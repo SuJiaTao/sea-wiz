@@ -23,12 +23,14 @@ const SPAWN_GAP := Vector2(0.6, 2.6)
 @onready var world: Node3D = $ViewportContainer/SubViewport/World
 @onready var world_env: WorldEnvironment = $ViewportContainer/SubViewport/World/WorldEnvironment
 @onready var turret: Turret = $ViewportContainer/SubViewport/World/Turret
-@onready var bullets: BulletManager = $ViewportContainer/SubViewport/World/Bullets
+@onready var ballistics: BallisticManager = $ViewportContainer/SubViewport/World/Ballistics
 @onready var enemies_root: Node3D = $ViewportContainer/SubViewport/World/Enemies
 @onready var hud: Control = $HUD/HUDRoot
 
 var fx: FXManager
-var missiles: MissileManager
+var bullet_renderer: ProjectileBatch
+var missile_renderer: ProjectileBatch
+var missile_smoke: MissileSmokeRenderer
 var thermal: ShaderMaterial
 
 var state: int = State.TITLE
@@ -90,18 +92,7 @@ func _ready() -> void:
 	fx.name = "FX"
 	world.add_child(fx)
 
-	missiles = MissileManager.new()
-	missiles.name = "Missiles"
-	world.add_child(missiles)
-
-	bullets.sensor = turret.camera
-	missiles.sensor = turret.camera
-	turret.fired.connect(_on_turret_fired)
-	turret.missile_launched.connect(_on_missile_launched)
-	bullets.hit_enemy.connect(_on_bullet_hit)
-	bullets.round_expired.connect(func(): misses += 1)
-	missiles.hit_enemy.connect(_on_missile_hit)
-	missiles.detonated.connect(_on_missile_detonated)
+	_setup_ballistics()
 
 	_warp_sound = AudioStreamPlayer.new()
 	_warp_sound.name = "WarpSound"
@@ -402,8 +393,40 @@ func live_enemies() -> Array:
 # Signals
 # ---------------------------------------------------------------------------
 
+func _setup_ballistics() -> void:
+	bullet_renderer = ProjectileBatch.new()
+	bullet_renderer.name = "BulletRenderer"
+	bullet_renderer.batch_mesh = BulletProjectile.make_mesh()
+	bullet_renderer.capacity = 900
+	bullet_renderer.sensor = turret.camera
+	bullet_renderer.near_cull = 10.0
+	bullet_renderer.zoom_near_cull = 70.0
+	world.add_child(bullet_renderer)
+
+	missile_renderer = ProjectileBatch.new()
+	missile_renderer.name = "MissileRenderer"
+	missile_renderer.batch_mesh = MeshFactory.build_missile_mesh()
+	missile_renderer.capacity = 32
+	world.add_child(missile_renderer)
+
+	missile_smoke = MissileSmokeRenderer.new()
+	missile_smoke.name = "MissileSmoke"
+	missile_smoke.sensor = turret.camera
+	world.add_child(missile_smoke)
+
+	turret.fired.connect(_on_turret_fired)
+	turret.missile_launched.connect(_on_missile_launched)
+
+
 func _on_turret_fired(origin: Vector3, velocity: Vector3) -> void:
-	bullets.spawn(origin, velocity)
+	var projectile := BulletProjectile.new(bullet_renderer, origin, velocity)
+	projectile.hit_enemy.connect(_on_bullet_hit)
+	projectile.round_expired.connect(_on_round_expired)
+	ballistics.fire(projectile)
+
+
+func _on_round_expired() -> void:
+	misses += 1
 
 
 func _on_bullet_hit(enemy: Enemy, point: Vector3, killed: bool) -> void:
@@ -418,7 +441,13 @@ func _on_bullet_hit(enemy: Enemy, point: Vector3, killed: bool) -> void:
 
 
 func _on_missile_launched(origin: Vector3, direction: Vector3, target: Enemy) -> void:
-	missiles.launch(origin, direction, target)
+	var projectile := GuidedMissileProjectile.new(
+		missile_renderer, missile_smoke, get_tree(), origin, direction, target
+	)
+	projectile.hit_enemy.connect(_on_missile_hit)
+	projectile.detonated.connect(_on_missile_detonated)
+	if not ballistics.fire(projectile):
+		return
 	missiles_fired += 1
 	if not turret.salvo_active():
 		flash_message("MISSILE AWAY", 1.1)
@@ -641,7 +670,7 @@ func _run_demo_gunner(delta: float) -> void:
 	var aim: Vector3 = best.global_position
 	if t > 0.0:
 		aim = best.global_position + best.velocity * t \
-				+ Vector3.UP * (0.5 * BulletManager.GRAVITY * t * t)
+				+ Vector3.UP * (0.5 * BulletProjectile.GRAVITY * t * t)
 	turret.slew_toward(aim, delta)
 
 	var bore := -turret.muzzle.global_transform.basis.z
@@ -762,8 +791,8 @@ func _game_over() -> void:
 func _restart() -> void:
 	for c in enemies_root.get_children():
 		c.queue_free()
-	bullets.clear_all()
-	missiles.clear_all()
+	ballistics.clear_all()
+	missile_smoke.clear_all()
 	fx.clear_all()
 	_pending_blasts.clear()
 	sensor_flash = 0.0

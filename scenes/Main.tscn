@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/Game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
-[ext_resource type="Script" path="res://scripts/BulletManager.gd" id="3_bullets"]
+[ext_resource type="Script" path="res://scripts/ballistics/BallisticManager.gd" id="3_ballistics"]
 [ext_resource type="Script" path="res://scripts/HUD.gd" id="4_hud"]
 
 [node name="Game" type="Node"]
@@ -30,8 +30,8 @@ render_target_update_mode = 4
 [node name="Turret" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("2_turret")
 
-[node name="Bullets" type="Node3D" parent="ViewportContainer/SubViewport/World"]
-script = ExtResource("3_bullets")
+[node name="Ballistics" type="Node" parent="ViewportContainer/SubViewport/World"]
+script = ExtResource("3_ballistics")
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 

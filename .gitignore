@@ -17,3 +17,4 @@ mono_crash.*.json
 
 # Dev custom
 docs/untracked/
+.vscode/settings.json

@@ -177,7 +177,7 @@ func _draw_lead(turret: Turret, cam: Camera3D, shrink: float, sz: Vector2) -> vo
 	if t <= 0.0:
 		return
 	var aim: Vector3 = _tracked.global_position + _tracked.velocity * t \
-			+ Vector3.UP * (0.5 * BulletManager.GRAVITY * t * t)
+			+ Vector3.UP * (0.5 * BulletProjectile.GRAVITY * t * t)
 	if not _visible_ahead(cam, aim):
 		return
 	var p := _project(cam, shrink, aim)
