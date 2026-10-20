@@ -2,22 +2,17 @@
 extends RefCounted
 class_name AbstractProjectile
 
-enum State { NEW, ACTIVE, TERMINATING, DELETED }
-enum DeleteReason { IMPACT, GROUND, EXPIRED, RANGE, REQUESTED, CLEARED }
+enum State { FIRING, FLYING, IMPACTING, DELETED }
 
 var position: Vector3
 var velocity: Vector3
 var radius: float
 var renderer: ProjectileBatch
 var age: float = 0.0
-var distance_travelled: float = 0.0
 var max_lifetime: float = 3.2
-var max_distance: float = 4000.0
-var ground_height: float = 0.0
 
-var _state: State = State.NEW
+var _state: State = State.FIRING
 var _should_destroy: bool = false
-var _requested_impact: ProjectileImpact
 
 
 func _init(
@@ -36,10 +31,6 @@ func request_delete() -> void:
 	_should_destroy = true
 
 
-func request_impact(impact: ProjectileImpact) -> void:
-	_requested_impact = impact
-
-
 func _on_fire() -> void:
 	if is_instance_valid(renderer):
 		renderer.register(self)
@@ -53,7 +44,7 @@ func _on_impact(_impact: ProjectileImpact) -> void:
 	pass
 
 
-func _on_delete(_reason: DeleteReason) -> void:
+func _on_delete() -> void:
 	if is_instance_valid(renderer):
 		renderer.unregister(self)
 
