@@ -77,7 +77,7 @@ func _propel_projectile(
 
 	var post_propel_pos := projectile.position
 
-	var impact := _sweep_impacts(projectile, pre_propel_pos, post_propel_pos, targets)
+	var impact := projectile._requested_impact if (projectile._requested_impact != null) else _sweep_impacts(projectile, pre_propel_pos, post_propel_pos, targets)
 
 	if impact != null:
 		projectile.position = impact.position

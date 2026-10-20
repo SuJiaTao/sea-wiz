@@ -29,10 +29,9 @@ func _on_impact(impact: ProjectileImpact) -> void:
 		hit_enemy.emit(impact.enemy, impact.point, killed)
 
 
-func _on_delete(reason: DeleteReason) -> void:
-	super(reason)
-	if reason in [DeleteReason.GROUND, DeleteReason.EXPIRED, DeleteReason.RANGE]:
-		round_expired.emit()
+func _on_delete() -> void:
+	super()
+	round_expired.emit()
 
 
 func visual_transform() -> Transform3D:

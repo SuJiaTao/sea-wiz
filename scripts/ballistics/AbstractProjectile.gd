@@ -13,7 +13,7 @@ var max_lifetime: float = 3.2
 
 var _state: State = State.FIRING
 var _should_destroy: bool = false
-
+var _requested_impact: ProjectileImpact = null
 
 func _init(
 	initial_position: Vector3,
@@ -29,6 +29,9 @@ func _init(
 
 func request_delete() -> void:
 	_should_destroy = true
+
+func request_impact(impact: ProjectileImpact) -> void:
+	_requested_impact = impact
 
 
 func _on_fire() -> void:

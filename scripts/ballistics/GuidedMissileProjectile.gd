@@ -40,9 +40,7 @@ func _init(
 	_smoke = smoke
 	_tree = tree
 	_target = target
-	ground_height = 0.5
 	max_lifetime = 14.0
-	max_distance = 6000.0
 
 
 func _on_fire() -> void:
@@ -132,10 +130,8 @@ func _on_impact(impact: ProjectileImpact) -> void:
 	_detonate(impact.enemy != null)
 
 
-func _on_delete(reason: DeleteReason) -> void:
-	if reason == DeleteReason.EXPIRED or reason == DeleteReason.RANGE:
-		_detonate(false)
-	super(reason)
+func _on_delete() -> void:
+	super()
 	_target = null
 	_tree = null
 	_smoke = null
