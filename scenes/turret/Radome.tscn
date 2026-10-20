@@ -1,0 +1,59 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_elmtk"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.28, 0.28, 0.28, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_ktlee"]
+radius = 1.25
+height = 2.5
+radial_segments = 8
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xfr8g"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.24, 0.24, 0.24, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_vg6cq"]
+top_radius = 1.3
+bottom_radius = 1.3
+height = 0.55
+radial_segments = 8
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l7s0p"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.21, 0.21, 0.21, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_w0otw"]
+top_radius = 1.0
+bottom_radius = 1.0
+height = 1.4
+radial_segments = 8
+rings = 1
+
+[node name="Radome" type="Node3D" unique_id=935896679]
+
+[node name="Sphere01" type="MeshInstance3D" parent="." unique_id=1337978451]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+material_override = SubResource("StandardMaterial3D_elmtk")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ktlee")
+
+[node name="Cylinder01" type="MeshInstance3D" parent="." unique_id=1220319343]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+material_override = SubResource("StandardMaterial3D_xfr8g")
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_vg6cq")
+
+[node name="Cylinder02" type="MeshInstance3D" parent="." unique_id=929872474]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.7, 0)
+material_override = SubResource("StandardMaterial3D_l7s0p")
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_w0otw")
