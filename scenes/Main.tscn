@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/Game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
 [ext_resource type="Script" path="res://scripts/ballistics/BallisticManager.gd" id="3_ballistics"]
 [ext_resource type="Script" path="res://scripts/HUD.gd" id="4_hud"]
+[ext_resource type="Script" path="res://scripts/enemy/EnemyManager.gd" id="5_enemies"]
 
 [node name="Game" type="Node"]
 script = ExtResource("1_game")
@@ -34,6 +35,7 @@ script = ExtResource("2_turret")
 script = ExtResource("3_ballistics")
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World"]
+script = ExtResource("5_enemies")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 

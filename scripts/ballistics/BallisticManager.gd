@@ -2,10 +2,28 @@ extends Node
 class_name BallisticManager
 
 const MAX_PROJECTILES: int = 4096
+const MIN_CAST_RADIUS: float = 0.001
+
+@export_flags_3d_physics var collision_mask: int = AbstractEnemy.COLLISION_LAYER
 
 var _projectiles: Array[AbstractProjectile] = []
 var _clearing: bool = false
 var _exiting: bool = false
+var _sphere_cast: ShapeCast3D
+var _sphere: SphereShape3D
+
+
+func _ready() -> void:
+	_sphere = SphereShape3D.new()
+	_sphere.radius = MIN_CAST_RADIUS
+	_sphere_cast = ShapeCast3D.new()
+	_sphere_cast.enabled = false
+	_sphere_cast.exclude_parent = false
+	_sphere_cast.collide_with_areas = true
+	_sphere_cast.collide_with_bodies = true
+	_sphere_cast.max_results = 1
+	_sphere_cast.shape = _sphere
+	add_child(_sphere_cast)
 
 
 func fire(projectile: AbstractProjectile) -> bool:
@@ -47,11 +65,10 @@ func _exit_tree() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	var targets := get_tree().get_nodes_in_group("enemy")
 	var snapshot: Array[AbstractProjectile] = _projectiles.duplicate()
 	for projectile in snapshot:
 		if projectile._state == AbstractProjectile.State.FLYING:
-			_propel_projectile(projectile, delta, targets)
+			_propel_projectile(projectile, delta)
 
 
 func _should_delete_projectile(projectile: AbstractProjectile) -> bool:
@@ -59,8 +76,7 @@ func _should_delete_projectile(projectile: AbstractProjectile) -> bool:
 
 func _propel_projectile(
 	projectile: AbstractProjectile,
-	delta: float,
-	targets: Array[Node]
+	delta: float
 ) -> void:
 	
 	if projectile._state != AbstractProjectile.State.FLYING:
@@ -78,7 +94,9 @@ func _propel_projectile(
 
 	var post_propel_pos := projectile.position
 
-	var impact := projectile._requested_impact if (projectile._requested_impact != null) else _sweep_impacts(projectile, pre_propel_pos, post_propel_pos, targets)
+	var impact := projectile._requested_impact
+	if impact == null:
+		impact = _spherecast(pre_propel_pos, post_propel_pos, projectile.radius)
 
 	if impact != null:
 		projectile.position = impact.position
@@ -86,26 +104,34 @@ func _propel_projectile(
 		return
 
 
-func _sweep_impacts(
-	projectile: AbstractProjectile,
+func _spherecast(
 	start: Vector3,
 	end: Vector3,
-	targets: Array[Node]
+	radius: float
 ) -> ProjectileImpact:
+	_sphere.radius = maxf(radius, MIN_CAST_RADIUS)
+	_sphere_cast.global_transform = Transform3D(Basis.IDENTITY, start)
+	_sphere_cast.target_position = end - start
+	_sphere_cast.collision_mask = collision_mask
+	_sphere_cast.force_shapecast_update()
+	if not _sphere_cast.is_colliding():
+		return null
 
-	var best: ProjectileImpact
+	var fraction := _sphere_cast.get_closest_collision_unsafe_fraction()
+	var impact := ProjectileImpact.new(start.lerp(end, fraction))
+	
+	impact.fraction = fraction
+	impact.point = _sphere_cast.get_collision_point(0)
+	impact.normal = _sphere_cast.get_collision_normal(0)
+	impact.collider = _sphere_cast.get_collider(0)
 
-	for node in targets:
-		if not is_instance_valid(node) or node.is_queued_for_deletion():
-			continue
-		var enemy := node as Enemy
-		if enemy == null or not enemy.alive:
-			continue
-		var impact := enemy.sweep_sphere(start, end, projectile.radius)
-		if impact != null and (best == null or impact.fraction < best.fraction):
-			best = impact
-
-	return best
+	var node := impact.collider as Node
+	while node != null:
+		if node is AbstractEnemy:
+			impact.managed_enemy = node as AbstractEnemy
+			break
+		node = node.get_parent()
+	return impact
 
 
 func _delete_projectile(

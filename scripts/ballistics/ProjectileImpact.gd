@@ -2,6 +2,8 @@ extends RefCounted
 class_name ProjectileImpact
 
 var enemy: Enemy
+var managed_enemy: AbstractEnemy
+var collider: Object
 var position: Vector3
 var point: Vector3
 var normal := Vector3.UP
