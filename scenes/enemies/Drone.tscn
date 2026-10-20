@@ -1,0 +1,106 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/DroneEnemy.gd" id="1_drone"]
+
+[sub_resource type="StandardMaterial3D" id="Material_skin"]
+shading_mode = 0
+cull_mode = 2
+albedo_color = Color(0.3, 0.3, 0.3, 1)
+metallic_specular = 0.0
+
+[sub_resource type="StandardMaterial3D" id="Material_motor"]
+shading_mode = 0
+cull_mode = 2
+albedo_color = Color(0.76, 0.76, 0.76, 1)
+metallic_specular = 0.0
+
+[sub_resource type="StandardMaterial3D" id="Material_exhaust"]
+shading_mode = 0
+cull_mode = 2
+albedo_color = Color(0.91, 0.91, 0.91, 1)
+metallic_specular = 0.0
+
+[sub_resource type="CylinderMesh" id="Mesh_body"]
+material = SubResource("Material_skin")
+top_radius = 0.3
+bottom_radius = 0.5
+height = 4.5
+radial_segments = 8
+rings = 1
+
+[sub_resource type="BoxMesh" id="Mesh_wing"]
+material = SubResource("Material_skin")
+size = Vector3(6.5, 0.16, 1.1)
+
+[sub_resource type="BoxMesh" id="Mesh_tail"]
+material = SubResource("Material_skin")
+size = Vector3(2, 0.16, 0.9)
+
+[sub_resource type="BoxMesh" id="Mesh_fin"]
+material = SubResource("Material_skin")
+size = Vector3(0.14, 1.4, 1)
+
+[sub_resource type="CylinderMesh" id="Mesh_motor"]
+material = SubResource("Material_motor")
+top_radius = 0.34
+bottom_radius = 0.34
+height = 1.2
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="Mesh_exhaust"]
+material = SubResource("Material_exhaust")
+top_radius = 0.15
+bottom_radius = 0.26
+height = 1.6
+radial_segments = 8
+rings = 1
+
+[sub_resource type="SphereShape3D" id="Shape_body"]
+radius = 3.2
+
+[node name="Drone" type="Node3D"]
+script = ExtResource("1_drone")
+max_hp = 22.0
+
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Visuals"]
+rotation = Vector3(1.5707964, 0, 0)
+mesh = SubResource("Mesh_body")
+cast_shadow = 0
+
+[node name="Wing" type="MeshInstance3D" parent="Visuals"]
+position = Vector3(0, 0.1, 0.4)
+mesh = SubResource("Mesh_wing")
+cast_shadow = 0
+
+[node name="Tail" type="MeshInstance3D" parent="Visuals"]
+position = Vector3(0, 0, 2)
+mesh = SubResource("Mesh_tail")
+cast_shadow = 0
+
+[node name="Fin" type="MeshInstance3D" parent="Visuals"]
+position = Vector3(0, 0.7, 2.1)
+mesh = SubResource("Mesh_fin")
+cast_shadow = 0
+
+[node name="Motor" type="MeshInstance3D" parent="Visuals"]
+position = Vector3(0, 0.1, 2.5)
+rotation = Vector3(1.5707964, 0, 0)
+mesh = SubResource("Mesh_motor")
+cast_shadow = 0
+
+[node name="Exhaust" type="MeshInstance3D" parent="Visuals"]
+position = Vector3(0, 0.1, 3.4)
+rotation = Vector3(1.5707964, 0, 0)
+mesh = SubResource("Mesh_exhaust")
+cast_shadow = 0
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox"]
+shape = SubResource("Shape_body")
