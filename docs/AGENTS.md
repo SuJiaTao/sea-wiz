@@ -1,0 +1,1 @@
+As an agent working on this project, you are held to the standard of humans (see `HUMANS.md`).
