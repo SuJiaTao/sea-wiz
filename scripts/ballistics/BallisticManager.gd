@@ -68,6 +68,7 @@ func _propel_projectile(
 
 	if _should_delete_projectile(projectile):
 		_delete_projectile(projectile)
+		return
 
 	var pre_propel_pos := projectile.position
 
