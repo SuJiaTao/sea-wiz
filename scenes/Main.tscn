@@ -1,0 +1,47 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/Game.gd" id="1_game"]
+[ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
+[ext_resource type="Script" path="res://scripts/BulletManager.gd" id="3_bullets"]
+[ext_resource type="Script" path="res://scripts/HUD.gd" id="4_hud"]
+
+[node name="Game" type="Node"]
+script = ExtResource("1_game")
+
+[node name="ViewportContainer" type="SubViewportContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+stretch_shrink = 4
+
+[node name="SubViewport" type="SubViewport" parent="ViewportContainer"]
+handle_input_locally = false
+msaa_3d = 0
+size = Vector2i(320, 180)
+render_target_update_mode = 4
+
+[node name="World" type="Node3D" parent="ViewportContainer/SubViewport"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="ViewportContainer/SubViewport/World"]
+
+[node name="Turret" type="Node3D" parent="ViewportContainer/SubViewport/World"]
+script = ExtResource("2_turret")
+
+[node name="Bullets" type="Node3D" parent="ViewportContainer/SubViewport/World"]
+script = ExtResource("3_bullets")
+
+[node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World"]
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="HUDRoot" type="Control" parent="HUD"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_hud")
