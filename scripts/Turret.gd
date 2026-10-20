@@ -70,6 +70,7 @@ const COMBO_WINDOW := 4.0
 const COMBO_MAX := 12
 
 @export var mouse_sensitivity: float = 0.0022
+@export var guided_weapons_enabled: bool = false
 @export var slew_speed: float = 1.5
 @export var dispersion_deg: float = 0.30    # 1-sigma cone half-angle
 @export var wander_deg: float = 0.22        # slow barrel whip
@@ -397,7 +398,8 @@ func _physics_process(delta: float) -> void:
 	else:
 		_fire_accum = 0.0
 
-	_process_fire_control(delta)
+	if guided_weapons_enabled:
+		_process_fire_control(delta)
 	_update_audio()
 
 
@@ -573,7 +575,7 @@ func _lock_beeps(delta: float) -> void:
 ## Locks every contact currently on screen and ripple-fires one cell at each.
 ## Returns the number of targets engaged, or 0 if it could not fire.
 func request_salvo() -> int:
-	if not _enabled or not salvo_ready():
+	if not guided_weapons_enabled or not _enabled or not salvo_ready():
 		return 0
 	var targets := visible_contacts()
 	if targets.is_empty():

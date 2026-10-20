@@ -2,6 +2,9 @@
 extends Node3D
 class_name AbstractEnemy
 
+signal damaged(amount: float, world_point: Vector3)
+signal reached_target(damage: float)
+
 enum State { CREATING, ALIVE, DEAD, DESTROYED }
 
 const COLLISION_LAYER: int = 1 << 1
@@ -25,6 +28,7 @@ func take_damage(amount: float, world_point: Vector3) -> void:
 	var applied := minf(amount, hp)
 	hp -= applied
 	_on_damage(applied, world_point)
+	damaged.emit(applied, world_point)
 
 
 func request_destroy() -> void:

@@ -1,6 +1,9 @@
 extends Node3D
 class_name EnemyManager
 
+signal enemy_created(enemy: AbstractEnemy)
+signal enemy_killed(enemy: AbstractEnemy)
+
 var _enemies: Array[AbstractEnemy] = []
 var _clearing: bool = false
 var _exiting: bool = false
@@ -22,10 +25,16 @@ func create(
 	_enemies.append(enemy)
 	add_child(enemy)
 	if is_instance_valid(enemy) and not enemy.is_queued_for_deletion():
-		enemy._activate()
+		enemy_created.emit(enemy)
+		if is_instance_valid(enemy) and not enemy.is_queued_for_deletion():
+			enemy._activate()
 	if is_instance_valid(enemy) and enemy._destroy_requested:
 		_destroy_enemy(enemy)
 	return true
+
+
+func active_count() -> int:
+	return _enemies.size()
 
 
 func clear_all() -> void:
@@ -52,6 +61,7 @@ func _physics_process(delta: float) -> void:
 		if enemy.hp <= 0.0:
 			enemy._state = AbstractEnemy.State.DEAD
 			enemy._on_killed()
+			enemy_killed.emit(enemy)
 			_destroy_enemy(enemy)
 			continue
 

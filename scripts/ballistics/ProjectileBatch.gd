@@ -1,11 +1,11 @@
 extends MultiMeshInstance3D
 class_name ProjectileBatch
 
-var batch_mesh: Mesh
-var capacity: int = 900
+@export var batch_mesh: Mesh
+@export var capacity: int = 900
 var sensor: Camera3D
-var near_cull: float = 0.0
-var zoom_near_cull: float = 0.0
+@export var near_cull: float = 0.0
+@export var zoom_near_cull: float = 0.0
 
 var _projectiles: Array[AbstractProjectile] = []
 

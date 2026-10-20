@@ -5,6 +5,7 @@ class_name DroneEnemy
 @export_range(0.0, 1.0) var agility: float = 0.45
 @export var target_position := Vector3.ZERO
 @export var arrival_radius: float = 55.0
+@export var contact_damage: float = 6.0
 
 @onready var _hurtbox: Area3D = $Hurtbox
 
@@ -27,7 +28,11 @@ func _create() -> void:
 func _on_think(delta: float) -> void:
 	var offset := target_position - global_position
 	var flat_distance := Vector2(offset.x, offset.z).length()
-	if flat_distance < arrival_radius or global_position.y < 2.0:
+	if flat_distance < arrival_radius:
+		request_destroy()
+		reached_target.emit(contact_damage)
+		return
+	if global_position.y < 2.0:
 		request_destroy()
 		return
 

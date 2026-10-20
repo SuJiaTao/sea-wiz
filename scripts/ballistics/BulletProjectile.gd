@@ -24,9 +24,11 @@ func _on_propel(delta: float) -> void:
 
 
 func _on_impact(impact: ProjectileImpact) -> void:
-	if is_instance_valid(impact.enemy) and impact.enemy.alive:
-		var killed := impact.enemy.take_damage(damage, impact.point)
-		hit_enemy.emit(impact.enemy, impact.point, killed)
+	var enemy := impact.managed_enemy
+	if not is_instance_valid(enemy):
+		return
+	if enemy.alive and not enemy._destroy_requested:
+		enemy.take_damage(damage, impact.point)
 
 
 func _on_delete() -> void:
