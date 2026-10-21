@@ -60,7 +60,7 @@ func _on_enemy_damaged(_amount: float, point: Vector3) -> void:
 	fx.hit(point)
 
 
-func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: Script) -> void:
+func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: DamageSource) -> void:
 	fx.explosion(enemy.global_position, 6.0)
 
 

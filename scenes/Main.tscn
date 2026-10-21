@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3]
+[gd_scene load_steps=34 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -25,6 +25,8 @@
 [ext_resource type="Script" path="res://scripts/hud/WeaponFeedback.gd" id="23_weapon_feedback"]
 [ext_resource type="Script" path="res://scripts/ballistics/MissileSmokeRenderer.gd" id="24_smoke"]
 [ext_resource type="Mesh" path="res://scenes/ballistics/InterceptorMesh.tres" id="25_interceptor"]
+[ext_resource type="Resource" path="res://resources/damage_sources/Cannon.tres" id="26_cannon_source"]
+[ext_resource type="Resource" path="res://resources/damage_sources/Missile.tres" id="27_missile_source"]
 
 [sub_resource type="Environment" id="Environment_world"]
 background_mode = 1
@@ -115,6 +117,7 @@ cast_shadow = 0
 
 [node name="Turret" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("2_turret")
+damage_source = ExtResource("26_cannon_source")
 guided_weapons_enabled = false
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World"]
@@ -153,6 +156,7 @@ enemies = NodePath("../Enemies")
 
 [node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "enemies", "ballistics", "renderer", "smoke")]
 script = ExtResource("21_launcher")
+damage_source = ExtResource("27_missile_source")
 turret = NodePath("../../Turret")
 enemies = NodePath("../../Enemies")
 ballistics = NodePath("../../Ballistics")

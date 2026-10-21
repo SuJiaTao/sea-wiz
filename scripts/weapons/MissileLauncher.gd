@@ -18,6 +18,7 @@ const REFIRE_TIME: float = 0.55
 @export var ballistics: BallisticManager
 @export var renderer: ProjectileBatch
 @export var smoke: MissileSmokeRenderer
+@export var damage_source: DamageSource
 
 var missiles: int = CAPACITY
 var lock_target: AbstractEnemy
@@ -157,7 +158,7 @@ func try_launch(target: AbstractEnemy) -> bool:
 	var projectile := MissileProjectile.new(
 		renderer, smoke, ballistics, origin, direction, target
 	)
-	projectile.weapon_source = get_script()
+	projectile.weapon_source = damage_source
 	projectile.detonated.connect(_on_detonated)
 	if not ballistics.fire(projectile):
 		return false

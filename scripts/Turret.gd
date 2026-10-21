@@ -70,6 +70,7 @@ const COMBO_WINDOW := 4.0
 const COMBO_MAX := 12
 
 @export var mouse_sensitivity: float = 0.0022
+@export var damage_source: DamageSource
 @export var guided_weapons_enabled: bool = false
 @export var slew_speed: float = 1.5
 @export var dispersion_deg: float = 0.30    # 1-sigma cone half-angle

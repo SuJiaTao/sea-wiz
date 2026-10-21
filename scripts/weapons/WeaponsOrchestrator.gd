@@ -45,7 +45,7 @@ func _on_cannon_fired(origin: Vector3, velocity: Vector3) -> void:
 	if not _enabled or get_tree().paused:
 		return
 	var projectile := BulletProjectile.new(tracers, origin, velocity)
-	projectile.weapon_source = turret.get_script()
+	projectile.weapon_source = turret.damage_source
 	ballistics.fire(projectile)
 
 
@@ -53,5 +53,5 @@ func _on_level_prepared(_number: int, _title: String) -> void:
 	missile_launcher.refill()
 
 
-func _on_enemy_killed(enemy: AbstractEnemy, weapon_source: Script) -> void:
+func _on_enemy_killed(enemy: AbstractEnemy, weapon_source: DamageSource) -> void:
 	salvos.on_enemy_killed(enemy, weapon_source)

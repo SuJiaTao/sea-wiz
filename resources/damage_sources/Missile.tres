@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="DamageSource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/weapons/DamageSource.gd" id="1_source"]
+
+[resource]
+resource_name = "Missile"
+script = ExtResource("1_source")
+display_name = "Interceptor Missile"

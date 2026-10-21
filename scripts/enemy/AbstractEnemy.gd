@@ -22,20 +22,20 @@ var alive: bool:
 
 var _state: State = State.CREATING
 var _destroy_requested: bool = false
-var _killing_weapon_source: Script
+var _damage_source: DamageSource
 
 
 func take_damage(
 	amount: float,
 	world_point: Vector3,
-	weapon_source: Script = null
+	weapon_source: DamageSource = null
 ) -> void:
 	if not alive or amount <= 0.0 or hp <= 0.0:
 		return
 	var applied := minf(amount, hp)
 	hp -= applied
 	if hp <= 0.0:
-		_killing_weapon_source = weapon_source
+		_damage_source = weapon_source
 	_on_damage(applied, world_point)
 	damaged.emit(applied, world_point)
 
@@ -47,7 +47,7 @@ func request_destroy() -> void:
 
 
 func _activate() -> void:
-	_killing_weapon_source = null
+	_damage_source = null
 	hp = max_hp
 	_create()
 	if _state != State.DESTROYED and not _destroy_requested:

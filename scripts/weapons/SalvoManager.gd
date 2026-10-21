@@ -12,6 +12,6 @@ func request_salvo() -> void:
 
 func on_enemy_killed(
 	_enemy: AbstractEnemy,
-	_weapon_source: Script
+	_weapon_source: DamageSource
 ) -> void:
 	pass

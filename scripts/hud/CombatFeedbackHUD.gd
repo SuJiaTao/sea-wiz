@@ -25,7 +25,7 @@ func _on_enemy_damaged(_amount: float, _point: Vector3) -> void:
 	_hit_remaining = 0.08
 
 
-func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: Script) -> void:
+func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: DamageSource) -> void:
 	_kill_remaining = 0.22
 	_splash_remaining = 1.3
 	_splash_text = "SPLASH " + enemy.display_name

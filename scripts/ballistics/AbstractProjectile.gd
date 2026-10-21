@@ -8,7 +8,7 @@ var position: Vector3
 var velocity: Vector3
 var radius: float
 var renderer: ProjectileBatch
-var weapon_source: Script
+var weapon_source: DamageSource
 var age: float = 0.0
 var max_lifetime: float = 3.2
 
