@@ -163,8 +163,10 @@ ballistics = NodePath("../../Ballistics")
 renderer = NodePath("../../Missiles")
 smoke = NodePath("../../MissileSmoke")
 
-[node name="SalvoManager" type="Node" parent="ViewportContainer/SubViewport/World/Weapons"]
+[node name="SalvoManager" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("launcher", "enemies")]
 script = ExtResource("22_salvos")
+launcher = NodePath("../MissileLauncher")
+enemies = NodePath("../../Enemies")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
@@ -220,7 +222,7 @@ mouse_filter = 2
 script = ExtResource("17_feedback_hud")
 enemies = NodePath("../../../ViewportContainer/SubViewport/World/Enemies")
 
-[node name="WeaponFeedback" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("launcher", "turret", "smoke", "fx")]
+[node name="WeaponFeedback" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("launcher", "salvos", "turret", "smoke", "fx")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -229,6 +231,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("23_weapon_feedback")
 launcher = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/MissileLauncher")
+salvos = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/SalvoManager")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Turret")
 smoke = NodePath("../../../ViewportContainer/SubViewport/World/MissileSmoke")
 fx = NodePath("../../../ViewportContainer/SubViewport/World/FX")

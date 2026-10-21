@@ -6,3 +6,4 @@
 resource_name = "Cannon"
 script = ExtResource("1_source")
 display_name = "20mm Cannon"
+charges_salvo = true

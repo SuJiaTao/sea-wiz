@@ -1,7 +1,9 @@
 extends Node
 class_name MissileLauncher
 
-signal launched(origin: Vector3, target: AbstractEnemy)
+enum LaunchMode { SINGLE, SALVO }
+
+signal launched(origin: Vector3, target: AbstractEnemy, mode: LaunchMode)
 signal detonated(position: Vector3, radius: float)
 
 const CAPACITY: int = 8
@@ -132,7 +134,17 @@ func _best_candidate() -> AbstractEnemy:
 
 
 func try_launch(target: AbstractEnemy) -> bool:
-	if not _enabled or get_tree().paused or missiles <= 0:
+	return _try_launch(target, LaunchMode.SINGLE)
+
+
+func try_launch_salvo(target: AbstractEnemy) -> bool:
+	return _try_launch(target, LaunchMode.SALVO)
+
+
+func _try_launch(target: AbstractEnemy, mode: LaunchMode) -> bool:
+	if not _enabled or get_tree().paused:
+		return false
+	if mode == LaunchMode.SINGLE and missiles <= 0:
 		return false
 	if not is_instance_valid(target):
 		return false
@@ -147,7 +159,7 @@ func try_launch(target: AbstractEnemy) -> bool:
 	var origin := turret.launcher.global_position + Vector3(0, 0.9, 0)
 	var forward := -turret.global_basis.z
 	var right := turret.global_basis.x
-	var spread := 0.06
+	var spread := 0.22 if mode == LaunchMode.SALVO else 0.06
 	var direction := (
 		Vector3.UP
 		+ forward * 0.34
@@ -163,8 +175,9 @@ func try_launch(target: AbstractEnemy) -> bool:
 	if not ballistics.fire(projectile):
 		return false
 
-	missiles -= 1
-	launched.emit(origin, target)
+	if mode == LaunchMode.SINGLE:
+		missiles -= 1
+	launched.emit(origin, target, mode)
 	return true
 
 
