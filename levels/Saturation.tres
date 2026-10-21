@@ -1,8 +1,12 @@
-[gd_resource type="Resource" script_class="WaveDefinition" load_steps=16 format=3]
+[gd_resource type="Resource" script_class="WaveDefinition" load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
 [ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Drone.tscn" id="3_drone"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="4_jet"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Helo.tscn" id="5_helo"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="6_missile"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/HeavyJet.tscn" id="7_heavy"]
 
 [sub_resource type="Resource" id="Spawn01"]
 script = ExtResource("2_spawn")
@@ -22,47 +26,65 @@ enemy_scene = ExtResource("3_drone")
 [sub_resource type="Resource" id="Spawn04"]
 script = ExtResource("2_spawn")
 time = 3.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("5_helo")
+distance = Vector2(800, 1300)
+altitude = Vector2(45, 180)
 
 [sub_resource type="Resource" id="Spawn05"]
 script = ExtResource("2_spawn")
 time = 5.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("4_jet")
+distance = Vector2(1500, 2100)
+altitude = Vector2(120, 480)
 
 [sub_resource type="Resource" id="Spawn06"]
 script = ExtResource("2_spawn")
 time = 7.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("6_missile")
+distance = Vector2(1600, 2200)
+altitude = Vector2(12, 30)
 
 [sub_resource type="Resource" id="Spawn07"]
 script = ExtResource("2_spawn")
 time = 9.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("4_jet")
+distance = Vector2(1500, 2100)
+altitude = Vector2(120, 480)
 
 [sub_resource type="Resource" id="Spawn08"]
 script = ExtResource("2_spawn")
 time = 11.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("6_missile")
+distance = Vector2(1600, 2200)
+altitude = Vector2(12, 30)
 
 [sub_resource type="Resource" id="Spawn09"]
 script = ExtResource("2_spawn")
 time = 12.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("5_helo")
+distance = Vector2(800, 1300)
+altitude = Vector2(45, 180)
 
 [sub_resource type="Resource" id="Spawn10"]
 script = ExtResource("2_spawn")
 time = 14.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("7_heavy")
+distance = Vector2(1800, 2400)
+altitude = Vector2(300, 700)
 
 [sub_resource type="Resource" id="Spawn11"]
 script = ExtResource("2_spawn")
 time = 17.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("6_missile")
+distance = Vector2(1600, 2200)
+altitude = Vector2(12, 30)
 
 [sub_resource type="Resource" id="Spawn12"]
 script = ExtResource("2_spawn")
 time = 18.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("6_missile")
+distance = Vector2(1600, 2200)
+altitude = Vector2(12, 30)
 
 [resource]
 script = ExtResource("1_wave")

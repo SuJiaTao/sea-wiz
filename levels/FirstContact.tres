@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="WaveDefinition" load_steps=12 format=3]
+[gd_resource type="Resource" script_class="WaveDefinition" load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
 [ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Drone.tscn" id="3_drone"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="4_jet"]
 
 [sub_resource type="Resource" id="Spawn01"]
 script = ExtResource("2_spawn")
@@ -37,12 +38,16 @@ enemy_scene = ExtResource("3_drone")
 [sub_resource type="Resource" id="Spawn07"]
 script = ExtResource("2_spawn")
 time = 12.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("4_jet")
+distance = Vector2(1500, 2100)
+altitude = Vector2(120, 480)
 
 [sub_resource type="Resource" id="Spawn08"]
 script = ExtResource("2_spawn")
 time = 15.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("4_jet")
+distance = Vector2(1500, 2100)
+altitude = Vector2(120, 480)
 
 [resource]
 script = ExtResource("1_wave")
