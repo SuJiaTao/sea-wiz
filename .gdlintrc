@@ -1,0 +1,34 @@
+function-name: &snake_case '^_?[a-z][a-z0-9]*(_[a-z0-9]+)*$'
+class-variable-name: *snake_case
+class-load-variable-name: *snake_case
+function-variable-name: *snake_case
+function-preload-variable-name: *snake_case
+function-argument-name: *snake_case
+loop-variable-name: *snake_case
+signal-name: *snake_case
+
+class-name: &pascal_case '^([A-Z][a-z0-9]*)+$'
+sub-class-name: *pascal_case
+
+constant-name: &constant_case '^_?[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'
+load-constant-name: *constant_case
+enum-element-name: *constant_case
+
+disable:
+  - enum-name
+  - duplicated-load
+  - expression-not-assigned
+  - unnecessary-pass
+  - unused-argument
+  - comparison-with-itself
+  - class-definitions-order
+  - max-returns
+  - max-public-methods
+  - function-arguments-number
+  - max-file-lines
+  - trailing-whitespace
+  - max-line-length
+  - tab-characters
+  - mixed-tabs-and-spaces
+  - no-elif-return
+  - no-else-return
