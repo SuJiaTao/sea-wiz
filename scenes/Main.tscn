@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=26 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -15,6 +15,10 @@
 [ext_resource type="Resource" path="res://levels/Saturation.tres" id="13_second"]
 [ext_resource type="Shader" path="res://shaders/thermal.gdshader" id="14_thermal_shader"]
 [ext_resource type="Shader" path="res://shaders/sea.gdshader" id="15_sea_shader"]
+[ext_resource type="Script" path="res://scripts/hud/PlayerHUD.gd" id="16_player_hud"]
+[ext_resource type="Script" path="res://scripts/hud/CombatFeedbackHUD.gd" id="17_feedback_hud"]
+[ext_resource type="Script" path="res://scripts/hud/WaveHUD.gd" id="18_wave_hud"]
+[ext_resource type="Script" path="res://scripts/hud/EnemyHUD.gd" id="19_enemy_hud"]
 
 [sub_resource type="Environment" id="Environment_world"]
 background_mode = 1
@@ -125,7 +129,7 @@ script = ExtResource("9_fx")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
-[node name="HUDRoot" type="Control" parent="HUD" node_paths=PackedStringArray("turret", "waves", "thermal")]
+[node name="HUDRoot" type="Control" parent="HUD"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -133,6 +137,46 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("4_hud")
-turret = NodePath("../../ViewportContainer/SubViewport/World/Turret")
-waves = NodePath("../../WaveOrchestrator")
-thermal = NodePath("../../ViewportContainer")
+
+[node name="EnemyHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("enemies", "turret")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("19_enemy_hud")
+enemies = NodePath("../../../ViewportContainer/SubViewport/World/Enemies")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Turret")
+
+[node name="PlayerHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("turret", "thermal")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("16_player_hud")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Turret")
+thermal = NodePath("../../../ViewportContainer")
+
+[node name="WaveHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("waves", "enemies")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("18_wave_hud")
+waves = NodePath("../../../WaveOrchestrator")
+enemies = NodePath("../../../ViewportContainer/SubViewport/World/Enemies")
+
+[node name="CombatFeedbackHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("enemies")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("17_feedback_hud")
+enemies = NodePath("../../../ViewportContainer/SubViewport/World/Enemies")

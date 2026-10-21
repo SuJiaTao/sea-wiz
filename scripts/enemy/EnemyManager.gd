@@ -37,6 +37,18 @@ func active_count() -> int:
 	return _enemies.size()
 
 
+func live_enemies() -> Array[AbstractEnemy]:
+	var result: Array[AbstractEnemy] = []
+	for enemy in _enemies:
+		if not is_instance_valid(enemy):
+			continue
+		if enemy.is_queued_for_deletion() or enemy._destroy_requested:
+			continue
+		if enemy.alive and enemy.hp > 0.0:
+			result.append(enemy)
+	return result
+
+
 func clear_all() -> void:
 	if _clearing:
 		return

@@ -3,6 +3,8 @@ class_name WaveOrchestrator
 
 signal completed()
 signal failed(reason: String)
+signal level_prepared(number: int, title: String)
+signal level_started(number: int, title: String)
 
 enum State { STOPPED, INTERMISSION, SPAWNING, FINISHED }
 
@@ -46,6 +48,7 @@ func _physics_process(delta: float) -> void:
 		intermission_remaining = maxf(intermission_remaining - delta, 0.0)
 		if intermission_remaining <= 0.0:
 			_state = State.SPAWNING
+			level_started.emit(level_number, level_title)
 		return
 	if _state != State.SPAWNING:
 		return
@@ -71,6 +74,7 @@ func _begin_next_level() -> void:
 	_clock = 0.0
 	intermission_remaining = initial_delay if level_number == 1 else intermission
 	_state = State.INTERMISSION
+	level_prepared.emit(level_number, level_title)
 
 
 func _spawn(entry: WaveSpawn) -> bool:

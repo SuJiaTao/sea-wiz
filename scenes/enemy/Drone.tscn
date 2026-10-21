@@ -9,6 +9,8 @@ radius = 3.2
 [node name="Drone" type="Node3D"]
 script = ExtResource("1_drone")
 max_hp = 22.0
+display_name = "DRONE"
+hud_radius = 3.2
 
 [node name="Visuals" parent="." instance=ExtResource("2_visuals")]
 

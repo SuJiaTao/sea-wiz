@@ -9,6 +9,8 @@ radius = 13.0
 [node name="HeavyJet" type="Node3D"]
 script = ExtResource("1_enemy")
 max_hp = 260.0
+display_name = "HEAVY BOMBER"
+hud_radius = 13.0
 speed = 130.0
 agility = 0.15
 contact_damage = 22.0

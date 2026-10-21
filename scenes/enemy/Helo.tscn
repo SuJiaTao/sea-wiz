@@ -9,6 +9,8 @@ radius = 5.0
 [node name="Helo" type="Node3D"]
 script = ExtResource("1_enemy")
 max_hp = 70.0
+display_name = "HELICOPTER"
+hud_radius = 5.0
 speed = 62.0
 agility = 0.35
 contact_damage = 12.0

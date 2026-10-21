@@ -10,6 +10,8 @@ enum State { CREATING, ALIVE, DEAD, DESTROYED }
 const COLLISION_LAYER: int = 1 << 1
 
 @export var max_hp: float = 20.0
+@export var display_name: String = "CONTACT"
+@export_range(0.1, 100.0) var hud_radius: float = 5.0
 
 var hp: float = 0.0
 var velocity := Vector3.ZERO

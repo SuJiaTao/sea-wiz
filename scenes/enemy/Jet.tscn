@@ -9,6 +9,8 @@ radius = 5.5
 [node name="Jet" type="Node3D"]
 script = ExtResource("1_enemy")
 max_hp = 55.0
+display_name = "FIGHTER"
+hud_radius = 5.5
 speed = 240.0
 agility = 0.7
 contact_damage = 14.0

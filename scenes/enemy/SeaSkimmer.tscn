@@ -9,6 +9,8 @@ radius = 2.4
 [node name="SeaSkimmer" type="Node3D"]
 script = ExtResource("1_enemy")
 max_hp = 14.0
+display_name = "SEA SKIMMER"
+hud_radius = 2.4
 speed = 310.0
 agility = 0.25
 contact_damage = 26.0
