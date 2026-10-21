@@ -7,8 +7,7 @@ const HULL_MAX: float = 100.0
 
 @onready var turret: Turret = $ViewportContainer/SubViewport/World/Turret
 @onready var enemies: EnemyManager = $ViewportContainer/SubViewport/World/Enemies
-@onready var ballistics: BallisticManager = $ViewportContainer/SubViewport/World/Ballistics
-@onready var tracers: ProjectileBatch = $ViewportContainer/SubViewport/World/Tracers
+@onready var weapons: WeaponsOrchestrator = $ViewportContainer/SubViewport/World/Weapons
 @onready var fx: FXManager = $ViewportContainer/SubViewport/World/FX
 @onready var waves: WaveOrchestrator = $WaveOrchestrator
 @onready var thermal: ThermalView = $ViewportContainer
@@ -19,8 +18,6 @@ var hull: float = HULL_MAX
 
 
 func _ready() -> void:
-	tracers.sensor = turret.camera
-	turret.fired.connect(_on_fired)
 	enemies.enemy_created.connect(_on_enemy_created)
 	enemies.enemy_killed.connect(_on_enemy_killed)
 	waves.completed.connect(_on_completed)
@@ -41,6 +38,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if get_tree().paused:
 		return
+	if weapons.handle_input(event):
+		get_viewport().set_input_as_handled()
+		return
 	if event is InputEventMouseMotion:
 		turret.apply_mouse_motion(event.relative)
 	elif event.is_action_pressed("ciws_zoom_in"):
@@ -49,11 +49,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		turret.nudge_zoom(-0.2)
 	elif event.is_action_pressed("ciws_polarity"):
 		thermal.polarity = 1.0 - thermal.polarity
-
-
-func _on_fired(origin: Vector3, velocity: Vector3) -> void:
-	if state == State.RUNNING and not get_tree().paused:
-		ballistics.fire(BulletProjectile.new(tracers, origin, velocity))
 
 
 func _on_enemy_created(enemy: AbstractEnemy) -> void:
@@ -65,7 +60,7 @@ func _on_enemy_damaged(_amount: float, point: Vector3) -> void:
 	fx.hit(point)
 
 
-func _on_enemy_killed(enemy: AbstractEnemy) -> void:
+func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: Script) -> void:
 	fx.explosion(enemy.global_position, 6.0)
 
 
@@ -89,7 +84,7 @@ func _on_wave_failed(reason: String) -> void:
 
 
 func _set_paused(paused: bool) -> void:
-	turret.set_enabled(not paused)
+	weapons.set_enabled(not paused)
 	get_tree().paused = paused
 	Input.mouse_mode = (
 		Input.MOUSE_MODE_VISIBLE if paused else Input.MOUSE_MODE_CAPTURED
@@ -102,7 +97,7 @@ func _finish(result: State, message: String) -> void:
 		return
 	state = result
 	waves.stop()
-	turret.set_enabled(false)
+	weapons.set_enabled(false)
 	get_tree().paused = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	hud.message = message + " - CLICK OR ENTER TO RESTART"

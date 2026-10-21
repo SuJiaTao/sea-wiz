@@ -28,7 +28,7 @@ func _on_impact(impact: ProjectileImpact) -> void:
 	if not is_instance_valid(enemy):
 		return
 	if enemy.alive and not enemy._destroy_requested:
-		enemy.take_damage(damage, impact.point)
+		enemy.take_damage(damage, impact.point, weapon_source)
 
 
 func _on_delete() -> void:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3]
+[gd_scene load_steps=32 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -19,6 +19,12 @@
 [ext_resource type="Script" path="res://scripts/hud/CombatFeedbackHUD.gd" id="17_feedback_hud"]
 [ext_resource type="Script" path="res://scripts/hud/WaveHUD.gd" id="18_wave_hud"]
 [ext_resource type="Script" path="res://scripts/hud/EnemyHUD.gd" id="19_enemy_hud"]
+[ext_resource type="Script" path="res://scripts/weapons/WeaponsOrchestrator.gd" id="20_weapons"]
+[ext_resource type="Script" path="res://scripts/weapons/MissileLauncher.gd" id="21_launcher"]
+[ext_resource type="Script" path="res://scripts/weapons/SalvoManager.gd" id="22_salvos"]
+[ext_resource type="Script" path="res://scripts/hud/WeaponFeedback.gd" id="23_weapon_feedback"]
+[ext_resource type="Script" path="res://scripts/ballistics/MissileSmokeRenderer.gd" id="24_smoke"]
+[ext_resource type="Mesh" path="res://scenes/ballistics/InterceptorMesh.tres" id="25_interceptor"]
 
 [sub_resource type="Environment" id="Environment_world"]
 background_mode = 1
@@ -127,6 +133,35 @@ zoom_near_cull = 70.0
 [node name="FX" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("9_fx")
 
+[node name="Missiles" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World"]
+script = ExtResource("8_batch")
+batch_mesh = ExtResource("25_interceptor")
+capacity = 32
+
+[node name="MissileSmoke" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World"]
+script = ExtResource("24_smoke")
+
+[node name="Weapons" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("turret", "ballistics", "tracers", "missile_launcher", "salvos", "waves", "enemies")]
+script = ExtResource("20_weapons")
+turret = NodePath("../Turret")
+ballistics = NodePath("../Ballistics")
+tracers = NodePath("../Tracers")
+missile_launcher = NodePath("MissileLauncher")
+salvos = NodePath("SalvoManager")
+waves = NodePath("../../../../WaveOrchestrator")
+enemies = NodePath("../Enemies")
+
+[node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "enemies", "ballistics", "renderer", "smoke")]
+script = ExtResource("21_launcher")
+turret = NodePath("../../Turret")
+enemies = NodePath("../../Enemies")
+ballistics = NodePath("../../Ballistics")
+renderer = NodePath("../../Missiles")
+smoke = NodePath("../../MissileSmoke")
+
+[node name="SalvoManager" type="Node" parent="ViewportContainer/SubViewport/World/Weapons"]
+script = ExtResource("22_salvos")
+
 [node name="HUD" type="CanvasLayer" parent="."]
 
 [node name="HUDRoot" type="Control" parent="HUD"]
@@ -180,3 +215,19 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("17_feedback_hud")
 enemies = NodePath("../../../ViewportContainer/SubViewport/World/Enemies")
+
+[node name="WeaponFeedback" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("launcher", "turret", "smoke", "fx")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("23_weapon_feedback")
+launcher = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/MissileLauncher")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Turret")
+smoke = NodePath("../../../ViewportContainer/SubViewport/World/MissileSmoke")
+fx = NodePath("../../../ViewportContainer/SubViewport/World/FX")
+
+[node name="SeekerAudio" type="AudioStreamPlayer" parent="HUD/HUDRoot/WeaponFeedback"]
+volume_db = -9.0

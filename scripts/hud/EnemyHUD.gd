@@ -54,9 +54,7 @@ func _draw() -> void:
 
 
 func _project(world_position: Vector3) -> Vector2:
-	var camera := turret.camera
-	var viewport_size := Vector2(camera.get_viewport().get_visible_rect().size)
-	return camera.unproject_position(world_position) / viewport_size * size
+	return _project_world(turret.camera, world_position)
 
 
 func _on_screen(point: Vector2) -> bool:
@@ -108,20 +106,6 @@ func _draw_contacts() -> void:
 				point + Vector2(half + 5, 4),
 				"%d" % int(distance), 10, FAINT
 			)
-
-
-func _draw_brackets(
-	point: Vector2,
-	half: float,
-	color: Color,
-	width: float
-) -> void:
-	var length := half * 0.35
-	for x in [-1.0, 1.0]:
-		for y in [-1.0, 1.0]:
-			var corner := point + Vector2(x, y) * half
-			draw_line(corner, corner - Vector2(x * length, 0), color, width)
-			draw_line(corner, corner - Vector2(0, y * length), color, width)
 
 
 func _draw_lead() -> void:

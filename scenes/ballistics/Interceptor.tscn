@@ -1,18 +1,7 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_soxws"]
-cull_mode = 2
-shading_mode = 0
-vertex_color_use_as_albedo = true
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_l6rix"]
-material = SubResource("StandardMaterial3D_soxws")
-top_radius = 0.0
-bottom_radius = 0.16
-height = 2.4
-radial_segments = 6
-rings = 1
+[ext_resource type="Mesh" path="res://scenes/ballistics/InterceptorMesh.tres" id="1_mesh"]
 
 [node name="Interceptor" type="MeshInstance3D" unique_id=1787963862]
 cast_shadow = 0
-mesh = SubResource("CylinderMesh_l6rix")
+mesh = ExtResource("1_mesh")

@@ -23,14 +23,18 @@ func _desired_velocity(_delta: float) -> Vector3:
 	return (target_position - global_position).normalized() * speed
 
 
-func take_damage(amount: float, world_point: Vector3) -> void:
+func take_damage(
+	amount: float,
+	world_point: Vector3,
+	weapon_source: Script = null
+) -> void:
 	var local_point := _visuals.to_local(world_point)
 	var radius_squared := weak_point_radius * weak_point_radius
 	for point in ENGINE_WEAK_POINTS:
 		if local_point.distance_squared_to(point) <= radius_squared:
-			super(amount * weak_point_multiplier, world_point)
+			super(amount * weak_point_multiplier, world_point, weapon_source)
 			return
-	super(amount, world_point)
+	super(amount, world_point, weapon_source)
 
 
 func _on_destroy() -> void:

@@ -51,3 +51,22 @@ func _bar(
 		dimensions.y - 4.0
 	)
 	draw_rect(Rect2(position + Vector2(2, 2), fill), color)
+
+
+func _project_world(camera: Camera3D, world_position: Vector3) -> Vector2:
+	var viewport_size := Vector2(camera.get_viewport().get_visible_rect().size)
+	return camera.unproject_position(world_position) / viewport_size * size
+
+
+func _draw_brackets(
+	point: Vector2,
+	half: float,
+	color: Color,
+	width: float
+) -> void:
+	var length := half * 0.35
+	for x in [-1.0, 1.0]:
+		for y in [-1.0, 1.0]:
+			var corner := point + Vector2(x, y) * half
+			draw_line(corner, corner - Vector2(x * length, 0), color, width)
+			draw_line(corner, corner - Vector2(0, y * length), color, width)

@@ -2,7 +2,7 @@ extends Node3D
 class_name EnemyManager
 
 signal enemy_created(enemy: AbstractEnemy)
-signal enemy_killed(enemy: AbstractEnemy)
+signal enemy_killed(enemy: AbstractEnemy, weapon_source: Script)
 
 var _enemies: Array[AbstractEnemy] = []
 var _clearing: bool = false
@@ -73,7 +73,7 @@ func _physics_process(delta: float) -> void:
 		if enemy.hp <= 0.0:
 			enemy._state = AbstractEnemy.State.DEAD
 			enemy._on_killed()
-			enemy_killed.emit(enemy)
+			enemy_killed.emit(enemy, enemy._killing_weapon_source)
 			_destroy_enemy(enemy)
 			continue
 

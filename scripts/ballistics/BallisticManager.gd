@@ -125,13 +125,73 @@ func _spherecast(
 	impact.normal = _sphere_cast.get_collision_normal(0)
 	impact.collider = _sphere_cast.get_collider(0)
 
-	var node := impact.collider as Node
+	impact.managed_enemy = _enemy_from_collider(impact.collider)
+	return impact
+
+
+func sphere_contacts(
+	center: Vector3,
+	radius: float
+) -> Array[ProjectileImpact]:
+	var result: Array[ProjectileImpact] = []
+	if radius <= 0.0 or not is_instance_valid(_sphere_cast):
+		return result
+
+	var sphere := SphereShape3D.new()
+	sphere.radius = radius
+	var query := PhysicsShapeQueryParameters3D.new()
+	query.shape = sphere
+	query.transform = Transform3D(Basis.IDENTITY, center)
+	query.collision_mask = collision_mask
+	query.collide_with_areas = true
+	query.collide_with_bodies = true
+	query.margin = 0.0
+
+	var space := _sphere_cast.get_world_3d().direct_space_state
+	var excluded: Array[RID] = []
+	var contacts: Dictionary[AbstractEnemy, ProjectileImpact] = {}
+
+	while true:
+		var hit := space.get_rest_info(query)
+		if hit.is_empty():
+			break
+		excluded.append(hit["rid"])
+		query.exclude = excluded
+
+		var collider := instance_from_id(int(hit["collider_id"]))
+		var enemy := _enemy_from_collider(collider)
+		if not is_instance_valid(enemy):
+			continue
+		if not enemy.alive or enemy.hp <= 0.0:
+			continue
+		if enemy.is_queued_for_deletion() or enemy._destroy_requested:
+			continue
+
+		var impact := ProjectileImpact.new(center)
+		impact.managed_enemy = enemy
+		impact.collider = collider
+		impact.point = hit["point"]
+		impact.normal = hit["normal"]
+
+		if contacts.has(enemy):
+			var previous: ProjectileImpact = contacts[enemy]
+			if previous.point.distance_squared_to(center) <= (
+				impact.point.distance_squared_to(center)
+			):
+				continue
+		contacts[enemy] = impact
+
+	result.assign(contacts.values())
+	return result
+
+
+static func _enemy_from_collider(collider: Object) -> AbstractEnemy:
+	var node := collider as Node
 	while node != null:
 		if node is AbstractEnemy:
-			impact.managed_enemy = node as AbstractEnemy
-			break
+			return node as AbstractEnemy
 		node = node.get_parent()
-	return impact
+	return null
 
 
 func _delete_projectile(
