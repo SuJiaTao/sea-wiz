@@ -119,7 +119,6 @@ cast_shadow = 0
 [node name="Turret" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("2_turret")
 damage_source = ExtResource("26_cannon_source")
-guided_weapons_enabled = false
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("5_enemies")

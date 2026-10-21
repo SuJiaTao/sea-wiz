@@ -1,9 +1,6 @@
 extends AbstractProjectile
 class_name BulletProjectile
 
-signal hit_enemy(enemy: Enemy, world_point: Vector3, killed: bool)
-signal round_expired()
-
 const GRAVITY := 9.81
 
 var damage: float = 10.0
@@ -31,11 +28,6 @@ func _on_impact(impact: ProjectileImpact) -> void:
 		enemy.take_damage(damage, impact.point, weapon_source)
 
 
-func _on_delete() -> void:
-	super()
-	round_expired.emit()
-
-
 func visual_transform() -> Transform3D:
 	var result := super()
 	result.basis *= Basis.from_scale(Vector3(1.0, 1.0, tracer_length))
@@ -45,10 +37,3 @@ func visual_transform() -> Transform3D:
 func visual_color() -> Color:
 	var fade := clampf((max_lifetime - age) / 1.4, 0.45, 1.0)
 	return Color(2.6 * fade, 2.6 * fade, 2.2 * fade, 1.0)
-
-
-static func make_mesh() -> Mesh:
-	var mesh := BoxMesh.new()
-	mesh.size = Vector3(0.085, 0.085, 1.0)
-	mesh.material = ProjectileBatch.make_material()
-	return mesh
