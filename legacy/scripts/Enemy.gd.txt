@@ -288,12 +288,12 @@ static func seg_sphere(a: Vector3, b: Vector3, c: Vector3, r: float) -> float:
 	var d := b - a
 	var f := a - c
 	var aa := d.dot(d)
-	if aa < 0.000001:
-		return -1.0
 	var bb := 2.0 * f.dot(d)
 	var cc := f.dot(f) - r * r
 	if cc <= 0.0:
 		return 0.0 # started inside
+	if aa < 0.000001:
+		return -1.0
 	var disc := bb * bb - 4.0 * aa * cc
 	if disc < 0.0:
 		return -1.0
@@ -313,28 +313,70 @@ static func seg_sphere(a: Vector3, b: Vector3, c: Vector3, r: float) -> float:
 ## plus the pods and gondola, so a round through empty sky beside a 360 m
 ## airship misses instead of hitting its bounding sphere.
 func segment_hit(a: Vector3, b: Vector3) -> float:
+	var impact := sweep_sphere(a, b, 0.0)
+	return impact.fraction if impact != null else -1.0
+
+
+func sweep_sphere(
+	a: Vector3,
+	b: Vector3,
+	projectile_radius: float
+) -> ProjectileImpact:
 	if warping:
-		return -1.0
-	var broad := seg_sphere(a, b, global_position, radius)
-	if _volumes.is_empty() or broad < 0.0:
-		return broad
-	# Test in model space: two transforms per round instead of one per volume,
-	# and volumes that are nowhere near the segment along the hull are skipped.
-	# The hit fraction along the segment is the same in either space.
+		return null
+	var broad := seg_sphere(a, b, global_position, radius + projectile_radius)
+	if broad < 0.0:
+		return null
+	if _volumes.is_empty():
+		return _sphere_impact(a, b, broad, global_position, radius)
+
+	# Hittable models use uniform scale; warp stretching disables collisions.
+	var scale_factor := maxf(
+		absf(_model.global_transform.basis.get_scale().x), 0.000001
+	)
+	var local_radius := projectile_radius / scale_factor
 	var la := _model.to_local(a)
 	var lb := _model.to_local(b)
 	var zmin := minf(la.z, lb.z)
 	var zmax := maxf(la.z, lb.z)
 	var best := -1.0
+	var best_center := Vector3.ZERO
+	var best_radius := 0.0
 	for v in _volumes:
 		var p: Vector3 = v["pos"]
 		var r: float = v["radius"]
-		if p.z + r < zmin or p.z - r > zmax:
+		var expanded_radius := r + local_radius
+		if p.z + expanded_radius < zmin or p.z - expanded_radius > zmax:
 			continue
-		var t := seg_sphere(la, lb, p, r)
+		var t := seg_sphere(la, lb, p, expanded_radius)
 		if t >= 0.0 and (best < 0.0 or t < best):
 			best = t
-	return best
+			best_center = p
+			best_radius = r
+	if best < 0.0:
+		return null
+	return _sphere_impact(
+		a, b, best, _model.to_global(best_center), best_radius * scale_factor
+	)
+
+
+func _sphere_impact(
+	a: Vector3,
+	b: Vector3,
+	fraction: float,
+	center: Vector3,
+	sphere_radius: float
+) -> ProjectileImpact:
+	var impact := ProjectileImpact.new(a.lerp(b, fraction), self)
+	impact.fraction = fraction
+	var outward := impact.position - center
+	if outward.length_squared() <= 0.000001:
+		outward = a - b
+	if outward.length_squared() <= 0.000001:
+		outward = Vector3.UP
+	impact.normal = outward.normalized()
+	impact.point = center + impact.normal * sphere_radius
+	return impact
 
 
 ## Distance from a point to this contact's surface (negative = inside).

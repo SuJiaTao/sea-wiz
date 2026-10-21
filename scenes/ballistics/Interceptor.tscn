@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Mesh" path="res://scenes/ballistics/InterceptorMesh.tres" id="1_mesh"]
+
+[node name="Interceptor" type="MeshInstance3D" unique_id=1787963862]
+cast_shadow = 0
+mesh = ExtResource("1_mesh")

@@ -1,0 +1,14 @@
+[gd_resource type="CylinderMesh" load_steps=2 format=3]
+
+[sub_resource type="StandardMaterial3D" id="Material_interceptor"]
+cull_mode = 2
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
+[resource]
+material = SubResource("Material_interceptor")
+top_radius = 0.0
+bottom_radius = 0.16
+height = 2.4
+radial_segments = 6
+rings = 1
