@@ -1,0 +1,77 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/TitleScreen.gd" id="1_title"]
+
+[node name="TitleScreen" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_title")
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Content" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Center/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.93, 0.98, 0.93, 0.95)
+theme_override_font_sizes/font_size = 64
+text = "PHALANX CIWS"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Center/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.62, 0.70, 0.62, 0.85)
+theme_override_font_sizes/font_size = 15
+text = "CLOSE IN WEAPON SYSTEM"
+horizontal_alignment = 1
+
+[node name="Tagline" type="Label" parent="Center/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+text = "You are the gun. Hold the line."
+horizontal_alignment = 1
+
+[node name="PromptSpace" type="Control" parent="Center/Content"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Prompt" type="Label" parent="Center/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+text = "CLICK OR ENTER TO ENGAGE"
+horizontal_alignment = 1
+
+[node name="ControlsSpace" type="Control" parent="Center/Content"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Controls" type="Label" parent="Center/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.62, 0.70, 0.62, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "MOUSE / WASD  AIM     LEFT  GUN
+RIGHT / SHIFT / WHEEL  ZOOM     MIDDLE / R  RELOAD
+Q / SIDE 1  MISSILE     E / SIDE 2  SALVO
+F  POLARITY     ESC  PAUSE"
+horizontal_alignment = 1

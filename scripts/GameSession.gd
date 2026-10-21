@@ -1,7 +1,7 @@
 extends Node
 class_name GameSession
 
-enum State { RUNNING, WON, LOST }
+enum State { TITLE, STARTING, RUNNING, WON, LOST }
 
 const HULL_MAX: float = 100.0
 
@@ -12,9 +12,11 @@ const HULL_MAX: float = 100.0
 @onready var waves: WaveOrchestrator = $WaveOrchestrator
 @onready var thermal: ThermalView = $ViewportContainer
 @onready var hud: GameplayHUD = $HUD/HUDRoot
+@onready var title_screen: TitleScreen = $HUD/TitleScreen
 
-var state: State = State.RUNNING
+var state: State = State.TITLE
 var hull: float = HULL_MAX
+var _title_time: float = 0.0
 
 
 func _ready() -> void:
@@ -22,12 +24,56 @@ func _ready() -> void:
 	enemies.enemy_killed.connect(_on_enemy_killed)
 	waves.completed.connect(_on_completed)
 	waves.failed.connect(_on_wave_failed)
+	title_screen.start_requested.connect(_on_start_requested)
 	hud.set_health(hull, HULL_MAX)
+	hud.hide()
+	title_screen.show()
+	weapons.set_enabled(false)
+	turret.hide_gun = true
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
+
+func _process(delta: float) -> void:
+	if state != State.TITLE and state != State.STARTING:
+		return
+
+	_title_time += delta
+	turret.rotation.y -= delta * 0.12
+	turret.mount.rotation.x = deg_to_rad(
+		6.0 + sin(_title_time * 0.4) * 3.0
+	)
+
+	if state == State.STARTING:
+		if (
+			Input.is_action_pressed("ciws_restart")
+			or Input.is_action_pressed("ciws_fire")
+		):
+			return
+		_begin()
+
+
+func _on_start_requested() -> void:
+	if state == State.TITLE:
+		state = State.STARTING
+
+
+func _begin() -> void:
+	state = State.RUNNING
+	title_screen.hide()
+	hud.show()
+	turret.hide_gun = false
+	weapons.set_enabled(true)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	waves.start(enemies)
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if state == State.TITLE:
+		if title_screen.handle_input(event):
+			get_viewport().set_input_as_handled()
+		return
+	if state == State.STARTING:
+		return
 	if state != State.RUNNING:
 		if event.is_action_pressed("ciws_restart"):
 			_restart()

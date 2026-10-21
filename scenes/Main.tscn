@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3]
+[gd_scene load_steps=35 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -27,6 +27,7 @@
 [ext_resource type="Mesh" path="res://scenes/ballistics/InterceptorMesh.tres" id="25_interceptor"]
 [ext_resource type="Resource" path="res://resources/damage_sources/Cannon.tres" id="26_cannon_source"]
 [ext_resource type="Resource" path="res://resources/damage_sources/Missile.tres" id="27_missile_source"]
+[ext_resource type="PackedScene" path="res://scenes/ui/TitleScreen.tscn" id="28_title"]
 
 [sub_resource type="Environment" id="Environment_world"]
 background_mode = 1
@@ -238,3 +239,5 @@ fx = NodePath("../../../ViewportContainer/SubViewport/World/FX")
 
 [node name="SeekerAudio" type="AudioStreamPlayer" parent="HUD/HUDRoot/WeaponFeedback"]
 volume_db = -9.0
+
+[node name="TitleScreen" parent="HUD" instance=ExtResource("28_title")]
