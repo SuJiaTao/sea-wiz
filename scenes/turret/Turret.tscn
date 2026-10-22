@@ -1,0 +1,68 @@
+[gd_scene format=3 uid="uid://bfbwp5hakbdf0"]
+
+[ext_resource type="Script" uid="uid://dcu3yxyksxkca" path="res://scripts/Turret.gd" id="1_rmqmx"]
+[ext_resource type="Resource" path="res://resources/damage_sources/Cannon.tres" id="2_xfx51"]
+[ext_resource type="PackedScene" uid="uid://bdovo3qxl4lwo" path="res://scenes/turret/Gun.tscn" id="3_ynqyc"]
+[ext_resource type="PackedScene" path="res://scenes/turret/Radome.tscn" id="4_bjbsn"]
+[ext_resource type="PackedScene" path="res://scenes/turret/Launcher.tscn" id="5_8qs6a"]
+[ext_resource type="AudioStream" uid="uid://bf32yubulyml" path="res://audio/ciws_fire.wav" id="6_8qs6a"]
+[ext_resource type="AudioStream" uid="uid://cmpblwjnp33uq" path="res://audio/ciws_spin.wav" id="7_bj70u"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7mu8f"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(3.2, 3.2, 2.8, 1)
+disable_receive_shadows = true
+billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_jyabn"]
+size = Vector2(0.3, 0.3)
+
+[node name="Turret" type="Node3D" unique_id=716990662 node_paths=PackedStringArray("mount", "gun", "muzzle", "camera", "flash", "launcher", "_gun_audio", "_spin_audio")]
+script = ExtResource("1_rmqmx")
+damage_source = ExtResource("2_xfx51")
+mount = NodePath("Mount")
+gun = NodePath("Mount/Gun")
+muzzle = NodePath("Mount/Muzzle")
+camera = NodePath("Mount/Sensor")
+flash = NodePath("Mount/Flash")
+launcher = NodePath("Launcher")
+_gun_audio = NodePath("GunAudio")
+_spin_audio = NodePath("SpinAudio")
+
+[node name="Mount" type="Node3D" parent="." unique_id=1768422786]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+
+[node name="Gun" parent="Mount" unique_id=735801425 instance=ExtResource("3_ynqyc")]
+
+[node name="Muzzle" type="Marker3D" parent="Mount" unique_id=1636647380]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.2)
+
+[node name="Flash" type="MeshInstance3D" parent="Mount" unique_id=1854651140]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.35)
+visible = false
+material_override = SubResource("StandardMaterial3D_7mu8f")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_jyabn")
+skeleton = NodePath("../..")
+
+[node name="Sensor" type="Camera3D" parent="Mount" unique_id=857557713]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0.95)
+fov = 55.0
+near = 0.1
+far = 6000.0
+
+[node name="Radome" parent="." unique_id=935896679 instance=ExtResource("4_bjbsn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 3.4)
+
+[node name="Launcher" parent="." unique_id=818477373 instance=ExtResource("5_8qs6a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3, 3.15)
+
+[node name="GunAudio" type="AudioStreamPlayer" parent="." unique_id=1256695360]
+stream = ExtResource("6_8qs6a")
+volume_db = -4.0
+
+[node name="SpinAudio" type="AudioStreamPlayer" parent="." unique_id=1343433886]
+stream = ExtResource("7_bj70u")
+volume_db = -14.0

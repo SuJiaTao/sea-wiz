@@ -32,19 +32,23 @@ const FOV_NARROW := 17.0
 const CAMERA_OFFSET := Vector3(0.0, 1.05, 0.95)
 const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 
+@export_category("Camera Movement Properties")
 @export var mouse_sensitivity: float = 0.0022
 @export var damage_source: DamageSource
 @export var slew_speed: float = 1.5
 @export var dispersion_deg: float = 0.30
 @export var wander_deg: float = 0.22
-
-var mount: Node3D
-var gun: Node3D
-var barrels: Node3D
-var muzzle: Marker3D
-var camera: Camera3D
-var flash: MeshInstance3D
-var launcher: Node3D
+@export_category("Componenets")
+@export var mount: Node3D
+@export var gun: Node3D
+@export var barrels: Node3D
+@export var muzzle: Marker3D
+@export var camera: Camera3D
+@export var flash: MeshInstance3D
+@export var launcher: Node3D
+@export_category("Audio Players")
+@export var _gun_audio: AudioStreamPlayer
+@export var _spin_audio: AudioStreamPlayer
 
 var ammo: int = MAGAZINE
 var reloading: bool = false
@@ -64,96 +68,6 @@ var _wander_target := Vector2.ZERO
 var _wander_timer: float = 0.0
 var _recoil: float = 0.0
 var _enabled: bool = true
-
-var _gun_audio: AudioStreamPlayer
-var _spin_audio: AudioStreamPlayer
-
-
-func _ready() -> void:
-	mount = Node3D.new()
-	mount.name = "Mount"
-	mount.position = Vector3(0, 2.0, 0)
-	add_child(mount)
-
-	var radome := RADOME_SCENE.instantiate() as Node3D
-	radome.name = "Radome"
-	radome.position = Vector3(0, 1.6, 3.4)
-	add_child(radome)
-
-	launcher = LAUNCHER_SCENE.instantiate() as Node3D
-	launcher.name = "Launcher"
-	launcher.position = LAUNCHER_OFFSET
-	add_child(launcher)
-
-	gun = GUN_SCENE.instantiate() as Node3D
-	gun.name = "Gun"
-	mount.add_child(gun)
-	barrels = gun.get_node_or_null("BarrelCluster")
-
-	muzzle = Marker3D.new()
-	muzzle.name = "Muzzle"
-	muzzle.position = Vector3(0, 0, -2.2)
-	mount.add_child(muzzle)
-
-	var quad := QuadMesh.new()
-	quad.size = Vector2(0.3, 0.3)
-	flash = MeshInstance3D.new()
-	flash.mesh = quad
-	var material := StandardMaterial3D.new()
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.albedo_color = Color(3.2, 3.2, 2.8, 1.0)
-	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
-	material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
-	material.disable_receive_shadows = true
-	flash.material_override = material
-	flash.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	flash.position = Vector3(0, 0, -2.35)
-	flash.visible = false
-	mount.add_child(flash)
-
-	camera = Camera3D.new()
-	camera.name = "Sensor"
-	camera.fov = FOV_WIDE
-	camera.near = 0.1
-	camera.far = 6000.0
-	camera.position = CAMERA_OFFSET
-	camera.current = true
-	mount.add_child(camera)
-
-	_gun_audio = AudioStreamPlayer.new()
-	_gun_audio.bus = "Master"
-	_gun_audio.volume_db = -4.0
-	add_child(_gun_audio)
-
-	_spin_audio = AudioStreamPlayer.new()
-	_spin_audio.bus = "Master"
-	_spin_audio.volume_db = -14.0
-	add_child(_spin_audio)
-
-	_load_audio()
-
-
-func _load_audio() -> void:
-	var fire_stream := _load_looping("res://audio/ciws_fire.wav")
-	if fire_stream != null:
-		_gun_audio.stream = fire_stream
-	var spin_stream := _load_looping("res://audio/ciws_spin.wav")
-	if spin_stream != null:
-		_spin_audio.stream = spin_stream
-
-
-func _load_looping(path: String) -> AudioStream:
-	if not ResourceLoader.exists(path):
-		return null
-	var stream := load(path)
-	if stream is AudioStreamWAV:
-		var wav := stream as AudioStreamWAV
-		wav.loop_mode = AudioStreamWAV.LOOP_FORWARD
-		wav.loop_begin = 0
-		wav.loop_end = int(wav.get_length() * float(wav.mix_rate))
-		return wav
-	return stream
 
 
 func set_enabled(value: bool) -> void:
