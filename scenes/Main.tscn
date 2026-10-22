@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3]
+[gd_scene load_steps=47 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -34,6 +34,8 @@
 [ext_resource type="Resource" path="res://resources/phosphors/WhitePhosphor.tres" id="32_white"]
 [ext_resource type="Resource" path="res://resources/phosphors/GreenPhosphor.tres" id="33_green"]
 [ext_resource type="Resource" path="res://resources/phosphors/RedPhosphor.tres" id="34_red"]
+[ext_resource type="Script" path="res://scripts/display/SensorAfterimage.gd" id="35_afterimage"]
+[ext_resource type="Shader" path="res://shaders/afterimage.gdshader" id="36_afterimage_shader"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMaterial_thermal"]
 sky_top_color = Color(0, 0, 0, 1)
@@ -74,6 +76,9 @@ fog_sky_affect = 0.0
 resource_local_to_scene = true
 shader = ExtResource("14_thermal_shader")
 
+[sub_resource type="ShaderMaterial" id="Material_afterimage"]
+shader = ExtResource("36_afterimage_shader")
+
 [sub_resource type="ShaderMaterial" id="Material_video"]
 shader = ExtResource("30_video_shader")
 
@@ -103,7 +108,23 @@ process_mode = 1
 script = ExtResource("6_waves")
 levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResource("13_second")])
 
-[node name="ViewportContainer" type="SubViewportContainer" parent="." node_paths=PackedStringArray("turret")]
+[node name="Afterimage" type="SubViewport" parent="."]
+disable_3d = true
+handle_input_locally = false
+size = Vector2i(320, 180)
+render_target_clear_mode = 1
+render_target_update_mode = 4
+
+[node name="Feed" type="TextureRect" parent="Afterimage" node_paths=PackedStringArray("source")]
+material = SubResource("Material_afterimage")
+offset_right = 320.0
+offset_bottom = 180.0
+mouse_filter = 2
+expand_mode = 1
+script = ExtResource("35_afterimage")
+source = NodePath("../../ViewportContainer/SubViewport")
+
+[node name="ViewportContainer" type="SubViewportContainer" parent="." node_paths=PackedStringArray("turret", "afterimage")]
 process_mode = 1
 material = SubResource("Material_thermal")
 texture_filter = 2
@@ -117,6 +138,7 @@ stretch = true
 stretch_shrink = 4
 script = ExtResource("7_thermal")
 turret = NodePath("SubViewport/World/Turret")
+afterimage = NodePath("../Afterimage")
 
 [node name="SubViewport" type="SubViewport" parent="ViewportContainer"]
 handle_input_locally = false

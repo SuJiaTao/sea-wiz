@@ -1,10 +1,9 @@
 shader_type canvas_item;
 render_mode unshaded;
 
-// Video stage: the recorded gun-camera signal as it reaches the monitor.
-// Runs over the whole screen, symbology included. Every artefact is driven by
-// the picture itself: bright detail smears, glows and gets noisier, dark
-// areas stay quiet.
+// Video stage: the gun-camera picture recorded to tape and played back, the
+// same signal path as Roll's VHS look in monochrome. Runs over the whole
+// screen, symbology included. Lengths are in pixels at 480 lines.
 
 uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap, repeat_disable;
 
@@ -12,30 +11,29 @@ uniform vec3 phosphor : source_color = vec3(1.0, 1.0, 0.985);
 uniform float highlight_bleach : hint_range(0.0, 1.0) = 0.0;
 
 uniform float frame_rate = 29.97;
-uniform float frame_lines = 480.0;
-uniform float tape_cell_px : hint_range(0.5, 4.0) = 1.0;
-uniform float tail_px : hint_range(0.0, 6.0) = 1.3;
-uniform float bright_tail_gain : hint_range(0.0, 8.0) = 2.5;
-uniform float sharpening : hint_range(0.0, 1.5) = 0.2;
-uniform float ghost_offset_px : hint_range(0.0, 20.0) = 7.0;
-uniform float ghost_amount : hint_range(0.0, 0.3) = 0.05;
-uniform float noise_floor : hint_range(0.0, 0.3) = 0.1;
-uniform float noise_signal : hint_range(0.0, 0.6) = 0.3;
-uniform float bloom_amount : hint_range(0.0, 2.0) = 0.35;
-uniform float bloom_floor : hint_range(0.0, 1.0) = 0.35;
-uniform float bloom_lod : hint_range(0.0, 6.0) = 2.5;
-uniform float wobble_px : hint_range(0.0, 4.0) = 0.7;
-uniform float wobble_lines : hint_range(4.0, 200.0) = 38.0;
-uniform float pedestal : hint_range(0.0, 0.2) = 0.02;
-uniform float response_gamma : hint_range(0.5, 2.0) = 1.1;
-uniform float level_flicker : hint_range(0.0, 0.1) = 0.01;
-uniform float vignette_amount : hint_range(0.0, 1.0) = 0.15;
+uniform float luma_band : hint_range(0.1, 1.0) = 0.42;
+uniform float smear_level : hint_range(0.0, 1.0) = 0.7;
+uniform float smear_gain : hint_range(0.0, 1.0) = 0.25;
+uniform float smear_band : hint_range(0.01, 0.5) = 0.0417;
+uniform float smear_delay : hint_range(0.0, 10.0) = 3.0;
+uniform float halo : hint_range(0.0, 2.0) = 0.8;
+uniform float halo_coring : hint_range(0.0, 0.1) = 0.015;
+uniform float halo_lod : hint_range(0.0, 5.0) = 2.8;
+uniform float luma_noise : hint_range(0.0, 0.3) = 0.06;
+uniform float dark_noise : hint_range(0.0, 4.0) = 1.6;
+uniform float grain_length : hint_range(1.0, 12.0) = 3.0;
+uniform float wave_amplitude : hint_range(0.0, 3.0) = 0.6;
 
 const vec3 LUMA = vec3(0.299, 0.587, 0.114);
-const int TAPS = 7;
-const float LEAD_SIGMA_TAPS = 0.6;
-const float WIDE_SIGMA_TAPS = 3.0;
+const float LINES = 480.0;
+const float LANCZOS_LOBES = 3.0;
+const int LUMA_TAPS = 7;
+const int SMEAR_TAPS = 12;
+const float SMEAR_PREFILTER_LOD = 1.5;
+const float MIN_DARK_NOISE = 0.35;
 const float BLEACH_START = 0.55;
+const float WAVE_REACH_LINES = 45.0;
+const float WAVE_RANDOM = 0.1;
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -43,72 +41,102 @@ float hash12(vec2 p) {
 	return fract((p3.x + p3.y) * p3.z);
 }
 
-float centred_noise(vec2 p) {
-	return hash12(p) + hash12(p + 17.31) - 1.0;
+float gaussian_noise(vec2 p) {
+	return (hash12(p) + hash12(p + 19.19) + hash12(p + 41.7) - 1.5) / 1.5;
 }
 
-float smooth_noise(float x, float seed) {
-	float i = floor(x);
-	float f = smoothstep(0.0, 1.0, fract(x));
-	return mix(centred_noise(vec2(i, seed)), centred_noise(vec2(i + 1.0, seed)), f);
+float lanczos3(float x) {
+	float ax = abs(x);
+	if (ax >= LANCZOS_LOBES) {
+		return 0.0;
+	}
+	if (ax < 0.0001) {
+		return 1.0;
+	}
+	float p = PI * x;
+	return LANCZOS_LOBES * sin(p) * sin(p / LANCZOS_LOBES) / (p * p);
 }
 
 float luma_at(vec2 uv) {
 	return dot(texture(screen_texture, uv).rgb, LUMA);
 }
 
-float tape_noise(float x_px, float line, float frame) {
-	return centred_noise(vec2(floor(x_px / tape_cell_px), line) + vec2(frame * 61.7, frame * 23.3));
+float edge_wave_px(float line, float frame, float u) {
+	float t = TIME;
+	float patch_a = LINES * (0.5 + 0.42 * sin(0.11 * t));
+	float patch_b = LINES * (0.5 + 0.42 * sin(0.07 * t + 2.1));
+	float near = max(
+		exp(-pow((line - patch_a) / WAVE_REACH_LINES, 2.0)),
+		exp(-pow((line - patch_b) / WAVE_REACH_LINES, 2.0))
+	);
+	float envelope = 0.15 + 0.85 * near;
+	float w = 0.6 * sin(TAU * line / 70.0 + t * 2.0)
+		+ 0.3 * sin(TAU * line / 23.0 - t * 3.1 + 1.3)
+		+ WAVE_RANDOM * (2.0 * hash12(vec2(line, frame)) - 1.0);
+	return wave_amplitude * u * 1.5 * envelope * w;
 }
 
-float timebase_wobble_px(float line, float frame) {
-	return smooth_noise(line / wobble_lines + frame * 0.37, frame * 0.013) * wobble_px;
-}
-
-float recorded_luma(vec2 uv, float pixel_width, float line, float frame) {
-	float trail = 0.0;
-	float trail_weight = 0.0;
-	float wide = 0.0;
-	float wide_weight = 0.0;
-	for (int i = -TAPS; i <= TAPS; i++) {
+float band_limited_luma(vec2 uv, float px, float u) {
+	float total = 0.0;
+	float weight = 0.0;
+	for (int i = -LUMA_TAPS; i <= LUMA_TAPS; i++) {
 		float k = float(i);
-		vec2 tap_uv = uv + vec2(k * pixel_width, 0.0);
-		float value = luma_at(tap_uv);
-		value += tape_noise(tap_uv.x / pixel_width, line, frame) * (noise_floor + noise_signal * value);
-		float reach = tail_px * (1.0 + bright_tail_gain * value);
-		float w_trail = k <= 0.0 ? exp(k / max(reach, 0.001)) : exp(-0.5 * pow(k / LEAD_SIGMA_TAPS, 2.0));
-		float w_wide = exp(-0.5 * pow(k / WIDE_SIGMA_TAPS, 2.0));
-		trail += value * w_trail;
-		trail_weight += w_trail;
-		wide += value * w_wide;
-		wide_weight += w_wide;
+		float w = lanczos3(k * luma_band);
+		total += w * luma_at(uv + vec2(k * u * px, 0.0));
+		weight += w;
 	}
-	trail /= trail_weight;
-	wide /= wide_weight;
-	return trail + (trail - wide) * sharpening;
+	return total / weight;
+}
+
+float highlight_smear(vec2 uv, float px, float u) {
+	float stride = LANCZOS_LOBES / smear_band / float(SMEAR_TAPS) * u;
+	vec2 source = uv - vec2(smear_delay * u * px, 0.0);
+	float total = 0.0;
+	float weight = 0.0;
+	for (int i = -SMEAR_TAPS; i <= SMEAR_TAPS; i++) {
+		float k = float(i) * stride;
+		float w = lanczos3(k / u * smear_band);
+		float level = dot(textureLod(screen_texture, source + vec2(k * px, 0.0), SMEAR_PREFILTER_LOD).rgb, LUMA);
+		total += w * clamp((level - smear_level) / (1.0 - smear_level), 0.0, 1.0);
+		weight += w;
+	}
+	return max(total / weight, 0.0);
+}
+
+float tape_grain(float x_px, float row, float frame, float u) {
+	float along = x_px / (grain_length * u);
+	float cell = floor(along);
+	vec2 offset = vec2(hash12(vec2(frame, 3.1)), hash12(vec2(frame, 7.9))) * 512.0;
+	float a = gaussian_noise(vec2(cell, row) + offset);
+	float b = gaussian_noise(vec2(cell + 1.0, row) + offset);
+	return mix(a, b, fract(along));
+}
+
+float screen_blend(float a, float b) {
+	return a + b - a * b;
 }
 
 void fragment() {
-	vec2 uv = SCREEN_UV;
-	float pixel_width = SCREEN_PIXEL_SIZE.x;
+	float px = SCREEN_PIXEL_SIZE.x;
+	float u = (1.0 / SCREEN_PIXEL_SIZE.y) / LINES;
 	float frame = floor(TIME * frame_rate);
-	float line = floor(uv.y * frame_lines);
+	float line = floor(SCREEN_UV.y * LINES);
 
-	uv.x += timebase_wobble_px(line, frame) * pixel_width;
-	float l = recorded_luma(uv, pixel_width, line, frame);
+	vec2 uv = SCREEN_UV;
+	uv.x -= edge_wave_px(line, frame, u) * px;
 
-	float glow = dot(textureLod(screen_texture, uv, bloom_lod).rgb, LUMA);
-	l += max(glow - bloom_floor, 0.0) * bloom_amount;
-	l += luma_at(uv - vec2(ghost_offset_px * pixel_width, 0.0)) * ghost_amount;
+	float y = band_limited_luma(uv, px, u);
+	y = screen_blend(y, highlight_smear(uv, px, u) * smear_gain);
 
-	l = pedestal + (1.0 - pedestal) * pow(clamp(l, 0.0, 1.0), response_gamma);
-	l *= 1.0 + centred_noise(vec2(frame, 0.5)) * level_flicker;
+	float soft = dot(textureLod(screen_texture, uv, halo_lod + log2(u)).rgb, LUMA);
+	float edge = y - soft;
+	y = clamp(y + halo * sign(edge) * max(0.0, abs(edge) - halo_coring), 0.0, 1.0);
 
-	vec2 from_centre = SCREEN_UV - vec2(0.5);
-	l *= 1.0 - vignette_amount * dot(from_centre, from_centre) * 2.0;
-	l = clamp(l, 0.0, 1.0);
+	float dark = max(MIN_DARK_NOISE, clamp(1.0 - dark_noise * y, 0.0, 1.0));
+	y += dark * luma_noise * tape_grain(uv.x / px, line, frame, u);
+	y = clamp(y, 0.0, 1.0);
 
-	vec3 colour = phosphor * l;
-	colour = mix(colour, vec3(l), smoothstep(BLEACH_START, 1.0, l) * highlight_bleach);
+	vec3 colour = phosphor * y;
+	colour = mix(colour, vec3(y), smoothstep(BLEACH_START, 1.0, y) * highlight_bleach);
 	COLOR = vec4(colour, 1.0);
 }

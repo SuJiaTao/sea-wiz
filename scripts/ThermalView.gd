@@ -2,6 +2,7 @@ extends SubViewportContainer
 class_name ThermalView
 
 @export var turret: Turret
+@export var afterimage: SubViewport
 
 var polarity: float = 0.0
 
@@ -9,6 +10,7 @@ var polarity: float = 0.0
 
 
 func _ready() -> void:
+	_thermal.set_shader_parameter("sensor_image", afterimage.get_texture())
 	resized.connect(_update_sensor_size)
 	_update_sensor_size()
 
