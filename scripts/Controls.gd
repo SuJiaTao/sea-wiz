@@ -26,6 +26,9 @@ const ACTIONS := {
 	"ciws_polarity": [
 		{"type": "key", "key": KEY_F},
 	],
+	"ciws_palette": [
+		{"type": "key", "key": KEY_C},
+	],
 	# Hold while zoomed to build a seeker lock; it launches on the tone.
 	"ciws_missile": [
 		{"type": "mouse", "button": MOUSE_BUTTON_XBUTTON1},

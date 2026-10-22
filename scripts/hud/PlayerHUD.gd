@@ -3,6 +3,7 @@ class_name PlayerHUD
 
 @export var turret: Turret
 @export var thermal: ThermalView
+@export var video: AnalogVideo
 
 var _hull: float = 100.0
 var _max_hull: float = 100.0
@@ -138,7 +139,7 @@ func _draw_view_info() -> void:
 	var origin := Vector2(size.x - 290, 82)
 	var polarity := "BLACK HOT" if thermal.polarity > 0.5 else "WHITE HOT"
 	var fov := turret.camera.fov
-	_text(origin, "MODE  " + polarity, 12, DIM)
+	_text(origin, "MODE  " + polarity + "   " + video.palette.display_name, 12, DIM)
 	_text(
 		origin + Vector2(0, 20),
 		"ZOOM %.1fx   FOV %.0f" % [
@@ -148,4 +149,4 @@ func _draw_view_info() -> void:
 	_text(origin + Vector2(0, 48), "MOUSE / WASD  AIM", 11, FAINT)
 	_text(origin + Vector2(0, 64), "LEFT  GUN    RIGHT / SHIFT  ZOOM", 11, FAINT)
 	_text(origin + Vector2(0, 80), "WHEEL  ZOOM    MIDDLE / R  RELOAD", 11, FAINT)
-	_text(origin + Vector2(0, 96), "F  POLARITY    ESC  PAUSE", 11, FAINT)
+	_text(origin + Vector2(0, 96), "F  POLARITY    C  COLOUR    ESC  PAUSE", 11, FAINT)

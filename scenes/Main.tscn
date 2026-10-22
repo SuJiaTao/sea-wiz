@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3]
+[gd_scene load_steps=44 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -28,10 +28,30 @@
 [ext_resource type="Resource" path="res://resources/damage_sources/Cannon.tres" id="26_cannon_source"]
 [ext_resource type="Resource" path="res://resources/damage_sources/Missile.tres" id="27_missile_source"]
 [ext_resource type="PackedScene" path="res://scenes/ui/TitleScreen.tscn" id="28_title"]
+[ext_resource type="Script" path="res://scripts/display/AnalogVideo.gd" id="29_video"]
+[ext_resource type="Shader" path="res://shaders/analog_video.gdshader" id="30_video_shader"]
+[ext_resource type="Script" path="res://scripts/display/PhosphorPalette.gd" id="31_palette_type"]
+[ext_resource type="Resource" path="res://resources/phosphors/WhitePhosphor.tres" id="32_white"]
+[ext_resource type="Resource" path="res://resources/phosphors/GreenPhosphor.tres" id="33_green"]
+[ext_resource type="Resource" path="res://resources/phosphors/RedPhosphor.tres" id="34_red"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMaterial_thermal"]
+sky_top_color = Color(0, 0, 0, 1)
+sky_horizon_color = Color(0.16, 0.16, 0.16, 1)
+sky_curve = 0.06
+ground_bottom_color = Color(0, 0, 0, 1)
+ground_horizon_color = Color(0.16, 0.16, 0.16, 1)
+ground_curve = 0.02
+sun_angle_max = 0.0
+sun_curve = 0.0
+
+[sub_resource type="Sky" id="Sky_thermal"]
+sky_material = SubResource("SkyMaterial_thermal")
 
 [sub_resource type="Environment" id="Environment_world"]
-background_mode = 1
+background_mode = 2
 background_color = Color(0, 0, 0, 1)
+sky = SubResource("Sky_thermal")
 ambient_light_source = 1
 reflected_light_source = 1
 tonemap_mode = 0
@@ -48,10 +68,14 @@ fog_light_color = Color(0, 0, 0, 1)
 fog_light_energy = 0.0
 fog_density = 0.00025
 fog_aerial_perspective = 0.0
+fog_sky_affect = 0.0
 
 [sub_resource type="ShaderMaterial" id="Material_thermal"]
 resource_local_to_scene = true
 shader = ExtResource("14_thermal_shader")
+
+[sub_resource type="ShaderMaterial" id="Material_video"]
+shader = ExtResource("30_video_shader")
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 shader = ExtResource("15_sea_shader")
@@ -82,7 +106,7 @@ levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResourc
 [node name="ViewportContainer" type="SubViewportContainer" parent="." node_paths=PackedStringArray("turret")]
 process_mode = 1
 material = SubResource("Material_thermal")
-texture_filter = 1
+texture_filter = 2
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -190,7 +214,7 @@ script = ExtResource("19_enemy_hud")
 enemies = NodePath("../../../ViewportContainer/SubViewport/World/Enemies")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Turret")
 
-[node name="PlayerHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("turret", "thermal")]
+[node name="PlayerHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("turret", "thermal", "video")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -200,6 +224,7 @@ mouse_filter = 2
 script = ExtResource("16_player_hud")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Turret")
 thermal = NodePath("../../../ViewportContainer")
+video = NodePath("../../../VideoSignal/AnalogVideo")
 
 [node name="WaveHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("waves", "enemies")]
 anchors_preset = 15
@@ -240,3 +265,17 @@ fx = NodePath("../../../ViewportContainer/SubViewport/World/FX")
 volume_db = -9.0
 
 [node name="TitleScreen" parent="HUD" instance=ExtResource("28_title")]
+
+[node name="VideoSignal" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="AnalogVideo" type="ColorRect" parent="VideoSignal"]
+material = SubResource("Material_video")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("29_video")
+palettes = Array[ExtResource("31_palette_type")]([ExtResource("32_white"), ExtResource("33_green"), ExtResource("34_red")])

@@ -11,6 +11,7 @@ const HULL_MAX: float = 100.0
 @onready var fx: FXManager = $ViewportContainer/SubViewport/World/FX
 @onready var waves: WaveOrchestrator = $WaveOrchestrator
 @onready var thermal: ThermalView = $ViewportContainer
+@onready var video: AnalogVideo = $VideoSignal/AnalogVideo
 @onready var hud: GameplayHUD = $HUD/HUDRoot
 @onready var title_screen: TitleScreen = $HUD/TitleScreen
 
@@ -68,6 +69,10 @@ func _begin() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ciws_palette"):
+		video.next_palette()
+		get_viewport().set_input_as_handled()
+		return
 	if state == State.TITLE:
 		if title_screen.handle_input(event):
 			get_viewport().set_input_as_handled()
