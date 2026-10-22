@@ -142,7 +142,7 @@ func _draw_view_info() -> void:
 	_text(
 		origin + Vector2(0, 20),
 		"ZOOM %.1fx   FOV %.0f" % [
-			Turret.FOV_WIDE / maxf(fov, 1.0), fov
+			TurretCamera.FOV_WIDE / maxf(fov, 1.0), fov	
 		], 12, DIM
 	)
 	_text(origin + Vector2(0, 48), "MOUSE / WASD  AIM", 11, FAINT)

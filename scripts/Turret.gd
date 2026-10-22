@@ -5,10 +5,6 @@ signal fired(origin: Vector3, direction: Vector3)
 signal reload_started()
 signal reload_finished()
 
-const GUN_SCENE := preload("res://scenes/turret/Gun.tscn")
-const LAUNCHER_SCENE := preload("res://scenes/turret/Launcher.tscn")
-const RADOME_SCENE := preload("res://scenes/turret/Radome.tscn")
-
 const MUZZLE_VELOCITY := 900.0
 const ROUNDS_PER_MIN := 4500.0
 const MAGAZINE := 1550
@@ -19,17 +15,8 @@ const SPINDOWN_TIME := 0.8
 const PITCH_MIN := deg_to_rad(-12.0)
 const PITCH_MAX := deg_to_rad(80.0)
 
-const SHAKE_PER_ROUND := 0.34
-const SHAKE_CAP := 2.4
-const SHAKE_DECAY := 7.0
-const IMPULSE_DECAY := 12.0
-const IMPULSE_CAP := 6.0
-const SHAKE_TO_OFFSET := 0.015
+const CAMERA_SHAKE_PER_ROUND := 0.34
 
-const FOV_WIDE := 55.0
-const FOV_NARROW := 17.0
-
-const CAMERA_OFFSET := Vector3(0.0, 1.05, 0.95)
 const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 
 @export_category("Camera Movement Properties")
@@ -43,7 +30,7 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export var gun: Node3D
 @export var barrels: Node3D
 @export var muzzle: Marker3D
-@export var camera: Camera3D
+@export var camera: TurretCamera
 @export var flash: MeshInstance3D
 @export var launcher: Node3D
 @export_category("Audio Players")
@@ -54,9 +41,6 @@ var ammo: int = MAGAZINE
 var reloading: bool = false
 var firing: bool = false
 var spin: float = 0.0
-var shake: float = 0.0
-var impulse: float = 0.0
-var zoom_level: float = 0.0
 var hide_gun: bool = false
 
 var _reload_timer: float = 0.0
@@ -83,7 +67,7 @@ func apply_mouse_motion(relative: Vector2) -> void:
 		return
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return
-	var scale_by_fov: float = camera.fov / FOV_WIDE
+	var scale_by_fov: float = camera.fov / camera.FOV_WIDE
 	aim(
 		-relative.x * mouse_sensitivity * scale_by_fov,
 		-relative.y * mouse_sensitivity * scale_by_fov
@@ -91,22 +75,19 @@ func apply_mouse_motion(relative: Vector2) -> void:
 
 
 func nudge_zoom(amount: float) -> void:
-	zoom_level = clampf(zoom_level + amount, 0.0, 1.0)
+	camera.nudge_zoom(amount)
 
 
 func aim(dyaw: float, dpitch: float) -> void:
 	rotate_y(dyaw)
 	mount.rotation.x = clampf(mount.rotation.x + dpitch, PITCH_MIN, PITCH_MAX)
 
+func shake_total() -> float:
+	return camera.shake_total()
 
 func add_impulse(value: float) -> void:
-	impulse = minf(impulse + value, IMPULSE_CAP)
-
-
-func shake_total() -> float:
-	return shake + impulse
-
-
+	camera.add_impulse(value)
+	
 func bearing_deg() -> float:
 	return fposmod(-rad_to_deg(rotation.y), 360.0)
 
@@ -125,13 +106,7 @@ func _process(delta: float) -> void:
 		flash.visible = false
 
 	_recoil = lerpf(_recoil, 0.0, clampf(delta * 9.0, 0.0, 1.0))
-	shake = lerpf(shake, 0.0, clampf(delta * SHAKE_DECAY, 0.0, 1.0))
-	impulse = lerpf(impulse, 0.0, clampf(delta * IMPULSE_DECAY, 0.0, 1.0))
-	if camera != null:
-		camera.position = CAMERA_OFFSET + Vector3(0.0, 0.0, _recoil * 0.22)
-		var amount: float = shake_total()
-		camera.h_offset = randf_range(-amount, amount) * SHAKE_TO_OFFSET
-		camera.v_offset = randf_range(-amount, amount) * SHAKE_TO_OFFSET
+	camera.recoil(Vector3(0.0, 0.0, _recoil * 0.22))
 
 	if barrels != null:
 		_barrel_angle += spin * TAU * 12.0 * delta
@@ -156,18 +131,11 @@ func _physics_process(delta: float) -> void:
 		- Input.get_action_strength("ciws_slew_down")
 	)
 	if horizontal != 0.0 or vertical != 0.0:
-		var scale_by_fov: float = camera.fov / FOV_WIDE
+		var scale_by_fov: float = camera.fov / camera.FOV_WIDE
 		aim(
 			horizontal * slew_speed * scale_by_fov * delta,
 			vertical * slew_speed * scale_by_fov * delta
 		)
-
-	var zoom := maxf(
-		zoom_level,
-		1.0 if Input.is_action_pressed("ciws_zoom") else 0.0
-	)
-	var desired_fov := lerpf(FOV_WIDE, FOV_NARROW, zoom)
-	camera.fov = lerpf(camera.fov, desired_fov, clampf(delta * 8.0, 0.0, 1.0))
 
 	if reloading:
 		_reload_timer -= delta
@@ -234,7 +202,7 @@ func _emit_round() -> void:
 	fired.emit(origin, direction * MUZZLE_VELOCITY)
 	_flash_timer = 0.035
 	_recoil = minf(_recoil + 0.05, 0.35)
-	shake = minf(shake + SHAKE_PER_ROUND, SHAKE_CAP)
+	camera.apply_shake(CAMERA_SHAKE_PER_ROUND)
 
 
 func _update_audio() -> void:

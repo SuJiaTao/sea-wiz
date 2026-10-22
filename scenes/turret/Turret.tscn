@@ -2,9 +2,10 @@
 
 [ext_resource type="Script" uid="uid://dcu3yxyksxkca" path="res://scripts/Turret.gd" id="1_rmqmx"]
 [ext_resource type="Resource" path="res://resources/damage_sources/Cannon.tres" id="2_xfx51"]
-[ext_resource type="PackedScene" uid="uid://bdovo3qxl4lwo" path="res://scenes/turret/Gun.tscn" id="3_ynqyc"]
-[ext_resource type="PackedScene" path="res://scenes/turret/Radome.tscn" id="4_bjbsn"]
-[ext_resource type="PackedScene" path="res://scenes/turret/Launcher.tscn" id="5_8qs6a"]
+[ext_resource type="PackedScene" uid="uid://bdovo3qxl4lwo" path="res://scenes/turret/body/Gun.tscn" id="3_ynqyc"]
+[ext_resource type="PackedScene" path="res://scenes/turret/body/Radome.tscn" id="4_bjbsn"]
+[ext_resource type="Script" uid="uid://bfgoiagkjkdn3" path="res://scripts/Turret/TurretCamera.gd" id="4_p64hc"]
+[ext_resource type="PackedScene" path="res://scenes/turret/body/Launcher.tscn" id="5_8qs6a"]
 [ext_resource type="AudioStream" uid="uid://bf32yubulyml" path="res://audio/ciws_fire.wav" id="6_8qs6a"]
 [ext_resource type="AudioStream" uid="uid://cmpblwjnp33uq" path="res://audio/ciws_spin.wav" id="7_bj70u"]
 
@@ -52,6 +53,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0.95)
 fov = 55.0
 near = 0.1
 far = 6000.0
+script = ExtResource("4_p64hc")
 
 [node name="Radome" parent="." unique_id=935896679 instance=ExtResource("4_bjbsn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 3.4)
