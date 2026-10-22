@@ -33,6 +33,8 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export var camera: TurretCamera
 @export var flash: MeshInstance3D
 @export var launcher: Node3D
+@export_category("Timers")
+@export var _reload_timer : Timer
 @export_category("Audio Players")
 @export var _gun_audio: AudioStreamPlayer
 @export var _spin_audio: AudioStreamPlayer
@@ -43,7 +45,6 @@ var firing: bool = false
 var spin: float = 0.0
 var hide_gun: bool = false
 
-var _reload_timer: float = 0.0
 var _fire_accum: float = 0.0
 var _barrel_angle: float = 0.0
 var _flash_timer: float = 0.0
@@ -52,6 +53,10 @@ var _wander_target := Vector2.ZERO
 var _wander_timer: float = 0.0
 var _recoil: float = 0.0
 var _enabled: bool = true
+
+
+func _ready() -> void:
+	_reload_timer.timeout.connect(_stop_reload)
 
 
 func set_enabled(value: bool) -> void:
@@ -136,17 +141,12 @@ func _physics_process(delta: float) -> void:
 			horizontal * slew_speed * scale_by_fov * delta,
 			vertical * slew_speed * scale_by_fov * delta
 		)
-
-	if reloading:
-		_reload_timer -= delta
-		if _reload_timer <= 0.0:
-			reloading = false
-			ammo = MAGAZINE
-			reload_finished.emit()
-	elif Input.is_action_just_pressed("ciws_reload") and ammo < MAGAZINE:
-		_start_reload()
-	elif ammo <= 0:
-		_start_reload()
+	
+	if not reloading:
+		if Input.is_action_just_pressed("ciws_reload") and ammo < MAGAZINE:
+			_start_reload()
+		elif ammo <= 0:
+			_start_reload()
 
 	firing = Input.is_action_pressed("ciws_fire") and ammo > 0 and not reloading
 	if firing:
@@ -175,12 +175,16 @@ func _physics_process(delta: float) -> void:
 
 	_update_audio()
 
+func _stop_reload() -> void:
+	reloading = false
+	ammo = MAGAZINE
+	reload_finished.emit()
 
 func _start_reload() -> void:
 	if reloading:
 		return
 	reloading = true
-	_reload_timer = RELOAD_TIME
+	_reload_timer.start(RELOAD_TIME)
 	reload_started.emit()
 
 

@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://di8ibfiut3qhe"]
+[gd_scene format=3 uid="uid://bl0kxwc87pjcr"]
 
 [ext_resource type="Script" uid="uid://b5n1fqsayfih1" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" uid="uid://bytbtjjkyux8j" path="res://scripts/ballistics/BallisticManager.gd" id="3_ballistics"]
