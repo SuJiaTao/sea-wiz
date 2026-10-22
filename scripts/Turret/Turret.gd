@@ -57,6 +57,7 @@ var _enabled: bool = true
 
 
 func _ready() -> void:
+	barrels = gun.get_node_or_null("BarrelCluster")
 	_reload_timer.timeout.connect(_stop_reload)
 
 
@@ -113,10 +114,6 @@ func _process(delta: float) -> void:
 
 	_recoil = lerpf(_recoil, 0.0, clampf(delta * 9.0, 0.0, 1.0))
 	camera.recoil(Vector3(0.0, 0.0, _recoil * 0.22))
-
-	if barrels != null:
-		_barrel_angle += spin * TAU * 12.0 * delta
-		barrels.rotation.z = _barrel_angle
 
 	if gun != null and camera != null:
 		gun.visible = camera.fov > 32.0 and not hide_gun
@@ -176,6 +173,9 @@ func _spin_gun(delta: float) -> void:
 	else:
 		spin = move_toward(spin, 0.0, delta / SPINDOWN_TIME)
 
+	if barrels != null:
+		_barrel_angle += spin * TAU * 12.0 * delta
+		barrels.rotation.z = _barrel_angle
 
 func _fire(delta: float) -> void:
 	if firing:
