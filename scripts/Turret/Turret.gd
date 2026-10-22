@@ -141,19 +141,26 @@ func _physics_process(delta: float) -> void:
 			horizontal * slew_speed * scale_by_fov * delta,
 			vertical * slew_speed * scale_by_fov * delta
 		)
-	
+
+	_handle_inputs()
+	_set_wander(delta)
+	_spin_gun(delta)
+	_fire(delta)
+	_update_audio()
+
+
+func _handle_inputs() -> void:
 	if not reloading:
 		if Input.is_action_just_pressed("ciws_reload") and ammo < MAGAZINE:
 			_start_reload()
 		elif ammo <= 0:
 			_start_reload()
+	
+		firing = Input.is_action_pressed("ciws_fire") and ammo > 0
 
-	firing = Input.is_action_pressed("ciws_fire") and ammo > 0 and not reloading
-	if firing:
-		spin = move_toward(spin, 1.0, delta / SPINUP_TIME)
-	else:
-		spin = move_toward(spin, 0.0, delta / SPINDOWN_TIME)
 
+
+func _set_wander(delta: float) -> void:
 	_wander_timer -= delta
 	if _wander_timer <= 0.0:
 		_wander_timer = randf_range(0.15, 0.4)
@@ -162,6 +169,15 @@ func _physics_process(delta: float) -> void:
 		) * deg_to_rad(wander_deg)
 	_wander = _wander.lerp(_wander_target, clampf(delta * 6.0, 0.0, 1.0))
 
+
+func _spin_gun(delta: float) -> void:
+	if firing:
+		spin = move_toward(spin, 1.0, delta / SPINUP_TIME)
+	else:
+		spin = move_toward(spin, 0.0, delta / SPINDOWN_TIME)
+
+
+func _fire(delta: float) -> void:
 	if firing:
 		var rate: float = (ROUNDS_PER_MIN / 60.0) * spin
 		_fire_accum += rate * delta
@@ -173,12 +189,12 @@ func _physics_process(delta: float) -> void:
 	else:
 		_fire_accum = 0.0
 
-	_update_audio()
 
 func _stop_reload() -> void:
 	reloading = false
 	ammo = MAGAZINE
 	reload_finished.emit()
+
 
 func _start_reload() -> void:
 	if reloading:
