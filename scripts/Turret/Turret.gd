@@ -38,6 +38,7 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export_category("Audio Players")
 @export var _gun_audio: AudioStreamPlayer
 @export var _spin_audio: AudioStreamPlayer
+@export var _reload_audio: AudioStreamPlayer
 
 var ammo: int = MAGAZINE
 var reloading: bool = false
@@ -92,7 +93,7 @@ func shake_total() -> float:
 
 func add_impulse(value: float) -> void:
 	camera.add_impulse(value)
-	
+
 func bearing_deg() -> float:
 	return fposmod(-rad_to_deg(rotation.y), 360.0)
 
@@ -155,9 +156,8 @@ func _handle_inputs() -> void:
 			_start_reload()
 		elif ammo <= 0:
 			_start_reload()
-	
-		firing = Input.is_action_pressed("ciws_fire") and ammo > 0
 
+		firing = Input.is_action_pressed("ciws_fire") and ammo > 0
 
 
 func _set_wander(delta: float) -> void:
@@ -193,6 +193,8 @@ func _fire(delta: float) -> void:
 func _stop_reload() -> void:
 	reloading = false
 	ammo = MAGAZINE
+	if _reload_audio:
+		_reload_audio.stop()
 	reload_finished.emit()
 
 
@@ -201,6 +203,8 @@ func _start_reload() -> void:
 		return
 	reloading = true
 	_reload_timer.start(RELOAD_TIME)
+	if _reload_audio:
+		_reload_audio.play()
 	reload_started.emit()
 
 

@@ -27,7 +27,7 @@ loop_mode = 1
 loop_end = 220469
 stereo = true
 
-[node name="Turret" type="Node3D" unique_id=716990662 node_paths=PackedStringArray("mount", "gun", "muzzle", "camera", "flash", "launcher", "_reload_timer", "_gun_audio", "_spin_audio")]
+[node name="Turret" type="Node3D" unique_id=716990662 node_paths=PackedStringArray("mount", "gun", "muzzle", "camera", "flash", "launcher", "_reload_timer", "_gun_audio", "_spin_audio", "_reload_audio")]
 script = ExtResource("1_rmqmx")
 damage_source = ExtResource("2_xfx51")
 mount = NodePath("Mount")
@@ -39,6 +39,7 @@ launcher = NodePath("Launcher")
 _reload_timer = NodePath("ReloadTimer")
 _gun_audio = NodePath("GunAudio")
 _spin_audio = NodePath("SpinAudio")
+_reload_audio = NodePath("ReloadAudio")
 
 [node name="Mount" type="Node3D" parent="." unique_id=1768422786]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
@@ -79,7 +80,8 @@ volume_db = -14.0
 
 [node name="ReloadAudio" type="AudioStreamPlayer" parent="." unique_id=1577571279]
 stream = SubResource("AudioStreamWAV_p64hc")
-pitch_scale = 1.21
+volume_db = -9.0
+pitch_scale = 1.2
 
 [node name="ReloadTimer" type="Timer" parent="." unique_id=227285232]
 one_shot = true
