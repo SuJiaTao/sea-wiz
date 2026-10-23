@@ -7,7 +7,7 @@ render_mode unshaded;
 uniform float gain : hint_range(0.2, 4.0) = 1.35;
 uniform float black_level : hint_range(0.0, 0.5) = 0.02;
 uniform float levels : hint_range(2.0, 256.0) = 64.0;
-uniform float sensor_floor : hint_range(0.0, 0.3) = 0.035;
+uniform float sensor_floor : hint_range(0.0, 0.3) = 0.0;
 uniform float optical_blur : hint_range(0.0, 1.0) = 0.55;
 uniform float optical_blur_texels : hint_range(0.25, 2.0) = 0.7;
 uniform float polarity : hint_range(0.0, 1.0) = 0.0;

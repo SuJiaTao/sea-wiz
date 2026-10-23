@@ -35,8 +35,8 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export var mouse_sensitivity: float = 0.0022
 @export var damage_source: DamageSource
 @export var slew_speed: float = 1.5
-@export var dispersion_deg: float = 0.30
-@export var wander_deg: float = 0.22
+@export var dispersion_deg: float = 0.15
+@export var wander_deg: float = 0.10
 
 var mount: Node3D
 var gun: Node3D

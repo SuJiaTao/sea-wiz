@@ -4,7 +4,7 @@ render_mode unshaded;
 // Video stage: the gun-camera picture recorded to tape and shown on a CRT.
 // Runs over the whole screen, symbology included.
 // Tape: each scan line holds a limited number of samples, so fine detail
-// smudges slightly; a faint ghost of the picture trails to the right; grain
+// smudges slightly; bright detail leaves a dark streak to its right; grain
 // sits on the samples, mostly in the dark parts.
 // CRT: every line is drawn by a beam that fattens with brightness, so dark
 // areas show the line structure and bright areas fill in.
@@ -19,11 +19,16 @@ uniform float video_lines : hint_range(120.0, 960.0) = 480.0;
 uniform float line_samples : hint_range(120.0, 1920.0) = 900.0;
 uniform float sample_hold : hint_range(0.0, 0.5) = 0.15;
 uniform float tail_samples : hint_range(0.0, 4.0) = 0.4;
-uniform float ghost_offset_samples : hint_range(0.0, 40.0) = 11.0;
-uniform float ghost_amount : hint_range(0.0, 0.5) = 0.13;
+uniform float streak_length : hint_range(0.0, 120.0) = 36.0;
+uniform float streak_amount : hint_range(0.0, 1.0) = 0.35;
+uniform float streak_floor : hint_range(0.0, 0.95) = 0.5;
+uniform float black_lift : hint_range(0.0, 0.3) = 0.0;
+uniform float head_switch_lines : hint_range(0.0, 20.0) = 5.0;
+uniform float head_switch_samples : hint_range(0.0, 30.0) = 6.0;
+uniform float capture_border : hint_range(0.0, 0.05) = 0.006;
 uniform float sharpening : hint_range(0.0, 1.5) = 0.45;
 uniform float sharpening_coring : hint_range(0.0, 0.1) = 0.02;
-uniform float grain_amount : hint_range(0.0, 0.4) = 0.09;
+uniform float grain_amount : hint_range(0.0, 0.4) = 0.06;
 uniform float dark_grain : hint_range(0.0, 4.0) = 1.6;
 uniform float beam_sigma_dark : hint_range(0.1, 0.6) = 0.36;
 uniform float beam_sigma_bright : hint_range(0.1, 0.8) = 0.5;
@@ -36,7 +41,10 @@ uniform float level_flicker : hint_range(0.0, 0.1) = 0.01;
 
 const vec3 LUMA = vec3(0.299, 0.587, 0.114);
 const int TAIL_TAPS = 4;
-const int GHOST_SPREAD = 1;
+const int STREAK_TAPS = 8;
+const float STREAK_FALLOFF = 2.0;
+const float HEAD_SWITCH_JITTER = 0.35;
+const float BORDER_JAGGIES = 0.0015;
 const int LEAD_TAPS = 3;
 const float LEAD_SIGMA = 0.6;
 const float WIDE_SIGMA = 2.0;
@@ -79,13 +87,27 @@ float trail_weight(float k) {
 	return exp(k / max(tail_samples, 0.001));
 }
 
-float ghost(float xs, float line) {
+float streak(float xs, float line) {
 	float total = 0.0;
-	for (int k = -GHOST_SPREAD; k <= GHOST_SPREAD; k++) {
-		float x = (xs - ghost_offset_samples + float(k)) / line_samples;
-		total += dot(textureLod(screen_texture, vec2(x, (line + 0.5) / video_lines), 0.0).rgb, LUMA);
+	float weight = 0.0;
+	for (int k = 1; k <= STREAK_TAPS; k++) {
+		float along = float(k) / float(STREAK_TAPS);
+		vec2 uv = vec2((xs - along * streak_length) / line_samples, (line + 0.5) / video_lines);
+		float value = dot(textureLod(screen_texture, uv, 0.0).rgb, LUMA);
+		float w = exp(-along * STREAK_FALLOFF);
+		total += w * max(value - streak_floor, 0.0) / (1.0 - streak_floor);
+		weight += w;
 	}
-	return total / float(2 * GHOST_SPREAD + 1);
+	return total / weight;
+}
+
+float head_switch(float line, float frame) {
+	float into = (line - (video_lines - head_switch_lines)) / max(head_switch_lines, 1.0);
+	if (into <= 0.0) {
+		return 0.0;
+	}
+	float jitter = 1.0 + centred_noise(vec2(line, frame)) * HEAD_SWITCH_JITTER;
+	return head_switch_samples * into * into * jitter;
 }
 
 float cored_sharpen(float trail, float wide) {
@@ -127,7 +149,8 @@ float line_signal(float xs, float line, vec2 grain_offset) {
 	float s0 = cored_sharpen(t0 / w0, wide0 / ww0);
 	float s1 = cored_sharpen(t1 / w1, wide1 / ww1);
 	float blend = smoothstep(0.5 - sample_hold, 0.5 + sample_hold, fract(xs - 0.5));
-	return mix(s0, s1, blend) + ghost(xs, line) * ghost_amount;
+	float held = mix(s0, s1, blend);
+	return held - streak(xs, line) * streak_amount * (1.0 - clamp(held, 0.0, 1.0));
 }
 
 float beam(float distance_lines, float value) {
@@ -144,15 +167,18 @@ void fragment() {
 
 	float xs = SCREEN_UV.x * line_samples;
 	vec2 grain_offset = vec2(hash12(vec2(frame, 3.1)), hash12(vec2(frame, 7.9))) * GRAIN_TILE;
-	float near_signal = line_signal(xs + timebase_wobble(line, frame), line, grain_offset);
-	float far_signal = line_signal(xs + timebase_wobble(neighbour, frame), neighbour, grain_offset);
+	float near_shift = timebase_wobble(line, frame) - head_switch(line, frame);
+	float far_shift = timebase_wobble(neighbour, frame) - head_switch(neighbour, frame);
+	float near_signal = line_signal(xs + near_shift, line, grain_offset);
+	float far_signal = line_signal(xs + far_shift, neighbour, grain_offset);
 	float l = beam(from_centre, near_signal) + beam(1.0 - abs(from_centre), far_signal);
 
 	float glow_lod = log2(max((1.0 / SCREEN_PIXEL_SIZE.y) / video_lines * bloom_lines, 1.0));
 	float glow = dot(textureLod(screen_texture, SCREEN_UV, glow_lod).rgb, LUMA);
 	l += max(glow - bloom_floor, 0.0) * bloom_amount;
 	l *= 1.0 + centred_noise(vec2(frame, 0.5)) * level_flicker;
-	l = clamp(l, 0.0, 1.0);
+	l = black_lift + (1.0 - black_lift) * clamp(l, 0.0, 1.0);
+	l *= step(capture_border + centred_noise(vec2(line, frame * 0.1)) * BORDER_JAGGIES, SCREEN_UV.x);
 
 	vec3 colour = phosphor * l;
 	colour = mix(colour, vec3(l), smoothstep(BLEACH_START, 1.0, l) * highlight_bleach);

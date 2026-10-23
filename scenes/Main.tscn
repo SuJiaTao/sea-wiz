@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3]
+[gd_scene load_steps=50 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -18,7 +18,7 @@
 [ext_resource type="Script" path="res://scripts/hud/PlayerHUD.gd" id="16_player_hud"]
 [ext_resource type="Script" path="res://scripts/hud/CombatFeedbackHUD.gd" id="17_feedback_hud"]
 [ext_resource type="Script" path="res://scripts/hud/WaveHUD.gd" id="18_wave_hud"]
-[ext_resource type="Script" path="res://scripts/hud/EnemyHUD.gd" id="19_enemy_hud"]
+[ext_resource type="Script" path="res://scripts/hud/TrackHUD.gd" id="19_track_hud"]
 [ext_resource type="Script" path="res://scripts/weapons/WeaponsOrchestrator.gd" id="20_weapons"]
 [ext_resource type="Script" path="res://scripts/weapons/MissileLauncher.gd" id="21_launcher"]
 [ext_resource type="Script" path="res://scripts/weapons/SalvoManager.gd" id="22_salvos"]
@@ -34,16 +34,15 @@
 [ext_resource type="Resource" path="res://resources/phosphors/WhitePhosphor.tres" id="32_white"]
 [ext_resource type="Resource" path="res://resources/phosphors/GreenPhosphor.tres" id="33_green"]
 [ext_resource type="Resource" path="res://resources/phosphors/RedPhosphor.tres" id="34_red"]
+[ext_resource type="Script" path="res://scripts/sensors/SearchRadar.gd" id="35_search"]
+[ext_resource type="Script" path="res://scripts/sensors/TrackManager.gd" id="36_tracks"]
+[ext_resource type="Script" path="res://scripts/sensors/Spotter.gd" id="37_spotter"]
+[ext_resource type="Script" path="res://scripts/sensors/GunDirector.gd" id="38_gun_director"]
+[ext_resource type="Script" path="res://scripts/BarrelHeat.gd" id="40_barrel_heat"]
+[ext_resource type="Shader" path="res://shaders/sky.gdshader" id="39_sky_shader"]
 
-[sub_resource type="ProceduralSkyMaterial" id="SkyMaterial_thermal"]
-sky_top_color = Color(0, 0, 0, 1)
-sky_horizon_color = Color(0.16, 0.16, 0.16, 1)
-sky_curve = 0.06
-ground_bottom_color = Color(0, 0, 0, 1)
-ground_horizon_color = Color(0.16, 0.16, 0.16, 1)
-ground_curve = 0.02
-sun_angle_max = 0.0
-sun_curve = 0.0
+[sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
+shader = ExtResource("39_sky_shader")
 
 [sub_resource type="Sky" id="Sky_thermal"]
 sky_material = SubResource("SkyMaterial_thermal")
@@ -192,6 +191,32 @@ script = ExtResource("22_salvos")
 launcher = NodePath("../MissileLauncher")
 enemies = NodePath("../../Enemies")
 
+[node name="Sensors" type="Node" parent="ViewportContainer/SubViewport/World"]
+
+[node name="SearchRadar" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" node_paths=PackedStringArray("enemies", "antenna")]
+script = ExtResource("35_search")
+enemies = NodePath("../../Enemies")
+antenna = NodePath("../../Turret")
+
+[node name="Tracks" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" node_paths=PackedStringArray("search_radar")]
+script = ExtResource("36_tracks")
+search_radar = NodePath("../SearchRadar")
+
+[node name="Spotter" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" node_paths=PackedStringArray("turret", "enemies")]
+script = ExtResource("37_spotter")
+turret = NodePath("../../Turret")
+enemies = NodePath("../../Enemies")
+
+[node name="GunDirector" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" node_paths=PackedStringArray("turret", "enemies", "spotter")]
+script = ExtResource("38_gun_director")
+turret = NodePath("../../Turret")
+enemies = NodePath("../../Enemies")
+spotter = NodePath("../Spotter")
+
+[node name="BarrelHeat" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("turret")]
+script = ExtResource("40_barrel_heat")
+turret = NodePath("../Turret")
+
 [node name="HUD" type="CanvasLayer" parent="."]
 
 [node name="HUDRoot" type="Control" parent="HUD"]
@@ -203,16 +228,18 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("4_hud")
 
-[node name="EnemyHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("enemies", "turret")]
+[node name="TrackHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("turret", "tracks", "spotter", "gun_director")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("19_enemy_hud")
-enemies = NodePath("../../../ViewportContainer/SubViewport/World/Enemies")
+script = ExtResource("19_track_hud")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Turret")
+tracks = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/Tracks")
+spotter = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/Spotter")
+gun_director = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/GunDirector")
 
 [node name="PlayerHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("turret", "thermal", "video")]
 anchors_preset = 15

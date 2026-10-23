@@ -113,6 +113,8 @@ func _on_enemy_damaged(_amount: float, point: Vector3) -> void:
 
 func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: DamageSource) -> void:
 	fx.explosion(enemy.global_position, 6.0)
+	if turret.camera.is_position_in_frustum(enemy.global_position):
+		thermal.heat_burst()
 
 
 func _on_target_reached(damage: float) -> void:
