@@ -1,10 +1,13 @@
 extends Node
 class_name BallisticManager
 
+signal entered_water(point: Vector3, splash_size: float)
+
 const MAX_PROJECTILES: int = 4096
 const MIN_CAST_RADIUS: float = 0.001
 
 @export_flags_3d_physics var collision_mask: int = AbstractEnemy.COLLISION_LAYER
+@export var sea: Node3D
 
 var _projectiles: Array[AbstractProjectile] = []
 var _clearing: bool = false
@@ -105,6 +108,21 @@ func _propel_projectile(
 			return
 		_delete_projectile(projectile, impact)
 		return
+
+	if _crossed_sea(pre_propel_pos, post_propel_pos):
+		_splash_down(projectile, pre_propel_pos, post_propel_pos)
+
+
+func _crossed_sea(start: Vector3, end: Vector3) -> bool:
+	return is_instance_valid(sea) and end.y <= sea.global_position.y and start.y > end.y
+
+
+func _splash_down(projectile: AbstractProjectile, start: Vector3, end: Vector3) -> void:
+	var level := sea.global_position.y
+	var fraction := clampf((start.y - level) / (start.y - end.y), 0.0, 1.0)
+	projectile.position = start.lerp(end, fraction)
+	entered_water.emit(projectile.position, projectile._splash_size())
+	_delete_projectile(projectile)
 
 
 func _spherecast(

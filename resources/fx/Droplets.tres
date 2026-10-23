@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="ParticleStyle" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/fx/ParticleStyle.gd" id="1_style"]
+[ext_resource type="Shader" path="res://shaders/spark_particle.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_Droplets"]
+render_priority = 0
+shader = ExtResource("2_shader")
+shader_parameter/growth = 1.0
+shader_parameter/growth_curve = 1.0
+shader_parameter/start_heat = 0.6
+shader_parameter/end_heat = 0.42
+shader_parameter/cooling = 1.0
+shader_parameter/start_alpha = 0.9
+shader_parameter/fade = 0.5
+shader_parameter/min_angular_size = 0.003
+shader_parameter/sharpness = 1.5
+
+[sub_resource type="QuadMesh" id="QuadMesh_Droplets"]
+material = SubResource("ShaderMaterial_Droplets")
+
+[resource]
+resource_name = "Droplets"
+script = ExtResource("1_style")
+mesh = SubResource("QuadMesh_Droplets")
+lifetime = Vector2(0.9, 1.8)
+start_size = Vector2(0.3, 0.6)
+gravity = 9.81
+drag = 0.3
+wind_factor = 0.2

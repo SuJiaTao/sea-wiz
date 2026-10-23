@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=3]
+[gd_scene load_steps=64 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -40,6 +40,20 @@
 [ext_resource type="Script" path="res://scripts/sensors/GunDirector.gd" id="38_gun_director"]
 [ext_resource type="Script" path="res://scripts/BarrelHeat.gd" id="40_barrel_heat"]
 [ext_resource type="Shader" path="res://shaders/sky.gdshader" id="39_sky_shader"]
+[ext_resource type="Script" path="res://scripts/fx/EffectManager.gd" id="41_effects"]
+[ext_resource type="Script" path="res://scripts/fx/ParticleBatch.gd" id="42_particles"]
+[ext_resource type="Script" path="res://scripts/fx/FireTexture.gd" id="43_fire_texture"]
+[ext_resource type="Resource" path="res://resources/fx/Wind.tres" id="44_wind"]
+[ext_resource type="Resource" path="res://resources/fx/WaterSplash.tres" id="45_splash"]
+[ext_resource type="Material" path="res://resources/fx/FireMaterial.tres" id="46_fire_material"]
+[ext_resource type="QuadMesh" path="res://resources/fx/FireMesh.tres" id="47_fire_mesh"]
+[ext_resource type="Resource" path="res://resources/fx/MissileTrail.tres" id="48_missile_trail"]
+[ext_resource type="Resource" path="res://resources/fx/WreckSmoke.tres" id="49_wreck_smoke"]
+[ext_resource type="Resource" path="res://resources/fx/Fireballs.tres" id="50_fireballs"]
+[ext_resource type="Resource" path="res://resources/fx/Embers.tres" id="51_embers"]
+[ext_resource type="Resource" path="res://resources/fx/Droplets.tres" id="52_droplets"]
+[ext_resource type="Resource" path="res://resources/fx/Spray.tres" id="53_spray"]
+[ext_resource type="Resource" path="res://resources/fx/Ripples.tres" id="54_ripples"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -146,8 +160,9 @@ damage_source = ExtResource("26_cannon_source")
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("5_enemies")
 
-[node name="Ballistics" type="Node" parent="ViewportContainer/SubViewport/World"]
+[node name="Ballistics" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("sea")]
 script = ExtResource("3_ballistics")
+sea = NodePath("../Sea")
 
 [node name="Tracers" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("8_batch")
@@ -159,6 +174,59 @@ zoom_near_cull = 70.0
 [node name="FX" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("9_fx")
 
+[node name="Effects" type="Node3D" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("sea", "smoke", "fireballs", "embers", "droplets", "spray", "ripples")]
+script = ExtResource("41_effects")
+sea = NodePath("../Sea")
+smoke = NodePath("Smoke")
+fireballs = NodePath("Fireballs")
+embers = NodePath("Embers")
+droplets = NodePath("Droplets")
+spray = NodePath("Spray")
+ripples = NodePath("Ripples")
+fire_mesh = ExtResource("47_fire_mesh")
+splash_style = ExtResource("45_splash")
+
+[node name="Smoke" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects"]
+script = ExtResource("42_particles")
+style = ExtResource("49_wreck_smoke")
+wind = ExtResource("44_wind")
+capacity = 1500
+
+[node name="Fireballs" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects"]
+script = ExtResource("42_particles")
+style = ExtResource("50_fireballs")
+wind = ExtResource("44_wind")
+capacity = 1500
+
+[node name="Embers" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects"]
+script = ExtResource("42_particles")
+style = ExtResource("51_embers")
+wind = ExtResource("44_wind")
+capacity = 1200
+
+[node name="Droplets" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects"]
+script = ExtResource("42_particles")
+style = ExtResource("52_droplets")
+wind = ExtResource("44_wind")
+capacity = 1500
+
+[node name="Spray" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects"]
+script = ExtResource("42_particles")
+style = ExtResource("53_spray")
+wind = ExtResource("44_wind")
+capacity = 1000
+
+[node name="Ripples" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects"]
+script = ExtResource("42_particles")
+style = ExtResource("54_ripples")
+wind = ExtResource("44_wind")
+capacity = 400
+
+[node name="FireTexture" type="Node" parent="ViewportContainer/SubViewport/World/Effects"]
+script = ExtResource("43_fire_texture")
+material = ExtResource("46_fire_material")
+wind = ExtResource("44_wind")
+
 [node name="Missiles" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("8_batch")
 batch_mesh = ExtResource("25_interceptor")
@@ -166,6 +234,11 @@ capacity = 32
 
 [node name="MissileSmoke" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("24_smoke")
+style = ExtResource("48_missile_trail")
+wind = ExtResource("44_wind")
+capacity = 5000
+near_cull = 7.0
+zoom_near_cull = 45.0
 
 [node name="Weapons" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("turret", "ballistics", "tracers", "missile_launcher", "salvos", "waves", "enemies")]
 script = ExtResource("20_weapons")
