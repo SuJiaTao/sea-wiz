@@ -40,7 +40,7 @@ func nudge_zoom(amount: float) -> void:
 func apply_shake(strength: float) -> void:
 	_shake = minf(_shake + strength, SHAKE_CAP)
 
-func add_impulse(value: float) -> void:
+func apply_shake_impulse(value: float) -> void:
 	_impulse = minf(_impulse + value, IMPULSE_CAP)
 
 func shake_total() -> float:

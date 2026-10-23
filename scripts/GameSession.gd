@@ -115,7 +115,7 @@ func _on_target_reached(damage: float) -> void:
 		return
 	hull = maxf(hull - maxf(damage, 0.0), 0.0)
 	hud.set_health(hull, HULL_MAX)
-	turret.add_impulse(5.0)
+	turret.apply_camera_shake_impulse(5.0)
 	if hull <= 0.0:
 		_finish(State.LOST, "DEFENCE LOST")
 

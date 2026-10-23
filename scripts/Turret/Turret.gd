@@ -57,7 +57,8 @@ var _enabled: bool = true
 
 
 func _ready() -> void:
-	barrels = gun.get_node_or_null("BarrelCluster")
+	if not barrels:
+		barrels = gun.get_node_or_null("BarrelCluster")
 	_reload_timer.timeout.connect(_stop_reload)
 
 
@@ -92,8 +93,8 @@ func aim(dyaw: float, dpitch: float) -> void:
 func shake_total() -> float:
 	return camera.shake_total()
 
-func add_impulse(value: float) -> void:
-	camera.add_impulse(value)
+func apply_camera_shake_impulse(value: float) -> void:
+	camera.apply_shake_impulse(value)
 
 func bearing_deg() -> float:
 	return fposmod(-rad_to_deg(rotation.y), 360.0)
