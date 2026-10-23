@@ -48,6 +48,14 @@ func _on_impact(_impact: ProjectileImpact) -> void:
 	pass
 
 
+func _deflects(_impact: ProjectileImpact) -> bool:
+	return false
+
+
+func _on_deflect(_impact: ProjectileImpact) -> void:
+	pass
+
+
 func _on_delete() -> void:
 	if is_instance_valid(renderer):
 		renderer.unregister(self)

@@ -1,4 +1,4 @@
-[gd_resource type="CylinderMesh" load_steps=2 format=3]
+[gd_resource type="CylinderMesh" format=3 uid="uid://cxsl6pdsu15o1"]
 
 [sub_resource type="StandardMaterial3D" id="Material_interceptor"]
 cull_mode = 2

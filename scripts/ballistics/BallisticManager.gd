@@ -100,6 +100,9 @@ func _propel_projectile(
 
 	if impact != null:
 		projectile.position = impact.position
+		if projectile._deflects(impact):
+			projectile._on_deflect(impact)
+			return
 		_delete_projectile(projectile, impact)
 		return
 

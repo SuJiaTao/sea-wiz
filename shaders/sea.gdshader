@@ -11,6 +11,8 @@ uniform float clutter_scale = 0.006;
 uniform float clutter_speed = 0.09;
 uniform float falloff = 520.0;
 
+const float DISPLAY_GAMMA = 2.2;
+
 float hash21(vec2 p) {
 	p = fract(p * vec2(233.34, 851.73));
 	p += dot(p, p + 23.45);
@@ -45,5 +47,5 @@ void fragment() {
 	fade = fade * fade;
 
 	float v = base_level + n * clutter_level * fade;
-	ALBEDO = vec3(v);
+	ALBEDO = vec3(pow(v, DISPLAY_GAMMA));
 }
