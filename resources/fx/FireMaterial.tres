@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3]
+
+[ext_resource type="Shader" path="res://shaders/fire_billboard.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" path="res://resources/fx/FirePalette.tres" id="2_palette"]
+
+[resource]
+resource_name = "FireMaterial"
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/palette = ExtResource("2_palette")
+shader_parameter/window = 0.35
+shader_parameter/intensity = 1.0
+shader_parameter/side_fade = 0.08
+shader_parameter/taper = 0.7

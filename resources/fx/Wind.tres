@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="WindField" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/fx/WindField.gd" id="1_wind"]
+
+[resource]
+resource_name = "Wind"
+script = ExtResource("1_wind")
+velocity = Vector3(3, 0, -1.5)
