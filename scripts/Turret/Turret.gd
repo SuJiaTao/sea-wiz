@@ -90,11 +90,14 @@ func aim(dyaw: float, dpitch: float) -> void:
 	rotate_y(dyaw)
 	mount.rotation.x = clampf(mount.rotation.x + dpitch, PITCH_MIN, PITCH_MAX)
 
+
 func shake_total() -> float:
 	return camera.shake_total()
 
+
 func apply_camera_shake_impulse(value: float) -> void:
 	camera.apply_shake_impulse(value)
+
 
 func bearing_deg() -> float:
 	return fposmod(-rad_to_deg(rotation.y), 360.0)
@@ -155,7 +158,7 @@ func _handle_inputs() -> void:
 		elif ammo <= 0:
 			_start_reload()
 
-		firing = Input.is_action_pressed("ciws_fire") and ammo > 0
+	firing = Input.is_action_pressed("ciws_fire") and ammo > 0 and not reloading
 
 
 func _set_wander(delta: float) -> void:
