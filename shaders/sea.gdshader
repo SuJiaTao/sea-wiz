@@ -10,6 +10,13 @@ uniform float clutter_level : hint_range(0.0, 0.5) = 0.02;
 uniform float clutter_scale = 0.006;
 uniform float clutter_speed = 0.09;
 uniform float falloff = 520.0;
+uniform float moon_bearing_deg : hint_range(0.0, 360.0) = 140.0;
+uniform float moon_elevation_deg : hint_range(0.0, 90.0) = 22.0;
+uniform float glitter : hint_range(0.0, 4.0) = 0.8;
+uniform float glitter_sharpness : hint_range(1.0, 400.0) = 120.0;
+uniform float ripple_scale = 0.35;
+uniform float ripple_slope : hint_range(0.0, 1.0) = 0.22;
+uniform float ripple_speed = 0.6;
 
 const float DISPLAY_GAMMA = 2.2;
 
@@ -30,7 +37,30 @@ float value_noise(vec2 p) {
 	return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
 
+const float SLOPE_STEP = 0.5;
+
 varying vec3 world_pos;
+
+vec3 moon_direction() {
+	float bearing = radians(moon_bearing_deg);
+	float elevation = radians(moon_elevation_deg);
+	return vec3(sin(bearing) * cos(elevation), sin(elevation), -cos(bearing) * cos(elevation));
+}
+
+float ripples(vec2 p) {
+	vec2 drift = vec2(TIME * ripple_speed, -TIME * ripple_speed * 0.7);
+	return value_noise(p + drift) * 0.6 + value_noise(p * 2.3 - drift) * 0.4;
+}
+
+float moon_glitter(vec3 view_ray) {
+	vec2 p = world_pos.xz * ripple_scale;
+	float centre = ripples(p);
+	float dx = ripples(p + vec2(SLOPE_STEP, 0.0)) - centre;
+	float dz = ripples(p + vec2(0.0, SLOPE_STEP)) - centre;
+	vec3 normal = normalize(vec3(-dx * ripple_slope / SLOPE_STEP, 1.0, -dz * ripple_slope / SLOPE_STEP));
+	float facing = max(dot(reflect(view_ray, normal), moon_direction()), 0.0);
+	return pow(facing, glitter_sharpness) * glitter;
+}
 
 void vertex() {
 	world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
@@ -47,5 +77,6 @@ void fragment() {
 	fade = fade * fade;
 
 	float v = base_level + n * clutter_level * fade;
+	v += moon_glitter(normalize(world_pos - CAMERA_POSITION_WORLD));
 	ALBEDO = vec3(pow(v, DISPLAY_GAMMA));
 }

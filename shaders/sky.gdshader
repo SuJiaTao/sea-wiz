@@ -14,10 +14,14 @@ uniform float ground_curve : hint_range(0.001, 1.0) = 0.02;
 uniform float moon_bearing_deg : hint_range(0.0, 360.0) = 140.0;
 uniform float moon_elevation_deg : hint_range(0.0, 90.0) = 22.0;
 uniform float moon_diameter_deg : hint_range(0.1, 5.0) = 1.2;
-uniform vec3 moon_color : source_color = vec3(0.55);
+uniform vec3 moon_color : source_color = vec3(0.9);
 uniform float moon_phase_deg : hint_range(0.0, 180.0) = 55.0;
 uniform float moon_maria : hint_range(0.0, 1.0) = 0.35;
 uniform float moon_maria_scale = 3.0;
+uniform float moon_glow : hint_range(0.0, 2.0) = 0.35;
+uniform float moon_glow_width_deg : hint_range(0.1, 30.0) = 3.0;
+uniform float moon_halo : hint_range(0.0, 1.0) = 0.1;
+uniform float moon_halo_width_deg : hint_range(1.0, 90.0) = 20.0;
 
 const float HALF_PI = 1.5707963;
 const float EDGE_SOFTNESS = 0.08;
@@ -58,6 +62,11 @@ void sky() {
 	vec3 colour = atmosphere(EYEDIR);
 
 	vec3 toward = moon_direction();
+	float off_moon = degrees(acos(clamp(dot(EYEDIR, toward), -1.0, 1.0)));
+	colour += moon_color * (
+		moon_glow * exp(-off_moon / moon_glow_width_deg)
+		+ moon_halo * exp(-off_moon / moon_halo_width_deg)
+	);
 	vec3 right = normalize(cross(toward, vec3(0.0, 1.0, 0.0)));
 	vec3 up = cross(right, toward);
 	float radius = radians(moon_diameter_deg) * 0.5;
