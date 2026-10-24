@@ -168,7 +168,7 @@ cast_shadow = 0
 [node name="Warship" parent="ViewportContainer/SubViewport/World/Vessel" instance=ExtResource("10_warship")]
 
 [node name="Turret" type="Node3D" parent="ViewportContainer/SubViewport/World/Vessel"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17, 0)
 script = ExtResource("2_turret")
 damage_source = ExtResource("26_cannon_source")
 
@@ -176,6 +176,8 @@ damage_source = ExtResource("26_cannon_source")
 script = ExtResource("58_casings")
 casing_mesh = ExtResource("60_casing_mesh")
 casing_material = ExtResource("61_casing_material")
+platform_centre = Vector3(0, 16.94, 0)
+deck_half_beam = 13.5
 
 [node name="ShipDamage" type="Node" parent="ViewportContainer/SubViewport/World"]
 
@@ -194,6 +196,7 @@ integrity = NodePath("../Integrity")
 vessel = NodePath("../../Vessel")
 gun = NodePath("../../Vessel/Turret")
 sea = NodePath("../../Sea")
+max_depth = 20.0
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("5_enemies")
