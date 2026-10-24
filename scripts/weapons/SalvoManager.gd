@@ -126,6 +126,8 @@ func _select_targets() -> Array[AbstractEnemy]:
 	var result: Array[AbstractEnemy] = []
 
 	for enemy in enemies.live_enemies():
+		if enemy.contact_kind == AbstractEnemy.ContactKind.MISSILE:
+			continue
 		if enemy.global_position.distance_squared_to(origin) > maximum_squared:
 			continue
 		if not camera.is_position_in_frustum(enemy.global_position):

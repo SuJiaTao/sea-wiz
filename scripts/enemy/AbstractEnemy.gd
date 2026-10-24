@@ -7,6 +7,7 @@ signal reached_target(damage: float)
 signal countermeasures_released(flares: Array[DecoyFlare])
 
 enum State { CREATING, ALIVE, DEAD, DESTROYED }
+enum ContactKind { AIRCRAFT, MISSILE }
 
 const COLLISION_LAYER: int = 1 << 1
 
@@ -14,6 +15,7 @@ const COLLISION_LAYER: int = 1 << 1
 @export var display_name: String = "CONTACT"
 @export_range(0.1, 100.0) var hud_radius: float = 5.0
 @export var visuals: Node3D
+@export var contact_kind: ContactKind = ContactKind.AIRCRAFT
 
 var hp: float = 0.0
 var velocity := Vector3.ZERO
