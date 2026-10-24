@@ -19,6 +19,7 @@ const COLLISION_LAYER: int = 1 << 1
 
 var hp: float = 0.0
 var velocity := Vector3.ZERO
+var countermeasures_enabled: bool = true
 
 var alive: bool:
 	get:

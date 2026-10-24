@@ -113,6 +113,7 @@ func _on_enemy_created(enemy: AbstractEnemy) -> void:
 	enemy.damaged.connect(_on_enemy_damaged)
 	enemy.reached_target.connect(_on_target_reached.bind(enemy))
 	enemy.countermeasures_released.connect(effects.countermeasures)
+	enemy.countermeasures_enabled = waves.level_number >= FLARES_FROM_LEVEL
 
 
 func _on_level_prepared(number: int, _title: String) -> void:

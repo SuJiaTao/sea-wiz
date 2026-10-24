@@ -40,7 +40,7 @@ func _create() -> void:
 
 
 func evade_missile(missile_position: Vector3) -> DecoyFlare:
-	if flares == null or not alive:
+	if flares == null or not alive or not countermeasures_enabled:
 		return null
 	_break_remaining = break_time
 	_break_from = missile_position
