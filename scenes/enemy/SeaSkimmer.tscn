@@ -12,6 +12,7 @@ visuals = NodePath("Visuals")
 max_hp = 14.0
 display_name = "SEA SKIMMER"
 hud_radius = 2.4
+max_bank_deg = 0.0
 speed = 310.0
 agility = 0.25
 contact_damage = 26.0
