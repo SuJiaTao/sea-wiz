@@ -5,6 +5,7 @@ enum State { TITLE, STARTING, RUNNING, WON, LOST }
 
 const HIT_IMPULSE: float = 5.0
 const HIT_FLASH: float = 0.6
+const FLARES_FROM_LEVEL: int = 2
 
 @onready var turret: Turret = $ViewportContainer/SubViewport/World/Vessel/Turret
 @onready var integrity: ShipIntegrity = $ViewportContainer/SubViewport/World/ShipDamage/Integrity
@@ -32,6 +33,7 @@ func _ready() -> void:
 	waves.failed.connect(_on_wave_failed)
 	title_screen.start_requested.connect(_on_start_requested)
 	sinking.sunk.connect(_on_ship_sunk)
+	waves.level_prepared.connect(_on_level_prepared)
 	hud.hide()
 	title_screen.show()
 	weapons.set_enabled(false)
@@ -111,6 +113,11 @@ func _on_enemy_created(enemy: AbstractEnemy) -> void:
 	enemy.damaged.connect(_on_enemy_damaged)
 	enemy.reached_target.connect(_on_target_reached.bind(enemy))
 	enemy.countermeasures_released.connect(effects.countermeasures)
+
+
+func _on_level_prepared(number: int, _title: String) -> void:
+	if number > 1:
+		integrity.repair(integrity.repair_per_wave)
 
 
 func _on_enemy_damaged(_amount: float, point: Vector3) -> void:
