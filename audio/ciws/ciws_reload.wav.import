@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://bf32yubulyml"
-path="res://.godot/imported/ciws_fire.wav-45ecf34924fb3d3b7a1a8990b475345b.sample"
+uid="uid://bxu1l6b8ylc1b"
+path="res://.godot/imported/ciws_reload.wav-4db6be2da3de4ae0494fa00a5a9155f8.sample"
 
 [deps]
 
-source_file="res://audio/ciws_fire.wav"
-dest_files=["res://.godot/imported/ciws_fire.wav-45ecf34924fb3d3b7a1a8990b475345b.sample"]
+source_file="res://audio/ciws/ciws_reload.wav"
+dest_files=["res://.godot/imported/ciws_reload.wav-4db6be2da3de4ae0494fa00a5a9155f8.sample"]
 
 [params]
 
