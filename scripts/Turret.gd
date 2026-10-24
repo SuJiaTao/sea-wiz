@@ -9,7 +9,7 @@ const GUN_SCENE := preload("res://scenes/turret/Gun.tscn")
 const LAUNCHER_SCENE := preload("res://scenes/turret/Launcher.tscn")
 const RADOME_SCENE := preload("res://scenes/turret/Radome.tscn")
 
-const MUZZLE_VELOCITY := 900.0
+const MUZZLE_VELOCITY := 1100.0
 const ROUNDS_PER_MIN := 4500.0
 const MAGAZINE := 1550
 const RELOAD_TIME := 2.4
@@ -19,7 +19,7 @@ const SPINDOWN_TIME := 0.8
 const PITCH_MIN := deg_to_rad(-12.0)
 const PITCH_MAX := deg_to_rad(80.0)
 
-const SHAKE_PER_ROUND := 0.34
+const SHAKE_PER_ROUND := 0.22
 const SHAKE_CAP := 2.4
 const SHAKE_DECAY := 7.0
 const IMPULSE_DECAY := 12.0
@@ -35,8 +35,8 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export var mouse_sensitivity: float = 0.0022
 @export var damage_source: DamageSource
 @export var slew_speed: float = 1.5
-@export var dispersion_deg: float = 0.15
-@export var wander_deg: float = 0.10
+@export var dispersion_deg: float = 0.05
+@export var wander_deg: float = 0.03
 
 var mount: Node3D
 var gun: Node3D

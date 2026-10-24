@@ -1,4 +1,4 @@
-[gd_scene load_steps=71 format=3]
+[gd_scene load_steps=72 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -61,6 +61,7 @@
 [ext_resource type="Script" path="res://scripts/weapons/CasingEjector.gd" id="59_ejector"]
 [ext_resource type="CylinderMesh" path="res://resources/fx/CasingMesh.tres" id="60_casing_mesh"]
 [ext_resource type="Material" path="res://resources/fx/Casing.tres" id="61_casing_material"]
+[ext_resource type="Shader" path="res://shaders/tracer.gdshader" id="62_tracer_shader"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -105,14 +106,15 @@ size = Vector2(14000, 14000)
 subdivide_width = 24
 subdivide_depth = 24
 
-[sub_resource type="StandardMaterial3D" id="Material_tracer"]
-shading_mode = 0
-cull_mode = 2
-vertex_color_use_as_albedo = true
+[sub_resource type="ShaderMaterial" id="Material_tracer"]
+render_priority = 0
+shader = ExtResource("62_tracer_shader")
+shader_parameter/base_width = 0.11
+shader_parameter/min_pixels = 1.5
 
 [sub_resource type="BoxMesh" id="Mesh_tracer"]
 material = SubResource("Material_tracer")
-size = Vector3(0.085, 0.085, 1)
+size = Vector3(0.11, 0.11, 1)
 
 [node name="Main" type="Node"]
 process_mode = 3
@@ -201,8 +203,8 @@ sea = NodePath("../Sea")
 script = ExtResource("8_batch")
 batch_mesh = SubResource("Mesh_tracer")
 capacity = 900
-near_cull = 10.0
-zoom_near_cull = 70.0
+near_cull = 4.0
+zoom_near_cull = 25.0
 
 [node name="FX" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("9_fx")
