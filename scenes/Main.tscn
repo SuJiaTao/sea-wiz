@@ -103,7 +103,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 stretch = true
 stretch_shrink = 4
 script = ExtResource("7_thermal")
@@ -129,6 +128,10 @@ mesh = SubResource("Mesh_sea")
 [node name="Deck" parent="ViewportContainer/SubViewport/World" unique_id=131422359 instance=ExtResource("10_deck")]
 
 [node name="Turret" parent="ViewportContainer/SubViewport/World" unique_id=716990662 instance=ExtResource("10_fs0b5")]
+mouse_sensitivity = null
+slew_speed = null
+dispersion_deg = null
+wander_deg = null
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1705128066]
 script = ExtResource("5_enemies")

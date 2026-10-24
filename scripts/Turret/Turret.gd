@@ -144,21 +144,49 @@ func _physics_process(delta: float) -> void:
 			vertical * slew_speed * scale_by_fov * delta
 		)
 
-	_handle_inputs()
 	_set_wander(delta)
 	_spin_gun(delta)
 	_fire(delta)
 	_update_audio()
 
 
-func _handle_inputs() -> void:
-	if not reloading:
-		if Input.is_action_just_pressed("ciws_reload") and ammo < MAGAZINE:
-			_start_reload()
-		elif ammo <= 0:
-			_start_reload()
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("ciws_fire"):
+		_start_firing()
+	elif event.is_action_released("ciws_fire"):
+		_stop_firing()
 
-	firing = Input.is_action_pressed("ciws_fire") and ammo > 0 and not reloading
+	if event.is_action_pressed("ciws_reload"):
+		_start_reload()
+
+func _start_firing() -> void:
+	if firing and not ammo > 0:
+		return
+	firing = true
+
+func _stop_firing() -> void:
+	if not firing:
+		return
+	firing = false
+
+func _start_reload() -> void:
+	if reloading:
+		return
+	_stop_firing()
+	reloading = true
+	_reload_timer.start(RELOAD_TIME)
+	if _reload_audio:
+		_reload_audio.play()
+	reload_started.emit()
+
+func _stop_reload() -> void:
+	if not reloading:
+		reloading = false
+	reloading = false
+	ammo = MAGAZINE
+	if _reload_audio:
+		_reload_audio.stop()
+	reload_finished.emit()
 
 
 func _set_wander(delta: float) -> void:
@@ -192,25 +220,6 @@ func _fire(delta: float) -> void:
 			_start_reload()
 	else:
 		_fire_accum = 0.0
-
-
-func _stop_reload() -> void:
-	reloading = false
-	ammo = MAGAZINE
-	if _reload_audio:
-		_reload_audio.stop()
-	reload_finished.emit()
-
-
-func _start_reload() -> void:
-	if reloading:
-		return
-	reloading = true
-	_reload_timer.start(RELOAD_TIME)
-	if _reload_audio:
-		_reload_audio.play()
-	reload_started.emit()
-
 
 func _emit_round() -> void:
 	ammo -= 1
