@@ -215,9 +215,10 @@ zoom_near_cull = 25.0
 [node name="FX" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("9_fx")
 
-[node name="Effects" type="Node3D" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("sea", "smoke", "fireballs", "embers", "droplets", "spray", "ripples", "flares", "flare_smoke")]
+[node name="Effects" type="Node3D" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("sea", "hull", "smoke", "fireballs", "embers", "droplets", "spray", "ripples", "flares", "flare_smoke")]
 script = ExtResource("41_effects")
 sea = NodePath("../Sea")
+hull = NodePath("../Vessel/Warship/Hull")
 smoke = NodePath("Smoke")
 fireballs = NodePath("Fireballs")
 embers = NodePath("Embers")

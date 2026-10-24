@@ -6,6 +6,7 @@ class_name DeckFires
 @export var spots: Node3D
 @export var ignite_strength: float = 0.45
 @export var strength_per_damage: float = 0.06
+@export var impact_blast: float = 0.6
 
 var _burning: Dictionary[Node3D, DeckFireEffect] = {}
 
@@ -19,6 +20,7 @@ func _on_damaged(amount: float, from_position: Vector3) -> void:
 	var spot := _spot_facing(from_position)
 	if spot == null:
 		return
+	effects.spawn(ExplosionEffect.new(spot.global_position, Vector3.ZERO, impact_blast))
 	var added := amount * strength_per_damage
 	if _burning.has(spot):
 		_burning[spot].grow(added)

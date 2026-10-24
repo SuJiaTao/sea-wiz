@@ -20,6 +20,7 @@ const BREAK_DIVE_FLOOR: float = 80.0
 @export var flares: FlareDispenser
 @export var break_time: float = 2.5
 @export var break_turn_rate: float = 6.0
+@export var max_g: float = 0.0
 
 var _flight_age: float = 0.0
 var _bank: float = 0.0
@@ -50,9 +51,9 @@ func evade_missile(missile_position: Vector3) -> DecoyFlare:
 func _on_think(delta: float) -> void:
 	var offset := target_position - global_position
 	if Vector2(offset.x, offset.z).length() < arrival_radius:
-		request_destroy()
-		reached_target.emit(contact_damage)
-		return
+		_on_arrival()
+		if _destroy_requested:
+			return
 	if global_position.y < 2.0:
 		request_destroy()
 		return
@@ -62,12 +63,15 @@ func _on_think(delta: float) -> void:
 	if _destroy_requested:
 		return
 	var desired := _desired_velocity(delta)
-	var turn := lerpf(0.5, 5.0, agility) * delta
-	if _break_remaining > 0.0:
+	var breaking := _break_remaining > 0.0
+	if breaking:
 		_break_remaining -= delta
 		desired = _break_velocity()
-		turn = break_turn_rate * delta
-	velocity = velocity.lerp(desired, clampf(turn, 0.0, 1.0))
+	if max_g > 0.0:
+		velocity = _turn_toward(desired, max_g * GRAVITY / speed * delta)
+	else:
+		var turn := (break_turn_rate if breaking else lerpf(0.5, 5.0, agility)) * delta
+		velocity = velocity.lerp(desired, clampf(turn, 0.0, 1.0))
 	if velocity.length_squared() > 0.000001:
 		velocity = velocity.normalized() * speed
 	global_position += velocity * delta
@@ -108,6 +112,23 @@ func _break_velocity() -> Vector3:
 
 func _flat(direction: Vector3) -> Vector3:
 	return Vector3(direction.x, 0.0, direction.z).normalized()
+
+
+func _on_arrival() -> void:
+	request_destroy()
+	reached_target.emit(contact_damage)
+
+
+func _turn_toward(desired: Vector3, max_angle: float) -> Vector3:
+	var current := velocity.normalized()
+	var wanted := desired.normalized()
+	var heading := _flat(current)
+	var yaw_error := heading.signed_angle_to(_flat(wanted), Vector3.UP)
+	var pitch := asin(clampf(current.y, -1.0, 1.0))
+	var pitch_error := asin(clampf(wanted.y, -1.0, 1.0)) - pitch
+	heading = heading.rotated(Vector3.UP, clampf(yaw_error, -max_angle, max_angle))
+	pitch += clampf(pitch_error, -max_angle, max_angle)
+	return (heading * cos(pitch) + Vector3.UP * sin(pitch)) * speed
 
 
 func _on_flight_created() -> void:
