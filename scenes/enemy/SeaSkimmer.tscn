@@ -6,8 +6,9 @@
 [sub_resource type="SphereShape3D" id="Shape_body"]
 radius = 2.4
 
-[node name="SeaSkimmer" type="Node3D"]
+[node name="SeaSkimmer" type="Node3D" node_paths=PackedStringArray("visuals")]
 script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
 max_hp = 14.0
 display_name = "SEA SKIMMER"
 hud_radius = 2.4

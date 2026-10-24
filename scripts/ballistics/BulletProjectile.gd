@@ -15,7 +15,7 @@ const TRACER_HEAT := Color(3.0, 3.0, 2.6, 1.0)
 const BURNOUT_TIME := 0.5
 const BURNOUT_FLOOR := 0.4
 
-var damage: float = 10.0
+var damage: float = 40.0
 var tracer_length: float = 18.0
 
 var _ricochets: int = 0

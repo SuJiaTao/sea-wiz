@@ -6,8 +6,9 @@
 [sub_resource type="SphereShape3D" id="Shape_body"]
 radius = 5.5
 
-[node name="Jet" type="Node3D"]
+[node name="Jet" type="Node3D" node_paths=PackedStringArray("visuals")]
 script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
 max_hp = 55.0
 display_name = "FIGHTER"
 hud_radius = 5.5

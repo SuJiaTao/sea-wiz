@@ -6,8 +6,9 @@
 [sub_resource type="SphereShape3D" id="Shape_body"]
 radius = 13.0
 
-[node name="HeavyJet" type="Node3D"]
+[node name="HeavyJet" type="Node3D" node_paths=PackedStringArray("visuals")]
 script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
 max_hp = 260.0
 display_name = "HEAVY BOMBER"
 hud_radius = 13.0

@@ -118,7 +118,9 @@ func _on_enemy_damaged(_amount: float, point: Vector3) -> void:
 
 func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: DamageSource) -> void:
 	fx.explosion(enemy.global_position, 6.0)
-	effects.spawn(ShootDownEffect.new(enemy.global_position, enemy.velocity, enemy.hud_radius))
+	effects.spawn(ShootDownEffect.new(
+		enemy.global_position, enemy.velocity, enemy.hud_radius, enemy.detach_visuals()
+	))
 	if turret.camera.is_position_in_frustum(enemy.global_position):
 		thermal.heat_burst()
 

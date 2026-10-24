@@ -12,6 +12,7 @@ const COLLISION_LAYER: int = 1 << 1
 @export var max_hp: float = 20.0
 @export var display_name: String = "CONTACT"
 @export_range(0.1, 100.0) var hud_radius: float = 5.0
+@export var visuals: Node3D
 
 var hp: float = 0.0
 var velocity := Vector3.ZERO
@@ -38,6 +39,17 @@ func take_damage(
 		_damage_source = weapon_source
 	_on_damage(applied, world_point)
 	damaged.emit(applied, world_point)
+
+
+func detach_visuals() -> Node3D:
+	if not is_instance_valid(visuals):
+		return null
+	var detached := visuals
+	var world_transform := detached.global_transform
+	detached.get_parent().remove_child(detached)
+	detached.transform = world_transform
+	visuals = null
+	return detached
 
 
 func request_destroy() -> void:
