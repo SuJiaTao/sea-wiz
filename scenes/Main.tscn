@@ -29,7 +29,6 @@
 [ext_resource type="Resource" path="res://resources/damage_sources/Cannon.tres" id="26_cannon_source"]
 [ext_resource type="Resource" path="res://resources/damage_sources/Missile.tres" id="27_missile_source"]
 [ext_resource type="PackedScene" path="res://scenes/ui/TitleScreen.tscn" id="28_title"]
-[ext_resource type="Texture2D" uid="uid://d3me1kgd3nfki" path="res://shaders/Screenshot (5).png" id="29_gsxep"]
 
 [sub_resource type="ShaderMaterial" id="Material_thermal"]
 resource_local_to_scene = true
@@ -88,6 +87,17 @@ vertex_color_use_as_albedo = true
 material = SubResource("Material_tracer")
 size = Vector3(0.085, 0.085, 1)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_e2s0e"]
+shader = ExtResource("23_e2s0e")
+shader_parameter/luminance = Color(0.55295557, 0.55295557, 0.55295545, 1)
+shader_parameter/base_color = Color(1, 1, 1, 1)
+shader_parameter/brightness = 2.0
+shader_parameter/noise_level = 0.28
+shader_parameter/vignette_level = 0.5
+shader_parameter/edge_x = 0.15
+shader_parameter/edge_y = 2.5
+shader_parameter/flickering_level = 0.5
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_b00cx"]
 shader = ExtResource("23_e2s0e")
 shader_parameter/luminance = Color(0.3086, 0.6094, 0.082, 1)
@@ -98,17 +108,6 @@ shader_parameter/vignette_level = 0.4
 shader_parameter/edge_x = 0.44
 shader_parameter/edge_y = 2.5
 shader_parameter/flickering_level = 0.1
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_v0vrg"]
-shader = ExtResource("23_e2s0e")
-shader_parameter/luminance = Color(0.3086, 0.6094, 0.082, 1)
-shader_parameter/base_color = Color(0.2, 1, 0.4, 1)
-shader_parameter/brightness = 3.61999992281108
-shader_parameter/noise_level = 0.40999999083568
-shader_parameter/vignette_level = 0.4
-shader_parameter/edge_x = 0.43999999016512
-shader_parameter/edge_y = 2.56999994255536
-shader_parameter/flickering_level = 0.20000000298024
 
 [node name="Main" type="Node" unique_id=1808385807]
 process_mode = 3
@@ -217,6 +216,17 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("4_hud")
 
+[node name="NightVision" type="ColorRect" parent="HUD/HUDRoot" unique_id=959954607]
+material = SubResource("ShaderMaterial_e2s0e")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
 [node name="Control" type="Control" parent="HUD/HUDRoot" unique_id=410719003]
 material = SubResource("ShaderMaterial_b00cx")
 anchors_preset = 0
@@ -283,12 +293,6 @@ fx = NodePath("../../../ViewportContainer/SubViewport/World/FX")
 
 [node name="SeekerAudio" type="AudioStreamPlayer" parent="HUD/HUDRoot/WeaponFeedback" unique_id=65263924]
 volume_db = -9.0
-
-[node name="Screenshot(5)" type="Sprite2D" parent="HUD/HUDRoot" unique_id=409311625]
-material = SubResource("ShaderMaterial_v0vrg")
-position = Vector2(151.00005, 440.00003)
-scale = Vector2(0.6544271, 0.67453706)
-texture = ExtResource("29_gsxep")
 
 [node name="TitleScreen" parent="HUD" unique_id=1956812312 instance=ExtResource("28_title")]
 layout_mode = 3
