@@ -1,4 +1,4 @@
-[gd_scene load_steps=64 format=3]
+[gd_scene load_steps=71 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -9,7 +9,7 @@
 [ext_resource type="Script" path="res://scripts/ThermalView.gd" id="7_thermal"]
 [ext_resource type="Script" path="res://scripts/ballistics/ProjectileBatch.gd" id="8_batch"]
 [ext_resource type="Script" path="res://scripts/FXManager.gd" id="9_fx"]
-[ext_resource type="PackedScene" path="res://scenes/world/Deck.tscn" id="10_deck"]
+[ext_resource type="PackedScene" path="res://scenes/world/Warship.tscn" id="10_warship"]
 [ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="11_wave_type"]
 [ext_resource type="Resource" path="res://levels/FirstContact.tres" id="12_first"]
 [ext_resource type="Resource" path="res://levels/Saturation.tres" id="13_second"]
@@ -54,6 +54,13 @@
 [ext_resource type="Resource" path="res://resources/fx/Droplets.tres" id="52_droplets"]
 [ext_resource type="Resource" path="res://resources/fx/Spray.tres" id="53_spray"]
 [ext_resource type="Resource" path="res://resources/fx/Ripples.tres" id="54_ripples"]
+[ext_resource type="Script" path="res://scripts/ship/ShipIntegrity.gd" id="55_integrity"]
+[ext_resource type="Script" path="res://scripts/ship/DeckFires.gd" id="56_deck_fires"]
+[ext_resource type="Script" path="res://scripts/ship/ShipSinking.gd" id="57_sinking"]
+[ext_resource type="Script" path="res://scripts/fx/CasingPile.gd" id="58_casings"]
+[ext_resource type="Script" path="res://scripts/weapons/CasingEjector.gd" id="59_ejector"]
+[ext_resource type="CylinderMesh" path="res://resources/fx/CasingMesh.tres" id="60_casing_mesh"]
+[ext_resource type="Material" path="res://resources/fx/Casing.tres" id="61_casing_material"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -129,7 +136,7 @@ mouse_filter = 2
 stretch = true
 stretch_shrink = 4
 script = ExtResource("7_thermal")
-turret = NodePath("SubViewport/World/Turret")
+turret = NodePath("SubViewport/World/Vessel/Turret")
 
 [node name="SubViewport" type="SubViewport" parent="ViewportContainer"]
 handle_input_locally = false
@@ -151,11 +158,37 @@ mesh = SubResource("Mesh_sea")
 material_override = SubResource("Material_sea")
 cast_shadow = 0
 
-[node name="Deck" parent="ViewportContainer/SubViewport/World" instance=ExtResource("10_deck")]
+[node name="Vessel" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 
-[node name="Turret" type="Node3D" parent="ViewportContainer/SubViewport/World"]
+[node name="Warship" parent="ViewportContainer/SubViewport/World/Vessel" instance=ExtResource("10_warship")]
+
+[node name="Turret" type="Node3D" parent="ViewportContainer/SubViewport/World/Vessel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
 script = ExtResource("2_turret")
 damage_source = ExtResource("26_cannon_source")
+
+[node name="Casings" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Vessel"]
+script = ExtResource("58_casings")
+casing_mesh = ExtResource("60_casing_mesh")
+casing_material = ExtResource("61_casing_material")
+
+[node name="ShipDamage" type="Node" parent="ViewportContainer/SubViewport/World"]
+
+[node name="Integrity" type="Node" parent="ViewportContainer/SubViewport/World/ShipDamage"]
+script = ExtResource("55_integrity")
+
+[node name="DeckFires" type="Node" parent="ViewportContainer/SubViewport/World/ShipDamage" node_paths=PackedStringArray("integrity", "effects", "spots")]
+script = ExtResource("56_deck_fires")
+integrity = NodePath("../Integrity")
+effects = NodePath("../../Effects")
+spots = NodePath("../../Vessel/Warship/FireSpots")
+
+[node name="Sinking" type="Node" parent="ViewportContainer/SubViewport/World/ShipDamage" node_paths=PackedStringArray("integrity", "vessel", "gun", "sea")]
+script = ExtResource("57_sinking")
+integrity = NodePath("../Integrity")
+vessel = NodePath("../../Vessel")
+gun = NodePath("../../Vessel/Turret")
+sea = NodePath("../../Sea")
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("5_enemies")
@@ -242,7 +275,7 @@ zoom_near_cull = 45.0
 
 [node name="Weapons" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("turret", "ballistics", "tracers", "missile_launcher", "salvos", "waves", "enemies")]
 script = ExtResource("20_weapons")
-turret = NodePath("../Turret")
+turret = NodePath("../Vessel/Turret")
 ballistics = NodePath("../Ballistics")
 tracers = NodePath("../Tracers")
 missile_launcher = NodePath("MissileLauncher")
@@ -253,7 +286,7 @@ enemies = NodePath("../Enemies")
 [node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "enemies", "ballistics", "renderer", "smoke")]
 script = ExtResource("21_launcher")
 damage_source = ExtResource("27_missile_source")
-turret = NodePath("../../Turret")
+turret = NodePath("../../Vessel/Turret")
 enemies = NodePath("../../Enemies")
 ballistics = NodePath("../../Ballistics")
 renderer = NodePath("../../Missiles")
@@ -264,12 +297,17 @@ script = ExtResource("22_salvos")
 launcher = NodePath("../MissileLauncher")
 enemies = NodePath("../../Enemies")
 
+
+[node name="CasingEjector" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "pile")]
+script = ExtResource("59_ejector")
+turret = NodePath("../../Vessel/Turret")
+pile = NodePath("../../Vessel/Casings")
 [node name="Sensors" type="Node" parent="ViewportContainer/SubViewport/World"]
 
 [node name="SearchRadar" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" node_paths=PackedStringArray("enemies", "antenna")]
 script = ExtResource("35_search")
 enemies = NodePath("../../Enemies")
-antenna = NodePath("../../Turret")
+antenna = NodePath("../../Vessel/Turret")
 
 [node name="Tracks" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" node_paths=PackedStringArray("search_radar")]
 script = ExtResource("36_tracks")
@@ -277,18 +315,18 @@ search_radar = NodePath("../SearchRadar")
 
 [node name="Spotter" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" node_paths=PackedStringArray("turret", "enemies")]
 script = ExtResource("37_spotter")
-turret = NodePath("../../Turret")
+turret = NodePath("../../Vessel/Turret")
 enemies = NodePath("../../Enemies")
 
 [node name="GunDirector" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" node_paths=PackedStringArray("turret", "enemies", "spotter")]
 script = ExtResource("38_gun_director")
-turret = NodePath("../../Turret")
+turret = NodePath("../../Vessel/Turret")
 enemies = NodePath("../../Enemies")
 spotter = NodePath("../Spotter")
 
 [node name="BarrelHeat" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("turret")]
 script = ExtResource("40_barrel_heat")
-turret = NodePath("../Turret")
+turret = NodePath("../Vessel/Turret")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
@@ -309,7 +347,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("19_track_hud")
-turret = NodePath("../../../ViewportContainer/SubViewport/World/Turret")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 tracks = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/Tracks")
 spotter = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/Spotter")
 gun_director = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/GunDirector")
@@ -322,7 +360,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("16_player_hud")
-turret = NodePath("../../../ViewportContainer/SubViewport/World/Turret")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 thermal = NodePath("../../../ViewportContainer")
 video = NodePath("../../../VideoSignal/AnalogVideo")
 
@@ -357,7 +395,7 @@ mouse_filter = 2
 script = ExtResource("23_weapon_feedback")
 launcher = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/MissileLauncher")
 salvos = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/SalvoManager")
-turret = NodePath("../../../ViewportContainer/SubViewport/World/Turret")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 smoke = NodePath("../../../ViewportContainer/SubViewport/World/MissileSmoke")
 fx = NodePath("../../../ViewportContainer/SubViewport/World/FX")
 
