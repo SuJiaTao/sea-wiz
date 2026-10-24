@@ -1,4 +1,4 @@
-[gd_scene load_steps=72 format=3]
+[gd_scene load_steps=74 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -62,6 +62,8 @@
 [ext_resource type="CylinderMesh" path="res://resources/fx/CasingMesh.tres" id="60_casing_mesh"]
 [ext_resource type="Material" path="res://resources/fx/Casing.tres" id="61_casing_material"]
 [ext_resource type="Shader" path="res://shaders/tracer.gdshader" id="62_tracer_shader"]
+[ext_resource type="Resource" path="res://resources/fx/FlareGlow.tres" id="63_flare_glow"]
+[ext_resource type="Resource" path="res://resources/fx/FlareSmoke.tres" id="64_flare_smoke"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -209,7 +211,7 @@ zoom_near_cull = 25.0
 [node name="FX" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("9_fx")
 
-[node name="Effects" type="Node3D" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("sea", "smoke", "fireballs", "embers", "droplets", "spray", "ripples")]
+[node name="Effects" type="Node3D" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("sea", "smoke", "fireballs", "embers", "droplets", "spray", "ripples", "flares", "flare_smoke")]
 script = ExtResource("41_effects")
 sea = NodePath("../Sea")
 smoke = NodePath("Smoke")
@@ -218,6 +220,8 @@ embers = NodePath("Embers")
 droplets = NodePath("Droplets")
 spray = NodePath("Spray")
 ripples = NodePath("Ripples")
+flares = NodePath("Flares")
+flare_smoke = NodePath("FlareSmoke")
 fire_mesh = ExtResource("47_fire_mesh")
 splash_style = ExtResource("45_splash")
 
@@ -256,6 +260,18 @@ script = ExtResource("42_particles")
 style = ExtResource("54_ripples")
 wind = ExtResource("44_wind")
 capacity = 400
+
+[node name="Flares" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects"]
+script = ExtResource("42_particles")
+style = ExtResource("63_flare_glow")
+wind = ExtResource("44_wind")
+capacity = 600
+
+[node name="FlareSmoke" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects"]
+script = ExtResource("42_particles")
+style = ExtResource("64_flare_smoke")
+wind = ExtResource("44_wind")
+capacity = 1500
 
 [node name="FireTexture" type="Node" parent="ViewportContainer/SubViewport/World/Effects"]
 script = ExtResource("43_fire_texture")

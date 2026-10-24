@@ -4,6 +4,7 @@ class_name AbstractEnemy
 
 signal damaged(amount: float, world_point: Vector3)
 signal reached_target(damage: float)
+signal countermeasures_released(flares: Array[DecoyFlare])
 
 enum State { CREATING, ALIVE, DEAD, DESTROYED }
 
@@ -50,6 +51,10 @@ func detach_visuals() -> Node3D:
 	detached.transform = world_transform
 	visuals = null
 	return detached
+
+
+func evade_missile(_missile_position: Vector3) -> DecoyFlare:
+	return null
 
 
 func request_destroy() -> void:
