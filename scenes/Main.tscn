@@ -1,60 +1,78 @@
-[gd_scene load_steps=35 format=3]
+[gd_scene format=3 uid="uid://di8ibfiut3qhe"]
 
-[ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
-[ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
-[ext_resource type="Script" path="res://scripts/ballistics/BallisticManager.gd" id="3_ballistics"]
-[ext_resource type="Script" path="res://scripts/GameplayHUD.gd" id="4_hud"]
-[ext_resource type="Script" path="res://scripts/enemy/EnemyManager.gd" id="5_enemies"]
-[ext_resource type="Script" path="res://scripts/waves/WaveOrchestrator.gd" id="6_waves"]
-[ext_resource type="Script" path="res://scripts/ThermalView.gd" id="7_thermal"]
-[ext_resource type="Script" path="res://scripts/ballistics/ProjectileBatch.gd" id="8_batch"]
-[ext_resource type="Script" path="res://scripts/FXManager.gd" id="9_fx"]
+[ext_resource type="Script" uid="uid://b5n1fqsayfih1" path="res://scripts/GameSession.gd" id="1_session"]
+[ext_resource type="Script" uid="uid://dcu3yxyksxkca" path="res://scripts/Turret.gd" id="2_turret"]
+[ext_resource type="Script" uid="uid://bytbtjjkyux8j" path="res://scripts/ballistics/BallisticManager.gd" id="3_ballistics"]
+[ext_resource type="Script" uid="uid://4a1tm2qbhkt2" path="res://scripts/GameplayHUD.gd" id="4_hud"]
+[ext_resource type="Script" uid="uid://bxu6ydmsivscv" path="res://scripts/enemy/EnemyManager.gd" id="5_enemies"]
+[ext_resource type="Script" uid="uid://18s4i6def6h0" path="res://scripts/waves/WaveOrchestrator.gd" id="6_waves"]
+[ext_resource type="Script" uid="uid://p4lc42i4uqjs" path="res://scripts/ThermalView.gd" id="7_thermal"]
+[ext_resource type="Script" uid="uid://dhvo8e35dfs0g" path="res://scripts/ballistics/ProjectileBatch.gd" id="8_batch"]
+[ext_resource type="Script" uid="uid://dkmwr4afokdk7" path="res://scripts/FXManager.gd" id="9_fx"]
 [ext_resource type="PackedScene" path="res://scenes/world/Deck.tscn" id="10_deck"]
-[ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="11_wave_type"]
-[ext_resource type="Resource" path="res://levels/FirstContact.tres" id="12_first"]
-[ext_resource type="Resource" path="res://levels/Saturation.tres" id="13_second"]
-[ext_resource type="Shader" path="res://shaders/thermal.gdshader" id="14_thermal_shader"]
-[ext_resource type="Shader" path="res://shaders/sea.gdshader" id="15_sea_shader"]
-[ext_resource type="Script" path="res://scripts/hud/PlayerHUD.gd" id="16_player_hud"]
-[ext_resource type="Script" path="res://scripts/hud/CombatFeedbackHUD.gd" id="17_feedback_hud"]
-[ext_resource type="Script" path="res://scripts/hud/WaveHUD.gd" id="18_wave_hud"]
-[ext_resource type="Script" path="res://scripts/hud/EnemyHUD.gd" id="19_enemy_hud"]
-[ext_resource type="Script" path="res://scripts/weapons/WeaponsOrchestrator.gd" id="20_weapons"]
-[ext_resource type="Script" path="res://scripts/weapons/MissileLauncher.gd" id="21_launcher"]
-[ext_resource type="Script" path="res://scripts/weapons/SalvoManager.gd" id="22_salvos"]
-[ext_resource type="Script" path="res://scripts/hud/WeaponFeedback.gd" id="23_weapon_feedback"]
-[ext_resource type="Script" path="res://scripts/ballistics/MissileSmokeRenderer.gd" id="24_smoke"]
-[ext_resource type="Mesh" path="res://scenes/ballistics/InterceptorMesh.tres" id="25_interceptor"]
+[ext_resource type="Script" uid="uid://b2ap6okbtqnal" path="res://scripts/waves/WaveDefinition.gd" id="11_wave_type"]
+[ext_resource type="Resource" uid="uid://blmh1ka3ro1ff" path="res://levels/FirstContact.tres" id="12_first"]
+[ext_resource type="Resource" uid="uid://bo5sd0cld6x1a" path="res://levels/Saturation.tres" id="13_second"]
+[ext_resource type="Shader" uid="uid://b4v53wi6xsomg" path="res://shaders/thermal.gdshader" id="14_thermal_shader"]
+[ext_resource type="Shader" uid="uid://c62jnvd10xwhp" path="res://shaders/sea.gdshader" id="15_sea_shader"]
+[ext_resource type="Script" uid="uid://cnlhuaro2rmrv" path="res://scripts/hud/PlayerHUD.gd" id="16_player_hud"]
+[ext_resource type="Script" uid="uid://5tpmswxer4mm" path="res://scripts/hud/CombatFeedbackHUD.gd" id="17_feedback_hud"]
+[ext_resource type="Script" uid="uid://5v68cijhwppy" path="res://scripts/hud/WaveHUD.gd" id="18_wave_hud"]
+[ext_resource type="Script" uid="uid://bfsc4fijr15k2" path="res://scripts/hud/EnemyHUD.gd" id="19_enemy_hud"]
+[ext_resource type="Script" uid="uid://dmxo1e4m8x4uj" path="res://scripts/weapons/WeaponsOrchestrator.gd" id="20_weapons"]
+[ext_resource type="Script" uid="uid://3isdddaon66x" path="res://scripts/weapons/MissileLauncher.gd" id="21_launcher"]
+[ext_resource type="Script" uid="uid://p0e7licgkygc" path="res://scripts/weapons/SalvoManager.gd" id="22_salvos"]
+[ext_resource type="Shader" uid="uid://cb4jfoxr72t3r" path="res://shaders/night_vision.gdshader" id="23_e2s0e"]
+[ext_resource type="Script" uid="uid://cu8tlm5bchc3w" path="res://scripts/hud/WeaponFeedback.gd" id="23_weapon_feedback"]
+[ext_resource type="Script" uid="uid://dru4raaqnben3" path="res://scripts/ballistics/MissileSmokeRenderer.gd" id="24_smoke"]
+[ext_resource type="CylinderMesh" uid="uid://cwascpljj1bw1" path="res://scenes/ballistics/InterceptorMesh.tres" id="25_interceptor"]
 [ext_resource type="Resource" path="res://resources/damage_sources/Cannon.tres" id="26_cannon_source"]
 [ext_resource type="Resource" path="res://resources/damage_sources/Missile.tres" id="27_missile_source"]
 [ext_resource type="PackedScene" path="res://scenes/ui/TitleScreen.tscn" id="28_title"]
-
-[sub_resource type="Environment" id="Environment_world"]
-background_mode = 1
-background_color = Color(0, 0, 0, 1)
-ambient_light_source = 1
-reflected_light_source = 1
-tonemap_mode = 0
-tonemap_white = 1.0
-glow_enabled = true
-glow_intensity = 0.45
-glow_strength = 0.8
-glow_bloom = 0.0
-glow_blend_mode = 0
-glow_hdr_threshold = 1.0
-glow_hdr_scale = 2.0
-fog_enabled = true
-fog_light_color = Color(0, 0, 0, 1)
-fog_light_energy = 0.0
-fog_density = 0.00025
-fog_aerial_perspective = 0.0
+[ext_resource type="Texture2D" uid="uid://d3me1kgd3nfki" path="res://shaders/Screenshot (5).png" id="29_gsxep"]
 
 [sub_resource type="ShaderMaterial" id="Material_thermal"]
 resource_local_to_scene = true
 shader = ExtResource("14_thermal_shader")
+shader_parameter/gain = 1.35
+shader_parameter/black_level = 0.02
+shader_parameter/levels = 7.0
+shader_parameter/polarity = 0.0
+shader_parameter/noise_amount = 0.038
+shader_parameter/fixed_pattern = 0.022
+shader_parameter/scanline_amount = 0.16
+shader_parameter/vignette_amount = 0.4
+shader_parameter/sweep_amount = 0.05
+shader_parameter/sweep_speed = 0.35
+shader_parameter/tint = Color(1, 1, 0.985, 1)
+shader_parameter/shake_x = 0.0
+shader_parameter/shake_y = 0.0
+shader_parameter/bloom_amount = 0.85
+shader_parameter/bloom_floor = 0.42
+shader_parameter/sensor_size = Vector2(320, 180)
+shader_parameter/flash = 0.0
+
+[sub_resource type="Environment" id="Environment_world"]
+background_mode = 1
+ambient_light_source = 1
+reflected_light_source = 1
+glow_enabled = true
+glow_intensity = 0.45
+glow_strength = 0.8
+glow_blend_mode = 0
+fog_enabled = true
+fog_light_color = Color(0, 0, 0, 1)
+fog_light_energy = 0.0
+fog_density = 0.00025
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
+render_priority = 0
 shader = ExtResource("15_sea_shader")
+shader_parameter/base_level = 0.026
+shader_parameter/clutter_level = 0.008
+shader_parameter/clutter_scale = 0.006
+shader_parameter/clutter_speed = 0.09
+shader_parameter/falloff = 520.0
 
 [sub_resource type="PlaneMesh" id="Mesh_sea"]
 size = Vector2(14000, 14000)
@@ -62,27 +80,49 @@ subdivide_width = 24
 subdivide_depth = 24
 
 [sub_resource type="StandardMaterial3D" id="Material_tracer"]
-shading_mode = 0
 cull_mode = 2
+shading_mode = 0
 vertex_color_use_as_albedo = true
 
 [sub_resource type="BoxMesh" id="Mesh_tracer"]
 material = SubResource("Material_tracer")
 size = Vector3(0.085, 0.085, 1)
 
-[node name="Main" type="Node"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_b00cx"]
+shader = ExtResource("23_e2s0e")
+shader_parameter/luminance = Color(0.3086, 0.6094, 0.082, 1)
+shader_parameter/base_color = Color(0.2, 1, 0.4, 1)
+shader_parameter/brightness = 2.0
+shader_parameter/noise_level = 0.5
+shader_parameter/vignette_level = 0.4
+shader_parameter/edge_x = 0.44
+shader_parameter/edge_y = 2.5
+shader_parameter/flickering_level = 0.1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_v0vrg"]
+shader = ExtResource("23_e2s0e")
+shader_parameter/luminance = Color(0.3086, 0.6094, 0.082, 1)
+shader_parameter/base_color = Color(0.2, 1, 0.4, 1)
+shader_parameter/brightness = 3.61999992281108
+shader_parameter/noise_level = 0.40999999083568
+shader_parameter/vignette_level = 0.4
+shader_parameter/edge_x = 0.43999999016512
+shader_parameter/edge_y = 2.56999994255536
+shader_parameter/flickering_level = 0.20000000298024
+
+[node name="Main" type="Node" unique_id=1808385807]
 process_mode = 3
 script = ExtResource("1_session")
 
-[node name="WaveOrchestrator" type="Node" parent="."]
+[node name="WaveOrchestrator" type="Node" parent="." unique_id=1579366770]
 process_mode = 1
 script = ExtResource("6_waves")
 levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResource("13_second")])
 
-[node name="ViewportContainer" type="SubViewportContainer" parent="." node_paths=PackedStringArray("turret")]
+[node name="ViewportContainer" type="SubViewportContainer" parent="." unique_id=295067949 node_paths=PackedStringArray("turret")]
 process_mode = 1
-material = SubResource("Material_thermal")
 texture_filter = 1
+material = SubResource("Material_thermal")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -94,57 +134,54 @@ stretch_shrink = 4
 script = ExtResource("7_thermal")
 turret = NodePath("SubViewport/World/Turret")
 
-[node name="SubViewport" type="SubViewport" parent="ViewportContainer"]
+[node name="SubViewport" type="SubViewport" parent="ViewportContainer" unique_id=1621269029]
 handle_input_locally = false
-msaa_3d = 0
-screen_space_aa = 0
 positional_shadow_atlas_size = 0
 size = Vector2i(320, 180)
 render_target_update_mode = 4
 
-[node name="World" type="Node3D" parent="ViewportContainer/SubViewport"]
+[node name="World" type="Node3D" parent="ViewportContainer/SubViewport" unique_id=1013562425]
 process_mode = 1
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="ViewportContainer/SubViewport/World"]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="ViewportContainer/SubViewport/World" unique_id=1801064334]
 environment = SubResource("Environment_world")
 
-[node name="Sea" type="MeshInstance3D" parent="ViewportContainer/SubViewport/World"]
-position = Vector3(0, -1.6, 0)
-mesh = SubResource("Mesh_sea")
+[node name="Sea" type="MeshInstance3D" parent="ViewportContainer/SubViewport/World" unique_id=501811125]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.6, 0)
 material_override = SubResource("Material_sea")
 cast_shadow = 0
+mesh = SubResource("Mesh_sea")
 
-[node name="Deck" parent="ViewportContainer/SubViewport/World" instance=ExtResource("10_deck")]
+[node name="Deck" parent="ViewportContainer/SubViewport/World" unique_id=820494612 instance=ExtResource("10_deck")]
 
-[node name="Turret" type="Node3D" parent="ViewportContainer/SubViewport/World"]
+[node name="Turret" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1355939615]
 script = ExtResource("2_turret")
 damage_source = ExtResource("26_cannon_source")
 
-[node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World"]
+[node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1700730723]
 script = ExtResource("5_enemies")
 
-[node name="Ballistics" type="Node" parent="ViewportContainer/SubViewport/World"]
+[node name="Ballistics" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=533076683]
 script = ExtResource("3_ballistics")
 
-[node name="Tracers" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World"]
+[node name="Tracers" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World" unique_id=1829914749]
 script = ExtResource("8_batch")
 batch_mesh = SubResource("Mesh_tracer")
-capacity = 900
 near_cull = 10.0
 zoom_near_cull = 70.0
 
-[node name="FX" type="Node3D" parent="ViewportContainer/SubViewport/World"]
+[node name="FX" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=110293126]
 script = ExtResource("9_fx")
 
-[node name="Missiles" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World"]
+[node name="Missiles" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World" unique_id=1293035008]
 script = ExtResource("8_batch")
 batch_mesh = ExtResource("25_interceptor")
 capacity = 32
 
-[node name="MissileSmoke" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World"]
+[node name="MissileSmoke" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World" unique_id=470183418]
 script = ExtResource("24_smoke")
 
-[node name="Weapons" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("turret", "ballistics", "tracers", "missile_launcher", "salvos", "waves", "enemies")]
+[node name="Weapons" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=835771212 node_paths=PackedStringArray("turret", "ballistics", "tracers", "missile_launcher", "salvos", "waves", "enemies")]
 script = ExtResource("20_weapons")
 turret = NodePath("../Turret")
 ballistics = NodePath("../Ballistics")
@@ -154,23 +191,24 @@ salvos = NodePath("SalvoManager")
 waves = NodePath("../../../../WaveOrchestrator")
 enemies = NodePath("../Enemies")
 
-[node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "enemies", "ballistics", "renderer", "smoke")]
+[node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=1188467878 node_paths=PackedStringArray("turret", "enemies", "ballistics", "renderer", "smoke")]
 script = ExtResource("21_launcher")
-damage_source = ExtResource("27_missile_source")
 turret = NodePath("../../Turret")
 enemies = NodePath("../../Enemies")
 ballistics = NodePath("../../Ballistics")
 renderer = NodePath("../../Missiles")
 smoke = NodePath("../../MissileSmoke")
+damage_source = ExtResource("27_missile_source")
 
-[node name="SalvoManager" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("launcher", "enemies")]
+[node name="SalvoManager" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=1901828449 node_paths=PackedStringArray("launcher", "enemies")]
 script = ExtResource("22_salvos")
 launcher = NodePath("../MissileLauncher")
 enemies = NodePath("../../Enemies")
 
-[node name="HUD" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1780522500]
 
-[node name="HUDRoot" type="Control" parent="HUD"]
+[node name="HUDRoot" type="Control" parent="HUD" unique_id=103815241]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -179,8 +217,15 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("4_hud")
 
-[node name="EnemyHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("enemies", "turret")]
-anchors_preset = 15
+[node name="Control" type="Control" parent="HUD/HUDRoot" unique_id=410719003]
+material = SubResource("ShaderMaterial_b00cx")
+anchors_preset = 0
+offset_top = 10.0
+offset_right = 420.0
+offset_bottom = 319.0
+
+[node name="EnemyHUD" type="Control" parent="HUD/HUDRoot" unique_id=1387813293 node_paths=PackedStringArray("enemies", "turret")]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -190,8 +235,8 @@ script = ExtResource("19_enemy_hud")
 enemies = NodePath("../../../ViewportContainer/SubViewport/World/Enemies")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Turret")
 
-[node name="PlayerHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("turret", "thermal")]
-anchors_preset = 15
+[node name="PlayerHUD" type="Control" parent="HUD/HUDRoot" unique_id=2086072244 node_paths=PackedStringArray("turret", "thermal")]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -201,8 +246,8 @@ script = ExtResource("16_player_hud")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Turret")
 thermal = NodePath("../../../ViewportContainer")
 
-[node name="WaveHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("waves", "enemies")]
-anchors_preset = 15
+[node name="WaveHUD" type="Control" parent="HUD/HUDRoot" unique_id=1787002296 node_paths=PackedStringArray("waves", "enemies")]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -212,8 +257,8 @@ script = ExtResource("18_wave_hud")
 waves = NodePath("../../../WaveOrchestrator")
 enemies = NodePath("../../../ViewportContainer/SubViewport/World/Enemies")
 
-[node name="CombatFeedbackHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("enemies")]
-anchors_preset = 15
+[node name="CombatFeedbackHUD" type="Control" parent="HUD/HUDRoot" unique_id=451380633 node_paths=PackedStringArray("enemies")]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -222,8 +267,8 @@ mouse_filter = 2
 script = ExtResource("17_feedback_hud")
 enemies = NodePath("../../../ViewportContainer/SubViewport/World/Enemies")
 
-[node name="WeaponFeedback" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("launcher", "salvos", "turret", "smoke", "fx")]
-anchors_preset = 15
+[node name="WeaponFeedback" type="Control" parent="HUD/HUDRoot" unique_id=211713410 node_paths=PackedStringArray("launcher", "salvos", "turret", "smoke", "fx")]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -236,7 +281,14 @@ turret = NodePath("../../../ViewportContainer/SubViewport/World/Turret")
 smoke = NodePath("../../../ViewportContainer/SubViewport/World/MissileSmoke")
 fx = NodePath("../../../ViewportContainer/SubViewport/World/FX")
 
-[node name="SeekerAudio" type="AudioStreamPlayer" parent="HUD/HUDRoot/WeaponFeedback"]
+[node name="SeekerAudio" type="AudioStreamPlayer" parent="HUD/HUDRoot/WeaponFeedback" unique_id=65263924]
 volume_db = -9.0
 
-[node name="TitleScreen" parent="HUD" instance=ExtResource("28_title")]
+[node name="Screenshot(5)" type="Sprite2D" parent="HUD/HUDRoot" unique_id=409311625]
+material = SubResource("ShaderMaterial_v0vrg")
+position = Vector2(151.00005, 440.00003)
+scale = Vector2(0.6544271, 0.67453706)
+texture = ExtResource("29_gsxep")
+
+[node name="TitleScreen" parent="HUD" unique_id=1956812312 instance=ExtResource("28_title")]
+layout_mode = 3
