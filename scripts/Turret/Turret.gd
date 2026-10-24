@@ -39,6 +39,7 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export var _gun_audio: AudioStreamPlayer
 @export var _spin_audio: AudioStreamPlayer
 @export var _reload_audio: AudioStreamPlayer
+@export var _wind_down_audio: AudioStreamPlayer
 
 var ammo: int = MAGAZINE
 var reloading: bool = false
@@ -167,6 +168,7 @@ func _start_firing() -> void:
 func _stop_firing() -> void:
 	if not firing:
 		return
+	_wind_down_audio.play()
 	firing = false
 
 func _start_reload() -> void:

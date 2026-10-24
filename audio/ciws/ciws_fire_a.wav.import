@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://bf32yubulyml"
-path="res://.godot/imported/ciws_fire.wav-45ecf34924fb3d3b7a1a8990b475345b.sample"
+path="res://.godot/imported/ciws_fire_a.wav-059e0f0765e07f75a35ed0c0cc5db27f.sample"
 
 [deps]
 
-source_file="res://audio/ciws_fire.wav"
-dest_files=["res://.godot/imported/ciws_fire.wav-45ecf34924fb3d3b7a1a8990b475345b.sample"]
+source_file="res://audio/ciws/ciws_fire_a.wav"
+dest_files=["res://.godot/imported/ciws_fire_a.wav-059e0f0765e07f75a35ed0c0cc5db27f.sample"]
 
 [params]
 

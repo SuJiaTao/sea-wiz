@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://cmpblwjnp33uq"
-path="res://.godot/imported/ciws_spin.wav-dfb97596441991bb3fbd8b86b2342882.sample"
+uid="uid://bivf47ey65sp5"
+path="res://.godot/imported/ciws_spin_b.wav-1d61f7aff6ae000ab3b5e07678ac66fc.sample"
 
 [deps]
 
-source_file="res://audio/ciws_spin.wav"
-dest_files=["res://.godot/imported/ciws_spin.wav-dfb97596441991bb3fbd8b86b2342882.sample"]
+source_file="res://audio/ciws/ciws_spin_b.wav"
+dest_files=["res://.godot/imported/ciws_spin_b.wav-1d61f7aff6ae000ab3b5e07678ac66fc.sample"]
 
 [params]
 
