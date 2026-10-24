@@ -14,7 +14,6 @@ const GUN_TARGET_REASON := "GUNS ONLY"
 const LOCK_CONE_DEG: float = 3.2
 const MIN_RANGE: float = 130.0
 const MAX_RANGE: float = 2800.0
-const LOCK_ZOOM_FOV: float = 38.0
 const REFIRE_TIME: float = 0.55
 
 @export var turret: Turret
@@ -80,9 +79,6 @@ func _run_lock(delta: float) -> void:
 		return
 	if missiles <= 0:
 		_clear_lock("NO MISSILES")
-		return
-	if turret.camera.fov > LOCK_ZOOM_FOV:
-		_clear_lock("ZOOM TO LOCK")
 		return
 	if _refire_remaining > 0.0:
 		_clear_lock()
