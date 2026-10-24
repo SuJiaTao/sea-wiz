@@ -26,8 +26,8 @@ const IMPULSE_DECAY := 12.0
 const IMPULSE_CAP := 6.0
 const SHAKE_TO_OFFSET := 0.015
 
-const FOV_WIDE := 55.0
-const FOV_NARROW := 17.0
+const FOV_WIDE := 65.0
+const FOV_NARROW := 20.0
 
 const CAMERA_OFFSET := Vector3(0.0, 1.05, 0.95)
 const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)

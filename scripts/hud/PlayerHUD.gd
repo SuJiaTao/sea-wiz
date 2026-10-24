@@ -5,11 +5,17 @@ class_name PlayerHUD
 @export var thermal: ThermalView
 @export var video: AnalogVideo
 
+const HELP_VISIBLE_TIME: float = 10.0
+const HELP_FADE_TIME: float = 3.0
+
 var _phase: float = 0.0
+var _help_time: float = 0.0
 
 
 func _update_hud(delta: float) -> void:
 	_phase += delta
+	if is_visible_in_tree():
+		_help_time += delta
 
 
 func _draw() -> void:
@@ -127,7 +133,11 @@ func _draw_view_info() -> void:
 			Turret.FOV_WIDE / maxf(fov, 1.0), fov
 		], 12, DIM
 	)
-	_text(origin + Vector2(0, 48), "MOUSE / WASD  AIM", 11, FAINT)
-	_text(origin + Vector2(0, 64), "LEFT  GUN    RIGHT / SHIFT  ZOOM", 11, FAINT)
-	_text(origin + Vector2(0, 80), "WHEEL  ZOOM    MIDDLE / R  RELOAD", 11, FAINT)
-	_text(origin + Vector2(0, 96), "F  POLARITY    C  COLOUR    ESC  PAUSE", 11, FAINT)
+	var help_fade := clampf((HELP_VISIBLE_TIME + HELP_FADE_TIME - _help_time) / HELP_FADE_TIME, 0.0, 1.0)
+	if help_fade <= 0.0:
+		return
+	var help := Color(FAINT, FAINT.a * help_fade)
+	_text(origin + Vector2(0, 48), "MOUSE / WASD  AIM", 11, help)
+	_text(origin + Vector2(0, 64), "LEFT  GUN    RIGHT / SHIFT  ZOOM", 11, help)
+	_text(origin + Vector2(0, 80), "WHEEL  ZOOM    MIDDLE / R  RELOAD", 11, help)
+	_text(origin + Vector2(0, 96), "F  POLARITY    C  COLOUR    ESC  PAUSE", 11, help)
