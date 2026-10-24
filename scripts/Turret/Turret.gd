@@ -152,6 +152,9 @@ func _physics_process(delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if GameSession.is_state(GameSession.State.TITLE):
+		return
+
 	if event.is_action_pressed("ciws_fire"):
 		_start_firing()
 	elif event.is_action_released("ciws_fire"):
