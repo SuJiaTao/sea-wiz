@@ -36,6 +36,9 @@ _gun_audio = NodePath("GunAudio")
 _spin_audio = NodePath("SpinAudio")
 _reload_audio = NodePath("ReloadAudio")
 _wind_down_audio = NodePath("GunWindDownAudio")
+_gun_audio_pitch_range = Vector2(0.72, 1.2)
+_spin_audio_pitch_range = Vector2(0.55, 1.25)
+_spin_audio_volume_db_range = Vector2(-5, 15)
 
 [node name="Mount" type="Node3D" parent="." unique_id=1768422786]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)

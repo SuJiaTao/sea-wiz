@@ -40,6 +40,10 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export var _spin_audio: AudioStreamPlayer
 @export var _reload_audio: AudioStreamPlayer
 @export var _wind_down_audio: AudioStreamPlayer
+@export_category("Audio Properties")
+@export var _gun_audio_pitch_range: Vector2 = Vector2(0.72, 1.0)
+@export var _spin_audio_pitch_range: Vector2 = Vector2(0.55, 1.15)
+@export var _spin_audio_volume_db_range: Vector2 = Vector2(-30.0, -13.0)
 
 var ammo: int = MAGAZINE
 var reloading: bool = false
@@ -252,14 +256,18 @@ func _update_audio() -> void:
 		if firing and spin > 0.25:
 			if not _gun_audio.playing:
 				_gun_audio.play()
-			_gun_audio.pitch_scale = lerpf(0.72, 1.0, spin)
+			_gun_audio.pitch_scale = _lerp_rangef(_gun_audio_pitch_range, spin)
 		elif _gun_audio.playing:
 			_gun_audio.stop()
 	if _spin_audio.stream != null:
 		if spin > 0.02:
 			if not _spin_audio.playing:
 				_spin_audio.play()
-			_spin_audio.pitch_scale = lerpf(0.55, 1.15, spin)
-			_spin_audio.volume_db = lerpf(-30.0, -13.0, spin)
+			_spin_audio.pitch_scale = _lerp_rangef(_spin_audio_pitch_range, spin)
+			_spin_audio.volume_db = _lerp_rangef(_spin_audio_volume_db_range, spin)
 		elif _spin_audio.playing:
 			_spin_audio.stop()
+
+
+func _lerp_rangef(lerp_range: Vector2, weight: float) -> float:
+	return lerpf(lerp_range.x, lerp_range.y, weight)
