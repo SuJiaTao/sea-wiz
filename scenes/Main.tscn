@@ -1,4 +1,4 @@
-[gd_scene load_steps=107 format=3]
+[gd_scene load_steps=109 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -97,6 +97,8 @@
 [ext_resource type="Resource" path="res://resources/weather/Thunderstorm.tres" id="95_storm"]
 [ext_resource type="Material" path="res://resources/weather/LightningMaterial.tres" id="96_bolt_material"]
 [ext_resource type="AudioStream" path="res://audio/thunder.wav" id="97_thunder"]
+[ext_resource type="Script" path="res://scripts/weather/AuroraWeather.gd" id="98_aurora"]
+[ext_resource type="Resource" path="res://resources/weather/Aurora.tres" id="99_aurora_profile"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -176,7 +178,7 @@ process_mode = 1
 script = ExtResource("75_weather")
 waves = NodePath("../WaveOrchestrator")
 clear = ExtResource("79_clear")
-fronts = Array[ExtResource("81_profile_type")]([ExtResource("80_fog_profile"), ExtResource("88_rain"), ExtResource("89_snow"), ExtResource("90_sleet"), ExtResource("95_storm")])
+fronts = Array[ExtResource("81_profile_type")]([ExtResource("80_fog_profile"), ExtResource("88_rain"), ExtResource("89_snow"), ExtResource("90_sleet"), ExtResource("95_storm"), ExtResource("99_aurora_profile")])
 
 [node name="Fog" type="Node" parent="Weather" node_paths=PackedStringArray("environment")]
 script = ExtResource("76_fog")
@@ -211,6 +213,10 @@ stream = ExtResource("97_thunder")
 script = ExtResource("93_sea_state")
 sea_material = SubResource("Material_sea")
 sway = NodePath("../../ViewportContainer/SubViewport/World/ShipSway")
+
+[node name="Aurora" type="Node" parent="Weather" node_paths=PackedStringArray("environment")]
+script = ExtResource("98_aurora")
+environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
 
 [node name="ViewportContainer" type="SubViewportContainer" parent="." node_paths=PackedStringArray("turret")]
 process_mode = 1
