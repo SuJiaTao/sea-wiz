@@ -26,7 +26,7 @@ func _physics_process(delta: float) -> void:
 	for enemy in enemies.live_enemies():
 		var offset := enemy.global_position - antenna.global_position
 		var distance := offset.length()
-		if distance > max_range or distance < 1.0:
+		if distance > minf(max_range, enemy.radar_reach) or distance < 1.0:
 			continue
 		if not _swept(previous, sweep_angle, _bearing(offset)):
 			continue
