@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="WeatherProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/weather/WeatherProfile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+display_name = "SLEET"
+fog_density = 0.0004
+rain_rate = 1800.0
+snow_rate = 3000.0
+lens_drops_per_second = 0.6
+radar_clutter = 0.2
