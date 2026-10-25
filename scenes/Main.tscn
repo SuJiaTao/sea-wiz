@@ -1,4 +1,4 @@
-[gd_scene load_steps=74 format=3]
+[gd_scene load_steps=76 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -64,6 +64,8 @@
 [ext_resource type="Shader" path="res://shaders/tracer.gdshader" id="62_tracer_shader"]
 [ext_resource type="Resource" path="res://resources/fx/FlareGlow.tres" id="63_flare_glow"]
 [ext_resource type="Resource" path="res://resources/fx/FlareSmoke.tres" id="64_flare_smoke"]
+[ext_resource type="Script" path="res://scripts/score/ScoreKeeper.gd" id="65_score"]
+[ext_resource type="Script" path="res://scripts/hud/ScoreHUD.gd" id="66_score_hud"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -127,6 +129,11 @@ script = ExtResource("1_session")
 process_mode = 1
 script = ExtResource("6_waves")
 levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResource("13_second")])
+
+[node name="Score" type="Node" parent="." node_paths=PackedStringArray("enemies")]
+process_mode = 1
+script = ExtResource("65_score")
+enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
 
 [node name="ViewportContainer" type="SubViewportContainer" parent="." node_paths=PackedStringArray("turret")]
 process_mode = 1
@@ -397,6 +404,16 @@ mouse_filter = 2
 script = ExtResource("18_wave_hud")
 waves = NodePath("../../../WaveOrchestrator")
 enemies = NodePath("../../../ViewportContainer/SubViewport/World/Enemies")
+
+[node name="ScoreHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("score")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("66_score_hud")
+score = NodePath("../../../Score")
 
 [node name="CombatFeedbackHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("enemies")]
 anchors_preset = 15

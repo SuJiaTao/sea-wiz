@@ -13,6 +13,7 @@ visuals = NodePath("Visuals")
 flares = NodePath("FlareDispenser")
 max_hp = 260.0
 display_name = "HEAVY BOMBER"
+score_value = 800
 hud_radius = 19.5
 max_bank_deg = 35.0
 speed = 130.0

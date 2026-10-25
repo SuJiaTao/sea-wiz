@@ -21,6 +21,7 @@ const WRECK_DAMAGE_PER_SIZE: float = 12.0
 @onready var video: AnalogVideo = $VideoSignal/AnalogVideo
 @onready var hud: GameplayHUD = $HUD/HUDRoot
 @onready var title_screen: TitleScreen = $HUD/TitleScreen
+@onready var score: ScoreKeeper = $Score
 
 var state: State = State.TITLE
 var _title_time: float = 0.0
@@ -176,6 +177,7 @@ func _finish(result: State, message: String) -> void:
 		return
 	state = result
 	waves.stop()
+	score.record_final()
 	weapons.set_enabled(false)
 	get_tree().paused = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE

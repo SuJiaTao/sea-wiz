@@ -11,6 +11,7 @@ script = ExtResource("1_enemy")
 visuals = NodePath("Visuals")
 max_hp = 70.0
 display_name = "HELICOPTER"
+score_value = 200
 hud_radius = 7.5
 max_bank_deg = 25.0
 speed = 62.0
