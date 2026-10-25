@@ -2,6 +2,7 @@ extends Node3D
 class_name EffectManager
 
 signal wreck_hit_ship(position: Vector3, size: float)
+signal wreck_falling(wreck: WreckEffect)
 
 @export var sea: Node3D
 @export var hull: HullMesh

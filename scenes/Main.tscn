@@ -1,4 +1,4 @@
-[gd_scene load_steps=76 format=3]
+[gd_scene load_steps=78 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -66,6 +66,8 @@
 [ext_resource type="Resource" path="res://resources/fx/FlareSmoke.tres" id="64_flare_smoke"]
 [ext_resource type="Script" path="res://scripts/score/ScoreKeeper.gd" id="65_score"]
 [ext_resource type="Script" path="res://scripts/hud/ScoreHUD.gd" id="66_score_hud"]
+[ext_resource type="Script" path="res://scripts/enemy/WreckHazards.gd" id="67_wreck_hazards"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Wreck.tscn" id="68_wreck"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -207,6 +209,12 @@ max_depth = 20.0
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("5_enemies")
+
+[node name="WreckHazards" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("effects", "enemies")]
+script = ExtResource("67_wreck_hazards")
+effects = NodePath("../Effects")
+enemies = NodePath("../Enemies")
+wreck_scene = ExtResource("68_wreck")
 
 [node name="Ballistics" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("sea")]
 script = ExtResource("3_ballistics")
