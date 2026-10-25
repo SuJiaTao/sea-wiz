@@ -4,6 +4,7 @@ class_name AbstractEnemy
 
 signal damaged(amount: float, world_point: Vector3)
 signal reached_target(damage: float)
+signal missed(world_point: Vector3)
 signal countermeasures_released(flares: Array[DecoyFlare])
 
 enum State { CREATING, ALIVE, DEAD, DESTROYED }
