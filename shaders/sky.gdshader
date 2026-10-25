@@ -22,6 +22,10 @@ uniform float moon_glow : hint_range(0.0, 2.0) = 0.35;
 uniform float moon_glow_width_deg : hint_range(0.1, 30.0) = 3.0;
 uniform float moon_halo : hint_range(0.0, 1.0) = 0.1;
 uniform float moon_halo_width_deg : hint_range(1.0, 90.0) = 20.0;
+uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
+uniform vec3 lightning_direction = vec3(0.0, 0.3, -1.0);
+uniform float lightning_spread_deg : hint_range(1.0, 90.0) = 25.0;
+uniform float lightning_ambient : hint_range(0.0, 1.0) = 0.25;
 
 const float HALF_PI = 1.5707963;
 const float EDGE_SOFTNESS = 0.08;
@@ -82,5 +86,7 @@ void sky() {
 		float coverage = 1.0 - smoothstep(1.0 - EDGE_SOFTNESS, 1.0 + EDGE_SOFTNESS, from_centre);
 		colour = mix(colour, moon, coverage);
 	}
+	float off_bolt = degrees(acos(clamp(dot(EYEDIR, normalize(lightning_direction)), -1.0, 1.0)));
+	colour += lightning_flash * (lightning_ambient + exp(-off_bolt / lightning_spread_deg));
 	COLOR = colour;
 }
