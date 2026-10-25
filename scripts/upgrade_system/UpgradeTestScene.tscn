@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://cib7ukkh0ok1q"]
+
+[ext_resource type="Script" uid="uid://8h0skygqeltk" path="res://scripts/upgrade_system/UpgradeTestScene.gd" id="1_wjlbx"]
+[ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="2_483hn"]
+[ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/UpgradeProvider.gd" id="3_2djax"]
+[ext_resource type="Script" uid="uid://dpxiiuueoo0tt" path="res://scripts/upgrade_system/upgrades/TestUpgrade.gd" id="3_483hn"]
+
+[sub_resource type="Resource" id="Resource_483hn"]
+script = ExtResource("3_483hn")
+label = "Hello"
+metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+
+[sub_resource type="Resource" id="Resource_2djax"]
+script = ExtResource("3_483hn")
+label = "Hello"
+metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+
+[sub_resource type="Resource" id="Resource_4r5tx"]
+script = ExtResource("3_483hn")
+label = "Hello"
+metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+
+[sub_resource type="Resource" id="Resource_5mlll"]
+script = ExtResource("3_483hn")
+label = "Hello"
+metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+
+[sub_resource type="Resource" id="Resource_4vbbs"]
+script = ExtResource("3_483hn")
+label = "Hello"
+metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+
+[sub_resource type="Resource" id="Resource_j7wh7"]
+script = ExtResource("3_483hn")
+label = "Hello"
+metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+
+[sub_resource type="Resource" id="Resource_qwil7"]
+script = ExtResource("3_483hn")
+label = "Hello"
+category = "TestCat"
+metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+
+[sub_resource type="Resource" id="Resource_6fp5s"]
+script = ExtResource("3_483hn")
+label = "Hello"
+category = "TestCat"
+metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+
+[sub_resource type="Resource" id="Resource_187ju"]
+script = ExtResource("3_483hn")
+label = "Hello"
+category = "TestCat"
+metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+
+[sub_resource type="Resource" id="Resource_8u7uy"]
+script = ExtResource("3_2djax")
+_upgrades = Array[ExtResource("2_483hn")]([SubResource("Resource_483hn"), SubResource("Resource_2djax"), SubResource("Resource_4r5tx"), SubResource("Resource_5mlll"), SubResource("Resource_4vbbs"), SubResource("Resource_j7wh7"), SubResource("Resource_qwil7"), SubResource("Resource_6fp5s"), SubResource("Resource_187ju")])
+metadata/_custom_type_script = "uid://d17mvn7phxhv1"
+
+[node name="UpgradeTestScene" type="Node" unique_id=1219985079]
+script = ExtResource("1_wjlbx")
+provider = SubResource("Resource_8u7uy")
