@@ -1,4 +1,4 @@
-[gd_scene load_steps=84 format=3]
+[gd_scene load_steps=92 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
@@ -74,6 +74,14 @@
 [ext_resource type="Resource" path="res://levels/FallingStars.tres" id="72_falling_stars"]
 [ext_resource type="Script" path="res://scripts/world/Starfield.gd" id="73_starfield"]
 [ext_resource type="QuadMesh" path="res://resources/world/StarMesh.tres" id="74_star_mesh"]
+[ext_resource type="Script" path="res://scripts/weather/WeatherDirector.gd" id="75_weather"]
+[ext_resource type="Script" path="res://scripts/weather/FogWeather.gd" id="76_fog"]
+[ext_resource type="Script" path="res://scripts/weather/RadarClutterWeather.gd" id="77_clutter"]
+[ext_resource type="Script" path="res://scripts/hud/WeatherHUD.gd" id="78_weather_hud"]
+[ext_resource type="Resource" path="res://resources/weather/Clear.tres" id="79_clear"]
+[ext_resource type="Resource" path="res://resources/weather/Fog.tres" id="80_fog_profile"]
+[ext_resource type="Script" path="res://scripts/weather/WeatherProfile.gd" id="81_profile_type"]
+[ext_resource type="Material" path="res://resources/world/StarPoint.tres" id="82_star_material"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -147,6 +155,22 @@ enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
 process_mode = 1
 script = ExtResource("70_lens")
 thermal = NodePath("../ViewportContainer")
+
+[node name="Weather" type="Node" parent="." node_paths=PackedStringArray("waves")]
+process_mode = 1
+script = ExtResource("75_weather")
+waves = NodePath("../WaveOrchestrator")
+clear = ExtResource("79_clear")
+fronts = Array[ExtResource("81_profile_type")]([ExtResource("80_fog_profile")])
+
+[node name="Fog" type="Node" parent="Weather" node_paths=PackedStringArray("environment")]
+script = ExtResource("76_fog")
+environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
+star_material = ExtResource("82_star_material")
+
+[node name="RadarClutter" type="Node" parent="Weather" node_paths=PackedStringArray("radar")]
+script = ExtResource("77_clutter")
+radar = NodePath("../../ViewportContainer/SubViewport/World/Sensors/SearchRadar")
 
 [node name="ViewportContainer" type="SubViewportContainer" parent="." node_paths=PackedStringArray("turret")]
 process_mode = 1
@@ -445,6 +469,16 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("66_score_hud")
 score = NodePath("../../../Score")
+
+[node name="WeatherHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("weather")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("78_weather_hud")
+weather = NodePath("../../../Weather")
 
 [node name="CombatFeedbackHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("enemies")]
 anchors_preset = 15
