@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b6t7bnslh26t3"]
 
 [ext_resource type="PackedScene" uid="uid://bu05gjgndg4ra" path="res://scenes/upgrade_demo/UpgradeDemoOupput.tscn" id="2_r7ssf"]
-[ext_resource type="Script" uid="uid://d4h8lrsqs6pku" path="res://scripts/upgrade_system/upgrade_demo/logic.gd" id="3_r7ssf"]
+[ext_resource type="Script" uid="uid://d4h8lrsqs6pku" path="res://scripts/upgrade_system/upgrade_demo/Logic.gd" id="3_r7ssf"]
 [ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="4_r7ssf"]
 [ext_resource type="Script" uid="uid://7g4f4o8glaya" path="res://scripts/upgrade_system/upgrades/test upgrades/GreenTestUpgrade.gd" id="5_dj5qx"]
 [ext_resource type="Script" uid="uid://dhge41xt0jr5v" path="res://scripts/upgrade_system/upgrades/test upgrades/SpinTestUpgrade.gd" id="5_r7ssf"]
