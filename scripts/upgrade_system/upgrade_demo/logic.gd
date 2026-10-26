@@ -37,5 +37,15 @@ func build_button(upgrade: Upgrade) -> Button:
 	var button : Button = Button.new()
 	button.text = upgrade.label
 	button.custom_minimum_size = Vector2(100, 100)
-	button.pressed.connect(upgrade.apply_upgrade)
+	button.pressed.connect(apply_upgrade.bind(button, upgrade), ConnectFlags.CONNECT_ONE_SHOT)
 	return button
+
+
+func apply_upgrade(button: Button, upgrade: Upgrade) -> void:
+	button.pressed.connect(remove_upgrade.bind(button, upgrade), ConnectFlags.CONNECT_ONE_SHOT)
+	upgrade.apply_upgrade()
+
+
+func remove_upgrade(button: Button, upgrade: Upgrade) -> void:
+	button.pressed.connect(apply_upgrade.bind(button, upgrade), ConnectFlags.CONNECT_ONE_SHOT)
+	upgrade.remove_upgrade()

@@ -6,7 +6,7 @@ extends Resource
 @export_multiline var description : String = ""
 
 @export var category : String = "Default"
-@export var weight : float
+@export var weight : float = 1.0
 
 @abstract func _apply() -> void
 @abstract func _remove() -> void

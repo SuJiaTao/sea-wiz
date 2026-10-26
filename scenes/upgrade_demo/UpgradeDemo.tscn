@@ -1,20 +1,31 @@
 [gd_scene format=3 uid="uid://b6t7bnslh26t3"]
 
-[ext_resource type="Script" path="res://scripts/upgrade_system/upgrade_demo.gd" id="1_vrp7i"]
 [ext_resource type="PackedScene" uid="uid://bu05gjgndg4ra" path="res://scenes/upgrade_demo/UpgradeDemoOupput.tscn" id="2_r7ssf"]
-[ext_resource type="Script" path="res://scenes/upgrade_demo/logic.gd" id="3_qhmm7"]
+[ext_resource type="Script" uid="uid://d4h8lrsqs6pku" path="res://scripts/upgrade_system/upgrade_demo/logic.gd" id="3_r7ssf"]
 [ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="4_r7ssf"]
-[ext_resource type="Script" uid="uid://dpxiiuueoo0tt" path="res://scripts/upgrade_system/upgrades/TestUpgrade.gd" id="5_dj5qx"]
+[ext_resource type="Script" uid="uid://7g4f4o8glaya" path="res://scripts/upgrade_system/upgrades/test upgrades/GreenTestUpgrade.gd" id="5_dj5qx"]
+[ext_resource type="Script" uid="uid://dhge41xt0jr5v" path="res://scripts/upgrade_system/upgrades/test upgrades/SpinTestUpgrade.gd" id="5_r7ssf"]
 [ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/UpgradeProvider.gd" id="6_8x6yk"]
+[ext_resource type="Script" uid="uid://d3k62t2ol1yk1" path="res://scripts/upgrade_system/upgrades/test upgrades/TinyTestUpgrade.gd" id="6_voa4p"]
 
-[sub_resource type="Resource" id="Resource_qhmm7"]
+[sub_resource type="Resource" id="Resource_dj5qx"]
+script = ExtResource("5_r7ssf")
+label = "spin"
+metadata/_custom_type_script = "uid://dhge41xt0jr5v"
+
+[sub_resource type="Resource" id="Resource_bwmui"]
 script = ExtResource("5_dj5qx")
-label = "test"
-metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+label = "greenify"
+metadata/_custom_type_script = "uid://7g4f4o8glaya"
+
+[sub_resource type="Resource" id="Resource_e4qvq"]
+script = ExtResource("6_voa4p")
+label = "become tiny"
+metadata/_custom_type_script = "uid://d3k62t2ol1yk1"
 
 [sub_resource type="Resource" id="Resource_xepq7"]
 script = ExtResource("6_8x6yk")
-_upgrades = Array[ExtResource("4_r7ssf")]([SubResource("Resource_qhmm7")])
+_upgrades = Array[ExtResource("4_r7ssf")]([SubResource("Resource_dj5qx"), SubResource("Resource_bwmui"), SubResource("Resource_e4qvq")])
 metadata/_custom_type_script = "uid://d17mvn7phxhv1"
 
 [node name="UgradeDemo" type="Control" unique_id=1726539843]
@@ -24,7 +35,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_vrp7i")
 metadata/_edit_use_anchors_ = true
 
 [node name="Background" type="ColorRect" parent="." unique_id=1880610318]
@@ -76,13 +86,13 @@ anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = 104.0
 offset_top = -208.0
-offset_right = 144.0
+offset_right = 526.0
 offset_bottom = -167.0
 grow_horizontal = 2
 grow_vertical = 0
 
 [node name="Logic" type="Node" parent="." unique_id=1845921226 node_paths=PackedStringArray("inactive_upgrades_dock", "active_upgrades_dock")]
-script = ExtResource("3_qhmm7")
+script = ExtResource("3_r7ssf")
 inactive_upgrades_dock = NodePath("../Upgrade Dock")
 active_upgrades_dock = NodePath("../Active Upgrades Dock")
 provider = SubResource("Resource_xepq7")
