@@ -11,6 +11,7 @@ script = ExtResource("1_drone")
 visuals = NodePath("Visuals")
 max_hp = 22.0
 display_name = "DRONE"
+score_value = 100
 hud_radius = 4.8
 max_bank_deg = 45.0
 

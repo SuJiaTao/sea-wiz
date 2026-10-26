@@ -4,6 +4,7 @@ class_name AbstractEnemy
 
 signal damaged(amount: float, world_point: Vector3)
 signal reached_target(damage: float)
+signal missed(world_point: Vector3)
 signal countermeasures_released(flares: Array[DecoyFlare])
 
 enum State { CREATING, ALIVE, DEAD, DESTROYED }
@@ -16,6 +17,9 @@ const COLLISION_LAYER: int = 1 << 1
 @export_range(0.1, 100.0) var hud_radius: float = 5.0
 @export var visuals: Node3D
 @export var contact_kind: ContactKind = ContactKind.AIRCRAFT
+@export var score_value: int = 100
+@export var leaves_wreck: bool = true
+@export var radar_reach: float = INF
 
 var hp: float = 0.0
 var velocity := Vector3.ZERO
@@ -54,6 +58,14 @@ func detach_visuals() -> Node3D:
 	detached.transform = world_transform
 	visuals = null
 	return detached
+
+
+func score_points() -> int:
+	return score_value
+
+
+func score_label() -> String:
+	return display_name
 
 
 func evade_missile(_missile_position: Vector3) -> DecoyFlare:
