@@ -12,6 +12,6 @@ func add_upgrade(upgrade: Upgrade) -> void:
 	upgrades_changed.emit()
 
 
-func remove_upgarde(upgrade: Upgrade) -> void:
+func remove_upgrade(upgrade: Upgrade) -> void:
 	active_upgrades.erase(upgrade)
 	upgrades_changed.emit()

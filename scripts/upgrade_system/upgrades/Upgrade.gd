@@ -2,6 +2,8 @@
 class_name Upgrade
 extends Resource
 
+var upgrade_target : UpgradeTarget
+
 @export var label : String = ""
 @export_multiline var description : String = ""
 
@@ -25,9 +27,11 @@ func apply_upgrade() -> bool:
 	if (check_preconditions() and can_accumulate_still()) :
 		_apply()
 		accumulation += 1
+		upgrade_target.add_upgrade(self)
 		return true
 	return false
 
 func remove_upgrade() -> void:
-	accumulation -= 1
 	_remove()
+	accumulation -= 1
+	upgrade_target.remove_upgrade(self)
