@@ -1,33 +1,32 @@
-## A class graph representing an "upgrade tree", with preceding	and succeeding upgrades. There are no backtracks.
+## A class graph representing an "upgrade tree", the graph flows backwards with no backtracks, starting from the end of an upgrade tree.
 @abstract
 class_name UpgradeGraph
 extends Upgrade
 
+signal is_being_stripped
+
 @export var predecessors : Array[UpgradeGraph] = []
-@export var successors : Array[UpgradeGraph] = []
 
 
-## Returns true if all necessary conditions and can_accumulate_still() is true, false otherwise
+func _init() -> void:
+	for n in predecessors:
+		n.is_being_stripped.connect(force_strip)
+
+
 func check_preconditions() -> bool:
-	var flag : bool = super.check_preconditions()
-	flag = flag && predecessors.all(func(u): return (u.check_preconditions()))
-	return flag
+	return check_preconditions() and predecessors.all(func(n): return n.check_preconditions())
 
 
-## Returns all nodes down the graph that where check_preconditions() is true, excluding this node.
-## Returns an empty array if there are no such nodes.
-func get_next_upgrades() -> Array[UpgradeGraph]:
-	var result : Array[UpgradeGraph] = []
-	if check_preconditions():
-		result.append(self)
-	for upgrade in successors:
-		result.append_array(upgrade.get_next_upgrades())
-	return result
-
-
-## Unapplies this upgrade. If accumulation == 0, unapplies every upgrade down the graph as well.
-## Successors are unapplied first before this.
+## Unapplies this upgrade.
+## If accumulation will be 0 after the function ends,
+## then calls force_strip on every upgrade that depends on this upgrade also
+## Successors are unapplied before this.
 func remove_upgrade() -> void:
-	for upgrade in successors:
-		upgrade.remove_upgrade()
+	if accumulation == 1:
+		is_being_stripped.emit()
 	super.remove_upgrade()
+
+
+func force_strip() -> void:
+	for i in accumulation:		# TODO: needs testing on accumulation
+		remove_upgrade()
