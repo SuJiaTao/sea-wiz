@@ -100,11 +100,12 @@ func _run_lock(delta: float) -> void:
 
 	lock_progress = minf(lock_progress + delta / LOCK_TIME, 1.0)
 	if lock_progress >= 1.0:
-		if try_launch(lock_target):
-			_clear_lock()
-			_refire_remaining = REFIRE_TIME
-		else:
-			lock_denied_reason = "LAUNCH UNAVAILABLE"
+		if Input.is_action_pressed("ciws_fire"):
+			if try_launch(lock_target):
+				_clear_lock()
+				_refire_remaining = REFIRE_TIME
+			else:
+				lock_denied_reason = "LAUNCH UNAVAILABLE"
 
 
 func _clear_lock(reason: String = "") -> void:
