@@ -14,38 +14,36 @@ func _ready() -> void:
 func restock() -> void:
 	var new_upgrades : Array[Upgrade] = provider.get_new_upgrades(upgrade_count)
 	for upgrade in new_upgrades:
-		var button = build_button(upgrade)
-		set_inactive(button)
+		var button = UpgradeButton.new(upgrade)
+		button.pressed.connect(process_button, ConnectFlags.CONNECT_APPEND_SOURCE_OBJECT)
+		inactive_upgrades_dock.add_child(button)
 
 
-func set_active(button: Button) -> void:
-	button.pressed.connect(set_inactive, ConnectFlags.CONNECT_APPEND_SOURCE_OBJECT | ConnectFlags.CONNECT_ONE_SHOT)
+func set_active(button: UpgradeButton) -> void:
+	button.active = true
+	button.process_upgrade()
+	if button.upgrade.can_accumulate_still():
+		button.active = false
+		return
 	if button.get_parent() == inactive_upgrades_dock:
 		inactive_upgrades_dock.remove_child(button)
 	active_upgrades_dock.add_child(button)
 	
 	
 
-func set_inactive(button: Button) -> void:
-	button.pressed.connect(set_active, ConnectFlags.CONNECT_APPEND_SOURCE_OBJECT | ConnectFlags.CONNECT_ONE_SHOT)
+func set_inactive(button: UpgradeButton) -> void:
+	button.active = false
+	button.process_upgrade()
+	if button.upgrade.accumulation > 0:
+		button.active = true
+		return
 	if button.get_parent() == active_upgrades_dock:
 		active_upgrades_dock.remove_child(button)
 	inactive_upgrades_dock.add_child(button)
 
 
-func build_button(upgrade: Upgrade) -> Button:
-	var button : Button = Button.new()
-	button.text = upgrade.label
-	button.custom_minimum_size = Vector2(100, 100)
-	button.pressed.connect(apply_upgrade.bind(button, upgrade), ConnectFlags.CONNECT_ONE_SHOT)
-	return button
-
-
-func apply_upgrade(button: Button, upgrade: Upgrade) -> void:
-	button.pressed.connect(remove_upgrade.bind(button, upgrade), ConnectFlags.CONNECT_ONE_SHOT)
-	upgrade.apply_upgrade()
-
-
-func remove_upgrade(button: Button, upgrade: Upgrade) -> void:
-	button.pressed.connect(apply_upgrade.bind(button, upgrade), ConnectFlags.CONNECT_ONE_SHOT)
-	upgrade.remove_upgrade()
+func process_button(button: UpgradeButton) -> void:
+	if button.active:
+		set_inactive(button)
+	else:
+		set_active(button)

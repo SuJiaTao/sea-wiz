@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://dhge41xt0jr5v" path="res://scripts/upgrade_system/upgrades/test upgrades/SpinTestUpgrade.gd" id="5_r7ssf"]
 [ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/UpgradeProvider.gd" id="6_8x6yk"]
 [ext_resource type="Script" uid="uid://d3k62t2ol1yk1" path="res://scripts/upgrade_system/upgrades/test upgrades/TinyTestUpgrade.gd" id="6_voa4p"]
+[ext_resource type="Script" uid="uid://d1vyspcpox424" path="res://scripts/upgrade_system/upgrades/test upgrades/CloneTestUpgrade.gd" id="7_8x6yk"]
 
 [sub_resource type="Resource" id="Resource_dj5qx"]
 script = ExtResource("5_r7ssf")
@@ -23,9 +24,15 @@ script = ExtResource("6_voa4p")
 label = "become tiny"
 metadata/_custom_type_script = "uid://d3k62t2ol1yk1"
 
+[sub_resource type="Resource" id="Resource_8gnrw"]
+script = ExtResource("7_8x6yk")
+label = "duplicate"
+max_acummulation = 3
+metadata/_custom_type_script = "uid://d1vyspcpox424"
+
 [sub_resource type="Resource" id="Resource_xepq7"]
 script = ExtResource("6_8x6yk")
-_upgrades = Array[ExtResource("4_r7ssf")]([SubResource("Resource_dj5qx"), SubResource("Resource_bwmui"), SubResource("Resource_e4qvq")])
+_upgrades = Array[ExtResource("4_r7ssf")]([SubResource("Resource_dj5qx"), SubResource("Resource_bwmui"), SubResource("Resource_e4qvq"), SubResource("Resource_8gnrw")])
 metadata/_custom_type_script = "uid://d17mvn7phxhv1"
 
 [node name="UgradeDemo" type="Control" unique_id=1726539843]
