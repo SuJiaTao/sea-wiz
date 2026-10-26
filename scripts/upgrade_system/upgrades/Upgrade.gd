@@ -2,6 +2,9 @@
 class_name Upgrade
 extends Resource
 
+signal applied
+signal stripped
+
 var upgrade_target : UpgradeTarget
 
 @export var label : String = ""
@@ -28,6 +31,7 @@ func apply_upgrade() -> bool:
 		_apply()
 		accumulation += 1
 		upgrade_target.add_upgrade(self)
+		applied.emit()
 		return true
 	return false
 
@@ -36,3 +40,8 @@ func remove_upgrade() -> void:
 	_remove()
 	accumulation -= 1
 	upgrade_target.remove_upgrade(self)
+	stripped.emit()
+
+
+func is_equal(upgrade: Upgrade) -> bool:
+	return upgrade == self

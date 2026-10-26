@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b6t7bnslh26t3"]
 
 [ext_resource type="PackedScene" uid="uid://bu05gjgndg4ra" path="res://scenes/upgrade_demo/UpgradeDemoOupput.tscn" id="2_r7ssf"]
+[ext_resource type="Script" uid="uid://bi3eis2i528gj" path="res://scripts/upgrade_system/upgrade_demo/DemoUpgradeDock.gd" id="2_voa4p"]
 [ext_resource type="Script" uid="uid://bre545b7yjpw5" path="res://scripts/upgrade_system/upgrade_demo/UpgrdeDemoLogic.gd" id="2_yvucc"]
 [ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="4_r7ssf"]
 [ext_resource type="Script" uid="uid://7g4f4o8glaya" path="res://scripts/upgrade_system/upgrades/test upgrades/GreenTestUpgrade.gd" id="5_dj5qx"]
@@ -83,6 +84,7 @@ offset_left = 108.0
 offset_top = 79.0
 offset_right = 148.0
 offset_bottom = 119.0
+script = ExtResource("2_voa4p")
 
 [node name="Active Upgrades Dock" type="HBoxContainer" parent="." unique_id=218999378]
 layout_mode = 1
@@ -97,6 +99,7 @@ offset_right = 526.0
 offset_bottom = -167.0
 grow_horizontal = 2
 grow_vertical = 0
+script = ExtResource("2_voa4p")
 
 [node name="Logic" type="Node" parent="." unique_id=1845921226 node_paths=PackedStringArray("inactive_upgrades_dock", "active_upgrades_dock")]
 script = ExtResource("2_yvucc")
