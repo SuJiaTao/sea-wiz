@@ -4,11 +4,18 @@ extends Resource
 @export var _upgrades : Array[Upgrade]
 var _pool : Array[Upgrade]
 
+
+func _init() -> void:
+	reset_pool()
+	
+
 func reset_pool() -> void:
 	_pool.clear()
 	for upgrade in _pool:
 		if upgrade.check_preconditions():
 			_pool.append(upgrade)
+		if upgrade is UpgradeGraph:
+			_pool.append_array(upgrade.get_next_upgrades())
 
 
 ## NOTE: Duplicate array before passing to pool if you want to keep the original array unaffected
