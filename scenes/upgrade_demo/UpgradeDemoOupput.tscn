@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://btot3ckhon4hq" path="res://icon.svg" id="1_dn22l"]
 [ext_resource type="Script" uid="uid://ps81pr7i5qug" path="res://scripts/upgrade_system/upgrade_demo/DemoUpgradeManager.gd" id="2_aiqj3"]
-[ext_resource type="Resource" uid="uid://sy1bsiaohvg1" path="res://scripts/upgrade_system/recievers/resources/DemoUpgradeTarget.tres" id="3_8gnrw"]
+[ext_resource type="Resource" uid="uid://sy1bsiaohvg1" path="res://scripts/upgrade_system/recievers/resources/demo_upgrade-target.tres" id="3_8gnrw"]
 
 [node name="Output" type="TextureRect" unique_id=612951646]
 offset_left = -64.0
@@ -12,7 +12,12 @@ offset_bottom = 64.0
 pivot_offset_ratio = Vector2(0.5, 0.5)
 texture = ExtResource("1_dn22l")
 
-[node name="Upgrade Manager" type="Node" parent="." unique_id=1284262593 node_paths=PackedStringArray("demo_output")]
+[node name="Upgrade Manager" type="Node" parent="." unique_id=1284262593 node_paths=PackedStringArray("demo_output", "circle")]
 script = ExtResource("2_aiqj3")
 demo_output = NodePath("..")
 target = ExtResource("3_8gnrw")
+circle = NodePath("../circle")
+
+[node name="circle" type="Polygon2D" parent="." unique_id=220440225]
+visible = false
+polygon = PackedVector2Array(204, -45, 186, -29, 185, -13, 188, 2, 192, 8, 205, 16, 218, 16, 236, 11, 248, 5, 252, -8, 250, -23, 247, -33, 239, -44, 229, -48, 215, -49)

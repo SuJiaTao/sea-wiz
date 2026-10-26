@@ -3,8 +3,8 @@
 class_name UpgradeGraph
 extends Upgrade
 
-var predecessors : Array[UpgradeGraph] = []
-var successors : Array[UpgradeGraph] = []
+@export var predecessors : Array[UpgradeGraph] = []
+@export var successors : Array[UpgradeGraph] = []
 
 
 ## Returns true if all necessary conditions and can_accumulate_still() is true, false otherwise
