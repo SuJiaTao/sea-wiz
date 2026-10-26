@@ -8,15 +8,22 @@ const DECAY_MASK: int = 1
 
 var width: int
 var height: int
+var cooling: float
 var cells := PackedByteArray()
 
 
-func _init(grid_width: int, grid_height: int) -> void:
+func _init(grid_width: int, grid_height: int, cooling_chance: float) -> void:
 	width = grid_width
 	height = grid_height
+	cooling = cooling_chance
 	cells.resize(width * height)
 	cells.fill(0)
-	_ignite()
+
+
+func feed(source: PackedByteArray) -> void:
+	var source_row := (height - 1) * width
+	for x in width:
+		cells[source_row + x] = source[x]
 
 
 func step(lean: float) -> void:
@@ -36,10 +43,7 @@ func step(lean: float) -> void:
 			var shift := SPREAD_CENTRE - spread
 			if randf() < lean_chance:
 				shift += lean_direction
-			cells[above + posmod(x + shift, width)] = heat - (spread & DECAY_MASK)
-
-
-func _ignite() -> void:
-	var source_row := (height - 1) * width
-	for x in width:
-		cells[source_row + x] = MAX_HEAT
+			var decay := spread & DECAY_MASK
+			if decay > 0 and randf() > cooling:
+				decay = 0
+			cells[above + posmod(x + shift, width)] = heat - decay

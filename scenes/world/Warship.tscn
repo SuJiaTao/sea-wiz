@@ -1,0 +1,523 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ship/HullMesh.gd" id="1_hull"]
+[ext_resource type="PackedScene" path="res://scenes/world/Deck.tscn" id="2_platform"]
+
+[sub_resource type="StandardMaterial3D" id="Material_hull"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.24, 0.24, 0.24, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_deck"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.2, 0.2, 0.2, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_superstructure"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.28, 0.28, 0.28, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_window"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.08, 0.08, 0.08, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_mast"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.3, 0.3, 0.3, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_funnel"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.42, 0.42, 0.42, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_hot"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(1.0, 1.0, 1.0, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_turret"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.3, 0.3, 0.3, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_barrel"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.33, 0.33, 0.33, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_Deckhouse_6a3fd3"]
+material = SubResource("Material_superstructure")
+size = Vector3(16, 9.4, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_DeckhouseWindows_84d7e3"]
+material = SubResource("Material_window")
+size = Vector3(16.2, 0.9, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_UpperDeckhouse_c64784"]
+material = SubResource("Material_superstructure")
+size = Vector3(20, 6, 26)
+
+[sub_resource type="BoxMesh" id="BoxMesh_Bridge_6c164f"]
+material = SubResource("Material_superstructure")
+size = Vector3(14, 3, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_Tower_ade380"]
+material = SubResource("Material_superstructure")
+size = Vector3(7, 7, 7)
+
+[sub_resource type="BoxMesh" id="BoxMesh_TowerWindows_4e601b"]
+material = SubResource("Material_window")
+size = Vector3(7.2, 0.8, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_FireControl_e9217f"]
+material = SubResource("Material_superstructure")
+size = Vector3(5, 2, 5)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ForeMast_2728b3"]
+material = SubResource("Material_mast")
+top_radius = 0.35
+bottom_radius = 0.35
+height = 12
+radial_segments = 10
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_ForeYard_ee8058"]
+material = SubResource("Material_mast")
+size = Vector3(10, 0.3, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ForwardFunnel_630324"]
+material = SubResource("Material_funnel")
+size = Vector3(7, 13, 9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ForwardFunnelMouth_786438"]
+material = SubResource("Material_hot")
+size = Vector3(6.6, 0.6, 8.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_AftFunnel_ce6cd3"]
+material = SubResource("Material_funnel")
+size = Vector3(7, 12, 9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_AftFunnelMouth_786438"]
+material = SubResource("Material_hot")
+size = Vector3(6.6, 0.6, 8.6)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_MainMast_bce019"]
+material = SubResource("Material_mast")
+top_radius = 0.35
+bottom_radius = 0.35
+height = 22
+radial_segments = 10
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_AftSuperstructure_8e3333"]
+material = SubResource("Material_superstructure")
+size = Vector3(16, 5, 14)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_Barbette_6300ba"]
+material = SubResource("Material_turret")
+top_radius = 6.0
+bottom_radius = 6.0
+height = 1.5
+radial_segments = 14
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_Gunhouse_e69d2b"]
+material = SubResource("Material_turret")
+size = Vector3(10, 3.6, 13)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_Barrel1_f25065"]
+material = SubResource("Material_barrel")
+top_radius = 0.38
+bottom_radius = 0.5
+height = 18.0
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_Barrel2_f25065"]
+material = SubResource("Material_barrel")
+top_radius = 0.38
+bottom_radius = 0.5
+height = 18.0
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_Barrel3_f25065"]
+material = SubResource("Material_barrel")
+top_radius = 0.38
+bottom_radius = 0.5
+height = 18.0
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_Barbette_bed316"]
+material = SubResource("Material_turret")
+top_radius = 6.0
+bottom_radius = 6.0
+height = 3.2
+radial_segments = 14
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_Mount_b996dd"]
+material = SubResource("Material_turret")
+size = Vector3(4, 2.4, 5)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_Barrel1_0dfe3b"]
+material = SubResource("Material_barrel")
+top_radius = 0.14
+bottom_radius = 0.14
+height = 5.0
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_Barrel2_0dfe3b"]
+material = SubResource("Material_barrel")
+top_radius = 0.14
+bottom_radius = 0.14
+height = 5.0
+radial_segments = 10
+rings = 1
+
+[node name="Warship" type="Node3D"]
+
+[node name="Hull" type="MeshInstance3D" parent="."]
+script = ExtResource("1_hull")
+half_breadths = PackedVector2Array(130, 9, 110, 12, 60, 13.5, 0, 13.5, -40, 12.5, -65, 9.5, -82, 6, -92, 2.5, -96, 0)
+deck_height = 6.0
+bow_sheer = 4.0
+sheer_start = -30.0
+keel_depth = -4.0
+waterline_tuck = 0.85
+side_material = SubResource("Material_hull")
+deck_material = SubResource("Material_deck")
+
+[node name="Deckhouse" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.7, 0)
+mesh = SubResource("BoxMesh_Deckhouse_6a3fd3")
+cast_shadow = 0
+
+[node name="DeckhouseWindows" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.5, -8.05)
+mesh = SubResource("BoxMesh_DeckhouseWindows_84d7e3")
+cast_shadow = 0
+
+[node name="UpperDeckhouse" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 23)
+mesh = SubResource("BoxMesh_UpperDeckhouse_c64784")
+cast_shadow = 0
+
+[node name="Bridge" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.5, 22)
+mesh = SubResource("BoxMesh_Bridge_6c164f")
+cast_shadow = 0
+
+[node name="Tower" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.5, 30)
+mesh = SubResource("BoxMesh_Tower_ade380")
+cast_shadow = 0
+
+[node name="TowerWindows" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20.5, 26.45)
+mesh = SubResource("BoxMesh_TowerWindows_4e601b")
+cast_shadow = 0
+
+[node name="FireControl" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 23, 30)
+mesh = SubResource("BoxMesh_FireControl_e9217f")
+cast_shadow = 0
+
+[node name="ForeMast" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 31)
+mesh = SubResource("CylinderMesh_ForeMast_2728b3")
+cast_shadow = 0
+
+[node name="ForeYard" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 31.5, 31)
+mesh = SubResource("BoxMesh_ForeYard_ee8058")
+cast_shadow = 0
+
+[node name="ForwardFunnel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.5, 46)
+mesh = SubResource("BoxMesh_ForwardFunnel_630324")
+cast_shadow = 0
+
+[node name="ForwardFunnelMouth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 19.3, 46)
+mesh = SubResource("BoxMesh_ForwardFunnelMouth_786438")
+cast_shadow = 0
+
+[node name="AftFunnel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 64)
+mesh = SubResource("BoxMesh_AftFunnel_ce6cd3")
+cast_shadow = 0
+
+[node name="AftFunnelMouth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.3, 64)
+mesh = SubResource("BoxMesh_AftFunnelMouth_786438")
+cast_shadow = 0
+
+[node name="MainMast" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21, 74)
+mesh = SubResource("CylinderMesh_MainMast_bce019")
+cast_shadow = 0
+
+[node name="AftSuperstructure" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.5, 78)
+mesh = SubResource("BoxMesh_AftSuperstructure_8e3333")
+cast_shadow = 0
+
+[node name="Turret1" type="Node3D" parent="."]
+transform = Transform3D(0.81915, 0, -0.57358, 0, 1, 0, 0.57358, 0, 0.81915, 0, 6.7, -58)
+
+[node name="Barbette" type="MeshInstance3D" parent="Turret1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+mesh = SubResource("CylinderMesh_Barbette_6300ba")
+cast_shadow = 0
+
+[node name="Gunhouse" type="MeshInstance3D" parent="Turret1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3, 1.0)
+mesh = SubResource("BoxMesh_Gunhouse_e69d2b")
+cast_shadow = 0
+
+[node name="Barrel1" type="MeshInstance3D" parent="Turret1"]
+transform = Transform3D(1, 0, 0, 0, 0.13917, 0.99027, 0, -0.99027, 0.13917, -2.4, 4.35256, -14.41241)
+mesh = SubResource("CylinderMesh_Barrel1_f25065")
+cast_shadow = 0
+
+[node name="Barrel2" type="MeshInstance3D" parent="Turret1"]
+transform = Transform3D(1, 0, 0, 0, 0.13917, 0.99027, 0, -0.99027, 0.13917, 0.0, 4.35256, -14.41241)
+mesh = SubResource("CylinderMesh_Barrel2_f25065")
+cast_shadow = 0
+
+[node name="Barrel3" type="MeshInstance3D" parent="Turret1"]
+transform = Transform3D(1, 0, 0, 0, 0.13917, 0.99027, 0, -0.99027, 0.13917, 2.4, 4.35256, -14.41241)
+mesh = SubResource("CylinderMesh_Barrel3_f25065")
+cast_shadow = 0
+
+[node name="Turret2" type="Node3D" parent="."]
+transform = Transform3D(0.84805, 0, -0.52992, 0, 1, 0, 0.52992, 0, 0.84805, 0, 6.0, -36)
+
+[node name="Barbette" type="MeshInstance3D" parent="Turret2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+mesh = SubResource("CylinderMesh_Barbette_bed316")
+cast_shadow = 0
+
+[node name="Gunhouse" type="MeshInstance3D" parent="Turret2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.0, 1.0)
+mesh = SubResource("BoxMesh_Gunhouse_e69d2b")
+cast_shadow = 0
+
+[node name="Barrel1" type="MeshInstance3D" parent="Turret2"]
+transform = Transform3D(1, 0, 0, 0, 0.13917, 0.99027, 0, -0.99027, 0.13917, -2.4, 6.05256, -14.41241)
+mesh = SubResource("CylinderMesh_Barrel1_f25065")
+cast_shadow = 0
+
+[node name="Barrel2" type="MeshInstance3D" parent="Turret2"]
+transform = Transform3D(1, 0, 0, 0, 0.13917, 0.99027, 0, -0.99027, 0.13917, 0.0, 6.05256, -14.41241)
+mesh = SubResource("CylinderMesh_Barrel2_f25065")
+cast_shadow = 0
+
+[node name="Barrel3" type="MeshInstance3D" parent="Turret2"]
+transform = Transform3D(1, 0, 0, 0, 0.13917, 0.99027, 0, -0.99027, 0.13917, 2.4, 6.05256, -14.41241)
+mesh = SubResource("CylinderMesh_Barrel3_f25065")
+cast_shadow = 0
+
+[node name="Turret3" type="Node3D" parent="."]
+transform = Transform3D(-0.90631, 0, 0.42262, 0, 1, 0, -0.42262, 0, -0.90631, 0, 6.0, 100)
+
+[node name="Barbette" type="MeshInstance3D" parent="Turret3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+mesh = SubResource("CylinderMesh_Barbette_6300ba")
+cast_shadow = 0
+
+[node name="Gunhouse" type="MeshInstance3D" parent="Turret3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3, 1.0)
+mesh = SubResource("BoxMesh_Gunhouse_e69d2b")
+cast_shadow = 0
+
+[node name="Barrel1" type="MeshInstance3D" parent="Turret3"]
+transform = Transform3D(1, 0, 0, 0, 0.13917, 0.99027, 0, -0.99027, 0.13917, -2.4, 4.35256, -14.41241)
+mesh = SubResource("CylinderMesh_Barrel1_f25065")
+cast_shadow = 0
+
+[node name="Barrel2" type="MeshInstance3D" parent="Turret3"]
+transform = Transform3D(1, 0, 0, 0, 0.13917, 0.99027, 0, -0.99027, 0.13917, 0.0, 4.35256, -14.41241)
+mesh = SubResource("CylinderMesh_Barrel2_f25065")
+cast_shadow = 0
+
+[node name="Barrel3" type="MeshInstance3D" parent="Turret3"]
+transform = Transform3D(1, 0, 0, 0, 0.13917, 0.99027, 0, -0.99027, 0.13917, 2.4, 4.35256, -14.41241)
+mesh = SubResource("CylinderMesh_Barrel3_f25065")
+cast_shadow = 0
+
+[node name="Secondary1" type="Node3D" parent="."]
+transform = Transform3D(0.5, 0, 0.86603, 0, 1, 0, -0.86603, 0, 0.5, -10, 6.0, 14)
+
+[node name="Mount" type="MeshInstance3D" parent="Secondary1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("BoxMesh_Mount_b996dd")
+cast_shadow = 0
+
+[node name="Barrel1" type="MeshInstance3D" parent="Secondary1"]
+transform = Transform3D(1, 0, 0, 0, 0.08716, 0.99619, 0, -0.99619, 0.08716, -0.7, 1.5, -4.8)
+mesh = SubResource("CylinderMesh_Barrel1_0dfe3b")
+cast_shadow = 0
+
+[node name="Barrel2" type="MeshInstance3D" parent="Secondary1"]
+transform = Transform3D(1, 0, 0, 0, 0.08716, 0.99619, 0, -0.99619, 0.08716, 0.7, 1.5, -4.8)
+mesh = SubResource("CylinderMesh_Barrel2_0dfe3b")
+cast_shadow = 0
+
+[node name="Secondary2" type="Node3D" parent="."]
+transform = Transform3D(0.5, 0, -0.86603, 0, 1, 0, 0.86603, 0, 0.5, 10, 6.0, 14)
+
+[node name="Mount" type="MeshInstance3D" parent="Secondary2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("BoxMesh_Mount_b996dd")
+cast_shadow = 0
+
+[node name="Barrel1" type="MeshInstance3D" parent="Secondary2"]
+transform = Transform3D(1, 0, 0, 0, 0.08716, 0.99619, 0, -0.99619, 0.08716, -0.7, 1.5, -4.8)
+mesh = SubResource("CylinderMesh_Barrel1_0dfe3b")
+cast_shadow = 0
+
+[node name="Barrel2" type="MeshInstance3D" parent="Secondary2"]
+transform = Transform3D(1, 0, 0, 0, 0.08716, 0.99619, 0, -0.99619, 0.08716, 0.7, 1.5, -4.8)
+mesh = SubResource("CylinderMesh_Barrel2_0dfe3b")
+cast_shadow = 0
+
+[node name="Secondary3" type="Node3D" parent="."]
+transform = Transform3D(0.5, 0, 0.86603, 0, 1, 0, -0.86603, 0, 0.5, -10, 6.0, 30)
+
+[node name="Mount" type="MeshInstance3D" parent="Secondary3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("BoxMesh_Mount_b996dd")
+cast_shadow = 0
+
+[node name="Barrel1" type="MeshInstance3D" parent="Secondary3"]
+transform = Transform3D(1, 0, 0, 0, 0.08716, 0.99619, 0, -0.99619, 0.08716, -0.7, 1.5, -4.8)
+mesh = SubResource("CylinderMesh_Barrel1_0dfe3b")
+cast_shadow = 0
+
+[node name="Barrel2" type="MeshInstance3D" parent="Secondary3"]
+transform = Transform3D(1, 0, 0, 0, 0.08716, 0.99619, 0, -0.99619, 0.08716, 0.7, 1.5, -4.8)
+mesh = SubResource("CylinderMesh_Barrel2_0dfe3b")
+cast_shadow = 0
+
+[node name="Secondary4" type="Node3D" parent="."]
+transform = Transform3D(0.5, 0, -0.86603, 0, 1, 0, 0.86603, 0, 0.5, 10, 6.0, 30)
+
+[node name="Mount" type="MeshInstance3D" parent="Secondary4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("BoxMesh_Mount_b996dd")
+cast_shadow = 0
+
+[node name="Barrel1" type="MeshInstance3D" parent="Secondary4"]
+transform = Transform3D(1, 0, 0, 0, 0.08716, 0.99619, 0, -0.99619, 0.08716, -0.7, 1.5, -4.8)
+mesh = SubResource("CylinderMesh_Barrel1_0dfe3b")
+cast_shadow = 0
+
+[node name="Barrel2" type="MeshInstance3D" parent="Secondary4"]
+transform = Transform3D(1, 0, 0, 0, 0.08716, 0.99619, 0, -0.99619, 0.08716, 0.7, 1.5, -4.8)
+mesh = SubResource("CylinderMesh_Barrel2_0dfe3b")
+cast_shadow = 0
+
+[node name="Secondary5" type="Node3D" parent="."]
+transform = Transform3D(0.5, 0, 0.86603, 0, 1, 0, -0.86603, 0, 0.5, -10, 6.0, 46)
+
+[node name="Mount" type="MeshInstance3D" parent="Secondary5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("BoxMesh_Mount_b996dd")
+cast_shadow = 0
+
+[node name="Barrel1" type="MeshInstance3D" parent="Secondary5"]
+transform = Transform3D(1, 0, 0, 0, 0.08716, 0.99619, 0, -0.99619, 0.08716, -0.7, 1.5, -4.8)
+mesh = SubResource("CylinderMesh_Barrel1_0dfe3b")
+cast_shadow = 0
+
+[node name="Barrel2" type="MeshInstance3D" parent="Secondary5"]
+transform = Transform3D(1, 0, 0, 0, 0.08716, 0.99619, 0, -0.99619, 0.08716, 0.7, 1.5, -4.8)
+mesh = SubResource("CylinderMesh_Barrel2_0dfe3b")
+cast_shadow = 0
+
+[node name="Secondary6" type="Node3D" parent="."]
+transform = Transform3D(0.5, 0, -0.86603, 0, 1, 0, 0.86603, 0, 0.5, 10, 6.0, 46)
+
+[node name="Mount" type="MeshInstance3D" parent="Secondary6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("BoxMesh_Mount_b996dd")
+cast_shadow = 0
+
+[node name="Barrel1" type="MeshInstance3D" parent="Secondary6"]
+transform = Transform3D(1, 0, 0, 0, 0.08716, 0.99619, 0, -0.99619, 0.08716, -0.7, 1.5, -4.8)
+mesh = SubResource("CylinderMesh_Barrel1_0dfe3b")
+cast_shadow = 0
+
+[node name="Barrel2" type="MeshInstance3D" parent="Secondary6"]
+transform = Transform3D(1, 0, 0, 0, 0.08716, 0.99619, 0, -0.99619, 0.08716, 0.7, 1.5, -4.8)
+mesh = SubResource("CylinderMesh_Barrel2_0dfe3b")
+cast_shadow = 0
+
+[node name="CiwsPlatform" parent="." instance=ExtResource("2_platform")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17, 0)
+
+[node name="FireSpots" type="Node3D" parent="."]
+
+[node name="Bow" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.8, -86)
+
+[node name="ForecastlePort" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 7.2, -72)
+
+[node name="Turret1Roof" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.9, -58)
+
+[node name="Turret2Roof" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13.0, -36)
+
+[node name="BreakwaterStarboard" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6.3, -26)
+
+[node name="SuperstructurePort" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 12.2, 26)
+
+[node name="SuperstructureStarboard" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 12.2, 32)
+
+[node name="BridgeTop" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15.2, 20)
+
+[node name="TowerTop" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.2, 30)
+
+[node name="FunnelBase" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 12, 46)
+
+[node name="SecondaryPort" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 8.5, 30)
+
+[node name="SecondaryStarboard" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 8.5, 46)
+
+[node name="WaistPort" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 6, 58)
+
+[node name="AftDeck" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11, 78)
+
+[node name="Turret3Roof" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.2, 100)
+
+[node name="Fantail" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 122)

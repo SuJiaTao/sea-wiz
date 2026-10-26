@@ -48,9 +48,12 @@ func _process(_delta: float) -> void:
 	if has_sensor and sensor.fov < 32.0:
 		cull = zoom_near_cull
 	multimesh.visible_instance_count = _projectiles.size()
+	var lead := Engine.get_physics_interpolation_fraction() / Engine.physics_ticks_per_second
 	for index in _projectiles.size():
 		var projectile := _projectiles[index]
-		var instance_transform := inverse * projectile.visual_transform()
+		var world_transform := projectile.visual_transform()
+		world_transform.origin += projectile.velocity * lead
+		var instance_transform := inverse * world_transform
 		var color := projectile.visual_color()
 		if has_sensor and projectile.position.distance_squared_to(
 			sensor.global_position

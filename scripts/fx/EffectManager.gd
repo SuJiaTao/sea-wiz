@@ -1,13 +1,18 @@
 extends Node3D
 class_name EffectManager
 
+signal wreck_hit_ship(position: Vector3, size: float)
+
 @export var sea: Node3D
+@export var hull: HullMesh
 @export var smoke: ParticleBatch
 @export var fireballs: ParticleBatch
 @export var embers: ParticleBatch
 @export var droplets: ParticleBatch
 @export var spray: ParticleBatch
 @export var ripples: ParticleBatch
+@export var flares: ParticleBatch
+@export var flare_smoke: ParticleBatch
 @export var fire_mesh: Mesh
 @export var splash_style: SplashStyle
 @export var max_effects: int = 96
@@ -30,6 +35,16 @@ func splash(at: Vector3, size: float) -> void:
 	spawn(SplashEffect.new(at, size))
 
 
+func countermeasures(released: Array[DecoyFlare]) -> void:
+	spawn(FlareEffect.new(released))
+
+
+func deck_height_at(world_position: Vector3) -> float:
+	if not is_instance_valid(hull):
+		return NAN
+	return hull.deck_height_at(world_position)
+
+
 func sea_level() -> float:
 	return sea.global_position.y
 
@@ -38,7 +53,7 @@ func clear_all() -> void:
 	var snapshot: Array[AbstractEffect] = _effects.duplicate()
 	for effect in snapshot:
 		_retire(effect)
-	for batch in [smoke, fireballs, embers, droplets, spray, ripples]:
+	for batch in [smoke, fireballs, embers, droplets, spray, ripples, flares, flare_smoke]:
 		batch.clear_all()
 
 

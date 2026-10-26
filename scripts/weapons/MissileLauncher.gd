@@ -8,11 +8,12 @@ signal detonated(position: Vector3, radius: float)
 
 const CAPACITY: int = 8
 const REARM_TIME: float = 9.0
-const LOCK_TIME: float = 2.45
+const LOCK_TIME := Vector2(0.8, 1.3)
+const NO_TARGET_REASON := "NO TARGET"
+const GUN_TARGET_REASON := "GUNS ONLY"
 const LOCK_CONE_DEG: float = 3.2
 const MIN_RANGE: float = 130.0
 const MAX_RANGE: float = 2800.0
-const LOCK_ZOOM_FOV: float = 38.0
 const REFIRE_TIME: float = 0.55
 
 @export var turret: Turret
@@ -31,6 +32,7 @@ var trigger_held: bool = false
 var _enabled: bool = true
 var _rearm_elapsed: float = 0.0
 var _refire_remaining: float = 0.0
+var _lock_duration: float = LOCK_TIME.y
 
 
 func _ready() -> void:
@@ -78,16 +80,13 @@ func _run_lock(delta: float) -> void:
 	if missiles <= 0:
 		_clear_lock("NO MISSILES")
 		return
-	if turret.camera.fov > LOCK_ZOOM_FOV:
-		_clear_lock("ZOOM TO LOCK")
-		return
 	if _refire_remaining > 0.0:
 		_clear_lock()
 		return
 
 	var candidate := _best_candidate()
 	if candidate == null:
-		lock_denied_reason = "NO TARGET"
+		lock_denied_reason = GUN_TARGET_REASON if _missile_in_cone() else NO_TARGET_REASON
 		lock_progress = maxf(lock_progress - delta * 2.5, 0.0)
 		if lock_progress <= 0.0 or not is_instance_valid(lock_target):
 			lock_target = null
@@ -97,8 +96,9 @@ func _run_lock(delta: float) -> void:
 	if candidate != lock_target:
 		lock_target = candidate
 		lock_progress = 0.0
+		_lock_duration = randf_range(LOCK_TIME.x, LOCK_TIME.y)
 
-	lock_progress = minf(lock_progress + delta / LOCK_TIME, 1.0)
+	lock_progress = minf(lock_progress + delta / _lock_duration, 1.0)
 	if lock_progress >= 1.0:
 		if try_launch(lock_target):
 			_clear_lock()
@@ -120,6 +120,8 @@ func _best_candidate() -> AbstractEnemy:
 	var best_angle := LOCK_CONE_DEG
 
 	for enemy in enemies.live_enemies():
+		if enemy.contact_kind == AbstractEnemy.ContactKind.MISSILE:
+			continue
 		var offset := enemy.global_position - origin
 		var distance := offset.length()
 		if distance < MIN_RANGE or distance > MAX_RANGE:
@@ -131,6 +133,18 @@ func _best_candidate() -> AbstractEnemy:
 			best_angle = angle
 			best = enemy
 	return best
+
+
+func _missile_in_cone() -> bool:
+	var forward := -turret.muzzle.global_basis.z
+	var origin := turret.camera.global_position
+	for enemy in enemies.live_enemies():
+		if enemy.contact_kind != AbstractEnemy.ContactKind.MISSILE:
+			continue
+		var direction := (enemy.global_position - origin).normalized()
+		if rad_to_deg(forward.angle_to(direction)) < LOCK_CONE_DEG:
+			return true
+	return false
 
 
 func try_launch(target: AbstractEnemy) -> bool:
