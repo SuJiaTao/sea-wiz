@@ -1,6 +1,8 @@
 extends Node
 class_name GameSession
 
+static var _singleton : GameSession
+
 enum State { TITLE, STARTING, RUNNING, WON, LOST }
 
 const HULL_MAX: float = 100.0
@@ -20,6 +22,8 @@ var _title_time: float = 0.0
 
 
 func _ready() -> void:
+	if not _singleton:
+		_singleton = self
 	enemies.enemy_created.connect(_on_enemy_created)
 	enemies.enemy_killed.connect(_on_enemy_killed)
 	waves.completed.connect(_on_completed)
@@ -115,7 +119,7 @@ func _on_target_reached(damage: float) -> void:
 		return
 	hull = maxf(hull - maxf(damage, 0.0), 0.0)
 	hud.set_health(hull, HULL_MAX)
-	turret.add_impulse(5.0)
+	turret.apply_camera_shake_impulse(5.0)
 	if hull <= 0.0:
 		_finish(State.LOST, "DEFENCE LOST")
 
@@ -154,3 +158,6 @@ func _restart() -> void:
 	var error := get_tree().reload_current_scene()
 	if error != OK:
 		push_error("Could not reload the gameplay scene.")
+
+static func is_state(state2: State) -> bool:
+	return _singleton.state == state2
