@@ -1,4 +1,4 @@
-class_name UpgradeButton
+class_name DemoUpgradeButton
 extends Button
 
 var upgrade : Upgrade

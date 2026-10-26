@@ -14,12 +14,12 @@ func _ready() -> void:
 func restock() -> void:
 	var new_upgrades : Array[Upgrade] = provider.get_new_upgrades(upgrade_count)
 	for upgrade in new_upgrades:
-		var button = UpgradeButton.new(upgrade)
+		var button = DemoUpgradeButton.new(upgrade)
 		button.pressed.connect(process_button, ConnectFlags.CONNECT_APPEND_SOURCE_OBJECT)
 		inactive_upgrades_dock.add_child(button)
 
 
-func set_active(button: UpgradeButton) -> void:
+func set_active(button: DemoUpgradeButton) -> void:
 	button.active = true
 	button.process_upgrade()
 	if button.upgrade.can_accumulate_still():
@@ -31,7 +31,7 @@ func set_active(button: UpgradeButton) -> void:
 	
 	
 
-func set_inactive(button: UpgradeButton) -> void:
+func set_inactive(button: DemoUpgradeButton) -> void:
 	button.active = false
 	button.process_upgrade()
 	if button.upgrade.accumulation > 0:
@@ -42,7 +42,7 @@ func set_inactive(button: UpgradeButton) -> void:
 	inactive_upgrades_dock.add_child(button)
 
 
-func process_button(button: UpgradeButton) -> void:
+func process_button(button: DemoUpgradeButton) -> void:
 	if button.active:
 		set_inactive(button)
 	else:
