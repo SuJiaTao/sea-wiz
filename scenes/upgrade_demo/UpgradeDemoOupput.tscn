@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://bu05gjgndg4ra"]
+
+[ext_resource type="Texture2D" uid="uid://btot3ckhon4hq" path="res://icon.svg" id="1_dn22l"]
+
+[node name="Output" type="TextureRect" unique_id=612951646]
+offset_right = 128.0
+offset_bottom = 128.0
+texture = ExtResource("1_dn22l")
+
+[node name="Upgrade Manager" type="Node" parent="." unique_id=1284262593]

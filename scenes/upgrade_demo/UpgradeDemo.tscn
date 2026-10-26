@@ -1,0 +1,88 @@
+[gd_scene format=3 uid="uid://b6t7bnslh26t3"]
+
+[ext_resource type="Script" path="res://scripts/upgrade_system/upgrade_demo.gd" id="1_vrp7i"]
+[ext_resource type="PackedScene" uid="uid://bu05gjgndg4ra" path="res://scenes/upgrade_demo/UpgradeDemoOupput.tscn" id="2_r7ssf"]
+[ext_resource type="Script" path="res://scenes/upgrade_demo/logic.gd" id="3_qhmm7"]
+[ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="4_r7ssf"]
+[ext_resource type="Script" uid="uid://dpxiiuueoo0tt" path="res://scripts/upgrade_system/upgrades/TestUpgrade.gd" id="5_dj5qx"]
+[ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/UpgradeProvider.gd" id="6_8x6yk"]
+
+[sub_resource type="Resource" id="Resource_qhmm7"]
+script = ExtResource("5_dj5qx")
+label = "test"
+metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+
+[sub_resource type="Resource" id="Resource_xepq7"]
+script = ExtResource("6_8x6yk")
+_upgrades = Array[ExtResource("4_r7ssf")]([SubResource("Resource_qhmm7")])
+metadata/_custom_type_script = "uid://d17mvn7phxhv1"
+
+[node name="UgradeDemo" type="Control" unique_id=1726539843]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vrp7i")
+metadata/_edit_use_anchors_ = true
+
+[node name="Background" type="ColorRect" parent="." unique_id=1880610318]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_transform_enabled = true
+offset_transform_scale = Vector2(1.01, 1.01)
+color = Color(0.5999427, 0.76730555, 0.83616793, 1)
+
+[node name="Label" type="Label" parent="." unique_id=2086396307]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 231.5
+offset_top = 236.0
+offset_right = 296.5
+offset_bottom = 259.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "OUTPUT"
+
+[node name="Output" parent="." unique_id=612951646 instance=ExtResource("2_r7ssf")]
+layout_mode = 0
+offset_left = 841.0
+offset_top = 275.0
+offset_right = 969.0
+offset_bottom = 403.0
+
+[node name="Upgrade Dock" type="VBoxContainer" parent="." unique_id=766761850]
+custom_minimum_size = Vector2(100, 100)
+propagate_maximum_size = false
+layout_mode = 0
+offset_left = 108.0
+offset_top = 79.0
+offset_right = 148.0
+offset_bottom = 119.0
+
+[node name="Active Upgrades Dock" type="HBoxContainer" parent="." unique_id=218999378]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 104.0
+offset_top = -208.0
+offset_right = 144.0
+offset_bottom = -167.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Logic" type="Node" parent="." unique_id=1845921226 node_paths=PackedStringArray("inactive_upgrades_dock", "active_upgrades_dock")]
+script = ExtResource("3_qhmm7")
+inactive_upgrades_dock = NodePath("../Upgrade Dock")
+active_upgrades_dock = NodePath("../Active Upgrades Dock")
+provider = SubResource("Resource_xepq7")
