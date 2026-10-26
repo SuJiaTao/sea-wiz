@@ -20,7 +20,7 @@ func can_accumulate_still() -> bool:
 	return not (accumulation == max_acummulation)
 
 func check_preconditions() -> bool:
-	return true
+	return can_accumulate_still()
 
 ## Returns true if successfully applied
 func apply_upgrade() -> bool:
@@ -30,6 +30,7 @@ func apply_upgrade() -> bool:
 		upgrade_target.add_upgrade(self)
 		return true
 	return false
+
 
 func remove_upgrade() -> void:
 	_remove()
