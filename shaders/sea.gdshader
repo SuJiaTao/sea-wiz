@@ -17,6 +17,16 @@ uniform float glitter_sharpness : hint_range(1.0, 400.0) = 120.0;
 uniform float ripple_scale = 0.35;
 uniform float ripple_slope : hint_range(0.0, 1.0) = 0.22;
 uniform float ripple_speed = 0.6;
+uniform float roughness : hint_range(0.0, 1.0) = 0.0;
+uniform float swell_wavelength = 140.0;
+uniform float swell_speed = 9.0;
+uniform float swell_level : hint_range(0.0, 0.3) = 0.04;
+uniform float whitecap_level : hint_range(0.0, 1.0) = 0.16;
+uniform float foam_scale = 0.22;
+uniform float storm_falloff = 1600.0;
+uniform float storm_slope = 2.5;
+uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
+uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
 
 const float DISPLAY_GAMMA = 2.2;
 
@@ -57,9 +67,24 @@ float moon_glitter(vec3 view_ray) {
 	float centre = ripples(p);
 	float dx = ripples(p + vec2(SLOPE_STEP, 0.0)) - centre;
 	float dz = ripples(p + vec2(0.0, SLOPE_STEP)) - centre;
-	vec3 normal = normalize(vec3(-dx * ripple_slope / SLOPE_STEP, 1.0, -dz * ripple_slope / SLOPE_STEP));
+	float slope = ripple_slope * (1.0 + roughness * storm_slope);
+	vec3 normal = normalize(vec3(-dx * slope / SLOPE_STEP, 1.0, -dz * slope / SLOPE_STEP));
 	float facing = max(dot(reflect(view_ray, normal), moon_direction()), 0.0);
 	return pow(facing, glitter_sharpness) * glitter;
+}
+
+float swell(vec2 xz, vec2 heading, float wavelength) {
+	return 0.5 + 0.5 * sin((dot(xz, heading) - TIME * swell_speed) * TAU / wavelength);
+}
+
+float rough_water(vec2 xz) {
+	float waves = swell(xz, vec2(0.8, 0.6), swell_wavelength) * 0.6
+		+ swell(xz, vec2(-0.5, 0.87), swell_wavelength * 0.62) * 0.4;
+	float foam = value_noise(xz * foam_scale + vec2(TIME * 0.3, 0.0))
+		* value_noise(xz * foam_scale * 2.4 - vec2(0.0, TIME * 0.2));
+	float crest = smoothstep(0.7, 0.95, waves) * smoothstep(0.3, 0.55, foam);
+	float fade = clamp(1.0 - length(xz) / storm_falloff, 0.0, 1.0);
+	return ((waves - 0.5) * swell_level + crest * whitecap_level) * fade;
 }
 
 void vertex() {
@@ -78,5 +103,7 @@ void fragment() {
 
 	float v = base_level + n * clutter_level * fade;
 	v += moon_glitter(normalize(world_pos - CAMERA_POSITION_WORLD));
+	v += roughness * rough_water(world_pos.xz);
+	v = max(v, 0.0) + lightning_flash * lightning_reflection;
 	ALBEDO = vec3(pow(v, DISPLAY_GAMMA));
 }

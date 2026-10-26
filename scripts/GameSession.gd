@@ -130,6 +130,8 @@ func _on_enemy_damaged(_amount: float, point: Vector3) -> void:
 
 func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: DamageSource) -> void:
 	fx.explosion(enemy.global_position, 6.0)
+	if enemy.blast_size > 0.0:
+		effects.spawn(BigExplosionEffect.new(enemy.global_position, enemy.blast_size))
 	if enemy.leaves_wreck:
 		effects.spawn(ShootDownEffect.new(
 			enemy.global_position, enemy.velocity, enemy.hud_radius, enemy.detach_visuals()
@@ -142,8 +144,15 @@ func _on_target_reached(damage: float, enemy: AbstractEnemy) -> void:
 	if state != State.RUNNING:
 		return
 	integrity.take_hit(damage, enemy.global_position)
+	if enemy.blast_size > 0.0:
+		effects.spawn(BigExplosionEffect.new(_on_ship(enemy.global_position), enemy.blast_size))
 	turret.add_impulse(HIT_IMPULSE)
 	thermal.heat_burst(HIT_FLASH)
+
+
+func _on_ship(above: Vector3) -> Vector3:
+	var deck := effects.deck_height_at(above)
+	return Vector3(above.x, effects.sea_level() if is_nan(deck) else deck, above.z)
 
 
 func _on_wreck_hit_ship(position: Vector3, size: float) -> void:

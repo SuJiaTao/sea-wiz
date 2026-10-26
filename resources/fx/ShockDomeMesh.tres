@@ -1,0 +1,14 @@
+[gd_resource type="SphereMesh" load_steps=3 format=3]
+
+[ext_resource type="Shader" path="res://shaders/shock_dome.gdshader" id="1_shader"]
+
+[sub_resource type="ShaderMaterial" id="Material_dome"]
+render_priority = 0
+shader = ExtResource("1_shader")
+
+[resource]
+material = SubResource("Material_dome")
+radius = 1.0
+height = 2.0
+radial_segments = 24
+rings = 12

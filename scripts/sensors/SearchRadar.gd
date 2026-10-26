@@ -18,6 +18,7 @@ const SIZE_ERROR := 0.15
 @export var angle_error_deg: float = 0.5
 
 var sweep_angle: float = 0.0
+var clutter: float = 0.0
 
 
 func _physics_process(delta: float) -> void:
@@ -48,7 +49,7 @@ func _swept(from: float, to: float, bearing: float) -> bool:
 func _chance(distance: float, size: float) -> float:
 	var reach := 1.0 - pow(distance / max_range, DETECTION_FALLOFF_POWER)
 	var size_factor := clampf(size / REFERENCE_SIZE, MIN_SIZE_FACTOR, 1.0)
-	return detection_chance * reach * size_factor
+	return detection_chance * reach * size_factor * (1.0 - clutter)
 
 
 func _measure(offset: Vector3, distance: float, size: float) -> RadarDetection:

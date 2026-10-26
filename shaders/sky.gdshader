@@ -22,6 +22,19 @@ uniform float moon_glow : hint_range(0.0, 2.0) = 0.35;
 uniform float moon_glow_width_deg : hint_range(0.1, 30.0) = 3.0;
 uniform float moon_halo : hint_range(0.0, 1.0) = 0.1;
 uniform float moon_halo_width_deg : hint_range(1.0, 90.0) = 20.0;
+uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
+uniform vec3 lightning_direction = vec3(0.0, 0.3, -1.0);
+uniform float lightning_spread_deg : hint_range(1.0, 90.0) = 25.0;
+uniform float lightning_ambient : hint_range(0.0, 1.0) = 0.25;
+uniform float aurora : hint_range(0.0, 1.0) = 0.0;
+uniform float aurora_bearing_deg : hint_range(0.0, 360.0) = 345.0;
+uniform float aurora_width_deg : hint_range(10.0, 180.0) = 75.0;
+uniform float aurora_base_deg : hint_range(0.0, 45.0) = 10.0;
+uniform float aurora_height = 0.28;
+uniform vec3 aurora_low : source_color = vec3(0.25, 1.0, 0.5);
+uniform vec3 aurora_high : source_color = vec3(0.75, 0.3, 1.0);
+uniform float aurora_brightness : hint_range(0.0, 2.0) = 0.32;
+uniform float aurora_speed = 0.05;
 
 const float HALF_PI = 1.5707963;
 const float EDGE_SOFTNESS = 0.08;
@@ -58,6 +71,31 @@ vec3 moon_direction() {
 	return vec3(sin(bearing) * cos(elevation), sin(elevation), -cos(bearing) * cos(elevation));
 }
 
+float wrap_degrees(float value) {
+	return mod(value + 180.0, 360.0) - 180.0;
+}
+
+// Curtains: a wavy lower edge, light fading upward, vertical rays and slow folds.
+vec3 aurora_light(vec3 direction) {
+	if (direction.y <= 0.0) {
+		return vec3(0.0);
+	}
+	float azimuth = atan(direction.x, -direction.z);
+	float elevation = asin(direction.y);
+	float off_axis = wrap_degrees(degrees(azimuth) - aurora_bearing_deg) / aurora_width_deg;
+	float band = exp(-off_axis * off_axis);
+	float drift = TIME * aurora_speed;
+	float edge = radians(aurora_base_deg)
+		+ 0.03 * sin(azimuth * 5.0 + drift * 7.0)
+		+ 0.015 * sin(azimuth * 17.0 - drift * 13.0);
+	float rise = elevation - edge;
+	float curtain = smoothstep(-0.01, 0.07, rise) * exp(-max(rise, 0.0) / aurora_height);
+	float rays = pow(value_noise(vec2(azimuth * 60.0 + drift * 25.0, rise * 1.5)), 1.5);
+	float folds = 0.55 + 0.45 * sin(azimuth * 11.0 + drift * 4.0 + 3.0 * value_noise(vec2(azimuth * 3.0, drift)));
+	vec3 tint = mix(aurora_low, aurora_high, smoothstep(0.05, 0.45, rise));
+	return tint * band * curtain * rays * folds * aurora_brightness;
+}
+
 void sky() {
 	vec3 colour = atmosphere(EYEDIR);
 
@@ -82,5 +120,8 @@ void sky() {
 		float coverage = 1.0 - smoothstep(1.0 - EDGE_SOFTNESS, 1.0 + EDGE_SOFTNESS, from_centre);
 		colour = mix(colour, moon, coverage);
 	}
+	float off_bolt = degrees(acos(clamp(dot(EYEDIR, normalize(lightning_direction)), -1.0, 1.0)));
+	colour += lightning_flash * (lightning_ambient + exp(-off_bolt / lightning_spread_deg));
+	colour += aurora * aurora_light(EYEDIR);
 	COLOR = colour;
 }
