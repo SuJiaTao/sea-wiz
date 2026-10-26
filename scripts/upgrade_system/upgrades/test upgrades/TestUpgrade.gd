@@ -1,7 +1,7 @@
 class_name TestUpgrade
 extends Upgrade
 
-var target : DemoUpgradeTarget = load("res://scripts/upgrade_system/recievers/resources/demo-upgrade_target.tres")
+var target : DemoUpgradeTarget = load("res://scripts/upgrade_system/recievers/resources/DemoUpgradeTarget.tres")
 
 func _apply() -> void:
 	pass
