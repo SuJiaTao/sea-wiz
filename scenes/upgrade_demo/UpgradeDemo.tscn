@@ -3,7 +3,42 @@
 [ext_resource type="PackedScene" uid="uid://bu05gjgndg4ra" path="res://scenes/upgrade_demo/UpgradeDemoOupput.tscn" id="2_r7ssf"]
 [ext_resource type="Script" uid="uid://bi3eis2i528gj" path="res://scripts/upgrade_system/upgrade_demo/DemoUpgradeDock.gd" id="2_voa4p"]
 [ext_resource type="Script" uid="uid://bre545b7yjpw5" path="res://scripts/upgrade_system/upgrade_demo/UpgradeDemoLogic.gd" id="2_yvucc"]
+[ext_resource type="Script" uid="uid://ce85p78y8ipn8" path="res://scenes/upgrade_demo/h_slider.gd" id="3_8x6yk"]
 [ext_resource type="Resource" uid="uid://3lh0rwsjj3fq" path="res://scripts/upgrade_system/providers/resources/test-provider.tres" id="4_qhmm7"]
+[ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="5_dj5qx"]
+[ext_resource type="Script" uid="uid://dq66xy3038ak5" path="res://scripts/upgrade_system/upgrades/test upgrades/blank_upgrade.gd" id="6_8x6yk"]
+[ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/providers/UpgradeProvider.gd" id="7_voa4p"]
+
+[sub_resource type="Resource" id="Resource_8u7uy"]
+script = ExtResource("6_8x6yk")
+label = "Common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_dj5qx"]
+script = ExtResource("6_8x6yk")
+label = "Common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_8x6yk"]
+script = ExtResource("6_8x6yk")
+label = "Common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_voa4p"]
+script = ExtResource("6_8x6yk")
+label = "Common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_bwmui"]
+script = ExtResource("6_8x6yk")
+label = "Rare"
+weight = 0.1
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_qhmm7"]
+script = ExtResource("7_voa4p")
+_upgrades = Array[ExtResource("5_dj5qx")]([SubResource("Resource_8u7uy"), SubResource("Resource_dj5qx"), SubResource("Resource_8x6yk"), SubResource("Resource_voa4p"), SubResource("Resource_bwmui")])
+metadata/_custom_type_script = "uid://d17mvn7phxhv1"
 
 [node name="UgradeDemo" type="Control" unique_id=1726539843]
 layout_mode = 3
@@ -50,18 +85,18 @@ custom_minimum_size = Vector2(100, 100)
 propagate_maximum_size = false
 layout_mode = 0
 offset_left = 108.0
-offset_top = 79.0
-offset_right = 148.0
-offset_bottom = 119.0
+offset_top = 121.0
+offset_right = 208.0
+offset_bottom = 221.0
 script = ExtResource("2_voa4p")
 
 [node name="Next Upgade Dock" type="VBoxContainer" parent="." unique_id=1981895004]
 modulate = Color(1, 0.3113789, 0.33715135, 1)
 layout_mode = 0
 offset_left = 269.0
-offset_top = 79.0
+offset_top = 132.0
 offset_right = 369.0
-offset_bottom = 187.0
+offset_bottom = 240.0
 script = ExtResource("2_voa4p")
 disabled = true
 
@@ -81,10 +116,73 @@ grow_vertical = 0
 alignment = 2
 script = ExtResource("2_voa4p")
 
-[node name="Logic" type="Node" parent="." unique_id=1845921226 node_paths=PackedStringArray("inactive_upgrades_dock", "active_upgrades_dock", "unavailable_upgrades_dock")]
+[node name="Button" type="Button" parent="." unique_id=1796312839]
+layout_mode = 0
+offset_left = 54.0
+offset_top = 34.0
+offset_right = 156.0
+offset_bottom = 75.0
+disabled = true
+text = "setA"
+
+[node name="Button2" type="Button" parent="." unique_id=929486882]
+layout_mode = 0
+offset_left = 171.0
+offset_top = 34.0
+offset_right = 273.0
+offset_bottom = 75.0
+text = "setB"
+
+[node name="HSlider" type="HSlider" parent="." unique_id=36381592 node_paths=PackedStringArray("value_label")]
+visible = false
+layout_mode = 0
+offset_left = 300.0
+offset_top = 50.0
+offset_right = 492.0
+offset_bottom = 66.0
+max_value = 10.0
+rounded = true
+script = ExtResource("3_8x6yk")
+value_label = NodePath("Label2")
+
+[node name="Label" type="Label" parent="HSlider" unique_id=1804575556]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -115.0
+offset_top = -34.0
+offset_right = -68.0
+offset_bottom = -11.0
+grow_horizontal = 0
+grow_vertical = 2
+text = "Count"
+
+[node name="Label2" type="Label" parent="HSlider" unique_id=1072006585]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 21.0
+offset_top = -11.5
+offset_right = 61.0
+offset_bottom = 11.5
+grow_horizontal = 0
+grow_vertical = 2
+text = "0"
+
+[node name="Logic" type="Node" parent="." unique_id=1845921226 node_paths=PackedStringArray("buttonA", "buttonB", "sliderB", "inactive_upgrades_dock", "active_upgrades_dock", "unavailable_upgrades_dock")]
 script = ExtResource("2_yvucc")
+buttonA = NodePath("../Button")
+buttonB = NodePath("../Button2")
+sliderB = NodePath("../HSlider")
 inactive_upgrades_dock = NodePath("../Upgrade Dock")
 active_upgrades_dock = NodePath("../Active Upgrades Dock")
 unavailable_upgrades_dock = NodePath("../Next Upgade Dock")
-provider = ExtResource("4_qhmm7")
-upgrade_count = 44
+providerA = ExtResource("4_qhmm7")
+providerB = SubResource("Resource_qhmm7")
+slots = 44

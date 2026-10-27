@@ -38,17 +38,17 @@ func _process_upgrade_array(new_pool: Array[Upgrade], count: int) -> Array[Upgra
 	return new_pool
 
 
-## Pool of upgrades is reset when called
 func get_new_upgrades(count: int)  -> Array[Upgrade]:
 	var new_pool = _get_pool()
 	return _process_upgrade_array(new_pool, count)
 
 
-## Pool of upgrades is reset when called
 func get_new_upgrades_of_category(count: int, category: String) -> Array[Upgrade]:
 	var filtered : Array[Upgrade] = _get_pool()
 	filtered = filtered.filter(func(u: Upgrade): return (u.category == category))
 	return _process_upgrade_array(filtered, count)
 
 
+func get_new_upgrades_weighted(count: int) -> Array[Upgrade]:
+	return []
 

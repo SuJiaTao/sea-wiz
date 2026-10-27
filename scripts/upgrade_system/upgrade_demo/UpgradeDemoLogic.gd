@@ -1,15 +1,42 @@
 extends Node
 
+@export var buttonA : Button
+@export var buttonB : Button
+@export var sliderB : Slider
+
 @export var inactive_upgrades_dock : DemoUpgradeDock
 @export var active_upgrades_dock : DemoUpgradeDock
 @export var unavailable_upgrades_dock : DemoUpgradeDock
 
-@export var provider : UpgradeProvider
-@export var upgrade_count : int = 4
+@export var providerA : UpgradeProvider
+@export var providerB : UpgradeProvider
+var provider : UpgradeProvider
+@export var slots : int = 4
 
 
 func _ready() -> void:
+	provider = providerA
 	provider.build_trees()
+	restock()
+	sliderB.value = 3
+	sliderB.drag_ended.connect(restock.unbind(1))
+	buttonA.pressed.connect(switch_to_A)
+	buttonB.pressed.connect(switch_to_B)
+
+
+func switch_to_A() -> void:
+	buttonA.disabled = true
+	buttonB.disabled = false
+	sliderB.hide()
+	provider = providerA
+	restock()
+
+
+func switch_to_B() -> void:
+	buttonB.disabled = true
+	buttonA.disabled = false
+	sliderB.show()
+	provider = providerB
 	restock()
 
 
@@ -20,7 +47,12 @@ func reset() -> void:
 
 func restock() -> void:
 	reset()
-	var new_upgrades : Array[Upgrade] = provider.get_new_upgrades(upgrade_count)
+	var new_upgrades : Array[Upgrade]
+	if buttonA.disabled:
+		new_upgrades = provider.get_new_upgrades(slots)
+	else:
+		new_upgrades = provider.get_new_upgrades(sliderB.value as int)
+
 	for upgrade in new_upgrades:
 		inactive_upgrades_dock.dock(upgrade, false)
 		if not upgrade.applied.is_connected(set_active):

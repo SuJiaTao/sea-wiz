@@ -33,7 +33,8 @@ func apply_upgrade() -> bool:
 	if (check_preconditions() and can_accumulate_still()) :
 		_apply()
 		accumulation += 1
-		upgrade_target.add_upgrade(self)
+		if upgrade_target:
+			upgrade_target.add_upgrade(self)
 		applied.emit()
 		return true
 	return false
@@ -42,7 +43,8 @@ func apply_upgrade() -> bool:
 func strip_upgrade() -> void:
 	_strip()
 	accumulation -= 1
-	upgrade_target.remove_upgrade(self)
+	if upgrade_target:
+		upgrade_target.remove_upgrade(self)
 	stripped.emit()
 
 
