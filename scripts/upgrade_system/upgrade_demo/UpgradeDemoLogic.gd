@@ -1,16 +1,16 @@
 extends Node
 
-@export var buttonA : Button
-@export var buttonB : Button
+@export var button_a : Button
+@export var button_b : Button
 @export var refresh_button : Button
-@export var sliderB : Slider
+@export var slider_b : Slider
 
 @export var inactive_upgrades_dock : DemoUpgradeDock
 @export var active_upgrades_dock : DemoUpgradeDock
 @export var unavailable_upgrades_dock : DemoUpgradeDock
 
-@export var providerA : UpgradeProvider
-@export var providerB : UpgradeProvider
+@export var provider_a : UpgradeProvider
+@export var provider_b : UpgradeProvider
 var provider : UpgradeProvider
 @export var slots : int = 4
 
@@ -19,9 +19,9 @@ var provider : UpgradeProvider
 
 func _ready() -> void:
 	connect_signals()
-	provider = providerA
+	provider = provider_a
 	provider.build_trees()
-	sliderB.value = slots
+	slider_b.value = slots
 	category_drop_down.add_item("NONE")
 	for c in categories:
 		category_drop_down.add_item(c)
@@ -29,24 +29,24 @@ func _ready() -> void:
 
 
 func connect_signals() -> void:
-	sliderB.drag_ended.connect(restock.unbind(1))
-	buttonA.pressed.connect(switch_to_A)
-	buttonB.pressed.connect(switch_to_B)
+	slider_b.drag_ended.connect(restock.unbind(1))
+	button_a.pressed.connect(switch_to_b)
+	button_b.pressed.connect(switch_to_a)
 	refresh_button.pressed.connect(restock)
 	category_drop_down.item_selected.connect(restock.unbind(1))
 
 
-func switch_to_A() -> void:
-	buttonA.disabled = true
-	buttonB.disabled = false
-	provider = providerA
+func switch_to_b() -> void:
+	button_a.disabled = true
+	button_b.disabled = false
+	provider = provider_a
 	restock()
 
 
-func switch_to_B() -> void:
-	buttonB.disabled = true
-	buttonA.disabled = false
-	provider = providerB
+func switch_to_a() -> void:
+	button_b.disabled = true
+	button_a.disabled = false
+	provider = provider_b
 	restock()
 
 
@@ -58,14 +58,14 @@ func reset() -> void:
 func restock() -> void:
 	reset()
 	var new_upgrades : Array[Upgrade]
-	if buttonA.disabled:
+	if button_a.disabled:
 		var filter : String = category_drop_down.get_item_text(category_drop_down.get_selected_id())
 		if filter == "NONE":
-			new_upgrades = provider.get_new_upgrades(sliderB.value as int)
+			new_upgrades = provider.get_new_upgrades(slider_b.value as int)
 		else:
-			new_upgrades = provider.get_new_upgrades_of_category(sliderB.value as int, filter)
+			new_upgrades = provider.get_new_upgrades_of_category(slider_b.value as int, filter)
 	else:
-		new_upgrades = provider.get_new_upgrades_weighted(sliderB.value as int)
+		new_upgrades = provider.get_new_upgrades_weighted(slider_b.value as int)
 
 	for upgrade in new_upgrades:
 		inactive_upgrades_dock.dock(upgrade, false)

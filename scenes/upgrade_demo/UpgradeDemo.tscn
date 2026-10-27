@@ -3,58 +3,83 @@
 [ext_resource type="PackedScene" uid="uid://bu05gjgndg4ra" path="res://scenes/upgrade_demo/UpgradeDemoOutput.tscn" id="2_r7ssf"]
 [ext_resource type="Script" uid="uid://bi3eis2i528gj" path="res://scripts/upgrade_system/upgrade_demo/DemoUpgradeDock.gd" id="2_voa4p"]
 [ext_resource type="Script" uid="uid://bre545b7yjpw5" path="res://scripts/upgrade_system/upgrade_demo/UpgradeDemoLogic.gd" id="2_yvucc"]
-[ext_resource type="Script" uid="uid://ce85p78y8ipn8" path="res://scenes/upgrade_demo/h_slider.gd" id="3_8x6yk"]
+[ext_resource type="Script" uid="uid://ce85p78y8ipn8" path="res://scripts/upgrade_system/upgrade_demo/DemoSlider.gd" id="3_8x6yk"]
 [ext_resource type="Resource" uid="uid://3lh0rwsjj3fq" path="res://scripts/upgrade_system/providers/resources/test-provider.tres" id="4_qhmm7"]
 [ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="5_dj5qx"]
 [ext_resource type="Script" uid="uid://dq66xy3038ak5" path="res://scripts/upgrade_system/upgrades/test upgrades/blank_upgrade.gd" id="6_8x6yk"]
 [ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/providers/UpgradeProvider.gd" id="7_voa4p"]
 
+[sub_resource type="Resource" id="Resource_bwmui"]
+script = ExtResource("6_8x6yk")
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_e4qvq"]
+script = ExtResource("6_8x6yk")
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
 [sub_resource type="Resource" id="Resource_odhqt"]
 script = ExtResource("6_8x6yk")
-label = "Common"
+label = "common"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"
 
 [sub_resource type="Resource" id="Resource_dxeu7"]
 script = ExtResource("6_8x6yk")
-label = "Common"
+label = "common"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"
 
 [sub_resource type="Resource" id="Resource_unwtq"]
 script = ExtResource("6_8x6yk")
-label = "Common"
-metadata/_custom_type_script = "uid://dq66xy3038ak5"
-
-[sub_resource type="Resource" id="Resource_uae3i"]
-script = ExtResource("6_8x6yk")
-label = "Common"
+label = "common"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"
 
 [sub_resource type="Resource" id="Resource_0ll24"]
 script = ExtResource("6_8x6yk")
-label = "Common"
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_uae3i"]
+script = ExtResource("6_8x6yk")
+label = "common"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"
 
 [sub_resource type="Resource" id="Resource_bfqvu"]
 script = ExtResource("6_8x6yk")
-label = "Rare!"
-weight = 0.2
+label = "common"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"
 
 [sub_resource type="Resource" id="Resource_o10cv"]
 script = ExtResource("6_8x6yk")
-label = "Rare!"
-weight = 0.2
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_gtgxy"]
+script = ExtResource("6_8x6yk")
+label = "common"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"
 
 [sub_resource type="Resource" id="Resource_tgytc"]
 script = ExtResource("6_8x6yk")
-label = "Super Rare!!"
-weight = 0.05
+label = "Rare!"
+weight = 0.4
 metadata/_custom_type_script = "uid://dq66xy3038ak5"
 
-[sub_resource type="Resource" id="Resource_e4qvq"]
+[sub_resource type="Resource" id="Resource_evdh7"]
+script = ExtResource("6_8x6yk")
+label = "Rare"
+weight = 0.4
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_voa4p"]
+script = ExtResource("6_8x6yk")
+label = "Super Rare!!"
+weight = 0.1
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_8x6yk"]
 script = ExtResource("7_voa4p")
-_upgrades = Array[ExtResource("5_dj5qx")]([SubResource("Resource_odhqt"), SubResource("Resource_dxeu7"), SubResource("Resource_unwtq"), SubResource("Resource_uae3i"), SubResource("Resource_0ll24"), SubResource("Resource_bfqvu"), SubResource("Resource_o10cv"), SubResource("Resource_tgytc")])
+_upgrades = Array[ExtResource("5_dj5qx")]([SubResource("Resource_bwmui"), SubResource("Resource_e4qvq"), SubResource("Resource_odhqt"), SubResource("Resource_dxeu7"), SubResource("Resource_unwtq"), SubResource("Resource_0ll24"), SubResource("Resource_uae3i"), SubResource("Resource_bfqvu"), SubResource("Resource_o10cv"), SubResource("Resource_gtgxy"), SubResource("Resource_tgytc"), SubResource("Resource_evdh7"), SubResource("Resource_voa4p")])
 metadata/_custom_type_script = "uid://d17mvn7phxhv1"
 
 [node name="UgradeDemo" type="Control" unique_id=1726539843]
@@ -220,17 +245,17 @@ offset_bottom = -2.0
 grow_horizontal = 2
 text = "filter"
 
-[node name="Logic" type="Node" parent="." unique_id=1845921226 node_paths=PackedStringArray("buttonA", "buttonB", "refresh_button", "sliderB", "inactive_upgrades_dock", "active_upgrades_dock", "unavailable_upgrades_dock", "category_drop_down")]
+[node name="Logic" type="Node" parent="." unique_id=1845921226 node_paths=PackedStringArray("button_a", "button_b", "refresh_button", "slider_b", "inactive_upgrades_dock", "active_upgrades_dock", "unavailable_upgrades_dock", "category_drop_down")]
 script = ExtResource("2_yvucc")
-buttonA = NodePath("../Button")
-buttonB = NodePath("../Button2")
+button_a = NodePath("../Button")
+button_b = NodePath("../Button2")
 refresh_button = NodePath("../Button3")
-sliderB = NodePath("../HSlider")
+slider_b = NodePath("../HSlider")
 inactive_upgrades_dock = NodePath("../Upgrade Dock")
 active_upgrades_dock = NodePath("../Active Upgrades Dock")
 unavailable_upgrades_dock = NodePath("../Next Upgade Dock")
-providerA = ExtResource("4_qhmm7")
-providerB = SubResource("Resource_e4qvq")
+provider_a = ExtResource("4_qhmm7")
+provider_b = SubResource("Resource_8x6yk")
 slots = 8
 category_drop_down = NodePath("../OptionButton")
 categories = Array[String](["spin", "circle"])
