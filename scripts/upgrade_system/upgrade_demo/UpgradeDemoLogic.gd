@@ -16,8 +16,16 @@ func restock() -> void:
 	var new_upgrades : Array[Upgrade] = provider.get_new_upgrades(upgrade_count)
 	for upgrade in new_upgrades:
 		inactive_upgrades_dock.dock(upgrade, false)
-		upgrade.applied.connect(set_active, ConnectFlags.CONNECT_APPEND_SOURCE_OBJECT)
-		upgrade.stripped.connect(set_inactive, ConnectFlags.CONNECT_APPEND_SOURCE_OBJECT)
+		if not upgrade.applied.is_connected(set_active):
+			upgrade.applied.connect(set_active, ConnectFlags.CONNECT_APPEND_SOURCE_OBJECT)
+		if not upgrade.stripped.is_connected(set_inactive):
+			upgrade.stripped.connect(set_inactive, ConnectFlags.CONNECT_APPEND_SOURCE_OBJECT)
+
+	var unavailables : Array[Upgrade] = provider.get_unavailable_upgrades()
+	if not unavailables.is_empty():
+		for upgrade in unavailables:
+			unavailable_upgrades_dock.dock(upgrade, false)
+		
 
 
 func set_active(upgrade: Upgrade) -> void:

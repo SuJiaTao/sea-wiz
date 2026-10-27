@@ -65,8 +65,8 @@ static func clone(count: int) -> void:
 		var new_object = prime_node.demo_output.duplicate(DuplicateFlags.DUPLICATE_DEFAULT)
 		clones.push_back(new_object)
 		prime_node.demo_output.add_sibling(new_object)
-		new_object.position = prime_node.demo_output.global_position
-		new_object.position.x -= (prime_node.demo_output.size.x + 10.0) * clones.size()
+		new_object.global_position = prime_node.demo_output.global_position
+		new_object.global_position.x -= (prime_node.demo_output.size.x + 10.0) * clones.size()
 	else:
 		var old_object = clones.pop_back()
 		old_object.queue_free()

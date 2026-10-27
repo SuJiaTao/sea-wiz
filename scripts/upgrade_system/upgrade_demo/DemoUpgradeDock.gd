@@ -3,6 +3,7 @@ extends Container
 
 var _button_pool : Array[DemoUpgradeButton]
 
+@export var disabled : bool = false
 
 ## Adds a DemoUpgradeButton with given upgrade as child, does nothing if the same Upgrade resource is already assigned a button.
 func dock(upgrade: Upgrade, active: bool) -> void:
@@ -11,10 +12,11 @@ func dock(upgrade: Upgrade, active: bool) -> void:
 	var button = _retrieve_button(upgrade)
 	if not button:
 		var new_button : DemoUpgradeButton = DemoUpgradeButton.new(upgrade, active)
-		if active:
-			new_button.pressed.connect(upgrade.remove_upgrade)
-		else:
-			new_button.pressed.connect(upgrade.apply_upgrade)
+		if not disabled:
+			if active:
+				new_button.pressed.connect(upgrade.remove_upgrade)
+			else:
+				new_button.pressed.connect(upgrade.apply_upgrade)
 		add_child(new_button)
 	else:
 		button.upgrade = upgrade	

@@ -57,10 +57,12 @@ script = ExtResource("2_voa4p")
 
 [node name="Next Upgade Dock" type="VBoxContainer" parent="." unique_id=1981895004]
 layout_mode = 0
-offset_left = 318.0
+offset_left = 269.0
 offset_top = 79.0
-offset_right = 418.0
+offset_right = 369.0
 offset_bottom = 187.0
+script = ExtResource("2_voa4p")
+disabled = true
 
 [node name="Active Upgrades Dock" type="HBoxContainer" parent="." unique_id=218999378]
 layout_mode = 1
@@ -77,9 +79,10 @@ grow_horizontal = 2
 grow_vertical = 0
 script = ExtResource("2_voa4p")
 
-[node name="Logic" type="Node" parent="." unique_id=1845921226 node_paths=PackedStringArray("inactive_upgrades_dock", "active_upgrades_dock")]
+[node name="Logic" type="Node" parent="." unique_id=1845921226 node_paths=PackedStringArray("inactive_upgrades_dock", "active_upgrades_dock", "unavailable_upgrades_dock")]
 script = ExtResource("2_yvucc")
 inactive_upgrades_dock = NodePath("../Upgrade Dock")
 active_upgrades_dock = NodePath("../Active Upgrades Dock")
+unavailable_upgrades_dock = NodePath("../Next Upgade Dock")
 provider = ExtResource("4_qhmm7")
 upgrade_count = 44
