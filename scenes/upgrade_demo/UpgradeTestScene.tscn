@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://cib7ukkh0ok1q"]
 
-[ext_resource type="Script" uid="uid://8h0skygqeltk" path="res://scripts/upgrade_system/UpgradeTestScene.gd" id="1_wjlbx"]
+[ext_resource type="Script" uid="uid://8h0skygqeltk" path="res://scripts/upgrade_system/upgrade_demo/UpgradeTestScene.gd" id="1_wjlbx"]
 [ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="2_483hn"]
-[ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/UpgradeProvider.gd" id="3_2djax"]
+[ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/providers/UpgradeProvider.gd" id="3_2djax"]
 [ext_resource type="Script" uid="uid://dpxiiuueoo0tt" path="res://scripts/upgrade_system/upgrades/test upgrades/TestUpgrade.gd" id="3_483hn"]
-
+[ext_resource type="Script" uid="uid://53g01lktbxqq" path="res://scripts/upgrade_system/upgrades/UgradeGraph.gd" id="3_jt2l1"]
 
 [sub_resource type="Resource" id="Resource_483hn"]
 script = ExtResource("3_483hn")

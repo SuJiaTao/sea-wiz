@@ -3,38 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://bu05gjgndg4ra" path="res://scenes/upgrade_demo/UpgradeDemoOupput.tscn" id="2_r7ssf"]
 [ext_resource type="Script" uid="uid://bi3eis2i528gj" path="res://scripts/upgrade_system/upgrade_demo/DemoUpgradeDock.gd" id="2_voa4p"]
 [ext_resource type="Script" uid="uid://bre545b7yjpw5" path="res://scripts/upgrade_system/upgrade_demo/UpgradeDemoLogic.gd" id="2_yvucc"]
-[ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="4_r7ssf"]
-[ext_resource type="Script" uid="uid://7g4f4o8glaya" path="res://scripts/upgrade_system/upgrades/test upgrades/GreenTestUpgrade.gd" id="5_dj5qx"]
-[ext_resource type="Script" uid="uid://dhge41xt0jr5v" path="res://scripts/upgrade_system/upgrades/test upgrades/SpinTestUpgrade.gd" id="5_r7ssf"]
-[ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/UpgradeProvider.gd" id="6_8x6yk"]
-[ext_resource type="Script" uid="uid://d3k62t2ol1yk1" path="res://scripts/upgrade_system/upgrades/test upgrades/TinyTestUpgrade.gd" id="6_voa4p"]
-[ext_resource type="Script" uid="uid://d1vyspcpox424" path="res://scripts/upgrade_system/upgrades/test upgrades/CloneTestUpgrade.gd" id="7_8x6yk"]
-
-[sub_resource type="Resource" id="Resource_dj5qx"]
-script = ExtResource("7_8x6yk")
-label = "duplicate"
-max_acummulation = 3
-metadata/_custom_type_script = "uid://d1vyspcpox424"
-
-[sub_resource type="Resource" id="Resource_8x6yk"]
-script = ExtResource("5_dj5qx")
-label = "greenify"
-metadata/_custom_type_script = "uid://7g4f4o8glaya"
-
-[sub_resource type="Resource" id="Resource_voa4p"]
-script = ExtResource("5_r7ssf")
-label = "spinning"
-metadata/_custom_type_script = "uid://dhge41xt0jr5v"
-
-[sub_resource type="Resource" id="Resource_bwmui"]
-script = ExtResource("6_voa4p")
-label = "Become tiny"
-metadata/_custom_type_script = "uid://d3k62t2ol1yk1"
-
-[sub_resource type="Resource" id="Resource_qhmm7"]
-script = ExtResource("6_8x6yk")
-_upgrades = Array[ExtResource("4_r7ssf")]([SubResource("Resource_dj5qx"), SubResource("Resource_8x6yk"), SubResource("Resource_voa4p"), SubResource("Resource_bwmui")])
-metadata/_custom_type_script = "uid://d17mvn7phxhv1"
+[ext_resource type="Resource" uid="uid://3lh0rwsjj3fq" path="res://scripts/upgrade_system/providers/resources/test-provider.tres" id="4_qhmm7"]
 
 [node name="UgradeDemo" type="Control" unique_id=1726539843]
 layout_mode = 3
@@ -86,6 +55,13 @@ offset_right = 148.0
 offset_bottom = 119.0
 script = ExtResource("2_voa4p")
 
+[node name="Next Upgade Dock" type="VBoxContainer" parent="." unique_id=1981895004]
+layout_mode = 0
+offset_left = 318.0
+offset_top = 79.0
+offset_right = 418.0
+offset_bottom = 187.0
+
 [node name="Active Upgrades Dock" type="HBoxContainer" parent="." unique_id=218999378]
 layout_mode = 1
 anchors_preset = 7
@@ -105,4 +81,5 @@ script = ExtResource("2_voa4p")
 script = ExtResource("2_yvucc")
 inactive_upgrades_dock = NodePath("../Upgrade Dock")
 active_upgrades_dock = NodePath("../Active Upgrades Dock")
-provider = SubResource("Resource_qhmm7")
+provider = ExtResource("4_qhmm7")
+upgrade_count = 44

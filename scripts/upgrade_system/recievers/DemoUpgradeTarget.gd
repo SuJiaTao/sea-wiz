@@ -9,7 +9,7 @@ var is_tiny		: bool = false
 var clones		: int = 0
 var is_super_spin : bool = false
 var has_circle : bool = false
-var purple_circle : bool = false
+var purple_circle : int = 0
 var green_spin : bool = false
 
 

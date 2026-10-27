@@ -2,6 +2,7 @@ extends Node
 
 @export var inactive_upgrades_dock : DemoUpgradeDock
 @export var active_upgrades_dock : DemoUpgradeDock
+@export var unavailable_upgrades_dock : DemoUpgradeDock
 
 @export var provider : UpgradeProvider
 @export var upgrade_count : int = 4
@@ -29,3 +30,5 @@ func set_inactive(upgrade: Upgrade) -> void:
 	if upgrade.accumulation == 0:
 		active_upgrades_dock.undock(upgrade)
 	inactive_upgrades_dock.dock(upgrade, false)
+
+

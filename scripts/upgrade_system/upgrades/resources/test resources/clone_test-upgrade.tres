@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CloneTestUpgrade" format=3 uid="uid://cpcskrlkkyd58"]
+
+[ext_resource type="Script" uid="uid://53g01lktbxqq" path="res://scripts/upgrade_system/upgrades/UgradeGraph.gd" id="1_vjfb6"]
+[ext_resource type="Script" uid="uid://d1vyspcpox424" path="res://scripts/upgrade_system/upgrades/test upgrades/CloneTestUpgrade.gd" id="2_sj7cj"]
+
+[resource]
+script = ExtResource("2_sj7cj")
+label = "+1 clone"
+max_acummulation = 3
+metadata/_custom_type_script = "uid://d1vyspcpox424"

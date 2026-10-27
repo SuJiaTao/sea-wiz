@@ -9,8 +9,8 @@ static var prime_node
 const ROTATION_RATE_RAD : float = PI / 4
 
 var rotating : bool = false
+var super_rotating : bool = false
 var z_rotate : bool = false
-var x_rotate : bool = false
 
 static var clones : Array[Node]
 
@@ -22,6 +22,7 @@ func _ready() -> void:
 	target.spin_was_reset.connect(reset_spin)
 	if not prime_node:
 		prime_node = self
+		circle.reparent.call_deferred(demo_output.get_parent())
 
 
 func update() -> void:
@@ -31,7 +32,11 @@ func update() -> void:
 	clone(target.clones)
 	z_rotate = target.green_spin 
 	circle_purple(target.purple_circle)
-	x_rotate = target.is_super_spin
+	super_rotating = target.is_super_spin
+	if target.has_circle:
+		show_circle()
+	else:
+		hide_circle()
 
 	demo_output.scale = base_size
 
@@ -43,11 +48,9 @@ func _process(delta: float) -> void:
 
 	demo_output.scale = base_size
 	if rotating:
-		demo_output.rotation += ROTATION_RATE_RAD * delta
+		demo_output.rotation += ROTATION_RATE_RAD * delta * (10 if super_rotating else 1)
 	if z_rotate:
 		demo_output.scale.x *= sin(t)
-	if x_rotate:
-		demo_output.scale.y *= sin(t)
 
 
 
@@ -78,8 +81,5 @@ func hide_circle() -> void:
 		return
 	circle.hide()
 
-func circle_purple(yes: bool) -> void:
-	if yes:
-		circle.modulate = Color.PURPLE
-	else:
-		circle.modulate = Color.WHITE
+func circle_purple(multiplier: int) -> void:
+	circle.self_modulate = Color.WHITE - (Color.WHITE - Color.PURPLE) * (multiplier/10.0)

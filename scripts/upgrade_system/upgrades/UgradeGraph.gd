@@ -13,8 +13,14 @@ func _init() -> void:
 		n.is_being_stripped.connect(force_strip)
 
 
+func is_applied() -> bool:
+	return super.is_applied() and predecessors.all(func(n): return n.is_applied())
+
+
 func check_preconditions() -> bool:
-	return check_preconditions() and predecessors.all(func(n): return n.check_preconditions())
+	var flag : bool = super.check_preconditions()
+	flag = flag and predecessors.all(func(n): return n.is_applied())
+	return flag
 
 
 ## Unapplies this upgrade.
@@ -28,5 +34,5 @@ func remove_upgrade() -> void:
 
 
 func force_strip() -> void:
-	for i in accumulation:		# TODO: needs testing on accumulation
+	for i in accumulation:
 		remove_upgrade()

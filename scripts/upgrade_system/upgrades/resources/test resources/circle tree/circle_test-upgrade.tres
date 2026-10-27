@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="HasCircleTestUpgrade" format=3 uid="uid://cy831tdlxw5v1"]
+
+[ext_resource type="Script" uid="uid://53g01lktbxqq" path="res://scripts/upgrade_system/upgrades/UgradeGraph.gd" id="1_b7g5k"]
+[ext_resource type="Script" uid="uid://cxuslcrcra1w3" path="res://scripts/upgrade_system/upgrades/test upgrades/HasCircleTestUpgrade.gd" id="2_fwt8p"]
+
+[resource]
+script = ExtResource("2_fwt8p")
+label = "+1 Circle"
+metadata/_custom_type_script = "uid://cxuslcrcra1w3"

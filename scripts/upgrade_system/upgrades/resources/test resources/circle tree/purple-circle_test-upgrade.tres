@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="HasPurpleCircleTestUpgrade" format=3 uid="uid://hv2lfhyougdp"]
+
+[ext_resource type="Script" uid="uid://53g01lktbxqq" path="res://scripts/upgrade_system/upgrades/UgradeGraph.gd" id="1_umyv1"]
+[ext_resource type="Resource" uid="uid://cy831tdlxw5v1" path="res://scripts/upgrade_system/upgrades/resources/test resources/circle tree/circle_test-upgrade.tres" id="2_kmcm7"]
+[ext_resource type="Script" uid="uid://bcslgc47meagl" path="res://scripts/upgrade_system/upgrades/test upgrades/HasPurpleCircleTestUpgrade.gd" id="3_h8wwg"]
+
+[resource]
+script = ExtResource("3_h8wwg")
+predecessors = Array[ExtResource("1_umyv1")]([ExtResource("2_kmcm7")])
+label = "Purpler Circle"
+max_acummulation = 10
+metadata/_custom_type_script = "uid://bcslgc47meagl"

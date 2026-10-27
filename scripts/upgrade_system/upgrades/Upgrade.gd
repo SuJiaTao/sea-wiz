@@ -43,5 +43,9 @@ func remove_upgrade() -> void:
 	stripped.emit()
 
 
+func is_applied() -> bool:
+	return accumulation > 0
+
+
 func is_equal(upgrade: Upgrade) -> bool:
 	return upgrade == self

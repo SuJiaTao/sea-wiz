@@ -3,8 +3,8 @@ extends TestUpgrade
 
 
 func _apply() -> void:
-	target.purple_circle = true
+	target.purple_circle += 1
 
 
 func _remove() -> void:
-	target.purple_circle = false
+	target.purple_circle -= 1
