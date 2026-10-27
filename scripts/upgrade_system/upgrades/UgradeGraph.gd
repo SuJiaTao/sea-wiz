@@ -5,12 +5,13 @@ extends Upgrade
 
 signal is_being_stripped
 
-@export var predecessors : Array[UpgradeGraph] = []
+@export var predecessors : Array[Upgrade]
 
 
 func setup() -> void:
 	for n in predecessors:
-		n.is_being_stripped.connect(force_strip)
+		if n is UpgradeGraph:
+			n.is_being_stripped.connect(force_strip)
 
 
 func is_applied() -> bool:
