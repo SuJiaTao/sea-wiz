@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://ce85p78y8ipn8" path="res://scripts/upgrade_system/upgrade_demo/DemoSlider.gd" id="3_8x6yk"]
 [ext_resource type="Resource" uid="uid://3lh0rwsjj3fq" path="res://scripts/upgrade_system/providers/resources/test-provider.tres" id="4_qhmm7"]
 [ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="5_dj5qx"]
-[ext_resource type="Script" uid="uid://dq66xy3038ak5" path="res://scripts/upgrade_system/upgrades/test upgrades/blank_upgrade.gd" id="6_8x6yk"]
+[ext_resource type="Script" uid="uid://dq66xy3038ak5" path="res://scripts/upgrade_system/upgrades/test upgrades/BlankUpgrade.gd" id="6_8x6yk"]
 [ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/providers/UpgradeProvider.gd" id="7_voa4p"]
 
 [sub_resource type="Resource" id="Resource_bwmui"]
