@@ -9,10 +9,17 @@ extends Node
 
 
 func _ready() -> void:
+	provider.build_trees()
 	restock()
 
 
+func reset() -> void:
+	inactive_upgrades_dock.clear()
+	unavailable_upgrades_dock.clear()
+
+
 func restock() -> void:
+	reset()
 	var new_upgrades : Array[Upgrade] = provider.get_new_upgrades(upgrade_count)
 	for upgrade in new_upgrades:
 		inactive_upgrades_dock.dock(upgrade, false)
@@ -32,11 +39,12 @@ func set_active(upgrade: Upgrade) -> void:
 	if not upgrade.can_accumulate_still():
 		inactive_upgrades_dock.undock(upgrade)
 	active_upgrades_dock.dock(upgrade, true)
+	restock()
 
 
 func set_inactive(upgrade: Upgrade) -> void:
 	if upgrade.accumulation == 0:
 		active_upgrades_dock.undock(upgrade)
 	inactive_upgrades_dock.dock(upgrade, false)
-
+	restock()
 

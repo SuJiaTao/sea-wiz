@@ -56,6 +56,7 @@ offset_bottom = 119.0
 script = ExtResource("2_voa4p")
 
 [node name="Next Upgade Dock" type="VBoxContainer" parent="." unique_id=1981895004]
+modulate = Color(1, 0.3113789, 0.33715135, 1)
 layout_mode = 0
 offset_left = 269.0
 offset_top = 79.0

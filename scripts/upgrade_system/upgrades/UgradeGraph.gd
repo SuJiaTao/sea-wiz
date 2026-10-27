@@ -8,7 +8,7 @@ signal is_being_stripped
 @export var predecessors : Array[UpgradeGraph] = []
 
 
-func _init() -> void:
+func setup() -> void:
 	for n in predecessors:
 		n.is_being_stripped.connect(force_strip)
 

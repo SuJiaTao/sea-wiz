@@ -19,11 +19,14 @@ var upgrade_target : UpgradeTarget
 var accumulation : int = 0
 @export var max_acummulation : int = 1
 
+
 func can_accumulate_still() -> bool:
 	return not (accumulation == max_acummulation)
 
+
 func check_preconditions() -> bool:
 	return can_accumulate_still()
+
 
 ## Returns true if successfully applied
 func apply_upgrade() -> bool:

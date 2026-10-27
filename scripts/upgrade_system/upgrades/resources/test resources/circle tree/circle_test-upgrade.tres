@@ -5,5 +5,5 @@
 
 [resource]
 script = ExtResource("2_fwt8p")
-label = "+1 Circle"
+label = "Circle"
 metadata/_custom_type_script = "uid://cxuslcrcra1w3"

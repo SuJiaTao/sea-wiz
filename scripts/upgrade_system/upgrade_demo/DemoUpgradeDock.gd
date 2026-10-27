@@ -48,3 +48,9 @@ func _retrieve_button(upgrade: Upgrade) -> DemoUpgradeButton:
 
 func already_docked(upgrade: Upgrade) -> bool:
 	return (_find_upgrade_button(upgrade) != null)
+
+
+## Clears all children, but not button pool.
+func clear() -> void:
+	for child in get_children():
+		undock(child.upgrade)

@@ -1,4 +1,4 @@
-## Must call setup() before use
+## Must call build_trees() before use if any given upgrade is an UpgradeGraph
 class_name UpgradeProvider
 extends Resource
 
@@ -7,18 +7,24 @@ var _pool : Array[Upgrade]
 var _unavailable_upgardes : Array[Upgrade]
 
 
+func build_trees() -> void:
+	for u in _upgrades:
+		if u is UpgradeGraph:
+			u.setup()
+
+
 func reset_pool() -> void:
 	_pool.clear()
+	_unavailable_upgardes.clear()
 	for upgrade in _upgrades:
 		if upgrade.check_preconditions():
 			_pool.append(upgrade)
-		else:
+		elif not upgrade.is_applied():
 			_unavailable_upgardes.append(upgrade)
 
 
 func _get_pool() -> Array[Upgrade]:
-	if _pool.is_empty():
-		reset_pool()
+	reset_pool()
 	return _pool.duplicate()
 
 
@@ -32,11 +38,13 @@ func _process_upgrade_array(new_pool: Array[Upgrade], count: int) -> Array[Upgra
 	return new_pool
 
 
+## Pool of upgrades is reset when called
 func get_new_upgrades(count: int)  -> Array[Upgrade]:
 	var new_pool = _get_pool()
 	return _process_upgrade_array(new_pool, count)
 
 
+## Pool of upgrades is reset when called
 func get_new_upgrades_of_category(count: int, category: String) -> Array[Upgrade]:
 	var filtered : Array[Upgrade] = _get_pool()
 	filtered = filtered.filter(func(u: Upgrade): return (u.category == category))
