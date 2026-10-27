@@ -2,6 +2,7 @@ extends Node
 
 @export var buttonA : Button
 @export var buttonB : Button
+@export var refresh_button : Button
 @export var sliderB : Slider
 
 @export var inactive_upgrades_dock : DemoUpgradeDock
@@ -13,21 +14,31 @@ extends Node
 var provider : UpgradeProvider
 @export var slots : int = 4
 
+@export var category_drop_down : OptionButton
+@export var categories : Array[String]
 
 func _ready() -> void:
+	connect_signals()
 	provider = providerA
 	provider.build_trees()
+	sliderB.value = slots
+	category_drop_down.add_item("NONE")
+	for c in categories:
+		category_drop_down.add_item(c)
 	restock()
-	sliderB.value = 3
+
+
+func connect_signals() -> void:
 	sliderB.drag_ended.connect(restock.unbind(1))
 	buttonA.pressed.connect(switch_to_A)
 	buttonB.pressed.connect(switch_to_B)
+	refresh_button.pressed.connect(restock)
+	category_drop_down.item_selected.connect(restock.unbind(1))
 
 
 func switch_to_A() -> void:
 	buttonA.disabled = true
 	buttonB.disabled = false
-	sliderB.hide()
 	provider = providerA
 	restock()
 
@@ -35,7 +46,6 @@ func switch_to_A() -> void:
 func switch_to_B() -> void:
 	buttonB.disabled = true
 	buttonA.disabled = false
-	sliderB.show()
 	provider = providerB
 	restock()
 
@@ -49,9 +59,13 @@ func restock() -> void:
 	reset()
 	var new_upgrades : Array[Upgrade]
 	if buttonA.disabled:
-		new_upgrades = provider.get_new_upgrades(slots)
+		var filter : String = category_drop_down.get_item_text(category_drop_down.get_selected_id())
+		if filter == "NONE":
+			new_upgrades = provider.get_new_upgrades(sliderB.value as int)
+		else:
+			new_upgrades = provider.get_new_upgrades_of_category(sliderB.value as int, filter)
 	else:
-		new_upgrades = provider.get_new_upgrades(sliderB.value as int)
+		new_upgrades = provider.get_new_upgrades_weighted(sliderB.value as int)
 
 	for upgrade in new_upgrades:
 		inactive_upgrades_dock.dock(upgrade, false)
@@ -64,7 +78,7 @@ func restock() -> void:
 	if not unavailables.is_empty():
 		for upgrade in unavailables:
 			unavailable_upgrades_dock.dock(upgrade, false)
-		
+
 
 
 func set_active(upgrade: Upgrade) -> void:
@@ -79,4 +93,3 @@ func set_inactive(upgrade: Upgrade) -> void:
 		active_upgrades_dock.undock(upgrade)
 	inactive_upgrades_dock.dock(upgrade, false)
 	restock()
-

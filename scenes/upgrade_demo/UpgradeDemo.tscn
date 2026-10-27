@@ -9,35 +9,52 @@
 [ext_resource type="Script" uid="uid://dq66xy3038ak5" path="res://scripts/upgrade_system/upgrades/test upgrades/blank_upgrade.gd" id="6_8x6yk"]
 [ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/providers/UpgradeProvider.gd" id="7_voa4p"]
 
-[sub_resource type="Resource" id="Resource_8u7uy"]
+[sub_resource type="Resource" id="Resource_odhqt"]
 script = ExtResource("6_8x6yk")
 label = "Common"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"
 
-[sub_resource type="Resource" id="Resource_dj5qx"]
+[sub_resource type="Resource" id="Resource_dxeu7"]
 script = ExtResource("6_8x6yk")
 label = "Common"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"
 
-[sub_resource type="Resource" id="Resource_8x6yk"]
+[sub_resource type="Resource" id="Resource_unwtq"]
 script = ExtResource("6_8x6yk")
 label = "Common"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"
 
-[sub_resource type="Resource" id="Resource_voa4p"]
+[sub_resource type="Resource" id="Resource_uae3i"]
 script = ExtResource("6_8x6yk")
 label = "Common"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"
 
-[sub_resource type="Resource" id="Resource_bwmui"]
+[sub_resource type="Resource" id="Resource_0ll24"]
 script = ExtResource("6_8x6yk")
-label = "Rare"
-weight = 0.1
+label = "Common"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"
 
-[sub_resource type="Resource" id="Resource_qhmm7"]
+[sub_resource type="Resource" id="Resource_bfqvu"]
+script = ExtResource("6_8x6yk")
+label = "Rare!"
+weight = 0.2
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_o10cv"]
+script = ExtResource("6_8x6yk")
+label = "Rare!"
+weight = 0.2
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_tgytc"]
+script = ExtResource("6_8x6yk")
+label = "Super Rare!!"
+weight = 0.05
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_e4qvq"]
 script = ExtResource("7_voa4p")
-_upgrades = Array[ExtResource("5_dj5qx")]([SubResource("Resource_8u7uy"), SubResource("Resource_dj5qx"), SubResource("Resource_8x6yk"), SubResource("Resource_voa4p"), SubResource("Resource_bwmui")])
+_upgrades = Array[ExtResource("5_dj5qx")]([SubResource("Resource_odhqt"), SubResource("Resource_dxeu7"), SubResource("Resource_unwtq"), SubResource("Resource_uae3i"), SubResource("Resource_0ll24"), SubResource("Resource_bfqvu"), SubResource("Resource_o10cv"), SubResource("Resource_tgytc")])
 metadata/_custom_type_script = "uid://d17mvn7phxhv1"
 
 [node name="UgradeDemo" type="Control" unique_id=1726539843]
@@ -100,20 +117,20 @@ offset_bottom = 240.0
 script = ExtResource("2_voa4p")
 disabled = true
 
-[node name="Active Upgrades Dock" type="HBoxContainer" parent="." unique_id=218999378]
+[node name="Active Upgrades Dock" type="GridContainer" parent="." unique_id=180942452]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -352.0
-offset_top = -208.0
-offset_right = 565.0
-offset_bottom = -167.0
+offset_left = -299.0
+offset_top = -257.0
+offset_right = 618.0
+offset_bottom = -44.0
 grow_horizontal = 2
 grow_vertical = 0
-alignment = 2
+columns = 8
 script = ExtResource("2_voa4p")
 
 [node name="Button" type="Button" parent="." unique_id=1796312839]
@@ -131,14 +148,14 @@ offset_left = 171.0
 offset_top = 34.0
 offset_right = 273.0
 offset_bottom = 75.0
-text = "setB"
+text = "setB (weighted)
+"
 
 [node name="HSlider" type="HSlider" parent="." unique_id=36381592 node_paths=PackedStringArray("value_label")]
-visible = false
 layout_mode = 0
-offset_left = 300.0
+offset_left = 321.0
 offset_top = 50.0
-offset_right = 492.0
+offset_right = 513.0
 offset_bottom = 66.0
 max_value = 10.0
 rounded = true
@@ -175,14 +192,45 @@ grow_horizontal = 0
 grow_vertical = 2
 text = "0"
 
-[node name="Logic" type="Node" parent="." unique_id=1845921226 node_paths=PackedStringArray("buttonA", "buttonB", "sliderB", "inactive_upgrades_dock", "active_upgrades_dock", "unavailable_upgrades_dock")]
+[node name="Button3" type="Button" parent="." unique_id=1376547920]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 675.0
+offset_right = 83.0
+offset_bottom = 706.0
+text = "Refresh
+"
+
+[node name="OptionButton" type="OptionButton" parent="." unique_id=417275656]
+layout_mode = 0
+offset_left = 115.0
+offset_top = 678.0
+offset_right = 265.0
+offset_bottom = 698.0
+
+[node name="Label2" type="Label" parent="OptionButton" unique_id=2061485856]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = -25.0
+offset_right = 36.0
+offset_bottom = -2.0
+grow_horizontal = 2
+text = "filter"
+
+[node name="Logic" type="Node" parent="." unique_id=1845921226 node_paths=PackedStringArray("buttonA", "buttonB", "refresh_button", "sliderB", "inactive_upgrades_dock", "active_upgrades_dock", "unavailable_upgrades_dock", "category_drop_down")]
 script = ExtResource("2_yvucc")
 buttonA = NodePath("../Button")
 buttonB = NodePath("../Button2")
+refresh_button = NodePath("../Button3")
 sliderB = NodePath("../HSlider")
 inactive_upgrades_dock = NodePath("../Upgrade Dock")
 active_upgrades_dock = NodePath("../Active Upgrades Dock")
 unavailable_upgrades_dock = NodePath("../Next Upgade Dock")
 providerA = ExtResource("4_qhmm7")
-providerB = SubResource("Resource_qhmm7")
-slots = 44
+providerB = SubResource("Resource_e4qvq")
+slots = 8
+category_drop_down = NodePath("../OptionButton")
+categories = Array[String](["spin", "circle"])
