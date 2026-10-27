@@ -14,7 +14,7 @@ func dock(upgrade: Upgrade, active: bool) -> void:
 		var new_button : DemoUpgradeButton = DemoUpgradeButton.new(upgrade, active)
 		if not disabled:
 			if active:
-				new_button.pressed.connect(upgrade.remove_upgrade)
+				new_button.pressed.connect(upgrade.strip_upgrade)
 			else:
 				new_button.pressed.connect(upgrade.apply_upgrade)
 		add_child(new_button)

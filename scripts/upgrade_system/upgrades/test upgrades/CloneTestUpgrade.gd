@@ -6,5 +6,5 @@ func _apply() -> void:
 	target.clones += 1
 
 
-func _remove() -> void:
+func _strip() -> void:
 	target.clones -= 1

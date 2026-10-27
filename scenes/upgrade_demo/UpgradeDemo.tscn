@@ -72,12 +72,13 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 104.0
+offset_left = -352.0
 offset_top = -208.0
-offset_right = 526.0
+offset_right = 565.0
 offset_bottom = -167.0
 grow_horizontal = 2
 grow_vertical = 0
+alignment = 2
 script = ExtResource("2_voa4p")
 
 [node name="Logic" type="Node" parent="." unique_id=1845921226 node_paths=PackedStringArray("inactive_upgrades_dock", "active_upgrades_dock", "unavailable_upgrades_dock")]

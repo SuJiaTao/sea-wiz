@@ -1,64 +1,29 @@
-[gd_scene format=3 uid="uid://cib7ukkh0ok1q"]
+[gd_scene format=3 uid="uid://die188ddtnoqq"]
 
-[ext_resource type="Script" uid="uid://8h0skygqeltk" path="res://scripts/upgrade_system/upgrade_demo/UpgradeTestScene.gd" id="1_wjlbx"]
 [ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="2_483hn"]
 [ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/providers/UpgradeProvider.gd" id="3_2djax"]
-[ext_resource type="Script" uid="uid://dpxiiuueoo0tt" path="res://scripts/upgrade_system/upgrades/test upgrades/TestUpgrade.gd" id="3_483hn"]
-[ext_resource type="Script" uid="uid://53g01lktbxqq" path="res://scripts/upgrade_system/upgrades/UgradeGraph.gd" id="3_jt2l1"]
 
-[sub_resource type="Resource" id="Resource_483hn"]
-script = ExtResource("3_483hn")
-label = "Hello"
-metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+[sub_resource type="GDScript" id="GDScript_jbn1c"]
+script/source = "extends Node
 
-[sub_resource type="Resource" id="Resource_2djax"]
-script = ExtResource("3_483hn")
-label = "Hello"
-metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+@export var provider : UpgradeProvider
 
-[sub_resource type="Resource" id="Resource_4r5tx"]
-script = ExtResource("3_483hn")
-label = "Hello"
-metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+func _ready() -> void:
+	print_result(provider.get_new_upgrades(3))
+	print_result(provider.get_new_upgrades(4))
+	print_result(provider.get_new_upgrades(10))
+	print_result(provider.get_new_upgrades_of_category(2, \"Default\"))
+	print_result(provider.get_new_upgrades_of_category(3, \"TestCat\"))
+	print_result(provider.get_new_upgrades_of_category(10, \"TestCat\"))
 
-[sub_resource type="Resource" id="Resource_5mlll"]
-script = ExtResource("3_483hn")
-label = "Hello"
-metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
-
-[sub_resource type="Resource" id="Resource_4vbbs"]
-script = ExtResource("3_483hn")
-label = "Hello"
-metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
-
-[sub_resource type="Resource" id="Resource_j7wh7"]
-script = ExtResource("3_483hn")
-label = "Hello"
-metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
-
-[sub_resource type="Resource" id="Resource_qwil7"]
-script = ExtResource("3_483hn")
-label = "Hello"
-category = "TestCat"
-metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
-
-[sub_resource type="Resource" id="Resource_6fp5s"]
-script = ExtResource("3_483hn")
-label = "Hello"
-category = "TestCat"
-metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
-
-[sub_resource type="Resource" id="Resource_187ju"]
-script = ExtResource("3_483hn")
-label = "Hello"
-category = "TestCat"
-metadata/_custom_type_script = "uid://dpxiiuueoo0tt"
+func print_result(array: Array[Upgrade]) -> void:
+	var label_array : Array = array.map(func(u: Upgrade): return u.label)
+	print(label_array)"
 
 [sub_resource type="Resource" id="Resource_8u7uy"]
 script = ExtResource("3_2djax")
-_upgrades = Array[ExtResource("2_483hn")]([SubResource("Resource_483hn"), SubResource("Resource_2djax"), SubResource("Resource_4r5tx"), SubResource("Resource_5mlll"), SubResource("Resource_4vbbs"), SubResource("Resource_j7wh7"), SubResource("Resource_qwil7"), SubResource("Resource_6fp5s"), SubResource("Resource_187ju")])
 metadata/_custom_type_script = "uid://d17mvn7phxhv1"
 
 [node name="UpgradeTestScene" type="Node" unique_id=1219985079]
-script = ExtResource("1_wjlbx")
+script = SubResource("GDScript_jbn1c")
 provider = SubResource("Resource_8u7uy")

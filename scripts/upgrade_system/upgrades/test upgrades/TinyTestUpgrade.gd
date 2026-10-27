@@ -6,5 +6,5 @@ func _apply() -> void:
 	target.is_tiny = true
 
 
-func _remove() -> void:
+func _strip() -> void:
 	target.is_tiny = false

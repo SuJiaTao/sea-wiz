@@ -6,5 +6,5 @@ func _apply() -> void:
 	target.has_circle = true
 
 
-func _remove() -> void:
+func _strip() -> void:
 	target.has_circle = false

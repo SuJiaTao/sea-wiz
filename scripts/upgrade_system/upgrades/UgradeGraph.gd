@@ -27,12 +27,12 @@ func check_preconditions() -> bool:
 ## If accumulation will be 0 after the function ends,
 ## then calls force_strip on every upgrade that depends on this upgrade also
 ## Successors are unapplied before this.
-func remove_upgrade() -> void:
+func strip_upgrade() -> void:
 	if accumulation == 1:
 		is_being_stripped.emit()
-	super.remove_upgrade()
+	super.strip_upgrade()
 
 
 func force_strip() -> void:
 	for i in accumulation:
-		remove_upgrade()
+		strip_upgrade()

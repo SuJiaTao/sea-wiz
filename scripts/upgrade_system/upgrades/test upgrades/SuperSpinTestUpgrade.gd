@@ -6,6 +6,6 @@ func _apply() -> void:
 	target.is_super_spin = true
 
 
-func _remove() -> void:
+func _strip() -> void:
 	target.is_super_spin = false
 	

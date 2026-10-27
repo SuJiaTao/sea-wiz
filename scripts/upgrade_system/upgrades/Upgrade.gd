@@ -14,7 +14,7 @@ var upgrade_target : UpgradeTarget
 @export var weight : float = 1.0
 
 @abstract func _apply() -> void
-@abstract func _remove() -> void
+@abstract func _strip() -> void
 
 var accumulation : int = 0
 @export var max_acummulation : int = 1
@@ -39,8 +39,8 @@ func apply_upgrade() -> bool:
 	return false
 
 
-func remove_upgrade() -> void:
-	_remove()
+func strip_upgrade() -> void:
+	_strip()
 	accumulation -= 1
 	upgrade_target.remove_upgrade(self)
 	stripped.emit()

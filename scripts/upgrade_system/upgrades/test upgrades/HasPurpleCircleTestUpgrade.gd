@@ -6,5 +6,5 @@ func _apply() -> void:
 	target.purple_circle += 1
 
 
-func _remove() -> void:
+func _strip() -> void:
 	target.purple_circle -= 1

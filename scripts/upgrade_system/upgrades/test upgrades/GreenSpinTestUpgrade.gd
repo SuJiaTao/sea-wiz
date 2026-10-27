@@ -6,5 +6,5 @@ func _apply() -> void:
 	target.green_spin = true
 
 
-func _remove() -> void:
+func _strip() -> void:
 	target.green_spin = false
