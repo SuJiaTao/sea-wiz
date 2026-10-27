@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b6t7bnslh26t3"]
 
-[ext_resource type="PackedScene" uid="uid://bu05gjgndg4ra" path="res://scenes/upgrade_demo/UpgradeDemoOupput.tscn" id="2_r7ssf"]
+[ext_resource type="PackedScene" uid="uid://bu05gjgndg4ra" path="res://scenes/upgrade_demo/UpgradeDemoOutput.tscn" id="2_r7ssf"]
 [ext_resource type="Script" uid="uid://bi3eis2i528gj" path="res://scripts/upgrade_system/upgrade_demo/DemoUpgradeDock.gd" id="2_voa4p"]
 [ext_resource type="Script" uid="uid://bre545b7yjpw5" path="res://scripts/upgrade_system/upgrade_demo/UpgradeDemoLogic.gd" id="2_yvucc"]
 [ext_resource type="Script" uid="uid://ce85p78y8ipn8" path="res://scenes/upgrade_demo/h_slider.gd" id="3_8x6yk"]
