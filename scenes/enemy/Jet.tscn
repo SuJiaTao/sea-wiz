@@ -16,7 +16,10 @@ display_name = "FIGHTER"
 hud_radius = 8.25
 speed = 240.0
 agility = 0.7
-contact_damage = 14.0
+contact_damage = 10.0
+max_g = 7.0
+arrival_radius = 150.0
+attack_altitude = 90.0
 
 [node name="Visuals" parent="." instance=ExtResource("2_visuals")]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)

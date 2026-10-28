@@ -7,6 +7,8 @@ enum State { TITLE, STARTING, RUNNING, WON, LOST }
 
 const HIT_IMPULSE: float = 5.0
 const HIT_FLASH: float = 0.6
+const FLARES_FROM_LEVEL: int = 2
+const WRECK_DAMAGE_PER_SIZE: float = 12.0
 
 @onready var turret: Turret = $ViewportContainer/SubViewport/World/Vessel/Turret
 @onready var integrity: ShipIntegrity = $ViewportContainer/SubViewport/World/ShipDamage/Integrity
@@ -32,10 +34,12 @@ func _ready() -> void:
 	enemies.enemy_created.connect(_on_enemy_created)
 	enemies.enemy_killed.connect(_on_enemy_killed)
 	ballistics.entered_water.connect(effects.splash)
+	effects.wreck_hit_ship.connect(_on_wreck_hit_ship)
 	waves.completed.connect(_on_completed)
 	waves.failed.connect(_on_wave_failed)
 	title_screen.start_requested.connect(_on_start_requested)
 	sinking.sunk.connect(_on_ship_sunk)
+	waves.level_prepared.connect(_on_level_prepared)
 	hud.hide()
 	title_screen.show()
 	weapons.set_enabled(false)
@@ -115,6 +119,12 @@ func _on_enemy_created(enemy: AbstractEnemy) -> void:
 	enemy.damaged.connect(_on_enemy_damaged)
 	enemy.reached_target.connect(_on_target_reached.bind(enemy))
 	enemy.countermeasures_released.connect(effects.countermeasures)
+	enemy.countermeasures_enabled = waves.level_number >= FLARES_FROM_LEVEL
+
+
+func _on_level_prepared(number: int, _title: String) -> void:
+	if number > 1:
+		integrity.repair(integrity.repair_per_wave)
 
 
 func _on_enemy_damaged(_amount: float, point: Vector3) -> void:
@@ -136,6 +146,11 @@ func _on_target_reached(damage: float, enemy: AbstractEnemy) -> void:
 	integrity.take_hit(damage, enemy.global_position)
 	turret.add_impulse(HIT_IMPULSE)
 	thermal.heat_burst(HIT_FLASH)
+
+
+func _on_wreck_hit_ship(position: Vector3, size: float) -> void:
+	if state == State.RUNNING:
+		integrity.take_hit(WRECK_DAMAGE_PER_SIZE * size, position)
 
 
 func _on_ship_sunk() -> void:

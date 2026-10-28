@@ -64,3 +64,20 @@ func _add_deck(hull: ArrayMesh) -> void:
 	deck.generate_normals()
 	deck.set_material(deck_material)
 	deck.commit(hull)
+
+
+func deck_height_at(world_position: Vector3) -> float:
+	var local := to_local(world_position)
+	var half_breadth := _half_breadth_at(local.z)
+	if is_nan(half_breadth) or absf(local.x) > half_breadth:
+		return NAN
+	return to_global(Vector3(local.x, deck_level(local.z), local.z)).y
+
+
+func _half_breadth_at(z: float) -> float:
+	for index in half_breadths.size() - 1:
+		var aft := half_breadths[index]
+		var forward := half_breadths[index + 1]
+		if z <= aft.x and z >= forward.x:
+			return lerpf(aft.y, forward.y, (aft.x - z) / (aft.x - forward.x))
+	return NAN

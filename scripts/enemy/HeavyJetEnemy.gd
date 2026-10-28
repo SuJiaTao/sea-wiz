@@ -1,4 +1,4 @@
-extends FlyingEnemy
+extends StrikeAircraft
 class_name HeavyJetEnemy
 
 const ENGINE_WEAK_POINTS: Array[Vector3] = [
@@ -17,10 +17,6 @@ const ENGINE_WEAK_POINTS: Array[Vector3] = [
 
 func _on_flight_created() -> void:
 	_hurtbox.collision_layer = COLLISION_LAYER
-
-
-func _desired_velocity(_delta: float) -> Vector3:
-	return (target_position - global_position).normalized() * speed
 
 
 func take_damage(
