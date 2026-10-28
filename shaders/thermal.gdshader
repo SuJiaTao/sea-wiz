@@ -1,86 +1,111 @@
 shader_type canvas_item;
 render_mode unshaded;
 
-// Post-process applied to the low-resolution SubViewport.
-// Turns the rendered scene into a coarse thermal / IR sensor image:
-// luminance -> gain -> posterise -> sensor noise, scanlines, vignette.
+// Sensor stage: what the FLIR head itself produces, before the video chain.
+// Optical softness, bloom on hot bodies and detail-peaking halos.
 
 uniform float gain : hint_range(0.2, 4.0) = 1.35;
 uniform float black_level : hint_range(0.0, 0.5) = 0.02;
-uniform float levels : hint_range(2.0, 32.0) = 7.0;
-uniform float polarity : hint_range(0.0, 1.0) = 0.0; // 0 = white hot, 1 = black hot
-uniform float noise_amount : hint_range(0.0, 0.5) = 0.038;
-uniform float fixed_pattern : hint_range(0.0, 0.3) = 0.022;
-uniform float scanline_amount : hint_range(0.0, 1.0) = 0.16;
-uniform float vignette_amount : hint_range(0.0, 1.0) = 0.40;
-uniform float sweep_amount : hint_range(0.0, 0.5) = 0.05;
-uniform float sweep_speed = 0.35;
-uniform vec3 tint : source_color = vec3(1.0, 1.0, 0.985);
+uniform float levels : hint_range(2.0, 256.0) = 64.0;
+uniform float sensor_floor : hint_range(0.0, 0.3) = 0.0;
+uniform float optical_blur : hint_range(0.0, 1.0) = 0.55;
+uniform float optical_blur_texels : hint_range(0.25, 2.0) = 0.7;
+uniform float polarity : hint_range(0.0, 1.0) = 0.0;
+uniform float bloom_amount : hint_range(0.0, 2.0) = 0.9;
+uniform float bloom_floor : hint_range(0.0, 1.0) = 0.42;
+uniform float bloom_radius_texels : hint_range(0.5, 4.0) = 1.4;
+uniform float halo_amount : hint_range(0.0, 2.0) = 0.75;
+uniform float halo_radius_texels : hint_range(1.0, 8.0) = 2.8;
 uniform float shake_x = 0.0;
 uniform float shake_y = 0.0;
-uniform float bloom_amount : hint_range(0.0, 2.0) = 0.85;
-uniform float bloom_floor : hint_range(0.0, 1.0) = 0.42;
 uniform vec2 sensor_size = vec2(320.0, 180.0);
-// Whiteout, 0..1: the sensor saturating on a huge heat event.
 uniform float flash : hint_range(0.0, 1.0) = 0.0;
 
-float hash21(vec2 p) {
-	p = fract(p * vec2(233.34, 851.73));
-	p += dot(p, p + 23.45);
-	return fract(p.x * p.y);
-}
+// Water on the lens: xy centre in UV, z radius (fraction of height), w strength.
+const int MAX_DROPLETS = 12;
+uniform vec4 droplets[MAX_DROPLETS];
+uniform float droplet_refraction : hint_range(0.0, 3.0) = 1.6;
+uniform float droplet_cooling : hint_range(0.0, 1.0) = 0.65;
+uniform float droplet_rim : hint_range(0.0, 1.0) = 0.12;
+uniform float chroma_keep : hint_range(0.0, 3.0) = 1.0;
 
-float luma(vec3 c) {
-	return dot(c, vec3(0.30, 0.59, 0.11));
+// Blast shockwaves: xy centre in UV, z ring radius (fraction of height), w strength.
+const int MAX_RINGS = 4;
+uniform vec4 shock_rings[MAX_RINGS];
+uniform float shock_width : hint_range(0.005, 0.2) = 0.025;
+uniform float shock_glow : hint_range(0.0, 20.0) = 4.0;
+
+const vec3 LUMA = vec3(0.30, 0.59, 0.11);
+const int RING_TAPS = 8;
+
+vec2 ring_direction(int tap) {
+	float angle = TAU * float(tap) / float(RING_TAPS);
+	return vec2(cos(angle), sin(angle));
 }
 
 void fragment() {
-	vec2 uv = UV + vec2(shake_x, shake_y);
-	uv = clamp(uv, vec2(0.0), vec2(1.0));
+	vec2 aspect = vec2(sensor_size.x / sensor_size.y, 1.0);
+	vec2 bend = vec2(0.0);
+	float wet = 0.0;
+	float rim = 0.0;
+	for (int i = 0; i < MAX_DROPLETS; i++) {
+		vec4 drop = droplets[i];
+		if (drop.w <= 0.0) {
+			continue;
+		}
+		vec2 offset = (UV - drop.xy) * aspect / drop.z;
+		float r2 = dot(offset, offset);
+		if (r2 < 1.0) {
+			float bulge = sqrt(1.0 - r2);
+			bend -= (UV - drop.xy) * droplet_refraction * bulge * drop.w;
+			wet = max(wet, bulge * drop.w);
+			rim = max(rim, smoothstep(0.6, 0.95, r2) * (1.0 - r2) * 4.0 * drop.w);
+		}
+	}
 
-	// Base sample plus a cheap 4-tap blur used as a poor-man's IR bloom so hot
-	// bodies smear the way they do on a real sensor.
-	vec3 base = texture(TEXTURE, uv).rgb;
-	vec2 tx = 1.0 / sensor_size;
-	vec3 blur = texture(TEXTURE, uv + vec2(tx.x, 0.0)).rgb;
-	blur += texture(TEXTURE, uv - vec2(tx.x, 0.0)).rgb;
-	blur += texture(TEXTURE, uv + vec2(0.0, tx.y)).rgb;
-	blur += texture(TEXTURE, uv - vec2(0.0, tx.y)).rgb;
-	blur *= 0.25;
+	float shock_light = 0.0;
+	for (int i = 0; i < MAX_RINGS; i++) {
+		vec4 ring = shock_rings[i];
+		if (ring.w <= 0.0) {
+			continue;
+		}
+		vec2 offset = (UV - ring.xy) * aspect;
+		float dist = length(offset);
+		float band = (dist - ring.z) / shock_width;
+		float front = exp(-band * band);
+		bend -= offset / max(dist, 1e-4) / aspect * ring.w * front * band;
+		shock_light += ring.w * front;
+	}
 
-	// Only genuinely hot pixels are allowed to smear into their neighbours;
-	// letting the whole image bloom just lifts the sea into a grey fog.
-	float l = luma(base) + max(luma(blur) - bloom_floor, 0.0) * bloom_amount;
+	vec2 uv = clamp(UV + bend + vec2(shake_x, shake_y), vec2(0.0), vec2(1.0));
+	vec2 texel = 1.0 / sensor_size;
+
+	vec3 centre_colour = texture(TEXTURE, uv).rgb;
+	float centre = dot(centre_colour, LUMA);
+	float soft = 0.0;
+	float near = 0.0;
+	float far = 0.0;
+	for (int i = 0; i < RING_TAPS; i++) {
+		vec2 direction = ring_direction(i) * texel;
+		soft += dot(texture(TEXTURE, uv + direction * optical_blur_texels).rgb, LUMA);
+		near += dot(texture(TEXTURE, uv + direction * bloom_radius_texels).rgb, LUMA);
+		far += dot(texture(TEXTURE, uv + direction * halo_radius_texels).rgb, LUMA);
+	}
+	soft /= float(RING_TAPS);
+	near /= float(RING_TAPS);
+	far /= float(RING_TAPS);
+
+	float base = mix(centre, soft, mix(optical_blur, 1.0, wet));
+	float l = base + max(near - bloom_floor, 0.0) * bloom_amount;
 	l = max(l - black_level, 0.0) * gain;
-	l = clamp(l + flash, 0.0, 1.0);
+	l = sensor_floor + l + (base - far) * halo_amount;
 
-	// Sensor noise: per-frame shimmer plus a static per-pixel offset (FPN).
-	vec2 px = floor(uv * sensor_size);
-	float shimmer = hash21(px + fract(TIME) * 91.7) - 0.5;
-	float fpn = hash21(px * 1.37) - 0.5;
-	l += shimmer * noise_amount + fpn * fixed_pattern;
+	l = l * (1.0 - droplet_cooling * wet) + droplet_rim * rim;
+	l = clamp(l + flash + shock_light * shock_glow, 0.0, 1.0);
 
-	// Slow horizontal integration sweep.
-	float sweep = sin((uv.y * 3.0 - TIME * sweep_speed) * 6.2831);
-	l += sweep * sweep_amount * 0.25;
+	l = floor(l * levels + 0.5) / levels;
+	l = mix(l, 1.0 - l, polarity);
 
-	l = clamp(l, 0.0, 1.0);
-
-	// Posterise to a coarse grey ramp.
-	float q = floor(l * levels) / max(levels - 1.0, 1.0);
-	q = clamp(q, 0.0, 1.0);
-
-	// White hot / black hot.
-	q = mix(q, 1.0 - q, polarity);
-
-	// Interlace scanlines.
-	float scan = 1.0 - scanline_amount * step(0.5, fract(uv.y * sensor_size.y * 0.5));
-	q *= scan;
-
-	// Vignette.
-	vec2 d = uv - vec2(0.5);
-	float vig = 1.0 - vignette_amount * dot(d, d) * 2.4;
-	q *= clamp(vig, 0.0, 1.0);
-
-	COLOR = vec4(tint * q, 1.0);
+	vec3 chroma = (centre_colour - vec3(centre)) * chroma_keep;
+	COLOR = vec4(clamp(vec3(l) + chroma, 0.0, 1.0), 1.0);
 }

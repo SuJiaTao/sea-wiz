@@ -73,5 +73,5 @@ theme_override_font_sizes/font_size = 12
 text = "MOUSE / WASD  AIM     LEFT  GUN
 RIGHT / SHIFT / WHEEL  ZOOM     MIDDLE / R  RELOAD
 Q / SIDE 1  MISSILE     E / SIDE 2  SALVO
-F  POLARITY     ESC  PAUSE"
+F  POLARITY     C  COLOUR     ESC  PAUSE"
 horizontal_alignment = 1

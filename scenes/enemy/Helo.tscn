@@ -4,18 +4,22 @@
 [ext_resource type="PackedScene" path="res://scenes/enemy/HeloVisuals.tscn" id="2_visuals"]
 
 [sub_resource type="SphereShape3D" id="Shape_body"]
-radius = 5.0
+radius = 7.5
 
-[node name="Helo" type="Node3D"]
+[node name="Helo" type="Node3D" node_paths=PackedStringArray("visuals")]
 script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
 max_hp = 70.0
 display_name = "HELICOPTER"
-hud_radius = 5.0
+score_value = 200
+hud_radius = 7.5
+max_bank_deg = 25.0
 speed = 62.0
 agility = 0.35
 contact_damage = 12.0
 
 [node name="Visuals" parent="." instance=ExtResource("2_visuals")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
 
 [node name="Hurtbox" type="Area3D" parent="."]
 collision_layer = 0

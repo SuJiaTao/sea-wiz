@@ -3,20 +3,19 @@ class_name PlayerHUD
 
 @export var turret: Turret
 @export var thermal: ThermalView
+@export var video: AnalogVideo
 
-var _hull: float = 100.0
-var _max_hull: float = 100.0
+const HELP_VISIBLE_TIME: float = 10.0
+const HELP_FADE_TIME: float = 3.0
+
 var _phase: float = 0.0
-
-
-func set_health(current: float, maximum: float) -> void:
-	_hull = current
-	_max_hull = maximum
-	queue_redraw()
+var _help_time: float = 0.0
 
 
 func _update_hud(delta: float) -> void:
 	_phase += delta
+	if is_visible_in_tree():
+		_help_time += delta
 
 
 func _draw() -> void:
@@ -101,19 +100,8 @@ func _draw_compass() -> void:
 
 func _draw_gauges() -> void:
 	var origin := Vector2(28, size.y - 154)
-	var hull_fraction := clampf(_hull / maxf(_max_hull, 1.0), 0, 1)
 	var ammo_fraction := float(turret.ammo) / float(Turret.MAGAZINE)
 	var warning := Color(1, 1, 1, 0.65 + 0.35 * sin(_phase * 8.0))
-
-	_text(origin, "HULL", 12, DIM)
-	_bar(
-		origin + Vector2(0, 8), Vector2(190, 12), hull_fraction,
-		warning if hull_fraction < 0.35 else MAIN
-	)
-	_text(
-		origin + Vector2(198, 18),
-		"%d%%" % int(hull_fraction * 100.0), 12
-	)
 
 	_text(origin + Vector2(0, 44), "MAGAZINE", 12, DIM)
 	_bar(
@@ -138,14 +126,18 @@ func _draw_view_info() -> void:
 	var origin := Vector2(size.x - 290, 82)
 	var polarity := "BLACK HOT" if thermal.polarity > 0.5 else "WHITE HOT"
 	var fov := turret.camera.fov
-	_text(origin, "MODE  " + polarity, 12, DIM)
+	_text(origin, "MODE  " + polarity + "   " + video.palette.display_name, 12, DIM)
 	_text(
 		origin + Vector2(0, 20),
 		"ZOOM %.1fx   FOV %.0f" % [
 			TurretCamera.FOV_WIDE / maxf(fov, 1.0), fov	
 		], 12, DIM
 	)
-	_text(origin + Vector2(0, 48), "MOUSE / WASD  AIM", 11, FAINT)
-	_text(origin + Vector2(0, 64), "LEFT  GUN    RIGHT / SHIFT  ZOOM", 11, FAINT)
-	_text(origin + Vector2(0, 80), "WHEEL  ZOOM    MIDDLE / R  RELOAD", 11, FAINT)
-	_text(origin + Vector2(0, 96), "F  POLARITY    ESC  PAUSE", 11, FAINT)
+	var help_fade := clampf((HELP_VISIBLE_TIME + HELP_FADE_TIME - _help_time) / HELP_FADE_TIME, 0.0, 1.0)
+	if help_fade <= 0.0:
+		return
+	var help := Color(FAINT, FAINT.a * help_fade)
+	_text(origin + Vector2(0, 48), "MOUSE / WASD  AIM", 11, help)
+	_text(origin + Vector2(0, 64), "LEFT  GUN    RIGHT / SHIFT  ZOOM", 11, help)
+	_text(origin + Vector2(0, 80), "WHEEL  ZOOM    MIDDLE / R  RELOAD", 11, help)
+	_text(origin + Vector2(0, 96), "F  POLARITY    C  COLOUR    ESC  PAUSE", 11, help)

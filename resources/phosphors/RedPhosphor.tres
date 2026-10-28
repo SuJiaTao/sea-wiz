@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="PhosphorPalette" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/display/PhosphorPalette.gd" id="1_palette"]
+
+[resource]
+resource_name = "Red"
+script = ExtResource("1_palette")
+display_name = "RED"
+phosphor = Color(1, 0.2, 0.14, 1)
+highlight_bleach = 0.3

@@ -5,7 +5,7 @@ signal fired(origin: Vector3, direction: Vector3)
 signal reload_started()
 signal reload_finished()
 
-const MUZZLE_VELOCITY := 900.0
+const MUZZLE_VELOCITY := 1100.0
 const ROUNDS_PER_MIN := 4500.0
 const MAGAZINE := 1550
 const RELOAD_TIME := 2.4
@@ -15,7 +15,7 @@ const SPINDOWN_TIME := 0.8
 const PITCH_MIN := deg_to_rad(-12.0)
 const PITCH_MAX := deg_to_rad(80.0)
 
-const CAMERA_SHAKE_PER_ROUND := 0.34
+const CAMERA_SHAKE_PER_ROUND := 0.22
 
 const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 
@@ -23,8 +23,8 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export var mouse_sensitivity: float = 0.0022
 @export var damage_source: DamageSource
 @export var slew_speed: float = 1.5
-@export var dispersion_deg: float = 0.30
-@export var wander_deg: float = 0.22
+@export var dispersion_deg: float = 0.05
+@export var wander_deg: float = 0.03
 @export_category("Componenets")
 @export var mount: Node3D
 @export var gun: Node3D
@@ -156,7 +156,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if GameSession.is_state(GameSession.State.TITLE):
+	if not _enabled or get_tree().paused:
 		return
 
 	if event.is_action_pressed("ciws_fire"):
@@ -168,7 +168,7 @@ func _input(event: InputEvent) -> void:
 		_start_reload()
 
 func _start_firing() -> void:
-	if firing and not ammo > 0:
+	if firing or ammo <= 0 or reloading:
 		return
 	firing = true
 
@@ -179,7 +179,7 @@ func _stop_firing() -> void:
 	firing = false
 
 func _start_reload() -> void:
-	if reloading:
+	if reloading or ammo >= MAGAZINE:
 		return
 	_stop_firing()
 	reloading = true
@@ -190,7 +190,7 @@ func _start_reload() -> void:
 
 func _stop_reload() -> void:
 	if not reloading:
-		reloading = false
+		return
 	reloading = false
 	ammo = MAGAZINE
 	if _reload_audio:

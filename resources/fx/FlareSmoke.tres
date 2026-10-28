@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="ParticleStyle" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/fx/ParticleStyle.gd" id="1_style"]
+[ext_resource type="Shader" path="res://shaders/smoke_particle.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_FlareSmoke"]
+render_priority = 0
+shader = ExtResource("2_shader")
+shader_parameter/growth = 4.0
+shader_parameter/growth_curve = 0.4
+shader_parameter/start_heat = 0.9
+shader_parameter/end_heat = 0.3
+shader_parameter/cooling = 3.0
+shader_parameter/start_alpha = 0.55
+shader_parameter/fade = 1.3
+shader_parameter/min_angular_size = 0.003
+shader_parameter/billow = 0.55
+shader_parameter/erosion = 0.6
+shader_parameter/softness = 0.6
+shader_parameter/noise_scale = 3.0
+shader_parameter/churn = 0.8
+
+[sub_resource type="QuadMesh" id="QuadMesh_FlareSmoke"]
+material = SubResource("ShaderMaterial_FlareSmoke")
+
+[resource]
+resource_name = "FlareSmoke"
+script = ExtResource("1_style")
+mesh = SubResource("QuadMesh_FlareSmoke")
+lifetime = Vector2(2.5, 3.5)
+start_size = Vector2(1.2, 1.8)
+buoyancy = 0.3
+drag = 1.0
+wind_factor = 1.0

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="WeatherProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/weather/WeatherProfile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+display_name = "RAIN"
+fog_density = 0.0004
+rain_rate = 4500.0
+lens_drops_per_second = 1.2
+radar_clutter = 0.25
