@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="UpgradeProvider" format=3 uid="uid://3lh0rwsjj3fq"]
+
+[ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="1_2fn6y"]
+[ext_resource type="Resource" uid="uid://cy831tdlxw5v1" path="res://scripts/upgrade_system/upgrades/resources/test resources/circle tree/circle_test-upgrade.tres" id="2_ta351"]
+[ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/providers/UpgradeProvider.gd" id="2_yucrh"]
+[ext_resource type="Resource" uid="uid://hv2lfhyougdp" path="res://scripts/upgrade_system/upgrades/resources/test resources/circle tree/purple-circle_test-upgrade.tres" id="3_01ekb"]
+[ext_resource type="Resource" uid="uid://2m2bk3mnnj01" path="res://scripts/upgrade_system/upgrades/resources/test resources/spin tree/green-spin_test-upgrade.tres" id="4_xb44q"]
+[ext_resource type="Resource" uid="uid://bfy8kk10kerj8" path="res://scripts/upgrade_system/upgrades/resources/test resources/spin tree/green_test-upgrade.tres" id="5_bob0h"]
+[ext_resource type="Resource" uid="uid://dyen68mhkgy0" path="res://scripts/upgrade_system/upgrades/resources/test resources/spin tree/spin_test-upgrade.tres" id="6_p1cbh"]
+[ext_resource type="Resource" uid="uid://b3binpc7qguyj" path="res://scripts/upgrade_system/upgrades/resources/test resources/spin tree/super-spin_test-upgrade.tres" id="7_melg3"]
+[ext_resource type="Resource" uid="uid://cpcskrlkkyd58" path="res://scripts/upgrade_system/upgrades/resources/test resources/clone_test-upgrade.tres" id="8_4yevs"]
+[ext_resource type="Resource" uid="uid://ckeankvm53pmg" path="res://scripts/upgrade_system/upgrades/resources/test resources/tiny_test-upgrade.tres" id="9_acgf4"]
+
+[resource]
+script = ExtResource("2_yucrh")
+_upgrades = Array[ExtResource("1_2fn6y")]([ExtResource("2_ta351"), ExtResource("3_01ekb"), ExtResource("4_xb44q"), ExtResource("5_bob0h"), ExtResource("6_p1cbh"), ExtResource("7_melg3"), ExtResource("8_4yevs"), ExtResource("9_acgf4")])
+metadata/_custom_type_script = "uid://d17mvn7phxhv1"

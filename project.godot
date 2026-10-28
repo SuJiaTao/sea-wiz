@@ -39,7 +39,10 @@ project/assembly_name="Phalanx CIWS"
 
 movie_writer/movie_file="C:/Users/LEGION/Videos/GodotMovies/seawiz.avi"
 
-[rendering]
+[file_customization]
 
+folder_colors={
+"res://scripts/upgrade_system/": "purple"
+}
 textures/default_filters/anisotropic_filtering_level=0
 environment/defaults/default_clear_color=Color(0, 0, 0, 1)

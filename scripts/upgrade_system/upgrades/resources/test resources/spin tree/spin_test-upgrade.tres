@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SpinTestUpgrade" format=3 uid="uid://dyen68mhkgy0"]
+
+[ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="1_j13w6"]
+[ext_resource type="Script" uid="uid://dhge41xt0jr5v" path="res://scripts/upgrade_system/upgrades/test upgrades/SpinTestUpgrade.gd" id="2_rouy5"]
+
+[resource]
+script = ExtResource("2_rouy5")
+label = "Spin"
+category = "spin"
+metadata/_custom_type_script = "uid://dhge41xt0jr5v"

@@ -1,0 +1,261 @@
+[gd_scene format=3 uid="uid://b6t7bnslh26t3"]
+
+[ext_resource type="PackedScene" uid="uid://bu05gjgndg4ra" path="res://scenes/upgrade_demo/UpgradeDemoOutput.tscn" id="2_r7ssf"]
+[ext_resource type="Script" uid="uid://bi3eis2i528gj" path="res://scripts/upgrade_system/upgrade_demo/DemoUpgradeDock.gd" id="2_voa4p"]
+[ext_resource type="Script" uid="uid://bre545b7yjpw5" path="res://scripts/upgrade_system/upgrade_demo/UpgradeDemoLogic.gd" id="2_yvucc"]
+[ext_resource type="Script" uid="uid://ce85p78y8ipn8" path="res://scripts/upgrade_system/upgrade_demo/DemoSlider.gd" id="3_8x6yk"]
+[ext_resource type="Resource" uid="uid://3lh0rwsjj3fq" path="res://scripts/upgrade_system/providers/resources/test-provider.tres" id="4_qhmm7"]
+[ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="5_dj5qx"]
+[ext_resource type="Script" uid="uid://dq66xy3038ak5" path="res://scripts/upgrade_system/upgrades/test upgrades/BlankUpgrade.gd" id="6_8x6yk"]
+[ext_resource type="Script" uid="uid://d17mvn7phxhv1" path="res://scripts/upgrade_system/providers/UpgradeProvider.gd" id="7_voa4p"]
+
+[sub_resource type="Resource" id="Resource_bwmui"]
+script = ExtResource("6_8x6yk")
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_e4qvq"]
+script = ExtResource("6_8x6yk")
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_odhqt"]
+script = ExtResource("6_8x6yk")
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_dxeu7"]
+script = ExtResource("6_8x6yk")
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_unwtq"]
+script = ExtResource("6_8x6yk")
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_0ll24"]
+script = ExtResource("6_8x6yk")
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_uae3i"]
+script = ExtResource("6_8x6yk")
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_bfqvu"]
+script = ExtResource("6_8x6yk")
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_o10cv"]
+script = ExtResource("6_8x6yk")
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_gtgxy"]
+script = ExtResource("6_8x6yk")
+label = "common"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_tgytc"]
+script = ExtResource("6_8x6yk")
+label = "Rare!"
+weight = 0.4
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_evdh7"]
+script = ExtResource("6_8x6yk")
+label = "Rare"
+weight = 0.4
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_voa4p"]
+script = ExtResource("6_8x6yk")
+label = "Super Rare!!"
+weight = 0.1
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
+
+[sub_resource type="Resource" id="Resource_8x6yk"]
+script = ExtResource("7_voa4p")
+_upgrades = Array[ExtResource("5_dj5qx")]([SubResource("Resource_bwmui"), SubResource("Resource_e4qvq"), SubResource("Resource_odhqt"), SubResource("Resource_dxeu7"), SubResource("Resource_unwtq"), SubResource("Resource_0ll24"), SubResource("Resource_uae3i"), SubResource("Resource_bfqvu"), SubResource("Resource_o10cv"), SubResource("Resource_gtgxy"), SubResource("Resource_tgytc"), SubResource("Resource_evdh7"), SubResource("Resource_voa4p")])
+metadata/_custom_type_script = "uid://d17mvn7phxhv1"
+
+[node name="UgradeDemo" type="Control" unique_id=1726539843]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Background" type="ColorRect" parent="." unique_id=1880610318]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_transform_enabled = true
+offset_transform_scale = Vector2(1.01, 1.01)
+color = Color(0.5999427, 0.76730555, 0.83616793, 1)
+
+[node name="Label" type="Label" parent="." unique_id=2086396307]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 231.5
+offset_top = 236.0
+offset_right = 296.5
+offset_bottom = 259.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "OUTPUT"
+
+[node name="Output" parent="." unique_id=612951646 instance=ExtResource("2_r7ssf")]
+layout_mode = 0
+offset_left = 841.0
+offset_top = 275.0
+offset_right = 969.0
+offset_bottom = 403.0
+
+[node name="Upgrade Dock" type="VBoxContainer" parent="." unique_id=766761850]
+custom_minimum_size = Vector2(100, 100)
+propagate_maximum_size = false
+layout_mode = 0
+offset_left = 108.0
+offset_top = 121.0
+offset_right = 208.0
+offset_bottom = 221.0
+script = ExtResource("2_voa4p")
+
+[node name="Next Upgade Dock" type="VBoxContainer" parent="." unique_id=1981895004]
+modulate = Color(1, 0.3113789, 0.33715135, 1)
+layout_mode = 0
+offset_left = 269.0
+offset_top = 132.0
+offset_right = 369.0
+offset_bottom = 240.0
+script = ExtResource("2_voa4p")
+disabled = true
+
+[node name="Active Upgrades Dock" type="GridContainer" parent="." unique_id=180942452]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -299.0
+offset_top = -257.0
+offset_right = 618.0
+offset_bottom = -44.0
+grow_horizontal = 2
+grow_vertical = 0
+columns = 8
+script = ExtResource("2_voa4p")
+
+[node name="Button" type="Button" parent="." unique_id=1796312839]
+layout_mode = 0
+offset_left = 54.0
+offset_top = 34.0
+offset_right = 156.0
+offset_bottom = 75.0
+disabled = true
+text = "setA"
+
+[node name="Button2" type="Button" parent="." unique_id=929486882]
+layout_mode = 0
+offset_left = 171.0
+offset_top = 34.0
+offset_right = 273.0
+offset_bottom = 75.0
+text = "setB (weighted)
+"
+
+[node name="HSlider" type="HSlider" parent="." unique_id=36381592 node_paths=PackedStringArray("value_label")]
+layout_mode = 0
+offset_left = 321.0
+offset_top = 50.0
+offset_right = 513.0
+offset_bottom = 66.0
+max_value = 10.0
+rounded = true
+script = ExtResource("3_8x6yk")
+value_label = NodePath("Label2")
+
+[node name="Label" type="Label" parent="HSlider" unique_id=1804575556]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -115.0
+offset_top = -34.0
+offset_right = -68.0
+offset_bottom = -11.0
+grow_horizontal = 0
+grow_vertical = 2
+text = "Count"
+
+[node name="Label2" type="Label" parent="HSlider" unique_id=1072006585]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 21.0
+offset_top = -11.5
+offset_right = 61.0
+offset_bottom = 11.5
+grow_horizontal = 0
+grow_vertical = 2
+text = "0"
+
+[node name="Button3" type="Button" parent="." unique_id=1376547920]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 675.0
+offset_right = 83.0
+offset_bottom = 706.0
+text = "Refresh
+"
+
+[node name="OptionButton" type="OptionButton" parent="." unique_id=417275656]
+layout_mode = 0
+offset_left = 115.0
+offset_top = 678.0
+offset_right = 265.0
+offset_bottom = 698.0
+
+[node name="Label2" type="Label" parent="OptionButton" unique_id=2061485856]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = -25.0
+offset_right = 36.0
+offset_bottom = -2.0
+grow_horizontal = 2
+text = "filter"
+
+[node name="Logic" type="Node" parent="." unique_id=1845921226 node_paths=PackedStringArray("button_a", "button_b", "refresh_button", "slider_b", "inactive_upgrades_dock", "active_upgrades_dock", "unavailable_upgrades_dock", "category_drop_down")]
+script = ExtResource("2_yvucc")
+button_a = NodePath("../Button")
+button_b = NodePath("../Button2")
+refresh_button = NodePath("../Button3")
+slider_b = NodePath("../HSlider")
+inactive_upgrades_dock = NodePath("../Upgrade Dock")
+active_upgrades_dock = NodePath("../Active Upgrades Dock")
+unavailable_upgrades_dock = NodePath("../Next Upgade Dock")
+provider_a = ExtResource("4_qhmm7")
+provider_b = SubResource("Resource_8x6yk")
+slots = 8
+category_drop_down = NodePath("../OptionButton")
+categories = Array[String](["spin", "circle"])
