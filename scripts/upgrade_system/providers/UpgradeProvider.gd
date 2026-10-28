@@ -25,6 +25,7 @@ func reset_pool() -> void:
 			_unavailable_upgardes.append(upgrade)
 
 
+## Calls reset_pool then returns a duplicated _pool
 func _get_pool() -> Array[Upgrade]:
 	reset_pool()
 	return _pool.duplicate()
@@ -32,8 +33,6 @@ func _get_pool() -> Array[Upgrade]:
 
 ## NOTE: Duplicate array before passing to pool if you want to keep the original array unaffected
 func _process_upgrade_array(new_pool: Array[Upgrade], count: int) -> Array[Upgrade]:
-	if count < 0:
-		count = new_pool.size()
 	new_pool = new_pool.slice(0, min(new_pool.size(), count))
 	_sort_pool(new_pool)
 	return new_pool
@@ -55,9 +54,9 @@ func get_new_upgrades_of_category(category: String) -> Array[Upgrade]:
 	return _process_upgrade_array(filtered, -1)
 
 
-func get_new_upgrades_weighted(count: int) -> Array[Upgrade]:
+func get_random_upgrades_weighted(count: int) -> Array[Upgrade]:
 	var new_pool : Array[Upgrade] = _get_pool()
-	if count < -1:
+	if count < 0:
 		count = new_pool.size()
 
 	var weights_array : Array[float]
@@ -70,6 +69,14 @@ func get_new_upgrades_weighted(count: int) -> Array[Upgrade]:
 
 	return _process_upgrade_array(shuffled_pool, count)
 
+func get_random_upgrades(count: int) -> Array[Upgrade]:
+	var new_pool : Array[Upgrade] = _get_pool()
+	if count < 0:
+		count = new_pool.size()
+
+	new_pool.shuffle()
+
+	return _process_upgrade_array(new_pool, count)
 
 class WeightIndexPair:
 	var weight : float

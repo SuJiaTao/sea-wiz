@@ -66,7 +66,7 @@ func restock() -> void:
 		else:
 			new_upgrades = provider.get_new_upgrades_of_category(filter)
 	else:
-		new_upgrades = provider.get_new_upgrades_weighted(slider_b.value as int)
+		new_upgrades = provider.get_random_upgrades_weighted(slider_b.value as int)
 
 	for upgrade in new_upgrades:
 		inactive_upgrades_dock.dock(upgrade, false)
