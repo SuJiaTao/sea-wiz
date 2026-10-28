@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="ParticleStyle" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ParticleStyle" format=3 uid="uid://drpri43ybk54"]
 
-[ext_resource type="Script" path="res://scripts/fx/ParticleStyle.gd" id="1_style"]
-[ext_resource type="Shader" path="res://shaders/spark_particle.gdshader" id="2_shader"]
+[ext_resource type="Script" uid="uid://bnxoapiig155" path="res://scripts/fx/ParticleStyle.gd" id="1_style"]
+[ext_resource type="Shader" uid="uid://cmtlbvy2jqypc" path="res://shaders/spark_particle.gdshader" id="2_shader"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_FlareGlow"]
 render_priority = 0
@@ -24,5 +24,5 @@ resource_name = "FlareGlow"
 script = ExtResource("1_style")
 mesh = SubResource("QuadMesh_FlareGlow")
 lifetime = Vector2(0.12, 0.2)
-start_size = Vector2(1.0, 1.4)
+start_size = Vector2(1, 1.4)
 wind_factor = 0.0
