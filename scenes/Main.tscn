@@ -1,4 +1,4 @@
-[gd_scene load_steps=109 format=3]
+[gd_scene load_steps=113 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="PackedScene" uid="uid://bfbwp5hakbdf0" path="res://scenes/turret/Turret.tscn" id="2_turret"]
@@ -99,6 +99,10 @@
 [ext_resource type="AudioStream" path="res://audio/thunder.wav" id="97_thunder"]
 [ext_resource type="Script" path="res://scripts/weather/AuroraWeather.gd" id="98_aurora"]
 [ext_resource type="Resource" path="res://resources/weather/Aurora.tres" id="99_aurora_profile"]
+[ext_resource type="Script" path="res://scripts/display/ShockwaveLens.gd" id="100_shock_lens"]
+[ext_resource type="Script" path="res://scripts/display/BlastFeel.gd" id="101_blast_feel"]
+[ext_resource type="SphereMesh" path="res://resources/fx/ShockDomeMesh.tres" id="102_dome"]
+[ext_resource type="AudioStream" path="res://audio/explosion.wav" id="103_boom"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -172,6 +176,23 @@ enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
 process_mode = 1
 script = ExtResource("70_lens")
 thermal = NodePath("../ViewportContainer")
+
+[node name="ShockwaveLens" type="Node" parent="." node_paths=PackedStringArray("thermal", "turret", "effects")]
+process_mode = 1
+script = ExtResource("100_shock_lens")
+thermal = NodePath("../ViewportContainer")
+turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
+effects = NodePath("../ViewportContainer/SubViewport/World/Effects")
+
+[node name="BlastFeel" type="Node" parent="." node_paths=PackedStringArray("effects", "turret", "boom")]
+process_mode = 1
+script = ExtResource("101_blast_feel")
+effects = NodePath("../ViewportContainer/SubViewport/World/Effects")
+turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
+boom = NodePath("Boom")
+
+[node name="Boom" type="AudioStreamPlayer" parent="BlastFeel"]
+stream = ExtResource("103_boom")
 
 [node name="Weather" type="Node" parent="." node_paths=PackedStringArray("waves")]
 process_mode = 1
@@ -355,6 +376,7 @@ ripples = NodePath("Ripples")
 flares = NodePath("Flares")
 flare_smoke = NodePath("FlareSmoke")
 fire_mesh = ExtResource("47_fire_mesh")
+shock_dome_mesh = ExtResource("102_dome")
 splash_style = ExtResource("45_splash")
 
 [node name="Smoke" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects"]
