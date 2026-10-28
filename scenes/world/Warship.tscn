@@ -1,0 +1,246 @@
+[gd_scene load_steps=25 format=3]
+
+[ext_resource type="Script" path="res://scripts/ship/HullMesh.gd" id="1_hull"]
+[ext_resource type="PackedScene" path="res://scenes/world/Deck.tscn" id="2_platform"]
+
+[sub_resource type="StandardMaterial3D" id="Material_hull"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.24, 0.24, 0.24, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_deck"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.2, 0.2, 0.2, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_superstructure"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.28, 0.28, 0.28, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_window"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.08, 0.08, 0.08, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_mast"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.3, 0.3, 0.3, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_funnel"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.42, 0.42, 0.42, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_hot"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(1.0, 1.0, 1.0, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_vls"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.26, 0.26, 0.26, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_gun"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.3, 0.3, 0.3, 1)
+
+[sub_resource type="BoxMesh" id="Box_Deckhouse"]
+material = SubResource("Material_superstructure")
+size = Vector3(12, 2.4, 16)
+
+[sub_resource type="BoxMesh" id="Box_GunHouse"]
+material = SubResource("Material_gun")
+size = Vector3(3, 1.8, 4)
+
+[sub_resource type="BoxMesh" id="Box_Launchers"]
+material = SubResource("Material_vls")
+size = Vector3(6, 0.4, 7)
+
+[sub_resource type="BoxMesh" id="Box_Bridge"]
+material = SubResource("Material_superstructure")
+size = Vector3(14, 6.2, 14)
+
+[sub_resource type="BoxMesh" id="Box_BridgeWindows"]
+material = SubResource("Material_window")
+size = Vector3(14.2, 0.8, 0.3)
+
+[sub_resource type="BoxMesh" id="Box_Yard"]
+material = SubResource("Material_mast")
+size = Vector3(8, 0.3, 0.3)
+
+[sub_resource type="BoxMesh" id="Box_ForwardFunnel"]
+material = SubResource("Material_funnel")
+size = Vector3(4.5, 9, 6)
+
+[sub_resource type="BoxMesh" id="Box_ForwardFunnelMouth"]
+material = SubResource("Material_hot")
+size = Vector3(4.3, 0.6, 5.8)
+
+[sub_resource type="BoxMesh" id="Box_AftFunnel"]
+material = SubResource("Material_funnel")
+size = Vector3(4.5, 9, 6)
+
+[sub_resource type="BoxMesh" id="Box_AftFunnelMouth"]
+material = SubResource("Material_hot")
+size = Vector3(4.3, 0.6, 5.8)
+
+[sub_resource type="BoxMesh" id="Box_Hangar"]
+material = SubResource("Material_superstructure")
+size = Vector3(12, 4, 12)
+
+[sub_resource type="CylinderMesh" id="Cylinder_Mast"]
+material = SubResource("Material_mast")
+top_radius = 0.35
+bottom_radius = 0.35
+height = 22
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="Cylinder_GunBarrel"]
+material = SubResource("Material_gun")
+top_radius = 0.14
+bottom_radius = 0.14
+height = 6
+radial_segments = 8
+rings = 1
+
+[node name="Warship" type="Node3D"]
+
+[node name="Hull" type="MeshInstance3D" parent="."]
+script = ExtResource("1_hull")
+half_breadths = PackedVector2Array(90, 8, 70, 9, 30, 9.5, 0, 9.5, -20, 8.5, -35, 6.5, -48, 3.5, -56, 1.2, -60, 0)
+deck_height = 6.0
+bow_sheer = 2.0
+sheer_start = -15.0
+keel_depth = -4.0
+waterline_tuck = 0.85
+side_material = SubResource("Material_hull")
+deck_material = SubResource("Material_deck")
+
+[node name="Deckhouse" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.2, 0)
+mesh = SubResource("Box_Deckhouse")
+cast_shadow = 0
+
+[node name="GunHouse" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.2, -33)
+mesh = SubResource("Box_GunHouse")
+cast_shadow = 0
+
+[node name="Launchers" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.3, -22)
+mesh = SubResource("Box_Launchers")
+cast_shadow = 0
+
+[node name="Bridge" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.1, 20)
+mesh = SubResource("Box_Bridge")
+cast_shadow = 0
+
+[node name="BridgeWindows" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.4, 12.95)
+mesh = SubResource("Box_BridgeWindows")
+cast_shadow = 0
+
+[node name="Yard" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 28, 26)
+mesh = SubResource("Box_Yard")
+cast_shadow = 0
+
+[node name="ForwardFunnel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.5, 40)
+mesh = SubResource("Box_ForwardFunnel")
+cast_shadow = 0
+
+[node name="ForwardFunnelMouth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15.3, 40)
+mesh = SubResource("Box_ForwardFunnelMouth")
+cast_shadow = 0
+
+[node name="AftFunnel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.5, 60)
+mesh = SubResource("Box_AftFunnel")
+cast_shadow = 0
+
+[node name="AftFunnelMouth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15.3, 60)
+mesh = SubResource("Box_AftFunnelMouth")
+cast_shadow = 0
+
+[node name="Hangar" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 78)
+mesh = SubResource("Box_Hangar")
+cast_shadow = 0
+
+[node name="Mast" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 23, 26)
+mesh = SubResource("Cylinder_Mast")
+cast_shadow = 0
+
+[node name="GunBarrel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.17365, -0.98481, 0, 0.98481, 0.17365, 0, 7.7, -36.2)
+mesh = SubResource("Cylinder_GunBarrel")
+cast_shadow = 0
+
+[node name="CiwsPlatform" parent="." instance=ExtResource("2_platform")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
+
+[node name="FireSpots" type="Node3D" parent="."]
+
+[node name="Bow" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.0, -52)
+
+[node name="ForedeckPort" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 6.9, -41)
+
+[node name="ForedeckStarboard" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 6.8, -39)
+
+[node name="BowGun" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.1, -33)
+
+[node name="Launchers" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.5, -22)
+
+[node name="WaistForwardPort" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 6.2, -18)
+
+[node name="WaistForwardStarboard" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 6.2, -16)
+
+[node name="BridgeRoof" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.2, 20)
+
+[node name="BridgePort" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 6.0, 18)
+
+[node name="BridgeStarboard" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6.0, 22)
+
+[node name="ForwardFunnel" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15.6, 40)
+
+[node name="WaistPort" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 6.0, 30)
+
+[node name="WaistStarboard" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6.0, 50)
+
+[node name="Hangar" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.0, 78)
+
+[node name="Stern" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.0, 87)
