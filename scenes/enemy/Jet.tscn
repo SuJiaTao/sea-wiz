@@ -13,6 +13,7 @@ visuals = NodePath("Visuals")
 flares = NodePath("FlareDispenser")
 max_hp = 55.0
 display_name = "FIGHTER"
+score_value = 300
 hud_radius = 8.25
 speed = 240.0
 agility = 0.7
