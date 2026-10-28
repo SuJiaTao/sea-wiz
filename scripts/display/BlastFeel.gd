@@ -24,6 +24,6 @@ func _on_shockwave(at: Vector3, size: float) -> void:
 
 
 func _arrive(size: float, nearness: float) -> void:
-	turret.add_impulse(impulse_per_size * size * nearness)
+	turret.apply_camera_shake_impulse(impulse_per_size * size * nearness)
 	boom.volume_db = lerpf(quietest_db, 0.0, nearness)
 	boom.play()

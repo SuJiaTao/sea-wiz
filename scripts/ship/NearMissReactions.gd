@@ -31,7 +31,7 @@ func _on_missed(point: Vector3) -> void:
 	var closeness := 1.0 - clampf(distance / felt_radius, 0.0, 1.0)
 	if closeness <= 0.0:
 		return
-	turret.add_impulse(rock_impulse * closeness)
+	turret.apply_camera_shake_impulse(rock_impulse * closeness)
 	lens.splash(closeness)
 	if distance < shrapnel_radius:
 		integrity.take_hit(shrapnel_damage * (1.0 - distance / shrapnel_radius), surface)
