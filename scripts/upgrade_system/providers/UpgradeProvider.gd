@@ -5,6 +5,7 @@ extends Resource
 static var rng := RandomNumberGenerator.new()
 
 @export var _upgrades : Array[Upgrade]
+## _pool is array of upgrades with passing preconditions
 var _pool : Array[Upgrade]
 var _unavailable_upgardes : Array[Upgrade]
 
@@ -15,7 +16,7 @@ func build_trees() -> void:
 			u.setup()
 
 
-func reset_pool() -> void:
+func _reset_pool() -> void:
 	_pool.clear()
 	_unavailable_upgardes.clear()
 	for upgrade in _upgrades:
@@ -25,9 +26,9 @@ func reset_pool() -> void:
 			_unavailable_upgardes.append(upgrade)
 
 
-## Calls reset_pool then returns a duplicated _pool
+## Calls _reset_pool then returns a duplicated _pool
 func _get_pool() -> Array[Upgrade]:
-	reset_pool()
+	_reset_pool()
 	return _pool.duplicate()
 
 
@@ -112,3 +113,4 @@ func _weighted_grab(weights: Array[float], result_size: int) -> Array[int]:
 ## Sorts upgrade pool by its index in upgrades
 func _sort_pool(pool: Array[Upgrade]) -> void:
 	pool.sort_custom(func(a, b): return _upgrades.find(a) < _upgrades.find(b))
+
