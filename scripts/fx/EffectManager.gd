@@ -8,6 +8,8 @@ class_name EffectManager
 @export var droplets: ParticleBatch
 @export var spray: ParticleBatch
 @export var ripples: ParticleBatch
+@export var flares: ParticleBatch
+@export var flare_smoke: ParticleBatch
 @export var fire_mesh: Mesh
 @export var splash_style: SplashStyle
 @export var max_effects: int = 96
@@ -30,6 +32,10 @@ func splash(at: Vector3, size: float) -> void:
 	spawn(SplashEffect.new(at, size))
 
 
+func countermeasures(released: Array[DecoyFlare]) -> void:
+	spawn(FlareEffect.new(released))
+
+
 func sea_level() -> float:
 	return sea.global_position.y
 
@@ -38,7 +44,7 @@ func clear_all() -> void:
 	var snapshot: Array[AbstractEffect] = _effects.duplicate()
 	for effect in snapshot:
 		_retire(effect)
-	for batch in [smoke, fireballs, embers, droplets, spray, ripples]:
+	for batch in [smoke, fireballs, embers, droplets, spray, ripples, flares, flare_smoke]:
 		batch.clear_all()
 
 
