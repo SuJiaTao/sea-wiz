@@ -130,7 +130,7 @@ func _draw_view_info() -> void:
 	_text(
 		origin + Vector2(0, 20),
 		"ZOOM %.1fx   FOV %.0f" % [
-			Turret.FOV_WIDE / maxf(fov, 1.0), fov
+			TurretCamera.FOV_WIDE / maxf(fov, 1.0), fov	
 		], 12, DIM
 	)
 	var help_fade := clampf((HELP_VISIBLE_TIME + HELP_FADE_TIME - _help_time) / HELP_FADE_TIME, 0.0, 1.0)

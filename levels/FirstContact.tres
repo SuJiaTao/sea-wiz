@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="WaveDefinition" format=3 uid="uid://dc5puaal8067j"]
+[gd_resource type="Resource" script_class="WaveDefinition" format=3 uid="uid://blmh1ka3ro1ff"]
 
 [ext_resource type="Script" uid="uid://b2ap6okbtqnal" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
 [ext_resource type="Script" uid="uid://174tvftdpqhu" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]

@@ -1,7 +1,7 @@
-[gd_scene load_steps=113 format=3]
+[gd_scene format=3 uid="uid://bl0kxwc87pjcr"]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
-[ext_resource type="Script" path="res://scripts/Turret.gd" id="2_turret"]
+[ext_resource type="PackedScene" path="res://scenes/turret/Turret.tscn" id="2_turret"]
 [ext_resource type="Script" path="res://scripts/ballistics/BallisticManager.gd" id="3_ballistics"]
 [ext_resource type="Script" path="res://scripts/GameplayHUD.gd" id="4_hud"]
 [ext_resource type="Script" path="res://scripts/enemy/EnemyManager.gd" id="5_enemies"]
@@ -25,7 +25,6 @@
 [ext_resource type="Script" path="res://scripts/hud/WeaponFeedback.gd" id="23_weapon_feedback"]
 [ext_resource type="Script" path="res://scripts/ballistics/MissileSmokeRenderer.gd" id="24_smoke"]
 [ext_resource type="Mesh" path="res://scenes/ballistics/InterceptorMesh.tres" id="25_interceptor"]
-[ext_resource type="Resource" path="res://resources/damage_sources/Cannon.tres" id="26_cannon_source"]
 [ext_resource type="Resource" path="res://resources/damage_sources/Missile.tres" id="27_missile_source"]
 [ext_resource type="PackedScene" path="res://scenes/ui/TitleScreen.tscn" id="28_title"]
 [ext_resource type="Script" path="res://scripts/display/AnalogVideo.gd" id="29_video"]
@@ -302,10 +301,8 @@ cast_shadow = 0
 
 [node name="Warship" parent="ViewportContainer/SubViewport/World/Vessel" instance=ExtResource("10_warship")]
 
-[node name="Turret" type="Node3D" parent="ViewportContainer/SubViewport/World/Vessel"]
+[node name="Turret" parent="ViewportContainer/SubViewport/World/Vessel" instance=ExtResource("2_turret")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17, 0)
-script = ExtResource("2_turret")
-damage_source = ExtResource("26_cannon_source")
 
 [node name="Casings" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Vessel"]
 script = ExtResource("58_casings")

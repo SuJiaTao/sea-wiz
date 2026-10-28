@@ -36,12 +36,12 @@ func _on_launched(
 	_seeker_audio.pitch_scale = 1.0
 	_seeker_audio.play()
 	smoke.play_launch(origin)
-	turret.add_impulse(4.5)
+	turret.apply_camera_shake_impulse(4.5)
 
 
 func _on_detonated(position: Vector3, radius: float) -> void:
 	fx.explosion(position, radius * 0.55)
-	turret.add_impulse(0.6)
+	turret.apply_camera_shake_impulse(0.6)
 
 
 func _update_hud(delta: float) -> void:

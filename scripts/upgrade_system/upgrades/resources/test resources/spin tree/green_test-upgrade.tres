@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="GreenTestUpgrade" format=3 uid="uid://bfy8kk10kerj8"]
+
+[ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="1_ieax4"]
+[ext_resource type="Script" uid="uid://7g4f4o8glaya" path="res://scripts/upgrade_system/upgrades/test upgrades/GreenTestUpgrade.gd" id="2_ieax4"]
+
+[resource]
+script = ExtResource("2_ieax4")
+label = "Greenify"
+category = "spin"
+metadata/_custom_type_script = "uid://7g4f4o8glaya"

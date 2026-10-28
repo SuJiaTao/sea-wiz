@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TinyTestUpgrade" format=3 uid="uid://ckeankvm53pmg"]
+
+[ext_resource type="Script" uid="uid://53g01lktbxqq" path="res://scripts/upgrade_system/upgrades/UgradeGraph.gd" id="1_38eap"]
+[ext_resource type="Script" uid="uid://d3k62t2ol1yk1" path="res://scripts/upgrade_system/upgrades/test upgrades/TinyTestUpgrade.gd" id="2_26df2"]
+
+[resource]
+script = ExtResource("2_26df2")
+label = "become tiny"
+metadata/_custom_type_script = "uid://d3k62t2ol1yk1"

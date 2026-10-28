@@ -1,6 +1,8 @@
 extends Node
 class_name GameSession
 
+static var _singleton : GameSession
+
 enum State { TITLE, STARTING, RUNNING, WON, LOST }
 
 const HIT_IMPULSE: float = 5.0
@@ -28,6 +30,7 @@ var _title_time: float = 0.0
 
 
 func _ready() -> void:
+	_singleton = self
 	enemies.enemy_created.connect(_on_enemy_created)
 	enemies.enemy_killed.connect(_on_enemy_killed)
 	ballistics.entered_water.connect(effects.splash)
@@ -146,7 +149,7 @@ func _on_target_reached(damage: float, enemy: AbstractEnemy) -> void:
 	integrity.take_hit(damage, enemy.global_position)
 	if enemy.blast_size > 0.0:
 		effects.spawn(BigExplosionEffect.new(_on_ship(enemy.global_position), enemy.blast_size))
-	turret.add_impulse(HIT_IMPULSE)
+	turret.apply_camera_shake_impulse(HIT_IMPULSE)
 	thermal.heat_burst(HIT_FLASH)
 
 
@@ -199,3 +202,6 @@ func _restart() -> void:
 	var error := get_tree().reload_current_scene()
 	if error != OK:
 		push_error("Could not reload the gameplay scene.")
+
+static func is_state(state2: State) -> bool:
+	return _singleton.state == state2
