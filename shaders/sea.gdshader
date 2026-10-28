@@ -5,11 +5,13 @@ render_mode unshaded, cull_disabled, depth_draw_opaque;
 // after the thermal posterise pass, it reads as an almost-black plane with a
 // crisp horizon line.
 
-uniform float base_level : hint_range(0.0, 0.5) = 0.026;
-uniform float clutter_level : hint_range(0.0, 0.5) = 0.008;
+uniform float base_level : hint_range(0.0, 0.5) = 0.08;
+uniform float clutter_level : hint_range(0.0, 0.5) = 0.02;
 uniform float clutter_scale = 0.006;
 uniform float clutter_speed = 0.09;
 uniform float falloff = 520.0;
+
+const float DISPLAY_GAMMA = 2.2;
 
 float hash21(vec2 p) {
 	p = fract(p * vec2(233.34, 851.73));
@@ -45,5 +47,5 @@ void fragment() {
 	fade = fade * fade;
 
 	float v = base_level + n * clutter_level * fade;
-	ALBEDO = vec3(v);
+	ALBEDO = vec3(pow(v, DISPLAY_GAMMA));
 }

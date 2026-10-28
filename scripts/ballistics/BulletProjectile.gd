@@ -2,9 +2,19 @@ extends AbstractProjectile
 class_name BulletProjectile
 
 const GRAVITY := 9.81
+const GLANCING_INCIDENCE := 0.5
+const RICOCHET_CHANCE := 0.8
+const MAX_RICOCHETS := 1
+const RICOCHET_SPEED_KEPT := 0.45
+const RICOCHET_DAMAGE_KEPT := 0.25
+const RICOCHET_SCATTER := 0.2
+const SURFACE_CLEARANCE := 0.05
+const MIN_NORMAL_LENGTH_SQUARED := 0.5
 
 var damage: float = 10.0
 var tracer_length: float = 8.0
+
+var _ricochets: int = 0
 
 
 func _init(
@@ -26,6 +36,26 @@ func _on_impact(impact: ProjectileImpact) -> void:
 		return
 	if enemy.alive and not enemy._destroy_requested:
 		enemy.take_damage(damage, impact.point, weapon_source)
+
+
+func _deflects(impact: ProjectileImpact) -> bool:
+	if _ricochets >= MAX_RICOCHETS:
+		return false
+	if impact.normal.length_squared() < MIN_NORMAL_LENGTH_SQUARED:
+		return false
+	var incidence := absf(velocity.normalized().dot(impact.normal))
+	return incidence < GLANCING_INCIDENCE and randf() < RICOCHET_CHANCE
+
+
+func _on_deflect(impact: ProjectileImpact) -> void:
+	_ricochets += 1
+	damage *= RICOCHET_DAMAGE_KEPT
+	_on_impact(impact)
+	var bounced := velocity.bounce(impact.normal)
+	var scatter := Vector3(randfn(0.0, 1.0), randfn(0.0, 1.0), randfn(0.0, 1.0))
+	var direction := (bounced.normalized() + scatter * RICOCHET_SCATTER).normalized()
+	velocity = direction * bounced.length() * RICOCHET_SPEED_KEPT
+	position = impact.point + impact.normal * SURFACE_CLEARANCE
 
 
 func visual_transform() -> Transform3D:

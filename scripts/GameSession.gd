@@ -11,8 +11,11 @@ const HULL_MAX: float = 100.0
 @onready var enemies: EnemyManager = $ViewportContainer/SubViewport/World/Enemies
 @onready var weapons: WeaponsOrchestrator = $ViewportContainer/SubViewport/World/Weapons
 @onready var fx: FXManager = $ViewportContainer/SubViewport/World/FX
+@onready var effects: EffectManager = $ViewportContainer/SubViewport/World/Effects
+@onready var ballistics: BallisticManager = $ViewportContainer/SubViewport/World/Ballistics
 @onready var waves: WaveOrchestrator = $WaveOrchestrator
 @onready var thermal: ThermalView = $ViewportContainer
+@onready var video: AnalogVideo = $VideoSignal/AnalogVideo
 @onready var hud: GameplayHUD = $HUD/HUDRoot
 @onready var title_screen: TitleScreen = $HUD/TitleScreen
 
@@ -26,6 +29,7 @@ func _ready() -> void:
 		_singleton = self
 	enemies.enemy_created.connect(_on_enemy_created)
 	enemies.enemy_killed.connect(_on_enemy_killed)
+	ballistics.entered_water.connect(effects.splash)
 	waves.completed.connect(_on_completed)
 	waves.failed.connect(_on_wave_failed)
 	title_screen.start_requested.connect(_on_start_requested)
@@ -72,6 +76,10 @@ func _begin() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ciws_palette"):
+		video.next_palette()
+		get_viewport().set_input_as_handled()
+		return
 	if state == State.TITLE:
 		if title_screen.handle_input(event):
 			get_viewport().set_input_as_handled()
@@ -112,6 +120,9 @@ func _on_enemy_damaged(_amount: float, point: Vector3) -> void:
 
 func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: DamageSource) -> void:
 	fx.explosion(enemy.global_position, 6.0)
+	effects.spawn(ShootDownEffect.new(enemy.global_position, enemy.velocity, enemy.hud_radius))
+	if turret.camera.is_position_in_frustum(enemy.global_position):
+		thermal.heat_burst()
 
 
 func _on_target_reached(damage: float) -> void:

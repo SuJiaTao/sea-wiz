@@ -23,8 +23,8 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export var mouse_sensitivity: float = 0.0022
 @export var damage_source: DamageSource
 @export var slew_speed: float = 1.5
-@export var dispersion_deg: float = 0.30
-@export var wander_deg: float = 0.22
+@export var dispersion_deg: float = 0.15
+@export var wander_deg: float = 0.10
 @export_category("Componenets")
 @export var mount: Node3D
 @export var gun: Node3D
@@ -102,6 +102,10 @@ func shake_total() -> float:
 
 func apply_camera_shake_impulse(value: float) -> void:
 	camera.apply_shake_impulse(value)
+
+
+func add_impulse(value: float) -> void:
+	apply_camera_shake_impulse(value)
 
 
 func bearing_deg() -> float:

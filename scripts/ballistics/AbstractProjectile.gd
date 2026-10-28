@@ -4,6 +4,8 @@ class_name AbstractProjectile
 
 enum State { FIRING, FLYING, IMPACTING, DELETED }
 
+const SPLASH_SIZE: float = 0.25
+
 var position: Vector3
 var velocity: Vector3
 var radius: float
@@ -46,6 +48,18 @@ func _on_propel(delta: float) -> void
 
 func _on_impact(_impact: ProjectileImpact) -> void:
 	pass
+
+
+func _deflects(_impact: ProjectileImpact) -> bool:
+	return false
+
+
+func _on_deflect(_impact: ProjectileImpact) -> void:
+	pass
+
+
+func _splash_size() -> float:
+	return SPLASH_SIZE
 
 
 func _on_delete() -> void:
