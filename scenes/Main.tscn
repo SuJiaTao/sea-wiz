@@ -1,4 +1,4 @@
-[gd_scene load_steps=92 format=3]
+[gd_scene load_steps=100 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="PackedScene" uid="uid://bfbwp5hakbdf0" path="res://scenes/turret/Turret.tscn" id="2_turret"]
@@ -82,6 +82,14 @@
 [ext_resource type="Resource" path="res://resources/weather/Fog.tres" id="80_fog_profile"]
 [ext_resource type="Script" path="res://scripts/weather/WeatherProfile.gd" id="81_profile_type"]
 [ext_resource type="Material" path="res://resources/world/StarPoint.tres" id="82_star_material"]
+[ext_resource type="Script" path="res://scripts/weather/PrecipitationField.gd" id="83_precip_field"]
+[ext_resource type="Script" path="res://scripts/weather/PrecipitationWeather.gd" id="84_precip"]
+[ext_resource type="Script" path="res://scripts/weather/LensRainWeather.gd" id="85_lens_rain"]
+[ext_resource type="QuadMesh" path="res://resources/weather/RainStreak.tres" id="86_rain_mesh"]
+[ext_resource type="QuadMesh" path="res://resources/weather/SnowFlake.tres" id="87_snow_mesh"]
+[ext_resource type="Resource" path="res://resources/weather/Rain.tres" id="88_rain"]
+[ext_resource type="Resource" path="res://resources/weather/Snow.tres" id="89_snow"]
+[ext_resource type="Resource" path="res://resources/weather/Sleet.tres" id="90_sleet"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -161,7 +169,7 @@ process_mode = 1
 script = ExtResource("75_weather")
 waves = NodePath("../WaveOrchestrator")
 clear = ExtResource("79_clear")
-fronts = Array[ExtResource("81_profile_type")]([ExtResource("80_fog_profile")])
+fronts = Array[ExtResource("81_profile_type")]([ExtResource("80_fog_profile"), ExtResource("88_rain"), ExtResource("89_snow"), ExtResource("90_sleet")])
 
 [node name="Fog" type="Node" parent="Weather" node_paths=PackedStringArray("environment")]
 script = ExtResource("76_fog")
@@ -171,6 +179,15 @@ star_material = ExtResource("82_star_material")
 [node name="RadarClutter" type="Node" parent="Weather" node_paths=PackedStringArray("radar")]
 script = ExtResource("77_clutter")
 radar = NodePath("../../ViewportContainer/SubViewport/World/Sensors/SearchRadar")
+
+[node name="Precipitation" type="Node" parent="Weather" node_paths=PackedStringArray("rain", "snow")]
+script = ExtResource("84_precip")
+rain = NodePath("../../ViewportContainer/SubViewport/World/Rain")
+snow = NodePath("../../ViewportContainer/SubViewport/World/Snow")
+
+[node name="LensRain" type="Node" parent="Weather" node_paths=PackedStringArray("lens")]
+script = ExtResource("85_lens_rain")
+lens = NodePath("../../LensSpray")
 
 [node name="ViewportContainer" type="SubViewportContainer" parent="." node_paths=PackedStringArray("turret")]
 process_mode = 1
@@ -204,6 +221,17 @@ environment = SubResource("Environment_world")
 [node name="Starfield" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("73_starfield")
 star_mesh = ExtResource("74_star_mesh")
+
+[node name="Rain" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("turret")]
+script = ExtResource("83_precip_field")
+turret = NodePath("../Vessel/Turret")
+particle_mesh = ExtResource("86_rain_mesh")
+
+[node name="Snow" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("turret")]
+script = ExtResource("83_precip_field")
+turret = NodePath("../Vessel/Turret")
+particle_mesh = ExtResource("87_snow_mesh")
+box = Vector3(50, 35, 50)
 
 [node name="Sea" type="MeshInstance3D" parent="ViewportContainer/SubViewport/World"]
 position = Vector3(0, -1.6, 0)
