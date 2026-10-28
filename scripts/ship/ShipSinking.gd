@@ -7,6 +7,7 @@ signal sunk
 @export var vessel: Node3D
 @export var gun: Node3D
 @export var sea: Node3D
+@export var sway: ShipSway
 @export var max_depth: float = 12.0
 @export var max_roll_deg: float = 12.0
 @export var max_bow_down_deg: float = 3.5
@@ -30,6 +31,8 @@ func _process(delta: float) -> void:
 		Basis(Vector3.BACK, deg_to_rad(max_roll_deg) * sink)
 		* Basis(Vector3.RIGHT, -deg_to_rad(max_bow_down_deg) * sink)
 	)
+	if sway != null:
+		tilt *= sway.basis()
 	vessel.transform = Transform3D(tilt, Vector3.DOWN * max_depth * sink) * _rest
 	if not _sunk and gun.global_position.y <= sea.global_position.y + gun_clearance:
 		_sunk = true
