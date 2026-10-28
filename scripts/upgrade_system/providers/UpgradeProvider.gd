@@ -30,30 +30,35 @@ func _get_pool() -> Array[Upgrade]:
 	return _pool.duplicate()
 
 
-func get_unavailable_upgrades() -> Array[Upgrade]:
-	return _unavailable_upgardes
-
-
 ## NOTE: Duplicate array before passing to pool if you want to keep the original array unaffected
 func _process_upgrade_array(new_pool: Array[Upgrade], count: int) -> Array[Upgrade]:
+	if count < 0:
+		count = new_pool.size()
 	new_pool = new_pool.slice(0, min(new_pool.size(), count))
 	_sort_pool(new_pool)
 	return new_pool
 
 
-func get_new_upgrades(count: int)  -> Array[Upgrade]:
+## Returns array of upgrades that did not have passing preconditions
+func get_unavailable_upgrades() -> Array[Upgrade]:
+	return _unavailable_upgardes
+
+
+func get_new_upgrades()  -> Array[Upgrade]:
 	var new_pool : Array[Upgrade] = _get_pool()
-	return _process_upgrade_array(new_pool, count)
+	return _process_upgrade_array(new_pool, -1)
 
 
-func get_new_upgrades_of_category(count: int, category: String) -> Array[Upgrade]:
+func get_new_upgrades_of_category(category: String) -> Array[Upgrade]:
 	var filtered : Array[Upgrade] = _get_pool()
 	filtered = filtered.filter(func(u: Upgrade): return (u.category == category))
-	return _process_upgrade_array(filtered, count)
+	return _process_upgrade_array(filtered, -1)
 
 
 func get_new_upgrades_weighted(count: int) -> Array[Upgrade]:
 	var new_pool : Array[Upgrade] = _get_pool()
+	if count < -1:
+		count = new_pool.size()
 
 	var weights_array : Array[float]
 	for u in new_pool:

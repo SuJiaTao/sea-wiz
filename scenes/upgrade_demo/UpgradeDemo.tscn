@@ -182,6 +182,7 @@ offset_left = 321.0
 offset_top = 50.0
 offset_right = 513.0
 offset_bottom = 66.0
+min_value = -1.0
 max_value = 10.0
 rounded = true
 script = ExtResource("3_8x6yk")

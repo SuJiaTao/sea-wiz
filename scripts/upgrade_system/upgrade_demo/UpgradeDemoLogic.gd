@@ -19,34 +19,35 @@ var provider : UpgradeProvider
 
 func _ready() -> void:
 	connect_signals()
-	provider = provider_a
-	provider.build_trees()
 	slider_b.value = slots
 	category_drop_down.add_item("NONE")
 	for c in categories:
 		category_drop_down.add_item(c)
-	restock()
+	switch_to_a()
+	provider.build_trees()
 
 
 func connect_signals() -> void:
 	slider_b.drag_ended.connect(restock.unbind(1))
-	button_a.pressed.connect(switch_to_b)
-	button_b.pressed.connect(switch_to_a)
+	button_a.pressed.connect(switch_to_a)
+	button_b.pressed.connect(switch_to_b)
 	refresh_button.pressed.connect(restock)
 	category_drop_down.item_selected.connect(restock.unbind(1))
 
 
-func switch_to_b() -> void:
+func switch_to_a() -> void:
 	button_a.disabled = true
 	button_b.disabled = false
 	provider = provider_a
+	slider_b.hide()
 	restock()
 
 
-func switch_to_a() -> void:
+func switch_to_b() -> void:
 	button_b.disabled = true
 	button_a.disabled = false
 	provider = provider_b
+	slider_b.show()
 	restock()
 
 
@@ -61,9 +62,9 @@ func restock() -> void:
 	if button_a.disabled:
 		var filter : String = category_drop_down.get_item_text(category_drop_down.get_selected_id())
 		if filter == "NONE":
-			new_upgrades = provider.get_new_upgrades(slider_b.value as int)
+			new_upgrades = provider.get_new_upgrades()
 		else:
-			new_upgrades = provider.get_new_upgrades_of_category(slider_b.value as int, filter)
+			new_upgrades = provider.get_new_upgrades_of_category(filter)
 	else:
 		new_upgrades = provider.get_new_upgrades_weighted(slider_b.value as int)
 
