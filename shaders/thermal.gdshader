@@ -29,6 +29,12 @@ uniform float droplet_cooling : hint_range(0.0, 1.0) = 0.65;
 uniform float droplet_rim : hint_range(0.0, 1.0) = 0.12;
 uniform float chroma_keep : hint_range(0.0, 3.0) = 1.0;
 
+// Blast shockwaves: xy centre in UV, z ring radius (fraction of height), w strength.
+const int MAX_RINGS = 4;
+uniform vec4 shock_rings[MAX_RINGS];
+uniform float shock_width : hint_range(0.005, 0.2) = 0.025;
+uniform float shock_glow : hint_range(0.0, 20.0) = 4.0;
+
 const vec3 LUMA = vec3(0.30, 0.59, 0.11);
 const int RING_TAPS = 8;
 
@@ -57,6 +63,20 @@ void fragment() {
 		}
 	}
 
+	float shock_light = 0.0;
+	for (int i = 0; i < MAX_RINGS; i++) {
+		vec4 ring = shock_rings[i];
+		if (ring.w <= 0.0) {
+			continue;
+		}
+		vec2 offset = (UV - ring.xy) * aspect;
+		float dist = length(offset);
+		float band = (dist - ring.z) / shock_width;
+		float front = exp(-band * band);
+		bend -= offset / max(dist, 1e-4) / aspect * ring.w * front * band;
+		shock_light += ring.w * front;
+	}
+
 	vec2 uv = clamp(UV + bend + vec2(shake_x, shake_y), vec2(0.0), vec2(1.0));
 	vec2 texel = 1.0 / sensor_size;
 
@@ -81,7 +101,7 @@ void fragment() {
 	l = sensor_floor + l + (base - far) * halo_amount;
 
 	l = l * (1.0 - droplet_cooling * wet) + droplet_rim * rim;
-	l = clamp(l + flash, 0.0, 1.0);
+	l = clamp(l + flash + shock_light * shock_glow, 0.0, 1.0);
 
 	l = floor(l * levels + 0.5) / levels;
 	l = mix(l, 1.0 - l, polarity);
