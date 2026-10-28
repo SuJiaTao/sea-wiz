@@ -37,6 +37,7 @@ func get_unavailable_upgrades() -> Array[Upgrade]:
 ## NOTE: Duplicate array before passing to pool if you want to keep the original array unaffected
 func _process_upgrade_array(new_pool: Array[Upgrade], count: int) -> Array[Upgrade]:
 	new_pool = new_pool.slice(0, min(new_pool.size(), count))
+	_sort_pool(new_pool)
 	return new_pool
 
 
@@ -94,3 +95,8 @@ func _weighted_grab(weights: Array[float], result_size: int) -> Array[int]:
 		wi_pool.erase(chosen_pair)
 
 	return result
+
+
+## Sorts upgrade pool by its index in upgrades
+func _sort_pool(pool: Array[Upgrade]) -> void:
+	pool.sort_custom(func(a, b): return _upgrades.find(a) < _upgrades.find(b))
