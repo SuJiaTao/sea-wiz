@@ -10,6 +10,7 @@ uniform float point_size_pixels : hint_range(0.5, 16.0) = 2.0;
 uniform float twinkle_rate = 5.0;
 uniform float twinkle_depth : hint_range(0.0, 1.0) = 0.5;
 uniform float softness = 3.0;
+uniform float visibility : hint_range(0.0, 1.0) = 1.0;
 
 varying float glow;
 
@@ -26,7 +27,7 @@ void vertex() {
 	float seed = hash13(NODE_POSITION_WORLD);
 	float shimmer = sin(TIME * twinkle_rate * (0.6 + seed) + seed * 40.0)
 		* sin(TIME * twinkle_rate * 1.37 + seed * 17.0);
-	glow = brightness * (1.0 - twinkle * twinkle_depth * (0.5 + 0.5 * shimmer));
+	glow = visibility * brightness * (1.0 - twinkle * twinkle_depth * (0.5 + 0.5 * shimmer));
 }
 
 void fragment() {
