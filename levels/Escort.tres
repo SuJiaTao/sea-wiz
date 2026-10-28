@@ -1,0 +1,120 @@
+[gd_resource type="Resource" script_class="WaveDefinition" load_steps=25 format=3]
+
+[ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Drone.tscn" id="3_drone"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/HeavyJet.tscn" id="4_heavy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Interceptor.tscn" id="5_interceptor"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="6_jet"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="7_skimmer"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Helo.tscn" id="8_helo"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Supersonic.tscn" id="9_supersonic"]
+
+[sub_resource type="Resource" id="Spawn01"]
+script = ExtResource("2_spawn")
+time = 0.0
+enemy_scene = ExtResource("3_drone")
+
+[sub_resource type="Resource" id="Spawn02"]
+script = ExtResource("2_spawn")
+time = 1.0
+enemy_scene = ExtResource("3_drone")
+
+[sub_resource type="Resource" id="Spawn03"]
+script = ExtResource("2_spawn")
+time = 2.0
+enemy_scene = ExtResource("3_drone")
+
+[sub_resource type="Resource" id="Spawn04"]
+script = ExtResource("2_spawn")
+time = 3.0
+enemy_scene = ExtResource("4_heavy")
+distance = Vector2(1800, 2400)
+altitude = Vector2(300, 700)
+group = &"first"
+
+[sub_resource type="Resource" id="Spawn05"]
+script = ExtResource("2_spawn")
+time = 3.5
+enemy_scene = ExtResource("5_interceptor")
+distance = Vector2(1900, 2400)
+altitude = Vector2(150, 420)
+group = &"first"
+
+[sub_resource type="Resource" id="Spawn06"]
+script = ExtResource("2_spawn")
+time = 4.0
+enemy_scene = ExtResource("5_interceptor")
+distance = Vector2(1900, 2400)
+altitude = Vector2(150, 420)
+group = &"first"
+
+[sub_resource type="Resource" id="Spawn07"]
+script = ExtResource("2_spawn")
+time = 7.0
+enemy_scene = ExtResource("6_jet")
+distance = Vector2(1500, 2100)
+altitude = Vector2(120, 480)
+
+[sub_resource type="Resource" id="Spawn08"]
+script = ExtResource("2_spawn")
+time = 9.0
+enemy_scene = ExtResource("7_skimmer")
+distance = Vector2(1600, 2200)
+altitude = Vector2(12, 30)
+
+[sub_resource type="Resource" id="Spawn09"]
+script = ExtResource("2_spawn")
+time = 12.0
+enemy_scene = ExtResource("8_helo")
+distance = Vector2(800, 1300)
+altitude = Vector2(45, 180)
+
+[sub_resource type="Resource" id="Spawn10"]
+script = ExtResource("2_spawn")
+time = 14.0
+enemy_scene = ExtResource("5_interceptor")
+distance = Vector2(1900, 2400)
+altitude = Vector2(150, 420)
+
+[sub_resource type="Resource" id="Spawn11"]
+script = ExtResource("2_spawn")
+time = 16.0
+enemy_scene = ExtResource("9_supersonic")
+distance = Vector2(2300, 2700)
+altitude = Vector2(10, 25)
+
+[sub_resource type="Resource" id="Spawn12"]
+script = ExtResource("2_spawn")
+time = 19.0
+enemy_scene = ExtResource("4_heavy")
+distance = Vector2(1800, 2400)
+altitude = Vector2(300, 700)
+group = &"second"
+
+[sub_resource type="Resource" id="Spawn13"]
+script = ExtResource("2_spawn")
+time = 19.5
+enemy_scene = ExtResource("5_interceptor")
+distance = Vector2(1900, 2400)
+altitude = Vector2(150, 420)
+group = &"second"
+
+[sub_resource type="Resource" id="Spawn14"]
+script = ExtResource("2_spawn")
+time = 21.0
+enemy_scene = ExtResource("6_jet")
+distance = Vector2(1500, 2100)
+altitude = Vector2(120, 480)
+
+[sub_resource type="Resource" id="Spawn15"]
+script = ExtResource("2_spawn")
+time = 23.0
+enemy_scene = ExtResource("9_supersonic")
+distance = Vector2(2300, 2700)
+altitude = Vector2(10, 25)
+
+[resource]
+script = ExtResource("1_wave")
+title = "ESCORT"
+spawns = Array[ExtResource("2_spawn")]([SubResource("Spawn01"), SubResource("Spawn02"), SubResource("Spawn03"), SubResource("Spawn04"), SubResource("Spawn05"), SubResource("Spawn06"), SubResource("Spawn07"), SubResource("Spawn08"), SubResource("Spawn09"), SubResource("Spawn10"), SubResource("Spawn11"), SubResource("Spawn12"), SubResource("Spawn13"), SubResource("Spawn14"), SubResource("Spawn15")])
