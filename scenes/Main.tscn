@@ -113,6 +113,7 @@ render_priority = 0
 shader = ExtResource("62_tracer_shader")
 shader_parameter/base_width = 0.11
 shader_parameter/min_pixels = 1.5
+shader_parameter/tail_falloff = 2.0
 
 [sub_resource type="BoxMesh" id="Mesh_tracer"]
 material = SubResource("Material_tracer")
@@ -167,12 +168,14 @@ cast_shadow = 0
 [node name="Warship" parent="ViewportContainer/SubViewport/World/Vessel" instance=ExtResource("10_warship")]
 
 [node name="Turret" parent="ViewportContainer/SubViewport/World/Vessel" instance=ExtResource("2_turret")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17, 0)
 
 [node name="Casings" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Vessel"]
 script = ExtResource("58_casings")
 casing_mesh = ExtResource("60_casing_mesh")
 casing_material = ExtResource("61_casing_material")
+platform_centre = Vector3(0, 16.94, 0)
+deck_half_beam = 13.5
 
 [node name="ShipDamage" type="Node" parent="ViewportContainer/SubViewport/World"]
 
@@ -191,6 +194,7 @@ integrity = NodePath("../Integrity")
 vessel = NodePath("../../Vessel")
 gun = NodePath("../../Vessel/Turret")
 sea = NodePath("../../Sea")
+max_depth = 20.0
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("5_enemies")
@@ -209,9 +213,10 @@ zoom_near_cull = 25.0
 [node name="FX" type="Node3D" parent="ViewportContainer/SubViewport/World"]
 script = ExtResource("9_fx")
 
-[node name="Effects" type="Node3D" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("sea", "smoke", "fireballs", "embers", "droplets", "spray", "ripples", "flares", "flare_smoke")]
+[node name="Effects" type="Node3D" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("sea", "hull", "smoke", "fireballs", "embers", "droplets", "spray", "ripples", "flares", "flare_smoke")]
 script = ExtResource("41_effects")
 sea = NodePath("../Sea")
+hull = NodePath("../Vessel/Warship/Hull")
 smoke = NodePath("Smoke")
 fireballs = NodePath("Fireballs")
 embers = NodePath("Embers")
