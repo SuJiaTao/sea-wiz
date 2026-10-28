@@ -1,4 +1,4 @@
-[gd_scene load_steps=81 format=3]
+[gd_scene load_steps=84 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="PackedScene" uid="uid://bfbwp5hakbdf0" path="res://scenes/turret/Turret.tscn" id="2_turret"]
@@ -71,6 +71,9 @@
 [ext_resource type="Resource" path="res://levels/Escort.tres" id="69_escort"]
 [ext_resource type="Script" path="res://scripts/display/LensSpray.gd" id="70_lens"]
 [ext_resource type="Script" path="res://scripts/ship/NearMissReactions.gd" id="71_near_miss"]
+[ext_resource type="Resource" path="res://levels/FallingStars.tres" id="72_falling_stars"]
+[ext_resource type="Script" path="res://scripts/world/Starfield.gd" id="73_starfield"]
+[ext_resource type="QuadMesh" path="res://resources/world/StarMesh.tres" id="74_star_mesh"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -133,7 +136,7 @@ script = ExtResource("1_session")
 [node name="WaveOrchestrator" type="Node" parent="."]
 process_mode = 1
 script = ExtResource("6_waves")
-levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResource("13_second"), ExtResource("69_escort")])
+levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResource("13_second"), ExtResource("69_escort"), ExtResource("72_falling_stars")])
 
 [node name="Score" type="Node" parent="." node_paths=PackedStringArray("enemies")]
 process_mode = 1
@@ -173,6 +176,10 @@ process_mode = 1
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="ViewportContainer/SubViewport/World"]
 environment = SubResource("Environment_world")
+
+[node name="Starfield" type="Node3D" parent="ViewportContainer/SubViewport/World"]
+script = ExtResource("73_starfield")
+star_mesh = ExtResource("74_star_mesh")
 
 [node name="Sea" type="MeshInstance3D" parent="ViewportContainer/SubViewport/World"]
 position = Vector3(0, -1.6, 0)

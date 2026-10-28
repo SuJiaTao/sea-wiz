@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="QuadMesh" path="res://resources/world/StarMesh.tres" id="1_star"]
+
+[sub_resource type="StandardMaterial3D" id="Material_body"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.85, 0.85, 0.85, 1)
+
+[sub_resource type="CylinderMesh" id="Mesh_body"]
+material = SubResource("Material_body")
+top_radius = 0.0
+bottom_radius = 0.9
+height = 4.0
+radial_segments = 10
+rings = 1
+
+[node name="StarMissileVisuals" type="Node3D"]
+
+[node name="Body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0)
+mesh = SubResource("Mesh_body")
+cast_shadow = 0
+
+[node name="Glow" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_star")
+cast_shadow = 0
+instance_shader_parameters/brightness = 0.7
+instance_shader_parameters/twinkle = 0.0
