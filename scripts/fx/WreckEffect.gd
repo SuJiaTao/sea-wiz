@@ -14,6 +14,8 @@ const ROLL_RATE := Vector2(1.5, 4.0)
 const MIN_SPEED_SQUARED: float = 0.01
 const ROLL_LEFT_CHANCE: float = 0.5
 const NEAR_VERTICAL: float = 0.98
+const PREDICTION_STEP: float = 1.0 / 60.0
+const SHATTER_BLAST_SCALE: float = 1.4
 
 var _position: Vector3
 var _velocity: Vector3
@@ -24,6 +26,19 @@ var _roll: float = 0.0
 var _roll_rate: float
 var _trail := EmissionRate.new()
 var _sparks := EmissionRate.new()
+var _shattered: bool = false
+
+var position: Vector3:
+	get:
+		return _position
+
+var velocity: Vector3:
+	get:
+		return _velocity
+
+var size: float:
+	get:
+		return _size
 
 
 func _init(at: Vector3, velocity: Vector3, size: float, wreckage: Node3D = null) -> void:
@@ -34,7 +49,30 @@ func _init(at: Vector3, velocity: Vector3, size: float, wreckage: Node3D = null)
 	_roll_rate = randf_range(ROLL_RATE.x, ROLL_RATE.y) * (-1.0 if randf() < ROLL_LEFT_CHANCE else 1.0)
 
 
+func predicted_landing(floor_height: float) -> Vector3:
+	var landing := _position + _flat_velocity() * _horizontal_reach(floor_height)
+	landing.y = floor_height
+	return landing
+
+
+func steer_to(target: Vector3, floor_height: float, max_change: float) -> bool:
+	var reach := _horizontal_reach(floor_height)
+	if reach <= 0.0:
+		return false
+	var offset := target - _position
+	var wanted := Vector3(offset.x, 0.0, offset.z) / reach
+	if wanted.distance_to(_flat_velocity()) > max_change:
+		return false
+	_velocity = Vector3(wanted.x, _velocity.y, wanted.z)
+	return true
+
+
+func shatter() -> void:
+	_shattered = true
+
+
 func _on_spawn(effects: EffectManager) -> void:
+	effects.wreck_falling.emit(self)
 	if _wreckage == null:
 		return
 	var start := _wreckage.transform
@@ -44,6 +82,9 @@ func _on_spawn(effects: EffectManager) -> void:
 
 
 func _on_step(effects: EffectManager, delta: float) -> void:
+	if _shattered:
+		_break_up(effects)
+		return
 	_fall(delta)
 	_tumble(delta)
 	_trail_smoke(effects, delta)
@@ -65,6 +106,27 @@ func _fall(delta: float) -> void:
 	_velocity.y -= GRAVITY * delta
 	_velocity -= _velocity * clampf(AIR_DRAG * delta, 0.0, 1.0)
 	_position += _velocity * delta
+
+
+func _horizontal_reach(floor_height: float) -> float:
+	var height := _position.y
+	var climb := _velocity.y
+	var carried := 1.0
+	var reach := 0.0
+	var keep := 1.0 - clampf(AIR_DRAG * PREDICTION_STEP, 0.0, 1.0)
+	var steps := int(MAX_FALL_TIME / PREDICTION_STEP)
+	for step in steps:
+		if height <= floor_height:
+			return reach
+		climb = (climb - GRAVITY * PREDICTION_STEP) * keep
+		carried *= keep
+		height += climb * PREDICTION_STEP
+		reach += carried * PREDICTION_STEP
+	return reach
+
+
+func _flat_velocity() -> Vector3:
+	return Vector3(_velocity.x, 0.0, _velocity.z)
 
 
 func _tumble(delta: float) -> void:
@@ -93,6 +155,11 @@ func _trail_smoke(effects: EffectManager, delta: float) -> void:
 func _hit_ship(effects: EffectManager) -> void:
 	effects.spawn(ExplosionEffect.new(_position, Vector3.ZERO, _size))
 	effects.wreck_hit_ship.emit(_position, _size)
+	finish()
+
+
+func _break_up(effects: EffectManager) -> void:
+	effects.spawn(ExplosionEffect.new(_position, _velocity, _size * SHATTER_BLAST_SCALE))
 	finish()
 
 
