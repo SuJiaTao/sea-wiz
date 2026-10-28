@@ -17,6 +17,7 @@ const COLLISION_LAYER: int = 1 << 1
 @export var visuals: Node3D
 @export var contact_kind: ContactKind = ContactKind.AIRCRAFT
 @export var score_value: int = 100
+@export var leaves_wreck: bool = true
 
 var hp: float = 0.0
 var velocity := Vector3.ZERO
