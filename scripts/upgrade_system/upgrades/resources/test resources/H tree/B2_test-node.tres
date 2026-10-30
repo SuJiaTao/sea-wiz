@@ -5,4 +5,5 @@
 
 [resource]
 script = ExtResource("2_vwoy7")
+label = "B2"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"

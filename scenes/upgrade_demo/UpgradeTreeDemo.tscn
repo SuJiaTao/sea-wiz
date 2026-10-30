@@ -1,14 +1,18 @@
 [gd_scene format=3 uid="uid://bbth1v2glujcw"]
 
 [ext_resource type="Script" uid="uid://brlb28ianxugt" path="res://scripts/upgrade_system/upgrade_demo/UpgradeTreeDemo.gd" id="1_e6hj4"]
-[ext_resource type="Resource" uid="uid://2m2bk3mnnj01" path="res://scripts/upgrade_system/upgrades/resources/test resources/spin tree/green-spin_test-upgrade.tres" id="2_70b2u"]
+[ext_resource type="Resource" uid="uid://86hj03lrxdpw" path="res://scripts/upgrade_system/upgrades/resources/test resources/H tree/E1_test-node.tres" id="2_ptqtb"]
+[ext_resource type="Resource" uid="uid://b00we8dso23yp" path="res://scripts/upgrade_system/upgrades/resources/test resources/H tree/C2_test-node.tres" id="3_ki0bs"]
 [ext_resource type="Texture2D" uid="uid://coefdhslmp35u" path="res://scripts/upgrade_system/upgrades/resources/test resources/H tree/H-diagram.jpg" id="3_ptqtb"]
 
 [node name="UpgradeTreeDemo" type="Node" unique_id=700283761]
 script = ExtResource("1_e6hj4")
-upgrade_tree_root_upgrade = ExtResource("2_70b2u")
+ugprade = ExtResource("2_ptqtb")
+c2 = ExtResource("3_ki0bs")
 
 [node name="HDiagram" type="Sprite2D" parent="." unique_id=40389276]
-position = Vector2(1241, 364)
+position = Vector2(1672, 387)
 scale = Vector2(2.9564316, 2.9564316)
 texture = ExtResource("3_ptqtb")
+
+[node name="Tree Display" type="CanvasLayer" parent="." unique_id=1326643829]

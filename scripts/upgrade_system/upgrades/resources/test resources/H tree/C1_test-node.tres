@@ -7,4 +7,5 @@
 [resource]
 script = ExtResource("2_koi2x")
 predecessors = Array[ExtResource("1_cmhpm")]([ExtResource("2_41uob")])
+label = "C1"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"

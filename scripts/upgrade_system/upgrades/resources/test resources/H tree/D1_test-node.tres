@@ -8,4 +8,5 @@
 [resource]
 script = ExtResource("2_p2tp1")
 predecessors = Array[ExtResource("1_6mn13")]([ExtResource("2_lv31h"), ExtResource("3_k5vhh")])
+label = "D1"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"

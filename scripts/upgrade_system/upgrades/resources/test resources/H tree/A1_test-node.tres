@@ -1,8 +1,9 @@
 [gd_resource type="Resource" script_class="BlankUpgrade" format=3 uid="uid://cg1sfv0omoj4s"]
 
-[ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="1_3xn6x"]
-[ext_resource type="Script" uid="uid://dq66xy3038ak5" path="res://scripts/upgrade_system/upgrades/test upgrades/BlankUpgrade.gd" id="2_x0cdp"]
+[ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="1_kypgd"]
+[ext_resource type="Script" uid="uid://dq66xy3038ak5" path="res://scripts/upgrade_system/upgrades/test upgrades/BlankUpgrade.gd" id="2_gxbr2"]
 
 [resource]
-script = ExtResource("2_x0cdp")
+script = ExtResource("2_gxbr2")
+label = "A1"
 metadata/_custom_type_script = "uid://dq66xy3038ak5"

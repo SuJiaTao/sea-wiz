@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BlankUpgrade" format=3 uid="uid://86hj03lrxdpw"]
+
+[ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="1_2jx7o"]
+[ext_resource type="Resource" uid="uid://dwckd0fn0a4u5" path="res://scripts/upgrade_system/upgrades/resources/test resources/H tree/D2_test-node.tres" id="2_ysneg"]
+[ext_resource type="Script" uid="uid://dq66xy3038ak5" path="res://scripts/upgrade_system/upgrades/test upgrades/BlankUpgrade.gd" id="3_76e7e"]
+
+[resource]
+script = ExtResource("3_76e7e")
+predecessors = Array[ExtResource("1_2jx7o")]([ExtResource("2_ysneg")])
+label = "E1"
+metadata/_custom_type_script = "uid://dq66xy3038ak5"
