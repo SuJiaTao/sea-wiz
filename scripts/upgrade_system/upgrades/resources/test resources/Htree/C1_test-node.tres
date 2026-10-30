@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="BlankUpgrade" format=3 uid="uid://d4bf510lnwp1f"]
 
 [ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="1_cmhpm"]
-[ext_resource type="Resource" uid="uid://c8jn267daykl6" path="res://scripts/upgrade_system/upgrades/resources/test resources/H tree/B1_test-node.tres" id="2_41uob"]
+[ext_resource type="Resource" uid="uid://c8jn267daykl6" path="res://scripts/upgrade_system/upgrades/resources/test resources/Htree/B1_test-node.tres" id="2_41uob"]
 [ext_resource type="Script" uid="uid://dq66xy3038ak5" path="res://scripts/upgrade_system/upgrades/test upgrades/BlankUpgrade.gd" id="2_koi2x"]
 
 [resource]
