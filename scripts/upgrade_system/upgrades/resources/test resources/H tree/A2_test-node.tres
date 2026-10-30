@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="BlankUpgrade" format=3 uid="uid://dukkm31mpa11m"]
+
+[ext_resource type="Script" uid="uid://grxkvelygde6" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="1_ohvc1"]
+[ext_resource type="Script" uid="uid://dq66xy3038ak5" path="res://scripts/upgrade_system/upgrades/test upgrades/BlankUpgrade.gd" id="2_tvk3i"]
+
+[resource]
+script = ExtResource("2_tvk3i")
+metadata/_custom_type_script = "uid://dq66xy3038ak5"

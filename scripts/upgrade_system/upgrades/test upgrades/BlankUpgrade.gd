@@ -1,5 +1,5 @@
 class_name BlankUpgrade
-extends Upgrade
+extends UpgradeGraph
 
 
 func _apply() -> void:
