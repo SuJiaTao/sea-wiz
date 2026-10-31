@@ -1,0 +1,26 @@
+extends RefCounted
+class_name CursorManager
+
+static var _capture_mouse : int = 0
+
+
+## Increments _capture_mouse by 1, mouse is capture while is_mouse_captured == true
+static func capture_mouse() -> void:
+	_capture_mouse += 1
+	_update()
+
+
+## Decrements _capture_mouse by 1, mouse is capture while is_mouse_captured == true
+static func free_mouse() -> void:
+	_capture_mouse -= 1
+
+
+static func is_captured() -> bool:
+	return _capture_mouse > 0
+
+
+static func _update() -> void:
+	if is_captured():
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	else:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
