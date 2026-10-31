@@ -98,11 +98,11 @@ static func _save_unlocks() -> void:
 static func _load_unlocks() -> void:
 	var data = EnemyCodexStore.load_codex_data()
 	if not data:
-		push_error("Error loading data.")
-		return
+		push_warning("Error loading enemy codex data.")
+		return 
 	for key in _entries.keys():
 		if not data.has(key):
-			push_warning("Corrupted entry data.")
+			push_warning("Corrupted enemy codex entry data.")
 			return
 		
 		var entry = _entries.get(key)
