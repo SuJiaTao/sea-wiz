@@ -23,16 +23,12 @@ static func register_command(command: StringName, function: Callable) -> void:
 ## Calls print_warning if an error occurs parsing string. [br]
 ## Saves [line] to [command_history].
 static func parse_string_and_execute(line: String) -> void:
-	command_history.push_back(line)
+	command_history.push_front(line)
 	if line.is_empty():
 		print_warning_to_console("Please input a command.")
 		return
 	var argv = line.split(" ", false)
-	# for i in len(argv):
-	# 	argv[i] = argv[i].lstrip(" ")
-	# 	argv[i] = argv[i].rstrip(" ")
 	var arg0 = argv[0]
-	print(_command_dict.keys())
 	if not _command_dict.has(arg0):
 		print_warning_to_console("Invalid command. Type 'list' to view all available commands.")
 		return
@@ -43,13 +39,13 @@ static func parse_string_and_execute(line: String) -> void:
 ## Prints [msg] to console_ui. Also calls [ConsoleUI.print_message(msg)].
 static func print_to_console(msg: String) -> void:
 	console_ui.print_message(msg)
-	message_history.push_back(msg)
+	message_history.push_front(msg)
 
 
 ## Prints [msg] to console_ui Also, calls [ConsoleUI.print_warning(msg)].
 static func print_warning_to_console(msg: String) -> void:
 	console_ui.print_warning(msg)
-	message_history.push_back(msg)
+	message_history.push_front(msg)
 
 
 static func get_command_list() -> Array[StringName]:
@@ -67,6 +63,7 @@ static func _static_init() -> void:
 
 static func load_default_commands() -> void:
 	register_command("list", print_command_list)
+	register_command("clear_history", clear_all_history.unbind(1))
 
 
 static func print_command_list(_args) -> void:

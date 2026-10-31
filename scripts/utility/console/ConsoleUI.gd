@@ -5,6 +5,7 @@ class_name ConsoleUI
 @export var text_box : TextBox
 
 var active : bool = false
+var history_pointer : int = 0
 
 
 func _ready() -> void:
@@ -21,6 +22,10 @@ func _input(event: InputEvent) -> void:
 			set_active()
 	if event.is_action_pressed("enter_text"):
 		process_text()
+	if event.is_action_pressed("ui_text_caret_up"):
+		get_last_command()
+	if event.is_action_pressed("ui_text_caret_down"):
+		get_next_command()
 
 
 func set_active() -> void:
@@ -58,8 +63,32 @@ func process_text() -> void:
 	if not active:
 		return
 	var line : String = text_field.text
+	history_pointer = 0
 	if line.is_empty():
 		return
 	text_field.clear()
 	print_message(">" + line)
 	DevConsole.parse_string_and_execute(line)
+
+
+func get_last_command() -> void:
+	var history = DevConsole.command_history
+	if not active or history.is_empty():
+		return
+	var last = history[history_pointer]
+	text_field.text = last
+	text_field.set_caret_column.call_deferred(text_field.text.length())
+	if history_pointer != history.size() - 1:
+		history_pointer += 1
+
+
+func get_next_command() -> void:
+	var history = DevConsole.command_history
+	if not active or history.is_empty():
+		return
+	if history_pointer == 0:
+		return
+	history_pointer -= 1
+	var last = history[history_pointer]
+	text_field.text = last
+	text_field.set_caret_column.call_deferred(text_field.text.length())

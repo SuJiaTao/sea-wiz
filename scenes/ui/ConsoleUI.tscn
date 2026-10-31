@@ -52,3 +52,4 @@ grow_horizontal = 2
 grow_vertical = 0
 placeholder_text = "Type command here"
 keep_editing_on_text_submit = true
+caret_blink = true

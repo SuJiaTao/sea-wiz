@@ -210,4 +210,5 @@ static func is_state(state2: State) -> bool:
 
 func quit_game() -> void:
 	DevConsole.print_to_console("quitting...")
+	# DevConsole.dump_history()
 	get_tree().quit.call_deferred()
