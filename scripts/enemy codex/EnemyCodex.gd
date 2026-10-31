@@ -15,7 +15,10 @@ static var entries := {
 
 ## Returns null if no entry found for given enemy name
 static func get_entry(name: StringName) -> Variant:
-	return entries.get(name, null)
+	var result = entries.get(name, null)
+	if !result:
+		push_warning("No codex entry for '" + name +"' found.")
+	return result
 
 
 ## Sets "unlocked" of the entry of name to true.[br]
