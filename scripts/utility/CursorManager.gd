@@ -12,8 +12,9 @@ static func capture_mouse(val:bool=true) -> void:
 
 
 ## Decrements _capture_mouse by 1, mouse is capture while is_mouse_captured == true.[br]
-static func free_mouse() -> void:
-	_capture_mouse -= 1
+## If val == false, increments instead.[br]
+static func free_mouse(val:bool=true) -> void:
+	_capture_mouse -= 1 if val else -1
 	_update()
 
 
