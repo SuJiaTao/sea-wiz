@@ -1,4 +1,4 @@
-extends Node
+extends Control
 class_name ConsoleUI
 
 @export var text_field : TextEdit
@@ -7,6 +7,12 @@ class_name ConsoleUI
 
 func _ready() -> void:
 	DevConsole.console_ui = self
+	hide()
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("dev_console"):
+		visible = not visible
 
 
 func print_message(msg: String) -> void:
