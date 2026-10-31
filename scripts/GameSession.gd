@@ -47,6 +47,7 @@ func _ready() -> void:
 	turret.hide_gun = true
 	if CursorManager.is_mouse_captured():
 		CursorManager.free_mouse()
+	DevConsole.register_command("quit", quit_game.unbind(1))
 
 
 func _process(delta: float) -> void:
@@ -205,3 +206,8 @@ func _restart() -> void:
 
 static func is_state(state2: State) -> bool:
 	return _singleton.state == state2
+
+
+func quit_game() -> void:
+	DevConsole.print_to_console("quitting...")
+	get_tree().quit.call_deferred()
