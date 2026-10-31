@@ -112,4 +112,5 @@ func auto_complete_command() -> void:
 				break
 
 	text_field.text = result
+	text_field.set_caret_column.call_deferred(text_field.text.length())
 	
