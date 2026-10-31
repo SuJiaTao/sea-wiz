@@ -43,11 +43,13 @@ static func parse_string_and_execute(line: String) -> void:
 ## Prints [msg] to console_ui. Also calls [ConsoleUI.print_message(msg)].
 static func print_to_console(msg: String) -> void:
 	console_ui.print_message(msg)
+	message_history.push_back(msg)
 
 
 ## Prints [msg] to console_ui Also, calls [ConsoleUI.print_warning(msg)].
 static func print_warning_to_console(msg: String) -> void:
 	console_ui.print_warning(msg)
+	message_history.push_back(msg)
 
 
 static func get_command_list() -> Array[StringName]:
@@ -71,3 +73,8 @@ static func print_command_list(_args) -> void:
 	for key in get_command_list():
 		console_ui.indent()
 		console_ui.print_message(key)
+
+
+static func dump_history() -> void:
+	print(message_history)
+	print(command_history)
