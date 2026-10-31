@@ -14,7 +14,7 @@ static var _entries := {
 
 
 static func _static_init() -> void:
-	load_unlocks()
+	_load_unlocks()
 
 
 ## Returns null if no entry found for given enemy name
@@ -35,7 +35,7 @@ static func unlock(name: StringName, save: bool=true) -> void:
 			return
 		entry.unlocked = true
 	if save:
-		EnemyCodexStore.save_entries_state(get_unlocked_data())
+		_save_unlocks()
 
 
 ## Sets "unlocked" of the entry of name to false.[br]
@@ -48,7 +48,7 @@ static func lock(name: StringName, save: bool=true) -> void:
 			return
 		entry.unlocked = false
 	if save:
-		EnemyCodexStore.save_entries_state(get_unlocked_data())
+		_save_unlocks()
 
 
 static func get_unlocked_data() -> Dictionary:
@@ -59,7 +59,11 @@ static func get_unlocked_data() -> Dictionary:
 	return result
 
 
-static func load_unlocks() -> void:
+static func _save_unlocks() -> void:
+	EnemyCodexStore.save_entries_state(get_unlocked_data())
+
+
+static func _load_unlocks() -> void:
 	var data = EnemyCodexStore.load_codex_data()
 	for key in _entries.keys():
 		if not data.has(key):
@@ -69,3 +73,12 @@ static func load_unlocks() -> void:
 		var entry = _entries.get(key)
 		entry.unlocked = data.get(key).unlocked
 		_entries.set(key, entry)
+
+
+static func lock_all() -> void:
+	for key in _entries.keys():
+		var entry = _entries.get(key)
+		entry.unlocked = false
+		_entries.set(key, entry)
+	
+	_save_unlocks()
