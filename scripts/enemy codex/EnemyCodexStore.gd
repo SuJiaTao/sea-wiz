@@ -5,7 +5,7 @@ const SECTION := &"codex"
 const KEY := &"entires"
 
 
-static func load_codex_data() -> Dictionary:
+static func load_codex_data() -> Variant:
 	return _load_from_file(SECTION, KEY)
 
 
