@@ -28,9 +28,13 @@ static func parse_string_and_execute(line: String) -> void:
 		print_warning_to_console("Please input a command.")
 		return
 	var argv = line.split(" ", false)
+	# for i in len(argv):
+	# 	argv[i] = argv[i].lstrip(" ")
+	# 	argv[i] = argv[i].rstrip(" ")
 	var arg0 = argv[0]
+	print(_command_dict.keys())
 	if not _command_dict.has(arg0):
-		print_warning_to_console("Invalid command. Type 'list' to view all available commans.")
+		print_warning_to_console("Invalid command. Type 'list' to view all available commands.")
 		return
 	var args = argv.slice(1)
 	_command_dict.get(arg0).call(args)
@@ -54,3 +58,16 @@ static func clear_all_history() -> void:
 	command_history.clear()
 	message_history.clear()
 
+
+static func _static_init() -> void:
+	load_default_commands()
+
+
+static func load_default_commands() -> void:
+	register_command("list", print_command_list)
+
+
+static func print_command_list(_args) -> void:
+	for key in get_command_list():
+		console_ui.indent()
+		console_ui.print_message(key)

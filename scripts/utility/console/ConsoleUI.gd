@@ -9,6 +9,7 @@ var active : bool = false
 
 func _ready() -> void:
 	DevConsole.console_ui = self
+	DevConsole.register_command("clear", text_box.clear_text.unbind(1))
 	hide()
 
 
@@ -18,7 +19,7 @@ func _input(event: InputEvent) -> void:
 			set_inactive()
 		else:
 			set_active()
-	if event.is_action_pressed("ui_accept"):
+	if event.is_action_pressed("enter_text"):
 		process_text()
 
 
@@ -45,6 +46,10 @@ func print_warning(msg: String) -> void:
 		text_box.push(wrap_color(msg, "yellow"))
 
 
+func indent(count:int=1) -> void:
+	text_box.indent(count)
+
+
 func wrap_color(line: String, color: String) -> String:
 	return "[color=" + color + "]" + line + "[/color]"
 
@@ -56,4 +61,5 @@ func process_text() -> void:
 	if line.is_empty():
 		return
 	text_field.clear()
+	print_message(">" + line)
 	DevConsole.parse_string_and_execute(line)
