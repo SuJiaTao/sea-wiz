@@ -27,7 +27,9 @@ static func parse_string_and_execute(line: String) -> void:
 	if line.is_empty():
 		print_warning_to_console("Please input a command.")
 		return
-	var argv = line.split(" ", false)
+	var argv : Array[String]
+	for s in line.split(" ", false):
+		argv.append(s)
 	var arg0 = argv[0]
 	if not _command_dict.has(arg0):
 		print_warning_to_console("Invalid command. Type 'list' to view all available commands.")
@@ -64,6 +66,7 @@ static func _static_init() -> void:
 static func load_default_commands() -> void:
 	register_command("list", print_command_list)
 	register_command("clear_history", clear_all_history.unbind(1))
+	register_command("sum", sum_cmd)
 
 
 static func print_command_list(_args) -> void:
@@ -75,3 +78,11 @@ static func print_command_list(_args) -> void:
 static func dump_history() -> void:
 	print(message_history)
 	print(command_history)
+
+
+static func sum_cmd(_args) -> void:
+	var nums = _args.map(func(x: String): return x.to_int())
+	var sum = 0
+	for n in nums:
+		sum += n
+	print_to_console(str(sum))
