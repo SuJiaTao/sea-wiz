@@ -1,5 +1,5 @@
 extends RefCounted
-class_name EnemyCodexData
+class_name EnemyCodexManager
 
 static var _entries := {
 	"NULL": {
