@@ -1,7 +1,7 @@
 extends RefCounted
 class_name EnemyCodexData
 
-static var entries := {
+static var _entries := {
 	"NULL": {
 		"description": "No item found",
 		"unlocked": false
@@ -13,9 +13,13 @@ static var entries := {
 }
 
 
+static func _static_init() -> void:
+	load_unlocks()
+
+
 ## Returns null if no entry found for given enemy name
 static func get_entry(name: StringName) -> Variant:
-	var result = entries.get(name, null)
+	var result = _entries.get(name, null)
 	if !result:
 		push_warning("No codex entry for '" + name +"' found.")
 	return result
@@ -49,7 +53,19 @@ static func lock(name: StringName, save: bool=true) -> void:
 
 static func get_unlocked_data() -> Dictionary:
 	var result : Dictionary = {}
-	for key in entries.keys():
-		result.set(key, {"unlocked": entries.get(key).unlocked})
+	for key in _entries.keys():
+		result.set(key, {"unlocked": _entries.get(key).unlocked})
 
 	return result
+
+
+static func load_unlocks() -> void:
+	var data = EnemyCodexStore.load_codex_data()
+	for key in _entries.keys():
+		if not data.has(key):
+			push_warning("Corrupted entry data.")
+			return
+		
+		var entry = _entries.get(key)
+		entry.unlocked = data.get(key).unlocked
+		_entries.set(key, entry)
