@@ -20,17 +20,37 @@ static func register_command(command: StringName, function: Callable) -> void:
 	_command_dict.set(command, function)
 
 
-## Calls print_warning if an error occurs. [br]
-## If successful, saves to command_history.
+## Calls print_warning if an error occurs parsing string. [br]
+## Saves [line] to [command_history].
 static func parse_string_and_execute(line: String) -> void:
-	pass
+	command_history.push_back(line)
+	if line.is_empty():
+		print_warning_to_console("Please input a command.")
+		return
+	var argv = line.split(" ", false)
+	var arg0 = argv[0]
+	if not _command_dict.has(arg0):
+		print_warning_to_console("Invalid command. Type 'list' to view all available commans.")
+		return
+	var args = argv.slice(1)
+	_command_dict.get(arg0).call(args)
 
 
-## Prints [msg] to console_ui. Also, calls [ConsoleUI.print_message(msg)].
+## Prints [msg] to console_ui. Also calls [ConsoleUI.print_message(msg)].
 static func print_to_console(msg: String) -> void:
 	pass
 
 
-## Prints [msg] to console_ui. Also, calls [ConsoleUI.print_warning(msg)].
+## Prints [msg] to console_ui Also, calls [ConsoleUI.print_warning(msg)].
 static func print_warning_to_console(msg: String) -> void:
 	pass
+
+
+static func get_command_list() -> Array[StringName]:
+	return _command_dict.keys()
+
+
+static func clear_all_history() -> void:
+	command_history.clear()
+	message_history.clear()
+

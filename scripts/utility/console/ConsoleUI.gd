@@ -1,14 +1,23 @@
 extends Node
 class_name ConsoleUI
 
+@export var text_field : TextEdit
+@export var text_box : TextBox
+
 
 func _ready() -> void:
 	DevConsole.console_ui = self
 
 
 func print_message(msg: String) -> void:
-	pass
+	if text_box:
+		text_box.push(msg)
 
 
 func print_warning(msg: String) -> void:
-	pass
+	if text_box:
+		text_box.push(wrap_color(msg, "yellow"))
+
+
+func wrap_color(line: String, color: String) -> String:
+	return "[color=" + color + "]" + line + "[/color]"
