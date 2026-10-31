@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="ParticleStyle" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ParticleStyle" format=3 uid="uid://cvlcysyh03aiw"]
 
-[ext_resource type="Script" path="res://scripts/fx/ParticleStyle.gd" id="1_style"]
-[ext_resource type="Shader" path="res://shaders/smoke_particle.gdshader" id="2_shader"]
+[ext_resource type="Script" uid="uid://bnxoapiig155" path="res://scripts/fx/ParticleStyle.gd" id="1_style"]
+[ext_resource type="Shader" uid="uid://b4j72mdwu6l5k" path="res://shaders/smoke_particle.gdshader" id="2_shader"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_Fireballs"]
 render_priority = 0
@@ -28,7 +28,6 @@ resource_name = "Fireballs"
 script = ExtResource("1_style")
 mesh = SubResource("QuadMesh_Fireballs")
 lifetime = Vector2(2.5, 4.5)
-start_size = Vector2(2.5, 4.0)
+start_size = Vector2(2.5, 4)
 buoyancy = 2.0
 drag = 1.2
-wind_factor = 1.0

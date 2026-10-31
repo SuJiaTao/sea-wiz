@@ -1,27 +1,26 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://dn4qyqqfnuw8w"]
 
-[ext_resource type="Script" path="res://scripts/enemy/DroneEnemy.gd" id="1_drone"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/DroneVisuals.tscn" id="2_visuals"]
+[ext_resource type="Script" uid="uid://bc175sj5yw5fa" path="res://scripts/enemy/DroneEnemy.gd" id="1_1u5n1"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/DroneVisuals.tscn" id="2_ujuy7"]
 
 [sub_resource type="SphereShape3D" id="Shape_body"]
 radius = 4.8
 
-[node name="Drone" type="Node3D" node_paths=PackedStringArray("visuals")]
-script = ExtResource("1_drone")
-visuals = NodePath("Visuals")
+[node name="Drone" type="Node3D" unique_id=1105400824 node_paths=PackedStringArray("visuals")]
+script = ExtResource("1_1u5n1")
+max_bank_deg = 45.0
 max_hp = 22.0
 display_name = "DRONE"
-score_value = 100
 hud_radius = 4.8
-max_bank_deg = 45.0
+visuals = NodePath("Visuals")
 
-[node name="Visuals" parent="." instance=ExtResource("2_visuals")]
+[node name="Visuals" parent="." unique_id=1327740048 instance=ExtResource("2_ujuy7")]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
 
-[node name="Hurtbox" type="Area3D" parent="."]
+[node name="Hurtbox" type="Area3D" parent="." unique_id=1519634895]
 collision_layer = 0
 collision_mask = 0
 monitoring = false
 
-[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox"]
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox" unique_id=1711843006]
 shape = SubResource("Shape_body")

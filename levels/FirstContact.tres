@@ -2,37 +2,37 @@
 
 [ext_resource type="Script" uid="uid://b2ap6okbtqnal" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
 [ext_resource type="Script" uid="uid://174tvftdpqhu" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/Drone.tscn" id="3_drone"]
+[ext_resource type="PackedScene" uid="uid://dn4qyqqfnuw8w" path="res://scenes/enemy/Drone.tscn" id="3_cl53r"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="4_jet"]
 
 [sub_resource type="Resource" id="Spawn01"]
 script = ExtResource("2_spawn")
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("3_cl53r")
 
 [sub_resource type="Resource" id="Spawn02"]
 script = ExtResource("2_spawn")
 time = 1.5
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("3_cl53r")
 
 [sub_resource type="Resource" id="Spawn03"]
 script = ExtResource("2_spawn")
 time = 3.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("3_cl53r")
 
 [sub_resource type="Resource" id="Spawn04"]
 script = ExtResource("2_spawn")
 time = 5.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("3_cl53r")
 
 [sub_resource type="Resource" id="Spawn05"]
 script = ExtResource("2_spawn")
 time = 7.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("3_cl53r")
 
 [sub_resource type="Resource" id="Spawn06"]
 script = ExtResource("2_spawn")
 time = 9.0
-enemy_scene = ExtResource("3_drone")
+enemy_scene = ExtResource("3_cl53r")
 
 [sub_resource type="Resource" id="Spawn07"]
 script = ExtResource("2_spawn")

@@ -91,6 +91,7 @@ func _destroy() -> void:
 	if _state == State.DESTROYED:
 		return
 	_state = State.DESTROYED
+	EnemyCodexData.unlock(display_name)
 	_on_destroy()
 
 
