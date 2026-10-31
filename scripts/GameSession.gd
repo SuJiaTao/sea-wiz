@@ -180,7 +180,10 @@ func _on_wave_failed(reason: String) -> void:
 func _set_paused(paused: bool) -> void:
 	weapons.set_enabled(not paused)
 	get_tree().paused = paused
-	CursorManager.capture_mouse(paused)
+	if paused:
+		CursorManager.free_mouse()
+	else:
+		CursorManager.capture_mouse()
 	hud.message = "PAUSED - ESC TO RESUME" if paused else ""
 
 
