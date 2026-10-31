@@ -26,6 +26,8 @@ func _input(event: InputEvent) -> void:
 		get_last_command()
 	if event.is_action_pressed("ui_text_caret_down"):
 		get_next_command()
+	if event.is_action_pressed("ui_text_indent"):
+		auto_complete_command()
 
 
 func set_active() -> void:
@@ -92,3 +94,22 @@ func get_next_command() -> void:
 	var last = history[history_pointer]
 	text_field.text = last
 	text_field.set_caret_column.call_deferred(text_field.text.length())
+
+
+func auto_complete_command() -> void:
+	if not active:
+		return
+	var line : String = text_field.text
+	if line.is_empty():
+		return
+	var result : String = line
+	var commands = DevConsole.get_command_list()
+	commands.sort_custom(func(s0, s1): return s0.length() < s1.length())
+	for c in commands:
+		if c.begins_with(line):
+			if c != result:
+				result = c
+				break
+
+	text_field.text = result
+	
