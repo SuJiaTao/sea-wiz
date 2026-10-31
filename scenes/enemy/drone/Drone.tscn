@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dn4qyqqfnuw8w"]
 
 [ext_resource type="Script" uid="uid://bc175sj5yw5fa" path="res://scripts/enemy/DroneEnemy.gd" id="1_pw1dl"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/flying/DroneVisuals.tscn" id="2_gj3ar"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/drone/DroneVisuals.tscn" id="2_gj3ar"]
 
 [sub_resource type="SphereShape3D" id="Shape_body"]
 radius = 4.8

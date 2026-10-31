@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://qoodmgyfv7gp"]
 
 [ext_resource type="Script" uid="uid://d28o163mv37kl" path="res://scripts/enemy/JetEnemy.gd" id="1_un0os"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/strike/JetVisuals.tscn" id="2_sob3g"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/strike_aircraft/JetVisuals.tscn" id="2_sob3g"]
 [ext_resource type="Script" uid="uid://4vllhgwjcnc6" path="res://scripts/enemy/FlareDispenser.gd" id="3_hb6bp"]
 
 [sub_resource type="SphereShape3D" id="Shape_body"]

@@ -7,9 +7,41 @@ static var _entries := {
 		"unlocked": false
 	},
 	"DRONE": {
-		"description": "example description of a drone",
+		"description": "example description",
 		"unlocked": false
-	}
+	},
+	"WRECK": {
+		"description": "example description",
+		"unlocked": false
+	},
+	"FIGHTER": {
+		"description": "example description",
+		"unlocked": false
+	},
+	"SEA SKIMMER": {
+		"description": "example description",
+		"unlocked": false
+	},
+	"HELICOPTER": {
+		"description": "example description",
+		"unlocked": false
+	},
+	"BALLISTIC": {
+		"description": "example description",
+		"unlocked": false
+	},
+	"HEAVY BOMBER": {
+		"description": "example description",
+		"unlocked": false
+	},
+	"SUPERSONIC": {
+		"description": "example description",
+		"unlocked": false
+	},
+	"INTERCEPTOR": {
+		"description": "example description",
+		"unlocked": false
+	},
 }
 
 
