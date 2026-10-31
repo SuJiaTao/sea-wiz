@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://blwuke40rkqa1"]
+
+[ext_resource type="Script" uid="uid://chapv7qbi6ve2" path="res://scripts/enemy/HeloEnemy.gd" id="1_ojk5d"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/helo/HeloVisuals.tscn" id="2_u247n"]
+
+[sub_resource type="SphereShape3D" id="Shape_body"]
+radius = 7.5
+
+[node name="Helo" type="Node3D" unique_id=1095646132 node_paths=PackedStringArray("visuals")]
+script = ExtResource("1_ojk5d")
+speed = 62.0
+agility = 0.35
+contact_damage = 12.0
+max_bank_deg = 25.0
+max_hp = 70.0
+display_name = "HELICOPTER"
+hud_radius = 7.5
+visuals = NodePath("Visuals")
+score_value = 200
+
+[node name="Visuals" parent="." unique_id=927785503 instance=ExtResource("2_u247n")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
+
+[node name="Hurtbox" type="Area3D" parent="." unique_id=302157624]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox" unique_id=1049231812]
+shape = SubResource("Shape_body")

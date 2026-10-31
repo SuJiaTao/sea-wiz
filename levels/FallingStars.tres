@@ -2,13 +2,13 @@
 
 [ext_resource type="Script" uid="uid://b2ap6okbtqnal" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
 [ext_resource type="Script" uid="uid://174tvftdpqhu" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
-[ext_resource type="PackedScene" uid="uid://dn4qyqqfnuw8w" path="res://scenes/enemy/Drone.tscn" id="3_2wggm"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/StarMissile.tscn" id="4_star"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="5_jet"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="6_skimmer"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/Interceptor.tscn" id="7_interceptor"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/Helo.tscn" id="8_helo"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/HeavyJet.tscn" id="9_heavy"]
+[ext_resource type="PackedScene" uid="uid://dn4qyqqfnuw8w" path="res://scenes/enemy/flying/Drone.tscn" id="3_2wggm"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/ballistic_missile/StarMissile.tscn" id="4_star"]
+[ext_resource type="PackedScene" uid="uid://qoodmgyfv7gp" path="res://scenes/enemy/strike/Jet.tscn" id="5_jet"]
+[ext_resource type="PackedScene" uid="uid://5s1pfvxhgcgi" path="res://scenes/enemy/sea_skimmer/SeaSkimmer.tscn" id="6_skimmer"]
+[ext_resource type="PackedScene" uid="uid://b2refwwpeiuv8" path="res://scenes/enemy/strike/Interceptor.tscn" id="7_interceptor"]
+[ext_resource type="PackedScene" uid="uid://blwuke40rkqa1" path="res://scenes/enemy/helo/Helo.tscn" id="8_helo"]
+[ext_resource type="PackedScene" uid="uid://bk35gtwjevtju" path="res://scenes/enemy/heavy_jet/HeavyJet.tscn" id="9_heavy"]
 
 [sub_resource type="Resource" id="Spawn01"]
 script = ExtResource("2_spawn")

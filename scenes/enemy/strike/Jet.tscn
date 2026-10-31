@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://qoodmgyfv7gp"]
+
+[ext_resource type="Script" uid="uid://d28o163mv37kl" path="res://scripts/enemy/JetEnemy.gd" id="1_un0os"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/strike/JetVisuals.tscn" id="2_sob3g"]
+[ext_resource type="Script" uid="uid://4vllhgwjcnc6" path="res://scripts/enemy/FlareDispenser.gd" id="3_hb6bp"]
+
+[sub_resource type="SphereShape3D" id="Shape_body"]
+radius = 8.25
+
+[node name="Jet" type="Node3D" unique_id=1717274800 node_paths=PackedStringArray("flares", "visuals")]
+script = ExtResource("1_un0os")
+speed = 240.0
+agility = 0.7
+arrival_radius = 150.0
+contact_damage = 10.0
+flares = NodePath("FlareDispenser")
+max_g = 7.0
+max_hp = 55.0
+display_name = "FIGHTER"
+hud_radius = 8.25
+visuals = NodePath("Visuals")
+score_value = 300
+
+[node name="Visuals" parent="." unique_id=55788299 instance=ExtResource("2_sob3g")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
+
+[node name="Hurtbox" type="Area3D" parent="." unique_id=1886253635]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox" unique_id=250636885]
+shape = SubResource("Shape_body")
+
+[node name="FlareDispenser" type="Node" parent="." unique_id=747029704]
+script = ExtResource("3_hb6bp")

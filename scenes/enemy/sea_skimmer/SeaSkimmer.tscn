@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://5s1pfvxhgcgi"]
+
+[ext_resource type="Script" uid="uid://ltc4xrn18eb8" path="res://scripts/enemy/SeaSkimmerEnemy.gd" id="1_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/sea_skimmer/MissileVisuals.tscn" id="2_visuals"]
+
+[sub_resource type="SphereShape3D" id="Shape_body"]
+radius = 2.4
+
+[node name="SeaSkimmer" type="Node3D" unique_id=2109197560 node_paths=PackedStringArray("visuals")]
+script = ExtResource("1_enemy")
+speed = 310.0
+agility = 0.25
+contact_damage = 26.0
+max_bank_deg = 0.0
+max_hp = 14.0
+display_name = "SEA SKIMMER"
+hud_radius = 2.4
+visuals = NodePath("Visuals")
+contact_kind = 1
+score_value = 250
+blast_size = 1.2
+
+[node name="Visuals" parent="." unique_id=757011167 instance=ExtResource("2_visuals")]
+
+[node name="Hurtbox" type="Area3D" parent="." unique_id=1337031672]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox" unique_id=415231628]
+shape = SubResource("Shape_body")
