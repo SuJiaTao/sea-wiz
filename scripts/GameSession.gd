@@ -45,7 +45,8 @@ func _ready() -> void:
 	title_screen.show()
 	weapons.set_enabled(false)
 	turret.hide_gun = true
-	CursorManager.free_mouse()
+	if CursorManager.is_mouse_captured():
+		CursorManager.free_mouse()
 
 
 func _process(delta: float) -> void:
@@ -180,10 +181,7 @@ func _on_wave_failed(reason: String) -> void:
 func _set_paused(paused: bool) -> void:
 	weapons.set_enabled(not paused)
 	get_tree().paused = paused
-	if paused:
-		CursorManager.free_mouse()
-	else:
-		CursorManager.capture_mouse()
+	CursorManager.capture_mouse(not paused)
 	hud.message = "PAUSED - ESC TO RESUME" if paused else ""
 
 

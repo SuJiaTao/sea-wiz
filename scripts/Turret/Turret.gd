@@ -78,7 +78,7 @@ func set_enabled(value: bool) -> void:
 func apply_mouse_motion(relative: Vector2) -> void:
 	if not _enabled or camera == null:
 		return
-	if not CursorManager.is_captured():
+	if not CursorManager.is_mouse_captured():
 		return
 	var scale_by_fov: float = camera.fov / camera.FOV_WIDE
 	aim(
