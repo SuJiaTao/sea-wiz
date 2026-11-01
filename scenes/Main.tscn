@@ -1,4 +1,4 @@
-[gd_scene load_steps=78 format=3]
+[gd_scene load_steps=79 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="PackedScene" uid="uid://bfbwp5hakbdf0" path="res://scenes/turret/Turret.tscn" id="2_turret"]
@@ -68,6 +68,7 @@
 [ext_resource type="Script" path="res://scripts/hud/ScoreHUD.gd" id="66_score_hud"]
 [ext_resource type="Script" path="res://scripts/enemy/WreckHazards.gd" id="67_wreck_hazards"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Wreck.tscn" id="68_wreck"]
+[ext_resource type="Resource" path="res://levels/Escort.tres" id="69_escort"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -130,7 +131,7 @@ script = ExtResource("1_session")
 [node name="WaveOrchestrator" type="Node" parent="."]
 process_mode = 1
 script = ExtResource("6_waves")
-levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResource("13_second")])
+levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResource("13_second"), ExtResource("69_escort")])
 
 [node name="Score" type="Node" parent="." node_paths=PackedStringArray("enemies")]
 process_mode = 1

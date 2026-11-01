@@ -30,6 +30,9 @@ const MISSILE_LABEL_SIZE: int = 11
 const MISSILE_BLINK_RATE: float = 4.0
 const MISSILE_BLINK_DUTY: float = 0.5
 const MISSILE_SCOPE_MARK: float = 4.0
+const LEADER_SECONDS: float = 4.0
+const LEADER_MAX_SHARE: float = 0.6
+const LEADER_MIN_PIXELS: float = 2.0
 
 @export var turret: Turret
 @export var tracks: TrackManager
@@ -187,8 +190,11 @@ func _draw_scope() -> void:
 	for track in tracks.tracks():
 		if not _belongs_to_marked(track, marked):
 			_draw_cloud(centre, track)
+			if track.confirmed:
+				_draw_leader(centre, track.position, track.velocity, Color(DIM, CLOUD_ALPHA * 3.0))
 	for enemy in marked:
 		var at := _scope_point(centre, enemy.global_position)
+		_draw_leader(centre, enemy.global_position, enemy.velocity, DIM)
 		if enemy.contact_kind == AbstractEnemy.ContactKind.MISSILE:
 			draw_polyline(_diamond(at, MISSILE_SCOPE_MARK), MAIN if _blink_on() else DIM, 1.5)
 		else:
@@ -206,6 +212,14 @@ func _scope_point(centre: Vector2, world_position: Vector3) -> Vector2:
 	var angle := wrapf(atan2(offset.x, -offset.z) - deg_to_rad(turret.bearing_deg()), -PI, PI)
 	var reach := clampf(distance / RADAR_RANGE, 0.0, 1.0) * SCOPE_RADIUS
 	return centre + Vector2(sin(angle), -cos(angle)) * reach
+
+
+func _draw_leader(centre: Vector2, world_position: Vector3, velocity: Vector3, colour: Color) -> void:
+	var start := _scope_point(centre, world_position)
+	var tip := _scope_point(centre, world_position + velocity * LEADER_SECONDS)
+	var leader := (tip - start).limit_length(SCOPE_RADIUS * LEADER_MAX_SHARE)
+	if leader.length() >= LEADER_MIN_PIXELS:
+		draw_line(start, start + leader, colour, 1.0)
 
 
 func _belongs_to_marked(track: RadarTrack, marked: Array[AbstractEnemy]) -> bool:
