@@ -1,8 +1,8 @@
 class_name TurretCamera
 extends Camera3D
 
-const FOV_WIDE := 55.0
-const FOV_NARROW := 17.0
+const FOV_WIDE := 65.0
+const FOV_NARROW := 20.0
 
 const SHAKE_DECAY := 7.0
 const SHAKE_TO_OFFSET := 0.015

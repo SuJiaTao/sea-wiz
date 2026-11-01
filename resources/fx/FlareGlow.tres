@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="ParticleStyle" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/fx/ParticleStyle.gd" id="1_style"]
+[ext_resource type="Shader" path="res://shaders/spark_particle.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_FlareGlow"]
+render_priority = 0
+shader = ExtResource("2_shader")
+shader_parameter/growth = 1.0
+shader_parameter/growth_curve = 1.0
+shader_parameter/start_heat = 2.5
+shader_parameter/end_heat = 0.6
+shader_parameter/cooling = 1.5
+shader_parameter/start_alpha = 1.0
+shader_parameter/fade = 1.5
+shader_parameter/min_angular_size = 0.006
+shader_parameter/sharpness = 1.5
+
+[sub_resource type="QuadMesh" id="QuadMesh_FlareGlow"]
+material = SubResource("ShaderMaterial_FlareGlow")
+
+[resource]
+resource_name = "FlareGlow"
+script = ExtResource("1_style")
+mesh = SubResource("QuadMesh_FlareGlow")
+lifetime = Vector2(0.12, 0.2)
+start_size = Vector2(1.0, 1.4)
+wind_factor = 0.0

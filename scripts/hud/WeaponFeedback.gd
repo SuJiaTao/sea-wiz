@@ -102,16 +102,15 @@ func _draw() -> void:
 
 	var camera := turret.camera
 	var center := size * 0.5
-	if camera.fov <= MissileLauncher.LOCK_ZOOM_FOV:
-		var distance := camera.near + 1.0
-		var bore := camera.global_position - camera.global_basis.z * distance
-		var edge := bore + camera.global_basis.x * (
-			tan(deg_to_rad(MissileLauncher.LOCK_CONE_DEG)) * distance
-		)
-		var radius := _project_world(camera, bore).distance_to(
-			_project_world(camera, edge)
-		)
-		draw_arc(center, maxf(radius, 10.0), 0, TAU, 40, FAINT)
+	var distance := camera.near + 1.0
+	var bore := camera.global_position - camera.global_basis.z * distance
+	var edge := bore + camera.global_basis.x * (
+		tan(deg_to_rad(MissileLauncher.LOCK_CONE_DEG)) * distance
+	)
+	var radius := _project_world(camera, bore).distance_to(
+		_project_world(camera, edge)
+	)
+	draw_arc(center, maxf(radius, 10.0), 0, TAU, 40, FAINT)
 
 	if not launcher.lock_denied_reason.is_empty():
 		_center(center.y + 58, launcher.lock_denied_reason, 14)

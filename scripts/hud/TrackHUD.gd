@@ -24,6 +24,12 @@ const GATE_OPEN: float = 2.2
 const GATE_CORNER: float = 0.45
 const SPOT_RING: float = 16.0
 const SPOT_RING_SEGMENTS: int = 24
+const MISSILE_MARKER: float = 9.0
+const MISSILE_LABEL := "VAMPIRE"
+const MISSILE_LABEL_SIZE: int = 11
+const MISSILE_BLINK_RATE: float = 4.0
+const MISSILE_BLINK_DUTY: float = 0.5
+const MISSILE_SCOPE_MARK: float = 4.0
 
 @export var turret: Turret
 @export var tracks: TrackManager
@@ -31,6 +37,7 @@ const SPOT_RING_SEGMENTS: int = 24
 @export var gun_director: GunDirector
 
 var _pings: Dictionary = {}
+var _clock: float = 0.0
 
 
 func _ready() -> void:
@@ -38,6 +45,7 @@ func _ready() -> void:
 
 
 func _update_hud(delta: float) -> void:
+	_clock += delta
 	for enemy: Variant in _pings.keys():
 		_pings[enemy] += delta
 		if _pings[enemy] > PING_TIME or not is_instance_valid(enemy):
@@ -73,21 +81,55 @@ func _screen_radius(enemy: AbstractEnemy) -> float:
 
 func _draw_marker(enemy: AbstractEnemy) -> void:
 	if not _on_screen(enemy.global_position):
-		_draw_edge_arrow(enemy.global_position)
+		_draw_edge_arrow(enemy.global_position, _marker_colour(enemy))
 		return
 	var point := _project(enemy.global_position)
+	if enemy.contact_kind == AbstractEnemy.ContactKind.MISSILE:
+		_draw_missile_marker(point, enemy)
+	else:
+		_draw_aircraft_marker(point, enemy)
+	if _pings.has(enemy) and _pings[enemy] < PING_TIME:
+		var age: float = _pings[enemy] / PING_TIME
+		draw_arc(point, PING_RADIUS * age, 0, TAU, 32, Color(MAIN, 1.0 - age), 1.5)
+
+
+func _draw_aircraft_marker(point: Vector2, enemy: AbstractEnemy) -> void:
 	var top := point - Vector2(0, _screen_radius(enemy) + MARKER_LIFT)
 	draw_colored_polygon(PackedVector2Array([
 		top + Vector2(-MARKER_SIZE, -MARKER_SIZE),
 		top + Vector2(MARKER_SIZE, -MARKER_SIZE),
 		top
 	]), DIM)
-	if _pings.has(enemy) and _pings[enemy] < PING_TIME:
-		var age: float = _pings[enemy] / PING_TIME
-		draw_arc(point, PING_RADIUS * age, 0, TAU, 32, Color(MAIN, 1.0 - age), 1.5)
 
 
-func _draw_edge_arrow(world_position: Vector3) -> void:
+func _draw_missile_marker(point: Vector2, enemy: AbstractEnemy) -> void:
+	var reach := _screen_radius(enemy) + MISSILE_MARKER
+	var colour := _marker_colour(enemy)
+	draw_polyline(_diamond(point, reach), colour, 2.0)
+	_text(point + Vector2(reach + 6.0, -reach), MISSILE_LABEL, MISSILE_LABEL_SIZE, colour)
+
+
+func _diamond(point: Vector2, reach: float) -> PackedVector2Array:
+	return PackedVector2Array([
+		point + Vector2(0, -reach),
+		point + Vector2(reach, 0),
+		point + Vector2(0, reach),
+		point + Vector2(-reach, 0),
+		point + Vector2(0, -reach)
+	])
+
+
+func _marker_colour(enemy: AbstractEnemy) -> Color:
+	if enemy.contact_kind != AbstractEnemy.ContactKind.MISSILE:
+		return DIM
+	return MAIN if _blink_on() else DIM
+
+
+func _blink_on() -> bool:
+	return fmod(_clock * MISSILE_BLINK_RATE, 1.0) < MISSILE_BLINK_DUTY
+
+
+func _draw_edge_arrow(world_position: Vector3, colour: Color) -> void:
 	var local := turret.camera.global_transform.affine_inverse() * world_position
 	var direction := Vector2(local.x, -local.y).normalized()
 	if direction == Vector2.ZERO:
@@ -98,7 +140,7 @@ func _draw_edge_arrow(world_position: Vector3) -> void:
 	var side := direction.orthogonal() * EDGE_ARROW * 0.6
 	draw_colored_polygon(PackedVector2Array([
 		tip, tip - direction * EDGE_ARROW + side, tip - direction * EDGE_ARROW - side
-	]), DIM)
+	]), colour)
 
 
 func _draw_spotting() -> void:
@@ -146,7 +188,11 @@ func _draw_scope() -> void:
 		if not _belongs_to_marked(track, marked):
 			_draw_cloud(centre, track)
 	for enemy in marked:
-		draw_circle(_scope_point(centre, enemy.global_position), MARKED_DOT, MAIN)
+		var at := _scope_point(centre, enemy.global_position)
+		if enemy.contact_kind == AbstractEnemy.ContactKind.MISSILE:
+			draw_polyline(_diamond(at, MISSILE_SCOPE_MARK), MAIN if _blink_on() else DIM, 1.5)
+		else:
+			draw_circle(at, MARKED_DOT, MAIN)
 
 	_text(
 		centre + Vector2(-SCOPE_RADIUS, SCOPE_RADIUS + 18),
