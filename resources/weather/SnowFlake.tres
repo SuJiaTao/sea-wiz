@@ -1,0 +1,10 @@
+[gd_resource type="QuadMesh" load_steps=3 format=3]
+
+[ext_resource type="Shader" path="res://shaders/snow_flake.gdshader" id="1_shader"]
+
+[sub_resource type="ShaderMaterial" id="Material_snow_flake"]
+render_priority = 0
+shader = ExtResource("1_shader")
+
+[resource]
+material = SubResource("Material_snow_flake")

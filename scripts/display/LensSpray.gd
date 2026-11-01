@@ -18,11 +18,15 @@ var _droplets: Array[LensDroplet] = []
 func splash(strength: float) -> void:
 	var count := roundi(lerpf(droplets_per_splash.x, droplets_per_splash.y, clampf(strength, 0.0, 1.0)))
 	for index in count:
-		_droplets.push_back(LensDroplet.new(
-			Vector2(randf(), randf()),
-			randf_range(droplet_radius.x, droplet_radius.y),
-			randf_range(droplet_life.x, droplet_life.y)
-		))
+		add_droplet()
+
+
+func add_droplet() -> void:
+	_droplets.push_back(LensDroplet.new(
+		Vector2(randf(), randf()),
+		randf_range(droplet_radius.x, droplet_radius.y),
+		randf_range(droplet_life.x, droplet_life.y)
+	))
 	while _droplets.size() > MAX_DROPLETS:
 		_droplets.pop_front()
 
