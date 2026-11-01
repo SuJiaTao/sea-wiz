@@ -13,6 +13,7 @@ const SMOKE_SPREAD: float = 1.2
 const EMBERS_PER_SECOND: float = 5.0
 const EMBER_RISE := Vector2(3.0, 9.0)
 const EMBER_SPREAD: float = 2.5
+const EXTINGUISHED_STRENGTH: float = 0.12
 
 var _anchor: Node3D
 var _strength: float
@@ -28,6 +29,14 @@ func _init(anchor: Node3D, strength: float) -> void:
 
 func grow(amount: float) -> void:
 	_strength = minf(_strength + amount, 1.0)
+
+
+func dampen(factor: float) -> bool:
+	_strength *= factor
+	if _strength >= EXTINGUISHED_STRENGTH:
+		return true
+	finish()
+	return false
 
 
 func _on_spawn(effects: EffectManager) -> void:
