@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://shaders/casing.gdshader" id="1_shader"]
+
+[resource]
+resource_name = "Casing"
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/hot_level = 1.1
+shader_parameter/cold_level = 0.16
+shader_parameter/cooling_time = 5.0

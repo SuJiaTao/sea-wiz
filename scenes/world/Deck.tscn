@@ -263,28 +263,6 @@ height = 0.07
 radial_segments = 8
 rings = 1
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l7s0p"]
-cull_mode = 2
-shading_mode = 0
-specular_mode = 2
-albedo_color = Color(0.21, 0.21, 0.21, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_vat7d"]
-size = Vector3(4, 2.6, 7)
-
-[sub_resource type="BoxMesh" id="BoxMesh_uk2ew"]
-size = Vector3(3, 4, 4)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_sngcn"]
-top_radius = 0.3
-bottom_radius = 0.3
-height = 14.0
-radial_segments = 8
-rings = 1
-
-[sub_resource type="BoxMesh" id="BoxMesh_b28p3"]
-size = Vector3(9, 1.4, 2)
-
 [node name="Deck" type="Node3D" unique_id=2044250007]
 
 [node name="Cylinder01" type="MeshInstance3D" parent="." unique_id=230454690]
@@ -496,27 +474,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 material_override = SubResource("StandardMaterial3D_q2soe")
 cast_shadow = 0
 mesh = SubResource("CylinderMesh_380vg")
-
-[node name="Box01" type="MeshInstance3D" parent="." unique_id=1404043448]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, -0.6, 7)
-material_override = SubResource("StandardMaterial3D_l7s0p")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_vat7d")
-
-[node name="Box02" type="MeshInstance3D" parent="." unique_id=892002702]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0.2, -9)
-material_override = SubResource("StandardMaterial3D_l7s0p")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_uk2ew")
-
-[node name="Cylinder36" type="MeshInstance3D" parent="." unique_id=1200345820]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 5.5, 10)
-material_override = SubResource("StandardMaterial3D_l7s0p")
-cast_shadow = 0
-mesh = SubResource("CylinderMesh_sngcn")
-
-[node name="Box03" type="MeshInstance3D" parent="." unique_id=788072006]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, -17)
-material_override = SubResource("StandardMaterial3D_l7s0p")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_b28p3")

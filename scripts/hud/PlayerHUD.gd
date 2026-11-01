@@ -5,15 +5,7 @@ class_name PlayerHUD
 @export var thermal: ThermalView
 @export var video: AnalogVideo
 
-var _hull: float = 100.0
-var _max_hull: float = 100.0
 var _phase: float = 0.0
-
-
-func set_health(current: float, maximum: float) -> void:
-	_hull = current
-	_max_hull = maximum
-	queue_redraw()
 
 
 func _update_hud(delta: float) -> void:
@@ -102,19 +94,8 @@ func _draw_compass() -> void:
 
 func _draw_gauges() -> void:
 	var origin := Vector2(28, size.y - 154)
-	var hull_fraction := clampf(_hull / maxf(_max_hull, 1.0), 0, 1)
 	var ammo_fraction := float(turret.ammo) / float(Turret.MAGAZINE)
 	var warning := Color(1, 1, 1, 0.65 + 0.35 * sin(_phase * 8.0))
-
-	_text(origin, "HULL", 12, DIM)
-	_bar(
-		origin + Vector2(0, 8), Vector2(190, 12), hull_fraction,
-		warning if hull_fraction < 0.35 else MAIN
-	)
-	_text(
-		origin + Vector2(198, 18),
-		"%d%%" % int(hull_fraction * 100.0), 12
-	)
 
 	_text(origin + Vector2(0, 44), "MAGAZINE", 12, DIM)
 	_bar(
