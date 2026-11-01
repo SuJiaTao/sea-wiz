@@ -11,6 +11,10 @@
 [ext_resource type="AudioStream" uid="uid://dmj35ky2d8md4" path="res://audio/ciws/ciws_spin_c.wav" id="9_t4bc6"]
 [ext_resource type="AudioStream" uid="uid://bxu1l6b8ylc1b" path="res://audio/ciws/ciws_reload.wav" id="10_1qnl4"]
 
+[sub_resource type="Curve" id="Curve_t4bc6"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 2.4121606, 0.0, 0, 0]
+point_count = 2
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7mu8f"]
 transparency = 1
 blend_mode = 1
@@ -36,8 +40,9 @@ _gun_audio = NodePath("GunAudio")
 _spin_audio = NodePath("SpinAudio")
 _reload_audio = NodePath("ReloadAudio")
 _wind_down_audio = NodePath("GunWindDownAudio")
-_spin_audio_pitch_range = Vector2(0.4, 3)
-_spin_audio_volume_db_range = Vector2(-20, -15)
+audio_curve = SubResource("Curve_t4bc6")
+_spin_audio_pitch_range = Vector2(0.01, 0.2)
+_spin_audio_volume_db_range = Vector2(-10, -5)
 
 [node name="Mount" type="Node3D" parent="." unique_id=1768422786]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
@@ -79,7 +84,6 @@ volume_db = -15.0
 [node name="SpinAudio" type="AudioStreamPlayer" parent="." unique_id=1343433886]
 stream = ExtResource("9_t4bc6")
 volume_db = -1.0
-pitch_scale = 2.45
 
 [node name="ReloadAudio" type="AudioStreamPlayer" parent="." unique_id=1577571279]
 stream = ExtResource("10_1qnl4")

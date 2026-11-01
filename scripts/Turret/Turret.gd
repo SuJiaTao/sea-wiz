@@ -41,6 +41,7 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export var _reload_audio: AudioStreamPlayer
 @export var _wind_down_audio: AudioStreamPlayer
 @export_category("Audio Properties")
+@export var audio_curve : Curve
 @export var _gun_audio_pitch_range: Vector2 = Vector2(0.72, 1.0)
 @export var _spin_audio_pitch_range: Vector2 = Vector2(0.55, 1.15)
 @export var _spin_audio_volume_db_range: Vector2 = Vector2(-30.0, -13.0)
@@ -187,6 +188,7 @@ func _start_reload() -> void:
 	if _reload_audio:
 		_reload_audio.play()
 	reload_started.emit()
+	_spin_audio.stop()
 
 func _stop_reload() -> void:
 	if not reloading:
@@ -270,4 +272,4 @@ func _update_audio() -> void:
 
 
 func _lerp_rangef(lerp_range: Vector2, weight: float) -> float:
-	return lerpf(lerp_range.x, lerp_range.y, weight)
+	return lerpf(lerp_range.x, lerp_range.y, audio_curve.sample(weight))
