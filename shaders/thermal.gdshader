@@ -27,6 +27,7 @@ uniform vec4 droplets[MAX_DROPLETS];
 uniform float droplet_refraction : hint_range(0.0, 3.0) = 1.6;
 uniform float droplet_cooling : hint_range(0.0, 1.0) = 0.65;
 uniform float droplet_rim : hint_range(0.0, 1.0) = 0.12;
+uniform float chroma_keep : hint_range(0.0, 3.0) = 1.0;
 
 const vec3 LUMA = vec3(0.30, 0.59, 0.11);
 const int RING_TAPS = 8;
@@ -59,7 +60,8 @@ void fragment() {
 	vec2 uv = clamp(UV + bend + vec2(shake_x, shake_y), vec2(0.0), vec2(1.0));
 	vec2 texel = 1.0 / sensor_size;
 
-	float centre = dot(texture(TEXTURE, uv).rgb, LUMA);
+	vec3 centre_colour = texture(TEXTURE, uv).rgb;
+	float centre = dot(centre_colour, LUMA);
 	float soft = 0.0;
 	float near = 0.0;
 	float far = 0.0;
@@ -84,5 +86,6 @@ void fragment() {
 	l = floor(l * levels + 0.5) / levels;
 	l = mix(l, 1.0 - l, polarity);
 
-	COLOR = vec4(vec3(l), 1.0);
+	vec3 chroma = (centre_colour - vec3(centre)) * chroma_keep;
+	COLOR = vec4(clamp(vec3(l) + chroma, 0.0, 1.0), 1.0);
 }
