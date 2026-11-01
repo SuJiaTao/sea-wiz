@@ -1,0 +1,96 @@
+[gd_resource type="Resource" script_class="WaveDefinition" load_steps=22 format=3]
+
+[ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Drone.tscn" id="3_drone"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/StarMissile.tscn" id="4_star"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="5_jet"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="6_skimmer"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Interceptor.tscn" id="7_interceptor"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Helo.tscn" id="8_helo"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/HeavyJet.tscn" id="9_heavy"]
+
+[sub_resource type="Resource" id="Spawn01"]
+script = ExtResource("2_spawn")
+time = 0.0
+enemy_scene = ExtResource("3_drone")
+
+[sub_resource type="Resource" id="Spawn02"]
+script = ExtResource("2_spawn")
+time = 1.0
+enemy_scene = ExtResource("3_drone")
+
+[sub_resource type="Resource" id="Spawn03"]
+script = ExtResource("2_spawn")
+time = 3.0
+enemy_scene = ExtResource("4_star")
+distance = Vector2(1600, 2100)
+altitude = Vector2(2000, 2500)
+
+[sub_resource type="Resource" id="Spawn04"]
+script = ExtResource("2_spawn")
+time = 6.0
+enemy_scene = ExtResource("5_jet")
+distance = Vector2(1500, 2100)
+altitude = Vector2(120, 480)
+
+[sub_resource type="Resource" id="Spawn05"]
+script = ExtResource("2_spawn")
+time = 10.0
+enemy_scene = ExtResource("4_star")
+distance = Vector2(1600, 2100)
+altitude = Vector2(2000, 2500)
+
+[sub_resource type="Resource" id="Spawn06"]
+script = ExtResource("2_spawn")
+time = 13.0
+enemy_scene = ExtResource("6_skimmer")
+distance = Vector2(1600, 2200)
+altitude = Vector2(12, 30)
+
+[sub_resource type="Resource" id="Spawn07"]
+script = ExtResource("2_spawn")
+time = 16.0
+enemy_scene = ExtResource("7_interceptor")
+distance = Vector2(1900, 2400)
+altitude = Vector2(150, 420)
+
+[sub_resource type="Resource" id="Spawn08"]
+script = ExtResource("2_spawn")
+time = 18.0
+enemy_scene = ExtResource("4_star")
+distance = Vector2(1600, 2100)
+altitude = Vector2(2000, 2500)
+
+[sub_resource type="Resource" id="Spawn09"]
+script = ExtResource("2_spawn")
+time = 22.0
+enemy_scene = ExtResource("8_helo")
+distance = Vector2(800, 1300)
+altitude = Vector2(45, 180)
+
+[sub_resource type="Resource" id="Spawn10"]
+script = ExtResource("2_spawn")
+time = 25.0
+enemy_scene = ExtResource("9_heavy")
+distance = Vector2(1800, 2400)
+altitude = Vector2(300, 700)
+
+[sub_resource type="Resource" id="Spawn11"]
+script = ExtResource("2_spawn")
+time = 27.0
+enemy_scene = ExtResource("4_star")
+distance = Vector2(1600, 2100)
+altitude = Vector2(2000, 2500)
+
+[sub_resource type="Resource" id="Spawn12"]
+script = ExtResource("2_spawn")
+time = 30.0
+enemy_scene = ExtResource("6_skimmer")
+distance = Vector2(1600, 2200)
+altitude = Vector2(12, 30)
+
+[resource]
+script = ExtResource("1_wave")
+title = "FALLING STARS"
+spawns = Array[ExtResource("2_spawn")]([SubResource("Spawn01"), SubResource("Spawn02"), SubResource("Spawn03"), SubResource("Spawn04"), SubResource("Spawn05"), SubResource("Spawn06"), SubResource("Spawn07"), SubResource("Spawn08"), SubResource("Spawn09"), SubResource("Spawn10"), SubResource("Spawn11"), SubResource("Spawn12")])

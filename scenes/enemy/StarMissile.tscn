@@ -1,0 +1,32 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/BallisticMissileEnemy.gd" id="1_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/StarMissileVisuals.tscn" id="2_visuals"]
+
+[sub_resource type="SphereShape3D" id="Shape_body"]
+radius = 3.0
+
+[node name="StarMissile" type="Node3D" node_paths=PackedStringArray("visuals", "glow")]
+script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
+glow = NodePath("Visuals/Glow")
+max_hp = 12.0
+display_name = "BALLISTIC"
+score_value = 700
+hud_radius = 3.0
+contact_kind = 1
+radar_reach = 1500.0
+max_bank_deg = 0.0
+agility = 0.6
+contact_damage = 40.0
+arrival_radius = 40.0
+
+[node name="Visuals" parent="." instance=ExtResource("2_visuals")]
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox"]
+shape = SubResource("Shape_body")
