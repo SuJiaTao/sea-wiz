@@ -21,6 +21,13 @@ uniform float shake_y = 0.0;
 uniform vec2 sensor_size = vec2(320.0, 180.0);
 uniform float flash : hint_range(0.0, 1.0) = 0.0;
 
+// Water on the lens: xy centre in UV, z radius (fraction of height), w strength.
+const int MAX_DROPLETS = 12;
+uniform vec4 droplets[MAX_DROPLETS];
+uniform float droplet_refraction : hint_range(0.0, 3.0) = 1.6;
+uniform float droplet_cooling : hint_range(0.0, 1.0) = 0.65;
+uniform float droplet_rim : hint_range(0.0, 1.0) = 0.12;
+
 const vec3 LUMA = vec3(0.30, 0.59, 0.11);
 const int RING_TAPS = 8;
 
@@ -30,7 +37,26 @@ vec2 ring_direction(int tap) {
 }
 
 void fragment() {
-	vec2 uv = clamp(UV + vec2(shake_x, shake_y), vec2(0.0), vec2(1.0));
+	vec2 aspect = vec2(sensor_size.x / sensor_size.y, 1.0);
+	vec2 bend = vec2(0.0);
+	float wet = 0.0;
+	float rim = 0.0;
+	for (int i = 0; i < MAX_DROPLETS; i++) {
+		vec4 drop = droplets[i];
+		if (drop.w <= 0.0) {
+			continue;
+		}
+		vec2 offset = (UV - drop.xy) * aspect / drop.z;
+		float r2 = dot(offset, offset);
+		if (r2 < 1.0) {
+			float bulge = sqrt(1.0 - r2);
+			bend -= (UV - drop.xy) * droplet_refraction * bulge * drop.w;
+			wet = max(wet, bulge * drop.w);
+			rim = max(rim, smoothstep(0.6, 0.95, r2) * (1.0 - r2) * 4.0 * drop.w);
+		}
+	}
+
+	vec2 uv = clamp(UV + bend + vec2(shake_x, shake_y), vec2(0.0), vec2(1.0));
 	vec2 texel = 1.0 / sensor_size;
 
 	float centre = dot(texture(TEXTURE, uv).rgb, LUMA);
@@ -47,11 +73,12 @@ void fragment() {
 	near /= float(RING_TAPS);
 	far /= float(RING_TAPS);
 
-	float base = mix(centre, soft, optical_blur);
+	float base = mix(centre, soft, mix(optical_blur, 1.0, wet));
 	float l = base + max(near - bloom_floor, 0.0) * bloom_amount;
 	l = max(l - black_level, 0.0) * gain;
 	l = sensor_floor + l + (base - far) * halo_amount;
 
+	l = l * (1.0 - droplet_cooling * wet) + droplet_rim * rim;
 	l = clamp(l + flash, 0.0, 1.0);
 
 	l = floor(l * levels + 0.5) / levels;
