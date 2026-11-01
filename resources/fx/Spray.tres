@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="ParticleStyle" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ParticleStyle" format=3 uid="uid://bhjsl7ay68pvd"]
 
-[ext_resource type="Script" path="res://scripts/fx/ParticleStyle.gd" id="1_style"]
-[ext_resource type="Shader" path="res://shaders/smoke_particle.gdshader" id="2_shader"]
+[ext_resource type="Script" uid="uid://bnxoapiig155" path="res://scripts/fx/ParticleStyle.gd" id="1_style"]
+[ext_resource type="Shader" uid="uid://b4j72mdwu6l5k" path="res://shaders/smoke_particle.gdshader" id="2_shader"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_Spray"]
 render_priority = 0
@@ -27,8 +27,8 @@ material = SubResource("ShaderMaterial_Spray")
 resource_name = "Spray"
 script = ExtResource("1_style")
 mesh = SubResource("QuadMesh_Spray")
-lifetime = Vector2(1.0, 1.8)
-start_size = Vector2(1.2, 2.0)
+lifetime = Vector2(1, 1.8)
+start_size = Vector2(1.2, 2)
 gravity = 9.81
 drag = 0.9
 wind_factor = 0.4

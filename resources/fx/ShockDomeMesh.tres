@@ -1,10 +1,14 @@
-[gd_resource type="SphereMesh" load_steps=3 format=3]
+[gd_resource type="SphereMesh" format=3 uid="uid://cw666x1bbx6fi"]
 
-[ext_resource type="Shader" path="res://shaders/shock_dome.gdshader" id="1_shader"]
+[ext_resource type="Shader" uid="uid://bh64eiokd6rt4" path="res://shaders/shock_dome.gdshader" id="1_shader"]
 
 [sub_resource type="ShaderMaterial" id="Material_dome"]
 render_priority = 0
 shader = ExtResource("1_shader")
+shader_parameter/fade = 0.0
+shader_parameter/brightness = 0.6
+shader_parameter/rim_power = 3.0
+shader_parameter/breakup_scale = 6.0
 
 [resource]
 material = SubResource("Material_dome")

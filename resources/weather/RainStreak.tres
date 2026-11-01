@@ -1,10 +1,16 @@
-[gd_resource type="QuadMesh" load_steps=3 format=3]
+[gd_resource type="QuadMesh" format=3 uid="uid://efqwkh210cn1"]
 
-[ext_resource type="Shader" path="res://shaders/rain_streak.gdshader" id="1_shader"]
+[ext_resource type="Shader" uid="uid://bbxdw6fwlbw8d" path="res://shaders/rain_streak.gdshader" id="1_shader"]
 
 [sub_resource type="ShaderMaterial" id="Material_rain_streak"]
 render_priority = 0
 shader = ExtResource("1_shader")
+shader_parameter/centre = Vector3(0, 0, 0)
+shader_parameter/box_size = Vector3(80, 50, 80)
+shader_parameter/fall_velocity = Vector3(2.5, -20, 1)
+shader_parameter/streak_seconds = 0.1
+shader_parameter/width_pixels = 1.0
+shader_parameter/brightness = 0.24
 
 [resource]
 material = SubResource("Material_rain_streak")

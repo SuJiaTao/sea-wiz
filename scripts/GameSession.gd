@@ -45,7 +45,9 @@ func _ready() -> void:
 	title_screen.show()
 	weapons.set_enabled(false)
 	turret.hide_gun = true
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if CursorManager.is_mouse_captured():
+		CursorManager.free_mouse()
+	DevConsole.register_command("quit", quit_game.unbind(1))
 
 
 func _process(delta: float) -> void:
@@ -78,7 +80,7 @@ func _begin() -> void:
 	hud.show()
 	turret.hide_gun = false
 	weapons.set_enabled(true)
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	CursorManager.capture_mouse()
 	waves.start(enemies)
 
 
@@ -180,9 +182,7 @@ func _on_wave_failed(reason: String) -> void:
 func _set_paused(paused: bool) -> void:
 	weapons.set_enabled(not paused)
 	get_tree().paused = paused
-	Input.mouse_mode = (
-		Input.MOUSE_MODE_VISIBLE if paused else Input.MOUSE_MODE_CAPTURED
-	)
+	CursorManager.free_mouse(paused)
 	hud.message = "PAUSED - ESC TO RESUME" if paused else ""
 
 
@@ -194,7 +194,7 @@ func _finish(result: State, message: String) -> void:
 	score.record_final()
 	weapons.set_enabled(false)
 	get_tree().paused = true
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	CursorManager.free_mouse()
 	hud.message = message + " - CLICK OR ENTER TO RESTART"
 
 
@@ -206,3 +206,9 @@ func _restart() -> void:
 
 static func is_state(state2: State) -> bool:
 	return _singleton.state == state2
+
+
+func quit_game() -> void:
+	DevConsole.print_to_console("quitting...")
+	# DevConsole.dump_history()
+	get_tree().quit.call_deferred()

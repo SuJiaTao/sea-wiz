@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="ParticleStyle" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ParticleStyle" format=3 uid="uid://b6yw8csd76l2y"]
 
-[ext_resource type="Script" path="res://scripts/fx/ParticleStyle.gd" id="1_style"]
-[ext_resource type="Shader" path="res://shaders/smoke_particle.gdshader" id="2_shader"]
+[ext_resource type="Script" uid="uid://bnxoapiig155" path="res://scripts/fx/ParticleStyle.gd" id="1_style"]
+[ext_resource type="Shader" uid="uid://b4j72mdwu6l5k" path="res://shaders/smoke_particle.gdshader" id="2_shader"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_WreckSmoke"]
 render_priority = 0
@@ -27,8 +27,7 @@ material = SubResource("ShaderMaterial_WreckSmoke")
 resource_name = "WreckSmoke"
 script = ExtResource("1_style")
 mesh = SubResource("QuadMesh_WreckSmoke")
-lifetime = Vector2(6.0, 9.0)
-start_size = Vector2(4.0, 7.0)
+lifetime = Vector2(6, 9)
+start_size = Vector2(4, 7)
 buoyancy = 1.4
 drag = 0.5
-wind_factor = 1.0

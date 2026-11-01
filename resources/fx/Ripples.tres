@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="ParticleStyle" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ParticleStyle" format=3 uid="uid://cf5bolxwnh8vd"]
 
-[ext_resource type="Script" path="res://scripts/fx/ParticleStyle.gd" id="1_style"]
-[ext_resource type="Shader" path="res://shaders/ripple_particle.gdshader" id="2_shader"]
+[ext_resource type="Script" uid="uid://bnxoapiig155" path="res://scripts/fx/ParticleStyle.gd" id="1_style"]
+[ext_resource type="Shader" uid="uid://4tbo6gn3mkwj" path="res://shaders/ripple_particle.gdshader" id="2_shader"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_Ripples"]
 render_priority = 0
@@ -13,6 +13,7 @@ shader_parameter/end_heat = 0.2
 shader_parameter/cooling = 1.0
 shader_parameter/start_alpha = 0.75
 shader_parameter/fade = 1.0
+shader_parameter/min_angular_size = 0.0
 shader_parameter/ring_radius = 0.85
 shader_parameter/ring_width = 0.12
 shader_parameter/foam = 0.35
@@ -27,5 +28,5 @@ resource_name = "Ripples"
 script = ExtResource("1_style")
 mesh = SubResource("PlaneMesh_Ripples")
 lifetime = Vector2(1.8, 2.8)
-start_size = Vector2(3.0, 4.0)
+start_size = Vector2(3, 4)
 wind_factor = 0.0

@@ -1,10 +1,17 @@
-[gd_resource type="QuadMesh" load_steps=3 format=3]
+[gd_resource type="QuadMesh" format=3 uid="uid://bd5fur0cuaei0"]
 
-[ext_resource type="Shader" path="res://shaders/snow_flake.gdshader" id="1_shader"]
+[ext_resource type="Shader" uid="uid://nbthca7kmtv8" path="res://shaders/snow_flake.gdshader" id="1_shader"]
 
 [sub_resource type="ShaderMaterial" id="Material_snow_flake"]
 render_priority = 0
 shader = ExtResource("1_shader")
+shader_parameter/centre = Vector3(0, 0, 0)
+shader_parameter/box_size = Vector3(70, 45, 70)
+shader_parameter/fall_velocity = Vector3(0.6, -1.6, 0.3)
+shader_parameter/sway = 0.8
+shader_parameter/flake_size = 0.09
+shader_parameter/size_pixels = 2.2
+shader_parameter/brightness = 0.6
 
 [resource]
 material = SubResource("Material_snow_flake")
