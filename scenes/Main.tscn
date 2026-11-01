@@ -1,4 +1,4 @@
-[gd_scene load_steps=100 format=3]
+[gd_scene load_steps=107 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="PackedScene" uid="uid://bfbwp5hakbdf0" path="res://scenes/turret/Turret.tscn" id="2_turret"]
@@ -90,6 +90,13 @@
 [ext_resource type="Resource" path="res://resources/weather/Rain.tres" id="88_rain"]
 [ext_resource type="Resource" path="res://resources/weather/Snow.tres" id="89_snow"]
 [ext_resource type="Resource" path="res://resources/weather/Sleet.tres" id="90_sleet"]
+[ext_resource type="Script" path="res://scripts/weather/LightningBolt.gd" id="91_bolt"]
+[ext_resource type="Script" path="res://scripts/weather/LightningWeather.gd" id="92_lightning"]
+[ext_resource type="Script" path="res://scripts/weather/SeaStateWeather.gd" id="93_sea_state"]
+[ext_resource type="Script" path="res://scripts/ship/ShipSway.gd" id="94_sway"]
+[ext_resource type="Resource" path="res://resources/weather/Thunderstorm.tres" id="95_storm"]
+[ext_resource type="Material" path="res://resources/weather/LightningMaterial.tres" id="96_bolt_material"]
+[ext_resource type="AudioStream" path="res://audio/thunder.wav" id="97_thunder"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -169,7 +176,7 @@ process_mode = 1
 script = ExtResource("75_weather")
 waves = NodePath("../WaveOrchestrator")
 clear = ExtResource("79_clear")
-fronts = Array[ExtResource("81_profile_type")]([ExtResource("80_fog_profile"), ExtResource("88_rain"), ExtResource("89_snow"), ExtResource("90_sleet")])
+fronts = Array[ExtResource("81_profile_type")]([ExtResource("80_fog_profile"), ExtResource("88_rain"), ExtResource("89_snow"), ExtResource("90_sleet"), ExtResource("95_storm")])
 
 [node name="Fog" type="Node" parent="Weather" node_paths=PackedStringArray("environment")]
 script = ExtResource("76_fog")
@@ -188,6 +195,22 @@ snow = NodePath("../../ViewportContainer/SubViewport/World/Snow")
 [node name="LensRain" type="Node" parent="Weather" node_paths=PackedStringArray("lens")]
 script = ExtResource("85_lens_rain")
 lens = NodePath("../../LensSpray")
+
+[node name="Lightning" type="Node" parent="Weather" node_paths=PackedStringArray("bolt", "environment", "thermal", "thunder")]
+script = ExtResource("92_lightning")
+bolt = NodePath("../../ViewportContainer/SubViewport/World/Lightning")
+environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
+sea_material = SubResource("Material_sea")
+thermal = NodePath("../../ViewportContainer")
+thunder = NodePath("Thunder")
+
+[node name="Thunder" type="AudioStreamPlayer" parent="Weather/Lightning"]
+stream = ExtResource("97_thunder")
+
+[node name="SeaState" type="Node" parent="Weather" node_paths=PackedStringArray("sway")]
+script = ExtResource("93_sea_state")
+sea_material = SubResource("Material_sea")
+sway = NodePath("../../ViewportContainer/SubViewport/World/ShipSway")
 
 [node name="ViewportContainer" type="SubViewportContainer" parent="." node_paths=PackedStringArray("turret")]
 process_mode = 1
@@ -233,6 +256,15 @@ turret = NodePath("../Vessel/Turret")
 particle_mesh = ExtResource("87_snow_mesh")
 box = Vector3(50, 35, 50)
 
+[node name="Lightning" type="MeshInstance3D" parent="ViewportContainer/SubViewport/World"]
+visible = false
+cast_shadow = 0
+material_override = ExtResource("96_bolt_material")
+script = ExtResource("91_bolt")
+
+[node name="ShipSway" type="Node" parent="ViewportContainer/SubViewport/World"]
+script = ExtResource("94_sway")
+
 [node name="Sea" type="MeshInstance3D" parent="ViewportContainer/SubViewport/World"]
 position = Vector3(0, -1.6, 0)
 mesh = SubResource("Mesh_sea")
@@ -264,13 +296,14 @@ integrity = NodePath("../Integrity")
 effects = NodePath("../../Effects")
 spots = NodePath("../../Vessel/Warship/FireSpots")
 
-[node name="Sinking" type="Node" parent="ViewportContainer/SubViewport/World/ShipDamage" node_paths=PackedStringArray("integrity", "vessel", "gun", "sea")]
+[node name="Sinking" type="Node" parent="ViewportContainer/SubViewport/World/ShipDamage" node_paths=PackedStringArray("integrity", "vessel", "gun", "sea", "sway")]
 script = ExtResource("57_sinking")
 integrity = NodePath("../Integrity")
 vessel = NodePath("../../Vessel")
 gun = NodePath("../../Vessel/Turret")
 sea = NodePath("../../Sea")
 max_depth = 20.0
+sway = NodePath("../../ShipSway")
 
 [node name="NearMisses" type="Node" parent="ViewportContainer/SubViewport/World/ShipDamage" node_paths=PackedStringArray("enemies", "effects", "integrity", "turret", "lens")]
 script = ExtResource("71_near_miss")
