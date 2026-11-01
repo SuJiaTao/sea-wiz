@@ -3,6 +3,7 @@ class_name EffectManager
 
 signal wreck_hit_ship(position: Vector3, size: float)
 signal wreck_falling(wreck: WreckEffect)
+signal shockwave(position: Vector3, size: float)
 
 @export var sea: Node3D
 @export var hull: HullMesh
@@ -15,6 +16,7 @@ signal wreck_falling(wreck: WreckEffect)
 @export var flares: ParticleBatch
 @export var flare_smoke: ParticleBatch
 @export var fire_mesh: Mesh
+@export var shock_dome_mesh: Mesh
 @export var splash_style: SplashStyle
 @export var max_effects: int = 96
 

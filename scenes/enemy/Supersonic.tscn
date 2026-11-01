@@ -12,6 +12,7 @@ visuals = NodePath("Visuals")
 max_hp = 10.0
 display_name = "SUPERSONIC"
 score_value = 600
+blast_size = 1.4
 hud_radius = 2.4
 contact_kind = 1
 max_bank_deg = 0.0
