@@ -45,6 +45,7 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export var _gun_audio_pitch_range: Vector2 = Vector2(0.72, 1.0)
 @export var _spin_audio_pitch_range: Vector2 = Vector2(0.55, 1.15)
 @export var _spin_audio_volume_db_range: Vector2 = Vector2(-30.0, -13.0)
+@export var _reload_audio_pitch_range: Vector2 = Vector2(0.55, 1.2)
 
 var ammo: int = MAGAZINE
 var reloading: bool = false
@@ -185,6 +186,8 @@ func _start_reload() -> void:
 	_stop_firing()
 	reloading = true
 	_reload_timer.start(RELOAD_TIME)
+	var tween = create_tween()
+	tween.tween_property(_reload_audio, "pitch_scale", _reload_audio_pitch_range.y, SPINUP_TIME)
 	if _reload_audio:
 		_reload_audio.play()
 	reload_started.emit()
@@ -195,8 +198,9 @@ func _stop_reload() -> void:
 		return
 	reloading = false
 	ammo = MAGAZINE
-	if _reload_audio:
-		_reload_audio.stop()
+	var tween = create_tween()
+	tween.tween_property(_reload_audio, "pitch_scale", _reload_audio_pitch_range.x, SPINUP_TIME)
+	tween.tween_callback(_reload_audio.stop)
 	reload_finished.emit()
 
 

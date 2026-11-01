@@ -6,13 +6,13 @@
 [ext_resource type="PackedScene" path="res://scenes/turret/body/Radome.tscn" id="4_bjbsn"]
 [ext_resource type="Script" uid="uid://bfgoiagkjkdn3" path="res://scripts/Turret/TurretCamera.gd" id="4_p64hc"]
 [ext_resource type="PackedScene" path="res://scenes/turret/body/Launcher.tscn" id="5_8qs6a"]
-[ext_resource type="AudioStream" uid="uid://drg1vfv2ef6v8" path="res://audio/ciws/ciws_fire_c.wav" id="7_t4bc6"]
+[ext_resource type="AudioStream" uid="uid://djeuolaslaofs" path="res://audio/ciws/ciws_fire_c2.wav" id="7_t4bc6"]
 [ext_resource type="AudioStream" uid="uid://b2w246juiqfe8" path="res://audio/ciws/ciws_fire_wind_down.wav" id="8_31x2x"]
 [ext_resource type="AudioStream" uid="uid://dmj35ky2d8md4" path="res://audio/ciws/ciws_spin_c.wav" id="9_t4bc6"]
 [ext_resource type="AudioStream" uid="uid://bxu1l6b8ylc1b" path="res://audio/ciws/ciws_reload.wav" id="10_1qnl4"]
 
 [sub_resource type="Curve" id="Curve_t4bc6"]
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 2.4121606, 0.0, 0, 0]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 0.98986495), 2.4121606, 0.0, 0, 0]
 point_count = 2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7mu8f"]
@@ -41,8 +41,9 @@ _spin_audio = NodePath("SpinAudio")
 _reload_audio = NodePath("ReloadAudio")
 _wind_down_audio = NodePath("GunWindDownAudio")
 audio_curve = SubResource("Curve_t4bc6")
-_spin_audio_pitch_range = Vector2(0.01, 0.2)
-_spin_audio_volume_db_range = Vector2(-10, -5)
+_gun_audio_pitch_range = Vector2(0.72, 1.2)
+_spin_audio_pitch_range = Vector2(0.01, 0.1)
+_spin_audio_volume_db_range = Vector2(-50, 0)
 
 [node name="Mount" type="Node3D" parent="." unique_id=1768422786]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
