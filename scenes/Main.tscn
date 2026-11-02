@@ -105,6 +105,7 @@
 [ext_resource type="AudioStream" uid="uid://b7xkm47bl56ms" path="res://audio/explosion.wav" id="103_boom"]
 [ext_resource type="Script" path="res://scripts/hud/CameraStamp.gd" id="90_camera_stamp"]
 [ext_resource type="Script" path="res://scripts/display/SignalDropout.gd" id="91_signal_dropout"]
+[ext_resource type="Script" path="res://scripts/display/FocusHunt.gd" id="92_focus_hunt"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -283,6 +284,11 @@ script = ExtResource("100_shock_lens")
 thermal = NodePath("../ViewportContainer")
 turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
 effects = NodePath("../ViewportContainer/SubViewport/World/Effects")
+
+[node name="FocusHunt" type="Node" parent="." node_paths=PackedStringArray("turret", "thermal")]
+script = ExtResource("92_focus_hunt")
+turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
+thermal = NodePath("../ViewportContainer")
 
 [node name="BlastFeel" type="Node" parent="." unique_id=71931798 node_paths=PackedStringArray("effects", "turret", "boom")]
 process_mode = 1
