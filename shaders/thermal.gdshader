@@ -35,6 +35,14 @@ uniform float banding_drift_speed : hint_range(0.0, 1.0) = 0.05;
 uniform float stuck_pixel_rate : hint_range(0.0, 0.01) = 0.0001;
 uniform float vignette_amount : hint_range(0.0, 1.0) = 0.22;
 
+// Glints: the brightest points split into clean star rays with a faint spectral edge.
+uniform float glint_threshold : hint_range(0.0, 1.0) = 0.7;
+uniform float glint_strength : hint_range(0.0, 8.0) = 4.0;
+uniform float glint_length_texels : hint_range(2.0, 64.0) = 34.0;
+uniform float glint_rotation : hint_range(0.0, 3.1416) = 0.26;
+uniform float glint_dispersion : hint_range(0.0, 0.5) = 0.18;
+uniform float glint_shimmer_speed : hint_range(0.0, 10.0) = 2.5;
+
 // Blast shockwaves: xy centre in UV, z ring radius (fraction of height), w strength.
 const int MAX_RINGS = 4;
 uniform vec4 shock_rings[MAX_RINGS];
@@ -46,6 +54,14 @@ const int RING_TAPS = 8;
 const float COLUMN_SEED = 17.3;
 const float STUCK_SEED = 91.7;
 const float STUCK_BRIGHT_SHARE = 0.3;
+const int GLINT_RAYS = 6;
+const int GLINT_STEPS = 10;
+const float GLINT_POINT_TEXELS = 3.0;
+const float GLINT_HUE_CYCLES = 4.0;
+const float GLINT_HUE_STRENGTH = 3.0;
+const float GLINT_SHIMMER_PHASE = 2.1;
+const float GLINT_FALLOFF = 2.2;
+const float GLINT_SHIMMER_DEPTH = 0.35;
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -73,6 +89,34 @@ float detector_flaws(float l, vec2 uv) {
 vec2 ring_direction(int tap) {
 	float angle = TAU * float(tap) / float(RING_TAPS);
 	return vec2(cos(angle), sin(angle));
+}
+
+float glint_source(sampler2D image, vec2 uv, vec2 across) {
+	float l = dot(texture(image, uv).rgb, LUMA);
+	float side = max(dot(texture(image, uv + across).rgb, LUMA), dot(texture(image, uv - across).rgb, LUMA));
+	return max(l - max(side, glint_threshold), 0.0) / (1.0 - glint_threshold);
+}
+
+vec3 glint_spectrum(float along) {
+	vec3 hue = clamp(abs(fract(along * glint_dispersion * GLINT_HUE_CYCLES + vec3(0.0, 0.333, 0.667)) * 6.0 - 3.0) - 1.0, 0.0, 1.0);
+	return mix(vec3(1.0), hue, smoothstep(0.0, 1.0, along) * glint_dispersion * GLINT_HUE_STRENGTH);
+}
+
+vec3 glint_rays(sampler2D image, vec2 uv, vec2 texel) {
+	vec3 total = vec3(0.0);
+	for (int ray = 0; ray < GLINT_RAYS; ray++) {
+		float angle = glint_rotation + TAU * float(ray) / float(GLINT_RAYS);
+		vec2 heading = vec2(cos(angle), sin(angle));
+		vec2 direction = heading * texel * glint_length_texels;
+		vec2 across = vec2(-heading.y, heading.x) * texel * GLINT_POINT_TEXELS;
+		float shimmer = 1.0 - GLINT_SHIMMER_DEPTH * (0.5 + 0.5 * sin(TIME * glint_shimmer_speed + float(ray) * GLINT_SHIMMER_PHASE));
+		for (int step = 1; step <= GLINT_STEPS; step++) {
+			float along = float(step) / float(GLINT_STEPS);
+			float weight = exp(-along * GLINT_FALLOFF) * shimmer;
+			total += glint_source(image, uv - direction * along, across) * weight * glint_spectrum(along);
+		}
+	}
+	return total * glint_strength / float(GLINT_STEPS);
 }
 
 void fragment() {
@@ -139,5 +183,5 @@ void fragment() {
 	l = mix(l, 1.0 - l, polarity);
 
 	vec3 chroma = (centre_colour - vec3(centre)) * chroma_keep;
-	COLOR = vec4(clamp(vec3(l) + chroma, 0.0, 1.0), 1.0);
+	COLOR = vec4(clamp(vec3(l) + chroma + glint_rays(TEXTURE, uv, texel), 0.0, 1.0), 1.0);
 }
