@@ -91,32 +91,13 @@ vec2 ring_direction(int tap) {
 	return vec2(cos(angle), sin(angle));
 }
 
-float glint_source(sampler2D image, vec2 uv, vec2 across) {
-	float l = dot(texture(image, uv).rgb, LUMA);
-	float side = max(dot(texture(image, uv + across).rgb, LUMA), dot(texture(image, uv - across).rgb, LUMA));
-	return max(l - max(side, glint_threshold), 0.0) / (1.0 - glint_threshold);
-}
-
 vec3 glint_spectrum(float along) {
 	vec3 hue = clamp(abs(fract(along * glint_dispersion * GLINT_HUE_CYCLES + vec3(0.0, 0.333, 0.667)) * 6.0 - 3.0) - 1.0, 0.0, 1.0);
 	return mix(vec3(1.0), hue, smoothstep(0.0, 1.0, along) * glint_dispersion * GLINT_HUE_STRENGTH);
 }
 
-vec3 glint_rays(sampler2D image, vec2 uv, vec2 texel) {
-	vec3 total = vec3(0.0);
-	for (int ray = 0; ray < GLINT_RAYS; ray++) {
-		float angle = glint_rotation + TAU * float(ray) / float(GLINT_RAYS);
-		vec2 heading = vec2(cos(angle), sin(angle));
-		vec2 direction = heading * texel * glint_length_texels;
-		vec2 across = vec2(-heading.y, heading.x) * texel * GLINT_POINT_TEXELS;
-		float shimmer = 1.0 - GLINT_SHIMMER_DEPTH * (0.5 + 0.5 * sin(TIME * glint_shimmer_speed + float(ray) * GLINT_SHIMMER_PHASE));
-		for (int step = 1; step <= GLINT_STEPS; step++) {
-			float along = float(step) / float(GLINT_STEPS);
-			float weight = exp(-along * GLINT_FALLOFF) * shimmer;
-			total += glint_source(image, uv - direction * along, across) * weight * glint_spectrum(along);
-		}
-	}
-	return total * glint_strength / float(GLINT_STEPS);
+float glint_point(float l, float side) {
+	return max(l - max(side, glint_threshold), 0.0) / (1.0 - glint_threshold);
 }
 
 void fragment() {
@@ -183,5 +164,24 @@ void fragment() {
 	l = mix(l, 1.0 - l, polarity);
 
 	vec3 chroma = (centre_colour - vec3(centre)) * chroma_keep;
-	COLOR = vec4(clamp(vec3(l) + chroma + glint_rays(TEXTURE, uv, texel), 0.0, 1.0), 1.0);
+	vec3 glint = vec3(0.0);
+	for (int ray = 0; ray < GLINT_RAYS; ray++) {
+		float angle = glint_rotation + TAU * float(ray) / float(GLINT_RAYS);
+		vec2 heading = vec2(cos(angle), sin(angle));
+		vec2 direction = heading * texel * glint_length_texels;
+		vec2 across = vec2(-heading.y, heading.x) * texel * GLINT_POINT_TEXELS;
+		float shimmer = 1.0 - GLINT_SHIMMER_DEPTH * (0.5 + 0.5 * sin(TIME * glint_shimmer_speed + float(ray) * GLINT_SHIMMER_PHASE));
+		for (int step = 1; step <= GLINT_STEPS; step++) {
+			float along = float(step) / float(GLINT_STEPS);
+			vec2 at = uv - direction * along;
+			float point = glint_point(
+				dot(texture(TEXTURE, at).rgb, LUMA),
+				max(dot(texture(TEXTURE, at + across).rgb, LUMA), dot(texture(TEXTURE, at - across).rgb, LUMA))
+			);
+			glint += point * exp(-along * GLINT_FALLOFF) * shimmer * glint_spectrum(along);
+		}
+	}
+	glint *= glint_strength / float(GLINT_STEPS);
+
+	COLOR = vec4(clamp(vec3(l) + chroma + glint, 0.0, 1.0), 1.0);
 }
