@@ -1,0 +1,56 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="Material_skin"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.17, 0.17, 0.17, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_exhaust"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.5, 0.5, 0.5, 1)
+
+[sub_resource type="PrismMesh" id="Mesh_wing"]
+material = SubResource("Material_skin")
+left_to_right = 0.5
+size = Vector3(52, 18, 1.2)
+
+[sub_resource type="BoxMesh" id="Mesh_spine"]
+material = SubResource("Material_skin")
+size = Vector3(6, 2.2, 16)
+
+[sub_resource type="BoxMesh" id="Mesh_sawtooth"]
+material = SubResource("Material_skin")
+size = Vector3(9, 1.0, 5)
+
+[sub_resource type="BoxMesh" id="Mesh_exhaust"]
+material = SubResource("Material_exhaust")
+size = Vector3(3, 0.3, 0.8)
+
+[node name="StealthBomberVisuals" type="Node3D"]
+
+[node name="Wing" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, -1)
+mesh = SubResource("Mesh_wing")
+
+[node name="Spine" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -1)
+mesh = SubResource("Mesh_spine")
+
+[node name="SawtoothLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.866, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866, -12, 0, 8)
+mesh = SubResource("Mesh_sawtooth")
+
+[node name="SawtoothRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.866, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866, 12, 0, 8)
+mesh = SubResource("Mesh_sawtooth")
+
+[node name="ExhaustLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.9, 6)
+mesh = SubResource("Mesh_exhaust")
+
+[node name="ExhaustRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.9, 6)
+mesh = SubResource("Mesh_exhaust")
