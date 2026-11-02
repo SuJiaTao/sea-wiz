@@ -32,7 +32,7 @@ uniform float chroma_keep : hint_range(0.0, 3.0) = 1.0;
 // Detector flaws: uneven column gain, a few dead or stuck elements, lens falloff.
 uniform float column_banding : hint_range(0.0, 0.1) = 0.018;
 uniform float banding_drift_speed : hint_range(0.0, 1.0) = 0.05;
-uniform float stuck_pixel_rate : hint_range(0.0, 0.01) = 0.0006;
+uniform float stuck_pixel_rate : hint_range(0.0, 0.01) = 0.0001;
 uniform float vignette_amount : hint_range(0.0, 1.0) = 0.22;
 
 // Blast shockwaves: xy centre in UV, z ring radius (fraction of height), w strength.
