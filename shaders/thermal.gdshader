@@ -29,6 +29,12 @@ uniform float droplet_cooling : hint_range(0.0, 1.0) = 0.65;
 uniform float droplet_rim : hint_range(0.0, 1.0) = 0.12;
 uniform float chroma_keep : hint_range(0.0, 3.0) = 1.0;
 
+// Detector flaws: uneven column gain, a few dead or stuck elements, lens falloff.
+uniform float column_banding : hint_range(0.0, 0.1) = 0.018;
+uniform float banding_drift_speed : hint_range(0.0, 1.0) = 0.05;
+uniform float stuck_pixel_rate : hint_range(0.0, 0.01) = 0.0006;
+uniform float vignette_amount : hint_range(0.0, 1.0) = 0.22;
+
 // Blast shockwaves: xy centre in UV, z ring radius (fraction of height), w strength.
 const int MAX_RINGS = 4;
 uniform vec4 shock_rings[MAX_RINGS];
@@ -37,6 +43,32 @@ uniform float shock_glow : hint_range(0.0, 20.0) = 4.0;
 
 const vec3 LUMA = vec3(0.30, 0.59, 0.11);
 const int RING_TAPS = 8;
+const float COLUMN_SEED = 17.3;
+const float STUCK_SEED = 91.7;
+const float STUCK_BRIGHT_SHARE = 0.3;
+
+float hash12(vec2 p) {
+	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+	p3 += dot(p3, p3.yzx + 33.33);
+	return fract((p3.x + p3.y) * p3.z);
+}
+
+float column_gain(float column) {
+	float drift = TIME * banding_drift_speed;
+	float slow = mix(hash12(vec2(column, floor(drift))), hash12(vec2(column, floor(drift) + 1.0)), fract(drift));
+	return 1.0 + (hash12(vec2(column, COLUMN_SEED)) + slow - 1.0) * column_banding;
+}
+
+float detector_flaws(float l, vec2 uv) {
+	vec2 element = floor(uv * sensor_size);
+	l *= column_gain(element.x);
+	float stuck = hash12(element + STUCK_SEED);
+	if (stuck < stuck_pixel_rate) {
+		l = stuck < stuck_pixel_rate * STUCK_BRIGHT_SHARE ? 1.0 : 0.0;
+	}
+	vec2 from_centre = (uv - 0.5) * 2.0;
+	return l * (1.0 - vignette_amount * dot(from_centre, from_centre) * 0.5);
+}
 
 vec2 ring_direction(int tap) {
 	float angle = TAU * float(tap) / float(RING_TAPS);
@@ -101,7 +133,7 @@ void fragment() {
 	l = sensor_floor + l + (base - far) * halo_amount;
 
 	l = l * (1.0 - droplet_cooling * wet) + droplet_rim * rim;
-	l = clamp(l + flash + shock_light * shock_glow, 0.0, 1.0);
+	l = clamp(detector_flaws(l + flash + shock_light * shock_glow, UV), 0.0, 1.0);
 
 	l = floor(l * levels + 0.5) / levels;
 	l = mix(l, 1.0 - l, polarity);
