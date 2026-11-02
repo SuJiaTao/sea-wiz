@@ -1,0 +1,49 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/GlideBombEnemy.gd" id="1_enemy"]
+
+[sub_resource type="StandardMaterial3D" id="Material_casing"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.32, 0.32, 0.32, 1)
+
+[sub_resource type="CapsuleMesh" id="Mesh_bomb"]
+material = SubResource("Material_casing")
+radius = 0.45
+height = 3.2
+radial_segments = 8
+rings = 2
+
+[sub_resource type="SphereShape3D" id="Shape_body"]
+radius = 2.2
+
+[node name="GlideBomb" type="Node3D" node_paths=PackedStringArray("visuals")]
+script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
+max_hp = 8.0
+display_name = "GLIDE BOMB"
+score_value = 250
+leaves_wreck = false
+blast_size = 1.6
+hud_radius = 2.2
+contact_kind = 1
+radar_reach = 0.0
+max_bank_deg = 0.0
+agility = 0.35
+contact_damage = 10.0
+arrival_radius = 12.0
+
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0)
+mesh = SubResource("Mesh_bomb")
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox"]
+shape = SubResource("Shape_body")
