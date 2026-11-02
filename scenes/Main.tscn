@@ -104,6 +104,7 @@
 [ext_resource type="SphereMesh" uid="uid://cw666x1bbx6fi" path="res://resources/fx/ShockDomeMesh.tres" id="102_dome"]
 [ext_resource type="AudioStream" uid="uid://b7xkm47bl56ms" path="res://audio/explosion.wav" id="103_boom"]
 [ext_resource type="Script" path="res://scripts/hud/CameraStamp.gd" id="90_camera_stamp"]
+[ext_resource type="Script" path="res://scripts/display/SignalDropout.gd" id="91_signal_dropout"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -717,3 +718,8 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("29_video")
 palettes = Array[ExtResource("31_palette_type")]([ExtResource("33_green"), ExtResource("32_white"), ExtResource("34_red")])
+
+[node name="SignalDropout" type="Node" parent="VideoSignal" node_paths=PackedStringArray("integrity", "video")]
+script = ExtResource("91_signal_dropout")
+integrity = NodePath("../../ViewportContainer/SubViewport/World/ShipDamage/Integrity")
+video = NodePath("../AnalogVideo")
