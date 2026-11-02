@@ -59,7 +59,7 @@ const float BLEACH_START = 0.55;
 const float SQRT_TAU = 2.50662827;
 const float GRAIN_TILE = 512.0;
 const float DROPOUT_SEED = 41.0;
-const float DROPOUT_DIM = 0.35;
+const float DROPOUT_DIM = 0.25;
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
