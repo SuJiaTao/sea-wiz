@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Formation" format=3]
+
+[ext_resource type="Script" path="res://scripts/waves/Formation.gd" id="1_formation"]
+
+[resource]
+resource_name = "VFormation"
+script = ExtResource("1_formation")
+slots = Array[Vector3]([Vector3(0, 0, 0), Vector3(-40, 5, 40), Vector3(40, 5, 40), Vector3(-80, 10, 80), Vector3(80, 10, 80)])
+break_turns_deg = Array[float]([0.0, 0.0, 0.0, 0.0, 0.0])
+break_range = 900.0
+break_time = 3.0
