@@ -1,9 +1,9 @@
 extends Node
 class_name SignalDropout
 
-const DAMAGE_FOR_FULL_DROPOUT := 25.0
-const PEAK := 0.8
-const RECOVERY_PER_SECOND := 2.5
+const DAMAGE_FOR_FULL_DROPOUT := 60.0
+const PEAK := 0.3
+const RECOVERY_PER_SECOND := 1.2
 
 @export var integrity: ShipIntegrity
 @export var video: AnalogVideo

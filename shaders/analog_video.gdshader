@@ -43,7 +43,7 @@ uniform float chroma_lines : hint_range(1.0, 64.0) = 3.0;
 uniform float dropout : hint_range(0.0, 1.0) = 0.0;
 uniform float dropout_tear_samples : hint_range(0.0, 200.0) = 60.0;
 uniform float dropout_band_lines : hint_range(1.0, 64.0) = 12.0;
-uniform float dropout_snow : hint_range(0.0, 1.0) = 0.5;
+uniform float dropout_snow : hint_range(0.0, 1.0) = 0.3;
 
 const vec3 LUMA = vec3(0.299, 0.587, 0.114);
 const int TAIL_TAPS = 4;
