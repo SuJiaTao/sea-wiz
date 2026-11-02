@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/TiltrotorEnemy.gd" id="1_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/TiltrotorVisuals.tscn" id="2_visuals"]
+
+[sub_resource type="SphereShape3D" id="Shape_body"]
+radius = 9.0
+
+[node name="Tiltrotor" type="Node3D" node_paths=PackedStringArray("visuals", "nacelles", "rotors")]
+script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
+nacelles = [NodePath("Visuals/NacelleLeft"), NodePath("Visuals/NacelleRight")]
+rotors = [NodePath("Visuals/NacelleLeft/Rotor"), NodePath("Visuals/NacelleRight/Rotor")]
+max_hp = 110.0
+display_name = "TILTROTOR"
+score_value = 350
+hud_radius = 9.0
+max_bank_deg = 30.0
+speed = 150.0
+agility = 0.3
+contact_damage = 14.0
+
+[node name="Visuals" parent="." instance=ExtResource("2_visuals")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0, 0)
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox"]
+shape = SubResource("Shape_body")
