@@ -106,6 +106,7 @@
 [ext_resource type="Script" path="res://scripts/hud/CameraStamp.gd" id="90_camera_stamp"]
 [ext_resource type="Script" path="res://scripts/display/SignalDropout.gd" id="91_signal_dropout"]
 [ext_resource type="Script" path="res://scripts/display/FocusHunt.gd" id="92_focus_hunt"]
+[ext_resource type="Script" path="res://scripts/display/CameraDamage.gd" id="93_camera_damage"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -727,5 +728,10 @@ palettes = Array[ExtResource("31_palette_type")]([ExtResource("33_green"), ExtRe
 
 [node name="SignalDropout" type="Node" parent="VideoSignal" node_paths=PackedStringArray("integrity", "video")]
 script = ExtResource("91_signal_dropout")
+integrity = NodePath("../../ViewportContainer/SubViewport/World/ShipDamage/Integrity")
+video = NodePath("../AnalogVideo")
+
+[node name="CameraDamage" type="Node" parent="VideoSignal" node_paths=PackedStringArray("integrity", "video")]
+script = ExtResource("93_camera_damage")
 integrity = NodePath("../../ViewportContainer/SubViewport/World/ShipDamage/Integrity")
 video = NodePath("../AnalogVideo")

@@ -44,6 +44,11 @@ uniform float dropout : hint_range(0.0, 1.0) = 0.0;
 uniform float dropout_tear_samples : hint_range(0.0, 200.0) = 60.0;
 uniform float dropout_band_lines : hint_range(1.0, 64.0) = 12.0;
 uniform float dropout_snow : hint_range(0.0, 1.0) = 0.3;
+uniform float camera_damage : hint_range(0.0, 1.0) = 0.0;
+uniform float damage_fringe_pixels : hint_range(0.0, 12.0) = 4.0;
+uniform float damage_warp_samples : hint_range(0.0, 40.0) = 10.0;
+uniform float damage_warp_speed : hint_range(0.0, 2.0) = 0.15;
+uniform float damage_jitter_samples : hint_range(0.0, 20.0) = 3.0;
 
 const vec3 LUMA = vec3(0.299, 0.587, 0.114);
 const int TAIL_TAPS = 4;
@@ -127,6 +132,14 @@ float dropout_tear(float line, float frame) {
 	return dropout_band(line, frame) * centred_noise(vec2(floor(line / dropout_band_lines), frame)) * dropout_tear_samples;
 }
 
+float damage_shift(float line, float frame) {
+	float band_centre = fract(TIME * damage_warp_speed) * video_lines;
+	float band = exp(-pow((line - band_centre) / WARP_BAND_LINES, 2.0));
+	float warp = sin(line / WARP_RIPPLE_LINES + TIME) * band * damage_warp_samples;
+	float jitter = step(1.0 - JITTER_LINE_SHARE * camera_damage, hash12(vec2(line, frame))) * centred_noise(vec2(frame, line)) * damage_jitter_samples;
+	return (warp + jitter) * camera_damage;
+}
+
 float cored_sharpen(float trail, float wide) {
 	float edge = trail - wide;
 	return trail + sign(edge) * max(abs(edge) - sharpening_coring, 0.0) * sharpening;
@@ -184,8 +197,8 @@ void fragment() {
 
 	float xs = SCREEN_UV.x * line_samples;
 	vec2 grain_offset = vec2(hash12(vec2(frame, 3.1)), hash12(vec2(frame, 7.9))) * GRAIN_TILE;
-	float near_shift = timebase_wobble(line, frame) - head_switch(line, frame) + dropout_tear(line, frame);
-	float far_shift = timebase_wobble(neighbour, frame) - head_switch(neighbour, frame) + dropout_tear(neighbour, frame);
+	float near_shift = timebase_wobble(line, frame) - head_switch(line, frame) + dropout_tear(line, frame) + damage_shift(line, frame);
+	float far_shift = timebase_wobble(neighbour, frame) - head_switch(neighbour, frame) + dropout_tear(neighbour, frame) + damage_shift(neighbour, frame);
 	float near_signal = line_signal(xs + near_shift, line, grain_offset);
 	float far_signal = line_signal(xs + far_shift, neighbour, grain_offset);
 	float l = beam(from_centre, near_signal) + beam(1.0 - abs(from_centre), far_signal);
@@ -205,5 +218,9 @@ void fragment() {
 	float chroma_lod = log2(max((1.0 / SCREEN_PIXEL_SIZE.y) / video_lines * chroma_lines, 1.0));
 	vec3 smeared = textureLod(screen_texture, SCREEN_UV, chroma_lod).rgb;
 	colour = clamp(colour + (smeared - vec3(dot(smeared, LUMA))) * chroma_amount, 0.0, 1.0);
-	COLOR = vec4(colour, 1.0);
+	vec2 fringe = vec2(damage_fringe_pixels * camera_damage * SCREEN_PIXEL_SIZE.x, 0.0);
+	float lead = dot(textureLod(screen_texture, SCREEN_UV + fringe, 0.0).rgb, LUMA);
+	float trail = dot(textureLod(screen_texture, SCREEN_UV - fringe, 0.0).rgb, LUMA);
+	colour += (FRINGE_LEAD * max(lead - l, 0.0) + FRINGE_TRAIL * max(trail - l, 0.0)) * camera_damage;
+	COLOR = vec4(clamp(colour, 0.0, 1.0), 1.0);
 }
