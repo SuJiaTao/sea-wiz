@@ -58,6 +58,10 @@ func _on_deflect(_impact: ProjectileImpact) -> void:
 	pass
 
 
+func _on_pushed(push: Vector3) -> void:
+	velocity += push
+
+
 func _splash_size() -> float:
 	return SPLASH_SIZE
 
