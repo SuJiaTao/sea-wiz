@@ -65,6 +65,11 @@ const float SQRT_TAU = 2.50662827;
 const float GRAIN_TILE = 512.0;
 const float DROPOUT_SEED = 41.0;
 const float DROPOUT_DIM = 0.25;
+const float WARP_BAND_LINES = 60.0;
+const float WARP_RIPPLE_LINES = 9.0;
+const float JITTER_LINE_SHARE = 0.08;
+const vec3 FRINGE_LEAD = vec3(1.0, 0.2, 0.1);
+const vec3 FRINGE_TRAIL = vec3(0.1, 1.0, 0.3);
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
