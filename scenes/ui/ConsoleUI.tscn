@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://dr2blsow1udrq"]
+
+[ext_resource type="Script" uid="uid://b31l8w7lofkld" path="res://scripts/utility/console/ConsoleUI.gd" id="1_a3sq7"]
+[ext_resource type="Script" uid="uid://cu6gdldnrccyf" path="res://scripts/utility/console/TextBox.gd" id="2_f1mqy"]
+
+[node name="ConsoleUi" type="Control" unique_id=1086120165 node_paths=PackedStringArray("text_field", "text_box")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_a3sq7")
+text_field = NodePath("input field")
+text_box = NodePath("text box")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1503791789]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.6681772, 0.68215865, 0.99823964, 0.13900001)
+
+[node name="text box" type="RichTextLabel" parent="." unique_id=1819009159]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_right = -8.0
+offset_bottom = -39.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 18
+bbcode_enabled = true
+vertical_alignment = 2
+script = ExtResource("2_f1mqy")
+
+[node name="input field" type="LineEdit" parent="." unique_id=1668151176]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -33.0
+offset_right = -10.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 0
+placeholder_text = "Type command here"
+keep_editing_on_text_submit = true
+caret_blink = true

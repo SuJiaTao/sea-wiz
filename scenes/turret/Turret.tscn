@@ -58,7 +58,7 @@ skeleton = NodePath("../..")
 
 [node name="Sensor" type="Camera3D" parent="Mount" unique_id=857557713]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0.95)
-fov = 55.0
+fov = 65.0
 near = 0.1
 far = 6000.0
 script = ExtResource("4_p64hc")

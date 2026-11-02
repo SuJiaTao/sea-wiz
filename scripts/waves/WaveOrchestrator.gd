@@ -20,6 +20,7 @@ var _state: State = State.STOPPED
 var _enemies: EnemyManager
 var _pending: Array[WaveSpawn] = []
 var _clock: float = 0.0
+var _group_bearings: Dictionary[StringName, float] = {}
 
 
 func start(enemies: EnemyManager) -> void:
@@ -71,6 +72,7 @@ func _begin_next_level() -> void:
 	level_title = definition.title
 	_pending = definition.spawns.duplicate()
 	_pending.sort_custom(_earlier)
+	_group_bearings.clear()
 	_clock = 0.0
 	intermission_remaining = initial_delay if level_number == 1 else intermission
 	_state = State.INTERMISSION
@@ -84,7 +86,7 @@ func _spawn(entry: WaveSpawn) -> bool:
 		instance.free()
 		_fail("Wave scene root must extend AbstractEnemy.")
 		return false
-	var angle := randf() * TAU
+	var angle := _bearing_for(entry.group)
 	var distance := randf_range(entry.distance.x, entry.distance.y)
 	var altitude := randf_range(entry.altitude.x, entry.altitude.y)
 	var position := _enemies.global_position + Vector3(
@@ -95,6 +97,14 @@ func _spawn(entry: WaveSpawn) -> bool:
 		_fail("EnemyManager rejected a wave spawn.")
 		return false
 	return true
+
+
+func _bearing_for(group: StringName) -> float:
+	if group.is_empty():
+		return randf() * TAU
+	if not _group_bearings.has(group):
+		_group_bearings[group] = randf() * TAU
+	return _group_bearings[group]
 
 
 func _validate() -> String:

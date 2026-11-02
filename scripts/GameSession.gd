@@ -7,6 +7,8 @@ enum State { TITLE, STARTING, RUNNING, WON, LOST }
 
 const HIT_IMPULSE: float = 5.0
 const HIT_FLASH: float = 0.6
+const FLARES_FROM_LEVEL: int = 2
+const WRECK_DAMAGE_PER_SIZE: float = 12.0
 
 @onready var turret: Turret = $ViewportContainer/SubViewport/World/Vessel/Turret
 @onready var integrity: ShipIntegrity = $ViewportContainer/SubViewport/World/ShipDamage/Integrity
@@ -21,6 +23,7 @@ const HIT_FLASH: float = 0.6
 @onready var video: AnalogVideo = $VideoSignal/AnalogVideo
 @onready var hud: GameplayHUD = $HUD/HUDRoot
 @onready var title_screen: TitleScreen = $HUD/TitleScreen
+@onready var score: ScoreKeeper = $Score
 
 var state: State = State.TITLE
 var _title_time: float = 0.0
@@ -32,15 +35,19 @@ func _ready() -> void:
 	enemies.enemy_created.connect(_on_enemy_created)
 	enemies.enemy_killed.connect(_on_enemy_killed)
 	ballistics.entered_water.connect(effects.splash)
+	effects.wreck_hit_ship.connect(_on_wreck_hit_ship)
 	waves.completed.connect(_on_completed)
 	waves.failed.connect(_on_wave_failed)
 	title_screen.start_requested.connect(_on_start_requested)
 	sinking.sunk.connect(_on_ship_sunk)
+	waves.level_prepared.connect(_on_level_prepared)
 	hud.hide()
 	title_screen.show()
 	weapons.set_enabled(false)
 	turret.hide_gun = true
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if CursorManager.is_mouse_captured():
+		CursorManager.free_mouse()
+	DevConsole.register_command("quit", quit_game.unbind(1))
 
 
 func _process(delta: float) -> void:
@@ -73,7 +80,7 @@ func _begin() -> void:
 	hud.show()
 	turret.hide_gun = false
 	weapons.set_enabled(true)
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	CursorManager.capture_mouse()
 	waves.start(enemies)
 
 
@@ -114,6 +121,13 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_enemy_created(enemy: AbstractEnemy) -> void:
 	enemy.damaged.connect(_on_enemy_damaged)
 	enemy.reached_target.connect(_on_target_reached.bind(enemy))
+	enemy.countermeasures_released.connect(effects.countermeasures)
+	enemy.countermeasures_enabled = waves.level_number >= FLARES_FROM_LEVEL
+
+
+func _on_level_prepared(number: int, _title: String) -> void:
+	if number > 1:
+		integrity.repair(integrity.repair_per_wave)
 
 
 func _on_enemy_damaged(_amount: float, point: Vector3) -> void:
@@ -122,7 +136,12 @@ func _on_enemy_damaged(_amount: float, point: Vector3) -> void:
 
 func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: DamageSource) -> void:
 	fx.explosion(enemy.global_position, 6.0)
-	effects.spawn(ShootDownEffect.new(enemy.global_position, enemy.velocity, enemy.hud_radius))
+	if enemy.blast_size > 0.0:
+		effects.spawn(BigExplosionEffect.new(enemy.global_position, enemy.blast_size))
+	if enemy.leaves_wreck:
+		effects.spawn(ShootDownEffect.new(
+			enemy.global_position, enemy.velocity, enemy.hud_radius, enemy.detach_visuals()
+		))
 	if turret.camera.is_position_in_frustum(enemy.global_position):
 		thermal.heat_burst()
 
@@ -131,8 +150,20 @@ func _on_target_reached(damage: float, enemy: AbstractEnemy) -> void:
 	if state != State.RUNNING:
 		return
 	integrity.take_hit(damage, enemy.global_position)
-	turret.add_impulse(HIT_IMPULSE)
+	if enemy.blast_size > 0.0:
+		effects.spawn(BigExplosionEffect.new(_on_ship(enemy.global_position), enemy.blast_size))
+	turret.apply_camera_shake_impulse(HIT_IMPULSE)
 	thermal.heat_burst(HIT_FLASH)
+
+
+func _on_ship(above: Vector3) -> Vector3:
+	var deck := effects.deck_height_at(above)
+	return Vector3(above.x, effects.sea_level() if is_nan(deck) else deck, above.z)
+
+
+func _on_wreck_hit_ship(position: Vector3, size: float) -> void:
+	if state == State.RUNNING:
+		integrity.take_hit(WRECK_DAMAGE_PER_SIZE * size, position)
 
 
 func _on_ship_sunk() -> void:
@@ -151,9 +182,7 @@ func _on_wave_failed(reason: String) -> void:
 func _set_paused(paused: bool) -> void:
 	weapons.set_enabled(not paused)
 	get_tree().paused = paused
-	Input.mouse_mode = (
-		Input.MOUSE_MODE_VISIBLE if paused else Input.MOUSE_MODE_CAPTURED
-	)
+	CursorManager.free_mouse(paused)
 	hud.message = "PAUSED - ESC TO RESUME" if paused else ""
 
 
@@ -162,9 +191,10 @@ func _finish(result: State, message: String) -> void:
 		return
 	state = result
 	waves.stop()
+	score.record_final()
 	weapons.set_enabled(false)
 	get_tree().paused = true
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	CursorManager.free_mouse()
 	hud.message = message + " - CLICK OR ENTER TO RESTART"
 
 
@@ -176,3 +206,9 @@ func _restart() -> void:
 
 static func is_state(state2: State) -> bool:
 	return _singleton.state == state2
+
+
+func quit_game() -> void:
+	DevConsole.print_to_console("quitting...")
+	# DevConsole.dump_history()
+	get_tree().quit.call_deferred()

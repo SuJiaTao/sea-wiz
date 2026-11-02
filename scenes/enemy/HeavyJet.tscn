@@ -1,21 +1,32 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemy/HeavyJetEnemy.gd" id="1_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/HeavyJetVisuals.tscn" id="2_visuals"]
+[ext_resource type="Script" path="res://scripts/enemy/FlareDispenser.gd" id="3_flares"]
 
 [sub_resource type="SphereShape3D" id="Shape_body"]
-radius = 13.0
+radius = 19.5
 
-[node name="HeavyJet" type="Node3D"]
+[node name="HeavyJet" type="Node3D" node_paths=PackedStringArray("visuals", "flares")]
 script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
+flares = NodePath("FlareDispenser")
 max_hp = 260.0
 display_name = "HEAVY BOMBER"
-hud_radius = 13.0
+score_value = 800
+blast_size = 2.5
+hud_radius = 19.5
+max_bank_deg = 35.0
 speed = 130.0
 agility = 0.15
-contact_damage = 22.0
+contact_damage = 18.0
+max_g = 2.0
+arrival_radius = 180.0
+attack_altitude = 260.0
+egress_distance = 1800.0
 
 [node name="Visuals" parent="." instance=ExtResource("2_visuals")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
 
 [node name="Hurtbox" type="Area3D" parent="."]
 collision_layer = 0
@@ -24,3 +35,9 @@ monitoring = false
 
 [node name="BodyShape" type="CollisionShape3D" parent="Hurtbox"]
 shape = SubResource("Shape_body")
+
+[node name="FlareDispenser" type="Node" parent="."]
+script = ExtResource("3_flares")
+seduce_chance = 0.4
+flares_per_salvo = 8
+cooldown = 7.0

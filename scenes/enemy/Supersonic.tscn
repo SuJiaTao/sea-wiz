@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/SeaSkimmerEnemy.gd" id="1_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/MissileVisuals.tscn" id="2_visuals"]
+
+[sub_resource type="SphereShape3D" id="Shape_body"]
+radius = 2.4
+
+[node name="Supersonic" type="Node3D" node_paths=PackedStringArray("visuals")]
+script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
+max_hp = 10.0
+display_name = "SUPERSONIC"
+score_value = 600
+blast_size = 1.4
+hud_radius = 2.4
+contact_kind = 1
+max_bank_deg = 0.0
+speed = 650.0
+agility = 0.18
+contact_damage = 32.0
+
+[node name="Visuals" parent="." instance=ExtResource("2_visuals")]
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox"]
+shape = SubResource("Shape_body")

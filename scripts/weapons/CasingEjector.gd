@@ -3,10 +3,10 @@ class_name CasingEjector
 
 @export var turret: Turret
 @export var pile: CasingPile
-@export var port_offset := Vector3(0.5, -0.15, 0.3)
+@export var port_offset := Vector3(0.6, -0.9, 0.2)
 @export var throw_speed := Vector2(5.0, 8.0)
 @export var throw_forward: float = 1.0
-@export var throw_lift: float = 2.5
+@export var throw_lift: float = 0.8
 @export var scatter: float = 0.9
 
 

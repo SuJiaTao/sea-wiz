@@ -38,6 +38,8 @@ uniform float bloom_lines : hint_range(1.0, 64.0) = 8.0;
 uniform float wobble_samples : hint_range(0.0, 2.0) = 0.25;
 uniform float wobble_lines : hint_range(4.0, 200.0) = 30.0;
 uniform float level_flicker : hint_range(0.0, 0.1) = 0.01;
+uniform float chroma_amount : hint_range(0.0, 3.0) = 0.9;
+uniform float chroma_lines : hint_range(1.0, 64.0) = 3.0;
 
 const vec3 LUMA = vec3(0.299, 0.587, 0.114);
 const int TAIL_TAPS = 4;
@@ -182,5 +184,8 @@ void fragment() {
 
 	vec3 colour = phosphor * l;
 	colour = mix(colour, vec3(l), smoothstep(BLEACH_START, 1.0, l) * highlight_bleach);
+	float chroma_lod = log2(max((1.0 / SCREEN_PIXEL_SIZE.y) / video_lines * chroma_lines, 1.0));
+	vec3 smeared = textureLod(screen_texture, SCREEN_UV, chroma_lod).rgb;
+	colour = clamp(colour + (smeared - vec3(dot(smeared, LUMA))) * chroma_amount, 0.0, 1.0);
 	COLOR = vec4(colour, 1.0);
 }

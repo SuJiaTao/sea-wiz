@@ -16,12 +16,15 @@ const CLOSEST_APPROACH_RANGE: float = 75.0
 const BLAST_RADIUS: float = 26.0
 const WARHEAD: float = 260.0
 const WATER_SPLASH_SIZE: float = 1.2
+const THREAT_RANGE: float = 650.0
 
 var _target: AbstractEnemy
 var _ballistics: BallisticManager
 var _smoke: MissileSmokeRenderer
 var _speed: float = LAUNCH_SPEED
 var _last_distance: float = INF
+var _decoy: DecoyFlare
+var _threat_announced: bool = false
 
 
 func _init(
@@ -50,6 +53,7 @@ func _on_propel(delta: float) -> void:
 			_target = null
 	else:
 		_target = null
+	_announce_threat()
 
 	var previous := position
 	if age < BOOST_DELAY:
@@ -64,6 +68,8 @@ func _on_propel(delta: float) -> void:
 				+ _target.velocity * time_to_go * 0.9
 			)
 			_steer(aim, delta)
+		elif _decoy != null and _decoy.burning:
+			_steer(_decoy.position, delta)
 		else:
 			velocity = velocity.normalized() * _speed
 			velocity.y -= GRAVITY * delta
@@ -73,6 +79,26 @@ func _on_propel(delta: float) -> void:
 		_smoke.emit_trail(previous, position, age < BOOST_DELAY)
 
 	_check_fuze()
+	_check_decoy()
+
+
+func _announce_threat() -> void:
+	if _target == null or _threat_announced:
+		return
+	if position.distance_to(_target.global_position) > THREAT_RANGE:
+		return
+	_threat_announced = true
+	_decoy = _target.evade_missile(position)
+	if _decoy != null:
+		_target = null
+
+
+func _check_decoy() -> void:
+	if _decoy == null or not _decoy.burning:
+		return
+	if position.distance_to(_decoy.position) <= FUZE_RADIUS:
+		_decoy = null
+		request_impact(ProjectileImpact.new(position))
 
 
 func _check_fuze() -> void:
@@ -148,6 +174,7 @@ func _splash_size() -> float:
 func _on_delete() -> void:
 	super()
 	_target = null
+	_decoy = null
 	_ballistics = null
 	_smoke = null
 
