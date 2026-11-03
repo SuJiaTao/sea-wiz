@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://b5n1fqsayfih1" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="PackedScene" uid="uid://bfbwp5hakbdf0" path="res://scenes/turret/Turret.tscn" id="2_turret"]
 [ext_resource type="Script" uid="uid://bytbtjjkyux8j" path="res://scripts/ballistics/BallisticManager.gd" id="3_ballistics"]
+[ext_resource type="Script" path="res://scripts/ballistics/BlastDrift.gd" id="94_blast_drift"]
+[ext_resource type="Script" path="res://scripts/weapons/MuzzleMotion.gd" id="95_muzzle_motion"]
 [ext_resource type="Script" uid="uid://4a1tm2qbhkt2" path="res://scripts/GameplayHUD.gd" id="4_hud"]
 [ext_resource type="Script" uid="uid://bxu6ydmsivscv" path="res://scripts/enemy/EnemyManager.gd" id="5_enemies"]
 [ext_resource type="Script" uid="uid://18s4i6def6h0" path="res://scripts/waves/WaveOrchestrator.gd" id="6_waves"]
@@ -457,6 +459,11 @@ wreck_scene = ExtResource("68_wreck")
 script = ExtResource("3_ballistics")
 sea = NodePath("../Sea")
 
+[node name="BlastDrift" type="Node" parent="ViewportContainer/SubViewport/World/Ballistics" node_paths=PackedStringArray("effects", "ballistics")]
+script = ExtResource("94_blast_drift")
+effects = NodePath("../../Effects")
+ballistics = NodePath("..")
+
 [node name="Tracers" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World" unique_id=692512813]
 script = ExtResource("8_batch")
 batch_mesh = SubResource("Mesh_tracer")
@@ -547,7 +554,7 @@ capacity = 5000
 near_cull = 7.0
 zoom_near_cull = 45.0
 
-[node name="Weapons" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1054982500 node_paths=PackedStringArray("turret", "ballistics", "tracers", "missile_launcher", "salvos", "waves", "enemies")]
+[node name="Weapons" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1054982500 node_paths=PackedStringArray("turret", "ballistics", "tracers", "missile_launcher", "salvos", "waves", "enemies", "muzzle_motion")]
 script = ExtResource("20_weapons")
 turret = NodePath("../Vessel/Turret")
 ballistics = NodePath("../Ballistics")
@@ -556,6 +563,11 @@ missile_launcher = NodePath("MissileLauncher")
 salvos = NodePath("SalvoManager")
 waves = NodePath("../../../../WaveOrchestrator")
 enemies = NodePath("../Enemies")
+muzzle_motion = NodePath("MuzzleMotion")
+
+[node name="MuzzleMotion" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret")]
+script = ExtResource("95_muzzle_motion")
+turret = NodePath("../../Vessel/Turret")
 
 [node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=803649068 node_paths=PackedStringArray("turret", "enemies", "ballistics", "renderer", "smoke")]
 script = ExtResource("21_launcher")

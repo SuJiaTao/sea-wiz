@@ -8,6 +8,7 @@ class_name WeaponsOrchestrator
 @export var salvos: SalvoManager
 @export var waves: WaveOrchestrator
 @export var enemies: EnemyManager
+@export var muzzle_motion: MuzzleMotion
 
 var _enabled: bool = true
 
@@ -44,6 +45,8 @@ func _physics_process(_delta: float) -> void:
 func _on_cannon_fired(origin: Vector3, velocity: Vector3) -> void:
 	if not _enabled or get_tree().paused:
 		return
+	if muzzle_motion != null:
+		velocity += muzzle_motion.carried_velocity()
 	var projectile := BulletProjectile.new(tracers, origin, velocity)
 	projectile.weapon_source = turret.damage_source
 	ballistics.fire(projectile)
