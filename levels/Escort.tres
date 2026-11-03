@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="7_skimmer"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Helo.tscn" id="8_helo"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Supersonic.tscn" id="9_supersonic"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Tiltrotor.tscn" id="20_tiltrotor"]
 
 [sub_resource type="Resource" id="Spawn01"]
 script = ExtResource("2_spawn")
@@ -113,7 +114,21 @@ enemy_scene = ExtResource("9_supersonic")
 distance = Vector2(2300, 2700)
 altitude = Vector2(10, 25)
 
+[sub_resource type="Resource" id="Spawn16"]
+script = ExtResource("2_spawn")
+time = 9.0
+enemy_scene = ExtResource("20_tiltrotor")
+distance = Vector2(1500, 2000)
+altitude = Vector2(150, 300)
+
+[sub_resource type="Resource" id="Spawn17"]
+script = ExtResource("2_spawn")
+time = 15.0
+enemy_scene = ExtResource("20_tiltrotor")
+distance = Vector2(1500, 2000)
+altitude = Vector2(150, 300)
+
 [resource]
 script = ExtResource("1_wave")
 title = "ESCORT"
-spawns = Array[ExtResource("2_spawn")]([SubResource("Spawn01"), SubResource("Spawn02"), SubResource("Spawn03"), SubResource("Spawn04"), SubResource("Spawn05"), SubResource("Spawn06"), SubResource("Spawn07"), SubResource("Spawn08"), SubResource("Spawn09"), SubResource("Spawn10"), SubResource("Spawn11"), SubResource("Spawn12"), SubResource("Spawn13"), SubResource("Spawn14"), SubResource("Spawn15")])
+spawns = Array[ExtResource("2_spawn")]([SubResource("Spawn01"), SubResource("Spawn02"), SubResource("Spawn03"), SubResource("Spawn04"), SubResource("Spawn05"), SubResource("Spawn06"), SubResource("Spawn07"), SubResource("Spawn08"), SubResource("Spawn09"), SubResource("Spawn10"), SubResource("Spawn11"), SubResource("Spawn12"), SubResource("Spawn13"), SubResource("Spawn14"), SubResource("Spawn15"), SubResource("Spawn16"), SubResource("Spawn17")])
