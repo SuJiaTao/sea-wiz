@@ -1,0 +1,42 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/StealthBomberEnemy.gd" id="1_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/StealthBomberVisuals.tscn" id="2_visuals"]
+[ext_resource type="Script" path="res://scripts/enemy/BombBay.gd" id="3_bay"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/GlideBomb.tscn" id="4_bomb"]
+
+[sub_resource type="SphereShape3D" id="Shape_body"]
+radius = 22.0
+
+[node name="StealthBomber" type="Node3D" node_paths=PackedStringArray("visuals", "bomb_bay")]
+script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
+bomb_bay = NodePath("BombBay")
+max_hp = 220.0
+display_name = "STEALTH BOMBER"
+score_value = 1200
+blast_size = 2.5
+hud_radius = 22.0
+radar_reach = 350.0
+max_bank_deg = 30.0
+speed = 150.0
+agility = 0.12
+contact_damage = 0.0
+max_g = 1.5
+arrival_radius = 160.0
+attack_altitude = 750.0
+egress_distance = 2200.0
+
+[node name="Visuals" parent="." instance=ExtResource("2_visuals")]
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox"]
+shape = SubResource("Shape_body")
+
+[node name="BombBay" type="Node" parent="."]
+script = ExtResource("3_bay")
+bomb_scene = ExtResource("4_bomb")

@@ -22,6 +22,7 @@ func create(
 	if enemy.get_parent() != null or enemy.max_hp <= 0.0:
 		return false
 	enemy.transform = global_transform.affine_inverse() * world_transform
+	enemy.deployed.connect(create)
 	_enemies.append(enemy)
 	add_child(enemy)
 	if is_instance_valid(enemy) and not enemy.is_queued_for_deletion():

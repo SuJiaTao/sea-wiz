@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/enemy/Interceptor.tscn" id="7_interceptor"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Helo.tscn" id="8_helo"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/HeavyJet.tscn" id="9_heavy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/StealthBomber.tscn" id="20_stealth"]
 
 [sub_resource type="Resource" id="Spawn01"]
 script = ExtResource("2_spawn")
@@ -89,7 +90,14 @@ enemy_scene = ExtResource("6_skimmer")
 distance = Vector2(1600, 2200)
 altitude = Vector2(12, 30)
 
+[sub_resource type="Resource" id="Spawn13"]
+script = ExtResource("2_spawn")
+time = 21.0
+enemy_scene = ExtResource("20_stealth")
+distance = Vector2(2200, 2600)
+altitude = Vector2(700, 800)
+
 [resource]
 script = ExtResource("1_wave")
 title = "FALLING STARS"
-spawns = Array[ExtResource("2_spawn")]([SubResource("Spawn01"), SubResource("Spawn02"), SubResource("Spawn03"), SubResource("Spawn04"), SubResource("Spawn05"), SubResource("Spawn06"), SubResource("Spawn07"), SubResource("Spawn08"), SubResource("Spawn09"), SubResource("Spawn10"), SubResource("Spawn11"), SubResource("Spawn12")])
+spawns = Array[ExtResource("2_spawn")]([SubResource("Spawn01"), SubResource("Spawn02"), SubResource("Spawn03"), SubResource("Spawn04"), SubResource("Spawn05"), SubResource("Spawn06"), SubResource("Spawn07"), SubResource("Spawn08"), SubResource("Spawn09"), SubResource("Spawn10"), SubResource("Spawn11"), SubResource("Spawn12"), SubResource("Spawn13")])
