@@ -20,12 +20,12 @@ func _ready() -> void:
 
 
 func _on_enemy_created(enemy: AbstractEnemy) -> void:
-	enemy.missed.connect(_on_missed)
+	enemy.missed.connect(_on_missed.bind(enemy.blast_size))
 
 
-func _on_missed(point: Vector3) -> void:
+func _on_missed(point: Vector3, enemy_blast_size: float) -> void:
 	var surface := Vector3(point.x, effects.sea_level(), point.z)
-	effects.spawn(NearMissEffect.new(surface, blast_size))
+	effects.spawn(NearMissEffect.new(surface, maxf(blast_size, enemy_blast_size)))
 	var offset := surface - enemies.global_position
 	var distance := Vector2(offset.x, offset.z).length()
 	var closeness := 1.0 - clampf(distance / felt_radius, 0.0, 1.0)

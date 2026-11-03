@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/GhostShipEnemy.gd" id="1_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/GhostShipVisuals.tscn" id="2_visuals"]
+
+[sub_resource type="BoxShape3D" id="Shape_body"]
+size = Vector3(10, 30, 44)
+
+[node name="GhostShip" type="Node3D" node_paths=PackedStringArray("visuals", "lanterns")]
+script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
+lanterns = [NodePath("Visuals/Lantern1"), NodePath("Visuals/Lantern2"), NodePath("Visuals/Lantern3"), NodePath("Visuals/Lantern4"), NodePath("Visuals/Lantern5")]
+max_hp = 420.0
+display_name = "GHOST SHIP"
+score_value = 1500
+blast_size = 3.0
+hud_radius = 22.0
+max_bank_deg = 8.0
+speed = 34.0
+agility = 0.12
+contact_damage = 30.0
+arrival_radius = 70.0
+
+[node name="Visuals" parent="." instance=ExtResource("2_visuals")]
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
+shape = SubResource("Shape_body")

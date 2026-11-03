@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="WaveDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/FallingTitan.tscn" id="3_titan"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="4_jet"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="5_skimmer"]
+
+[sub_resource type="Resource" id="Spawn01"]
+script = ExtResource("2_spawn")
+time = 2.0
+enemy_scene = ExtResource("3_titan")
+distance = Vector2(900, 1400)
+altitude = Vector2(2400, 2800)
+
+[sub_resource type="Resource" id="Spawn02"]
+script = ExtResource("2_spawn")
+time = 5.0
+enemy_scene = ExtResource("4_jet")
+distance = Vector2(1600, 2100)
+altitude = Vector2(150, 350)
+
+[sub_resource type="Resource" id="Spawn03"]
+script = ExtResource("2_spawn")
+time = 10.0
+enemy_scene = ExtResource("3_titan")
+distance = Vector2(900, 1400)
+altitude = Vector2(2400, 2800)
+
+[sub_resource type="Resource" id="Spawn04"]
+script = ExtResource("2_spawn")
+time = 13.0
+enemy_scene = ExtResource("5_skimmer")
+distance = Vector2(1600, 2200)
+altitude = Vector2(12, 30)
+
+[sub_resource type="Resource" id="Spawn05"]
+script = ExtResource("2_spawn")
+time = 17.0
+enemy_scene = ExtResource("3_titan")
+distance = Vector2(900, 1400)
+altitude = Vector2(2400, 2800)
+
+[sub_resource type="Resource" id="Spawn06"]
+script = ExtResource("2_spawn")
+time = 20.0
+enemy_scene = ExtResource("4_jet")
+distance = Vector2(1600, 2100)
+altitude = Vector2(150, 350)
+
+[resource]
+script = ExtResource("1_wave")
+title = "SKYFALL"
+spawns = Array[ExtResource("2_spawn")]([SubResource("Spawn01"), SubResource("Spawn02"), SubResource("Spawn03"), SubResource("Spawn04"), SubResource("Spawn05"), SubResource("Spawn06")])

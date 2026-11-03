@@ -1,0 +1,152 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/TripodEnemy.gd" id="1_enemy"]
+
+[sub_resource type="StandardMaterial3D" id="Material_hood"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.35, 0.35, 0.35, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_leg"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.3, 0.3, 0.3, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_lamp"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(1.0, 1.0, 1.0, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_ray"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(1.0, 1.0, 1.0, 1)
+
+[sub_resource type="SphereMesh" id="Mesh_hood"]
+material = SubResource("Material_hood")
+radius = 14.0
+height = 9.0
+radial_segments = 12
+rings = 6
+
+[sub_resource type="CylinderMesh" id="Mesh_leg"]
+material = SubResource("Material_leg")
+top_radius = 1.1
+bottom_radius = 0.6
+height = 62.0
+radial_segments = 6
+rings = 1
+
+[sub_resource type="SphereMesh" id="Mesh_lamp"]
+material = SubResource("Material_lamp")
+radius = 1.3
+height = 2.6
+radial_segments = 8
+rings = 4
+
+[sub_resource type="SphereMesh" id="Mesh_eye"]
+material = SubResource("Material_lamp")
+radius = 2.4
+height = 4.8
+radial_segments = 8
+rings = 4
+
+[sub_resource type="BoxMesh" id="Mesh_ray"]
+material = SubResource("Material_ray")
+size = Vector3(1.4, 1.4, 1)
+
+[sub_resource type="SphereShape3D" id="Shape_hood"]
+radius = 24.0
+
+[node name="Tripod" type="Node3D" node_paths=PackedStringArray("visuals", "legs", "lights", "beam", "eye")]
+script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
+legs = [NodePath("Visuals/LegMount1/Leg"), NodePath("Visuals/LegMount2/Leg"), NodePath("Visuals/LegMount3/Leg")]
+lights = NodePath("Visuals/Hood/Lights")
+beam = NodePath("Beam")
+eye = NodePath("Visuals/Hood/Lights/Eye")
+max_hp = 900.0
+display_name = "TRIPOD"
+score_value = 2500
+leaves_wreck = false
+blast_size = 2.5
+hud_radius = 24.0
+standing_height = 90.0
+
+[node name="Visuals" type="Node3D" parent="."]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 0, 0, 0)
+
+[node name="Hood" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 55.0, 0)
+mesh = SubResource("Mesh_hood")
+
+[node name="Lights" type="Node3D" parent="Visuals/Hood"]
+
+[node name="Eye" type="MeshInstance3D" parent="Visuals/Hood/Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -13)
+mesh = SubResource("Mesh_eye")
+
+[node name="Lamp1" type="MeshInstance3D" parent="Visuals/Hood/Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 1.5, -11.5)
+mesh = SubResource("Mesh_lamp")
+
+[node name="Lamp2" type="MeshInstance3D" parent="Visuals/Hood/Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1.5, -11.5)
+mesh = SubResource("Mesh_lamp")
+
+[node name="Lamp3" type="MeshInstance3D" parent="Visuals/Hood/Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.5, -11.5)
+mesh = SubResource("Mesh_lamp")
+
+[node name="LegMount1" type="Node3D" parent="Visuals"]
+transform = Transform3D(0.5, 0, 0.866, 0, 1, 0, -0.866, 0, 0.5, 0, 52.0, 0)
+
+[node name="Leg" type="Node3D" parent="Visuals/LegMount1"]
+
+[node name="Splay" type="Node3D" parent="Visuals/LegMount1/Leg"]
+transform = Transform3D(1, 0, 0, 0, 0.9397, 0.342, 0, -0.342, 0.9397, 0, 0, 0)
+
+[node name="Shin" type="MeshInstance3D" parent="Visuals/LegMount1/Leg/Splay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -31.0, 0)
+mesh = SubResource("Mesh_leg")
+
+[node name="LegMount2" type="Node3D" parent="Visuals"]
+transform = Transform3D(-1.0, 0, 0.0, 0, 1, 0, -0.0, 0, -1.0, 0, 52.0, 0)
+
+[node name="Leg" type="Node3D" parent="Visuals/LegMount2"]
+
+[node name="Splay" type="Node3D" parent="Visuals/LegMount2/Leg"]
+transform = Transform3D(1, 0, 0, 0, 0.9397, 0.342, 0, -0.342, 0.9397, 0, 0, 0)
+
+[node name="Shin" type="MeshInstance3D" parent="Visuals/LegMount2/Leg/Splay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -31.0, 0)
+mesh = SubResource("Mesh_leg")
+
+[node name="LegMount3" type="Node3D" parent="Visuals"]
+transform = Transform3D(0.5, 0, -0.866, 0, 1, 0, 0.866, 0, 0.5, 0, 52.0, 0)
+
+[node name="Leg" type="Node3D" parent="Visuals/LegMount3"]
+
+[node name="Splay" type="Node3D" parent="Visuals/LegMount3/Leg"]
+transform = Transform3D(1, 0, 0, 0, 0.9397, 0.342, 0, -0.342, 0.9397, 0, 0, 0)
+
+[node name="Shin" type="MeshInstance3D" parent="Visuals/LegMount3/Leg/Splay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -31.0, 0)
+mesh = SubResource("Mesh_leg")
+
+[node name="Beam" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("Mesh_ray")
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="HoodShape" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 88.0, 0)
+shape = SubResource("Shape_hood")
