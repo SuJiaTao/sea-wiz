@@ -16,6 +16,14 @@ func _ready() -> void:
 	_apply_palette()
 
 
+func set_dropout(amount: float) -> void:
+	_signal.set_shader_parameter("dropout", clampf(amount, 0.0, 1.0))
+
+
+func set_camera_damage(amount: float) -> void:
+	_signal.set_shader_parameter("camera_damage", clampf(amount, 0.0, 1.0))
+
+
 func next_palette() -> void:
 	if palettes.is_empty():
 		return
@@ -28,3 +36,6 @@ func _apply_palette() -> void:
 		return
 	_signal.set_shader_parameter("phosphor", palette.phosphor)
 	_signal.set_shader_parameter("highlight_bleach", palette.highlight_bleach)
+	_signal.set_shader_parameter("tone_shadow", palette.shadow)
+	_signal.set_shader_parameter("tone_mid", palette.midtone)
+	_signal.set_shader_parameter("tone_mid_point", palette.mid_point)
