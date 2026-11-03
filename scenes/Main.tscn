@@ -96,6 +96,7 @@
 [ext_resource type="Script" uid="uid://oy8exuaddm5e" path="res://scripts/weather/LightningWeather.gd" id="92_lightning"]
 [ext_resource type="Script" uid="uid://bxqxvlgg1ujtf" path="res://scripts/weather/SeaStateWeather.gd" id="93_sea_state"]
 [ext_resource type="Script" uid="uid://bofiqnylnyqxx" path="res://scripts/ship/ShipSway.gd" id="94_sway"]
+[ext_resource type="Script" path="res://scripts/ship/SplashRocking.gd" id="98_splash_rocking"]
 [ext_resource type="Resource" path="res://resources/weather/Thunderstorm.tres" id="95_storm"]
 [ext_resource type="Material" path="res://resources/weather/LightningMaterial.tres" id="96_bolt_material"]
 [ext_resource type="PackedScene" uid="uid://dr2blsow1udrq" path="res://scenes/ui/ConsoleUI.tscn" id="97_jhuvt"]
@@ -393,6 +394,12 @@ script = ExtResource("91_bolt")
 
 [node name="ShipSway" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1159628755]
 script = ExtResource("94_sway")
+
+[node name="SplashRocking" type="Node" parent="ViewportContainer/SubViewport/World/ShipSway" node_paths=PackedStringArray("effects", "sway", "vessel")]
+script = ExtResource("98_splash_rocking")
+effects = NodePath("../../Effects")
+sway = NodePath("..")
+vessel = NodePath("../../Vessel")
 
 [node name="Sea" type="MeshInstance3D" parent="ViewportContainer/SubViewport/World" unique_id=155310161]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.6, 0)
