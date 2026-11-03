@@ -49,7 +49,11 @@ func _process(delta: float) -> void:
 
 
 func _on_level_prepared(number: int, _title: String) -> void:
-	if number < first_weather_level or fronts.is_empty():
+	var forced := waves.levels[number - 1].weather if number <= waves.levels.size() else null
+	if forced != null:
+		_front = null
+		_settle(forced, 1.0)
+	elif number < first_weather_level or fronts.is_empty():
 		_settle(clear, 0.0)
 	elif _front != null and _front.waves_left > 0:
 		_advance_front()
