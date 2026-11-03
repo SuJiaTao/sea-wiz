@@ -72,6 +72,7 @@
 [ext_resource type="Script" uid="uid://dxecqktkhiq04" path="res://scripts/display/LensSpray.gd" id="70_lens"]
 [ext_resource type="Script" uid="uid://d1eiyouy38af8" path="res://scripts/ship/NearMissReactions.gd" id="71_near_miss"]
 [ext_resource type="Resource" uid="uid://craphhve3bg4h" path="res://levels/FallingStars.tres" id="72_falling_stars"]
+[ext_resource type="Resource" path="res://levels/Skyfall.tres" id="104_skyfall"]
 [ext_resource type="Script" uid="uid://bedv8jb775n4s" path="res://scripts/world/Starfield.gd" id="73_starfield"]
 [ext_resource type="QuadMesh" path="res://resources/world/StarMesh.tres" id="74_star_mesh"]
 [ext_resource type="Script" uid="uid://8ekyivo2ib3l" path="res://scripts/weather/WeatherDirector.gd" id="75_weather"]
@@ -267,7 +268,7 @@ script = ExtResource("1_session")
 [node name="WaveOrchestrator" type="Node" parent="." unique_id=1833867121]
 process_mode = 1
 script = ExtResource("6_waves")
-levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResource("97_formations"), ExtResource("13_second"), ExtResource("69_escort"), ExtResource("72_falling_stars"), ExtResource("100_ghost_fleet")])
+levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResource("97_formations"), ExtResource("13_second"), ExtResource("69_escort"), ExtResource("72_falling_stars"), ExtResource("100_ghost_fleet"), ExtResource("104_skyfall")])
 
 [node name="Score" type="Node" parent="." unique_id=668317612 node_paths=PackedStringArray("enemies")]
 process_mode = 1
