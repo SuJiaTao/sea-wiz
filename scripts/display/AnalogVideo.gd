@@ -36,3 +36,6 @@ func _apply_palette() -> void:
 		return
 	_signal.set_shader_parameter("phosphor", palette.phosphor)
 	_signal.set_shader_parameter("highlight_bleach", palette.highlight_bleach)
+	_signal.set_shader_parameter("tone_shadow", palette.shadow)
+	_signal.set_shader_parameter("tone_mid", palette.midtone)
+	_signal.set_shader_parameter("tone_mid_point", palette.mid_point)

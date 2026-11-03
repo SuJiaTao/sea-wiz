@@ -8,3 +8,4 @@ script = ExtResource("1_palette")
 display_name = "WHITE"
 phosphor = Color(1, 1, 0.985, 1)
 highlight_bleach = 0.0
+midtone = Color(0.500, 0.500, 0.4925, 1)
