@@ -37,6 +37,9 @@
 [ext_resource type="Resource" path="res://resources/phosphors/WhitePhosphor.tres" id="32_white"]
 [ext_resource type="Resource" path="res://resources/phosphors/GreenPhosphor.tres" id="33_green"]
 [ext_resource type="Resource" path="res://resources/phosphors/RedPhosphor.tres" id="34_red"]
+[ext_resource type="Resource" path="res://resources/phosphors/NightOpsPalette.tres" id="34_night_ops"]
+[ext_resource type="Resource" path="res://resources/phosphors/EmberPalette.tres" id="34_ember"]
+[ext_resource type="Resource" path="res://resources/phosphors/CrimsonPalette.tres" id="34_crimson"]
 [ext_resource type="Script" uid="uid://fwmfhw2nut5h" path="res://scripts/sensors/SearchRadar.gd" id="35_search"]
 [ext_resource type="Script" uid="uid://du21xtyvbxthh" path="res://scripts/sensors/TrackManager.gd" id="36_tracks"]
 [ext_resource type="Script" uid="uid://j1vexdi14cv6" path="res://scripts/sensors/Spotter.gd" id="37_spotter"]
@@ -148,16 +151,16 @@ resource_local_to_scene = true
 shader = ExtResource("14_thermal_shader")
 shader_parameter/gain = 1.35
 shader_parameter/black_level = 0.02
-shader_parameter/levels = 64.0
+shader_parameter/levels = 160.0
 shader_parameter/sensor_floor = 0.0
 shader_parameter/optical_blur = 0.55
-shader_parameter/optical_blur_texels = 1.0
+shader_parameter/optical_blur_texels = 1.6
 shader_parameter/polarity = 0.0
 shader_parameter/bloom_amount = 0.9
 shader_parameter/bloom_floor = 0.42
-shader_parameter/bloom_radius_texels = 2.4
+shader_parameter/bloom_radius_texels = 4.0
 shader_parameter/halo_amount = 0.75
-shader_parameter/halo_radius_texels = 4.5
+shader_parameter/halo_radius_texels = 8.0
 shader_parameter/shake_x = 0.0
 shader_parameter/shake_y = 0.0
 shader_parameter/sensor_size = Vector2(320, 180)
@@ -243,8 +246,8 @@ shader = ExtResource("30_video_shader")
 shader_parameter/phosphor = Color(1, 1, 0.985, 1)
 shader_parameter/highlight_bleach = 0.0
 shader_parameter/frame_rate = 29.97
-shader_parameter/video_lines = 720.0
-shader_parameter/line_samples = 1440.0
+shader_parameter/video_lines = 1080.0
+shader_parameter/line_samples = 1920.0
 shader_parameter/sample_hold = 0.06
 shader_parameter/tail_samples = 0.25
 shader_parameter/streak_length = 36.0
@@ -369,7 +372,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 stretch = true
-stretch_shrink = 2
+stretch_shrink = 1
 script = ExtResource("7_thermal")
 turret = NodePath("SubViewport/World/Vessel/Turret")
 
@@ -758,7 +761,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("29_video")
-palettes = Array[ExtResource("31_palette_type")]([ExtResource("33_green"), ExtResource("32_white"), ExtResource("34_red")])
+palettes = Array[ExtResource("31_palette_type")]([ExtResource("34_night_ops"), ExtResource("34_ember"), ExtResource("34_crimson"), ExtResource("33_green"), ExtResource("32_white"), ExtResource("34_red")])
 
 [node name="SignalDropout" type="Node" parent="VideoSignal" node_paths=PackedStringArray("integrity", "video")]
 script = ExtResource("91_signal_dropout")

@@ -12,6 +12,9 @@ render_mode unshaded;
 uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap, repeat_disable;
 
 uniform vec3 phosphor : source_color = vec3(1.0, 1.0, 0.985);
+uniform vec3 tone_shadow : source_color = vec3(0.0);
+uniform vec3 tone_mid : source_color = vec3(0.5, 0.5, 0.49);
+uniform float tone_mid_point : hint_range(0.05, 0.95) = 0.5;
 uniform float highlight_bleach : hint_range(0.0, 1.0) = 0.0;
 
 uniform float frame_rate = 29.97;
@@ -218,7 +221,9 @@ void fragment() {
 	l = black_lift + (1.0 - black_lift) * clamp(l, 0.0, 1.0);
 	l *= step(capture_border + centred_noise(vec2(line, frame * 0.1)) * BORDER_JAGGIES, SCREEN_UV.x);
 
-	vec3 colour = phosphor * l;
+	vec3 colour = l < tone_mid_point
+		? mix(tone_shadow, tone_mid, l / tone_mid_point)
+		: mix(tone_mid, phosphor, (l - tone_mid_point) / (1.0 - tone_mid_point));
 	colour = mix(colour, vec3(l), smoothstep(BLEACH_START, 1.0, l) * highlight_bleach);
 	float chroma_lod = log2(max((1.0 / SCREEN_PIXEL_SIZE.y) / video_lines * chroma_lines, 1.0));
 	vec3 smeared = textureLod(screen_texture, SCREEN_UV, chroma_lod).rgb;
