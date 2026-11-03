@@ -40,6 +40,10 @@ uniform float wobble_lines : hint_range(4.0, 200.0) = 30.0;
 uniform float level_flicker : hint_range(0.0, 0.1) = 0.01;
 uniform float chroma_amount : hint_range(0.0, 3.0) = 0.9;
 uniform float chroma_lines : hint_range(1.0, 64.0) = 3.0;
+uniform float dropout : hint_range(0.0, 1.0) = 0.0;
+uniform float dropout_tear_samples : hint_range(0.0, 200.0) = 60.0;
+uniform float dropout_band_lines : hint_range(1.0, 64.0) = 12.0;
+uniform float dropout_snow : hint_range(0.0, 1.0) = 0.3;
 
 const vec3 LUMA = vec3(0.299, 0.587, 0.114);
 const int TAIL_TAPS = 4;
@@ -54,6 +58,8 @@ const float MIN_DARK_GRAIN = 0.35;
 const float BLEACH_START = 0.55;
 const float SQRT_TAU = 2.50662827;
 const float GRAIN_TILE = 512.0;
+const float DROPOUT_SEED = 41.0;
+const float DROPOUT_DIM = 0.25;
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -110,6 +116,15 @@ float head_switch(float line, float frame) {
 	}
 	float jitter = 1.0 + centred_noise(vec2(line, frame)) * HEAD_SWITCH_JITTER;
 	return head_switch_samples * into * into * jitter;
+}
+
+float dropout_band(float line, float frame) {
+	float band = floor(line / dropout_band_lines);
+	return step(1.0 - dropout, hash12(vec2(band, frame + DROPOUT_SEED)));
+}
+
+float dropout_tear(float line, float frame) {
+	return dropout_band(line, frame) * centred_noise(vec2(floor(line / dropout_band_lines), frame)) * dropout_tear_samples;
 }
 
 float cored_sharpen(float trail, float wide) {
@@ -169,8 +184,8 @@ void fragment() {
 
 	float xs = SCREEN_UV.x * line_samples;
 	vec2 grain_offset = vec2(hash12(vec2(frame, 3.1)), hash12(vec2(frame, 7.9))) * GRAIN_TILE;
-	float near_shift = timebase_wobble(line, frame) - head_switch(line, frame);
-	float far_shift = timebase_wobble(neighbour, frame) - head_switch(neighbour, frame);
+	float near_shift = timebase_wobble(line, frame) - head_switch(line, frame) + dropout_tear(line, frame);
+	float far_shift = timebase_wobble(neighbour, frame) - head_switch(neighbour, frame) + dropout_tear(neighbour, frame);
 	float near_signal = line_signal(xs + near_shift, line, grain_offset);
 	float far_signal = line_signal(xs + far_shift, neighbour, grain_offset);
 	float l = beam(from_centre, near_signal) + beam(1.0 - abs(from_centre), far_signal);
@@ -179,6 +194,9 @@ void fragment() {
 	float glow = dot(textureLod(screen_texture, SCREEN_UV, glow_lod).rgb, LUMA);
 	l += max(glow - bloom_floor, 0.0) * bloom_amount;
 	l *= 1.0 + centred_noise(vec2(frame, 0.5)) * level_flicker;
+	float torn = dropout_band(line, frame);
+	l = mix(l, hash12(vec2(xs, line) + grain_offset), torn * dropout_snow);
+	l *= 1.0 - dropout * DROPOUT_DIM;
 	l = black_lift + (1.0 - black_lift) * clamp(l, 0.0, 1.0);
 	l *= step(capture_border + centred_noise(vec2(line, frame * 0.1)) * BORDER_JAGGIES, SCREEN_UV.x);
 

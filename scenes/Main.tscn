@@ -103,6 +103,9 @@
 [ext_resource type="Script" uid="uid://bvsg4xcbl4fq0" path="res://scripts/display/BlastFeel.gd" id="101_blast_feel"]
 [ext_resource type="SphereMesh" uid="uid://cw666x1bbx6fi" path="res://resources/fx/ShockDomeMesh.tres" id="102_dome"]
 [ext_resource type="AudioStream" uid="uid://b7xkm47bl56ms" path="res://audio/explosion.wav" id="103_boom"]
+[ext_resource type="Script" path="res://scripts/hud/CameraStamp.gd" id="90_camera_stamp"]
+[ext_resource type="Script" path="res://scripts/display/SignalDropout.gd" id="91_signal_dropout"]
+[ext_resource type="Script" path="res://scripts/display/FocusHunt.gd" id="92_focus_hunt"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -138,13 +141,13 @@ shader_parameter/black_level = 0.02
 shader_parameter/levels = 64.0
 shader_parameter/sensor_floor = 0.0
 shader_parameter/optical_blur = 0.55
-shader_parameter/optical_blur_texels = 0.7
+shader_parameter/optical_blur_texels = 1.0
 shader_parameter/polarity = 0.0
 shader_parameter/bloom_amount = 0.9
 shader_parameter/bloom_floor = 0.42
-shader_parameter/bloom_radius_texels = 1.4
+shader_parameter/bloom_radius_texels = 2.4
 shader_parameter/halo_amount = 0.75
-shader_parameter/halo_radius_texels = 2.8
+shader_parameter/halo_radius_texels = 4.5
 shader_parameter/shake_x = 0.0
 shader_parameter/shake_y = 0.0
 shader_parameter/sensor_size = Vector2(320, 180)
@@ -230,29 +233,29 @@ shader = ExtResource("30_video_shader")
 shader_parameter/phosphor = Color(1, 1, 0.985, 1)
 shader_parameter/highlight_bleach = 0.0
 shader_parameter/frame_rate = 29.97
-shader_parameter/video_lines = 480.0
-shader_parameter/line_samples = 900.0
-shader_parameter/sample_hold = 0.15
-shader_parameter/tail_samples = 0.4
+shader_parameter/video_lines = 720.0
+shader_parameter/line_samples = 1440.0
+shader_parameter/sample_hold = 0.06
+shader_parameter/tail_samples = 0.25
 shader_parameter/streak_length = 36.0
 shader_parameter/streak_amount = 0.35
 shader_parameter/streak_floor = 0.5
-shader_parameter/black_lift = 0.0
-shader_parameter/head_switch_lines = 5.0
-shader_parameter/head_switch_samples = 6.0
+shader_parameter/black_lift = 0.025
+shader_parameter/head_switch_lines = 2.0
+shader_parameter/head_switch_samples = 3.0
 shader_parameter/capture_border = 0.006
-shader_parameter/sharpening = 0.45
+shader_parameter/sharpening = 0.3
 shader_parameter/sharpening_coring = 0.02
-shader_parameter/grain_amount = 0.06
-shader_parameter/dark_grain = 1.6
-shader_parameter/beam_sigma_dark = 0.36
+shader_parameter/grain_amount = 0.03
+shader_parameter/dark_grain = 1.2
+shader_parameter/beam_sigma_dark = 0.45
 shader_parameter/beam_sigma_bright = 0.5
 shader_parameter/bloom_amount = 0.3
 shader_parameter/bloom_floor = 0.4
 shader_parameter/bloom_lines = 8.0
-shader_parameter/wobble_samples = 0.25
+shader_parameter/wobble_samples = 0.08
 shader_parameter/wobble_lines = 30.0
-shader_parameter/level_flicker = 0.01
+shader_parameter/level_flicker = 0.004
 shader_parameter/chroma_amount = 0.9
 shader_parameter/chroma_lines = 3.0
 
@@ -281,6 +284,11 @@ script = ExtResource("100_shock_lens")
 thermal = NodePath("../ViewportContainer")
 turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
 effects = NodePath("../ViewportContainer/SubViewport/World/Effects")
+
+[node name="FocusHunt" type="Node" parent="." node_paths=PackedStringArray("turret", "thermal")]
+script = ExtResource("92_focus_hunt")
+turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
+thermal = NodePath("../ViewportContainer")
 
 [node name="BlastFeel" type="Node" parent="." unique_id=71931798 node_paths=PackedStringArray("effects", "turret", "boom")]
 process_mode = 1
@@ -347,7 +355,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 stretch = true
-stretch_shrink = 4
+stretch_shrink = 2
 script = ExtResource("7_thermal")
 turret = NodePath("SubViewport/World/Vessel/Turret")
 
@@ -630,6 +638,16 @@ turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 thermal = NodePath("../../../ViewportContainer")
 video = NodePath("../../../VideoSignal/AnalogVideo")
 
+[node name="CameraStamp" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("turret")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("90_camera_stamp")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
+
 [node name="WaveHUD" type="Control" parent="HUD/HUDRoot" unique_id=1961425847 node_paths=PackedStringArray("waves", "enemies")]
 anchors_preset = 0
 anchor_right = 1.0
@@ -705,4 +723,9 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("29_video")
-palettes = Array[ExtResource("31_palette_type")]([ExtResource("32_white"), ExtResource("33_green"), ExtResource("34_red")])
+palettes = Array[ExtResource("31_palette_type")]([ExtResource("33_green"), ExtResource("32_white"), ExtResource("34_red")])
+
+[node name="SignalDropout" type="Node" parent="VideoSignal" node_paths=PackedStringArray("integrity", "video")]
+script = ExtResource("91_signal_dropout")
+integrity = NodePath("../../ViewportContainer/SubViewport/World/ShipDamage/Integrity")
+video = NodePath("../AnalogVideo")
