@@ -1,0 +1,79 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="Material_armour"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.55, 0.55, 0.55, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_hot"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(1.0, 1.0, 1.0, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_Torso"]
+material = SubResource("Material_armour")
+size = Vector3(14, 18, 9)
+
+[sub_resource type="BoxMesh" id="Mesh_Head"]
+material = SubResource("Material_armour")
+size = Vector3(6, 5, 6)
+
+[sub_resource type="BoxMesh" id="Mesh_ArmLeft"]
+material = SubResource("Material_armour")
+size = Vector3(4, 16, 4)
+
+[sub_resource type="BoxMesh" id="Mesh_ArmRight"]
+material = SubResource("Material_armour")
+size = Vector3(4, 16, 4)
+
+[sub_resource type="BoxMesh" id="Mesh_LegLeft"]
+material = SubResource("Material_armour")
+size = Vector3(5, 20, 5)
+
+[sub_resource type="BoxMesh" id="Mesh_LegRight"]
+material = SubResource("Material_armour")
+size = Vector3(5, 20, 5)
+
+[sub_resource type="BoxMesh" id="Mesh_HeatShield"]
+material = SubResource("Material_hot")
+size = Vector3(15, 3, 10)
+
+[sub_resource type="BoxMesh" id="Mesh_Core"]
+material = SubResource("Material_hot")
+size = Vector3(4, 4, 1)
+
+[node name="FallingTitanVisuals" type="Node3D"]
+
+[node name="Torso" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("Mesh_Torso")
+
+[node name="Head" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+mesh = SubResource("Mesh_Head")
+
+[node name="ArmLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, -2, 0)
+mesh = SubResource("Mesh_ArmLeft")
+
+[node name="ArmRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, -2, 0)
+mesh = SubResource("Mesh_ArmRight")
+
+[node name="LegLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -19, 0)
+mesh = SubResource("Mesh_LegLeft")
+
+[node name="LegRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -19, 0)
+mesh = SubResource("Mesh_LegRight")
+
+[node name="HeatShield" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -10, 0)
+mesh = SubResource("Mesh_HeatShield")
+
+[node name="Core" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -4.6)
+mesh = SubResource("Mesh_Core")
