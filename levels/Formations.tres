@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="WaveDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Drone.tscn" id="3_drone"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="4_jet"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Interceptor.tscn" id="5_interceptor"]
+[ext_resource type="Resource" path="res://resources/formations/VFormation.tres" id="6_v"]
+[ext_resource type="Resource" path="res://resources/formations/LineAbreast.tres" id="7_line"]
+[ext_resource type="Resource" path="res://resources/formations/SplitPair.tres" id="8_split"]
+[ext_resource type="Resource" path="res://resources/formations/Pincer.tres" id="9_pincer"]
+[ext_resource type="Resource" path="res://resources/formations/Trail.tres" id="10_trail"]
+
+[sub_resource type="Resource" id="Spawn01"]
+script = ExtResource("2_spawn")
+time = 0.0
+enemy_scene = ExtResource("3_drone")
+distance = Vector2(1300, 1600)
+altitude = Vector2(90, 160)
+formation = ExtResource("6_v")
+
+[sub_resource type="Resource" id="Spawn02"]
+script = ExtResource("2_spawn")
+time = 7.0
+enemy_scene = ExtResource("4_jet")
+distance = Vector2(1700, 2100)
+altitude = Vector2(150, 300)
+formation = ExtResource("7_line")
+
+[sub_resource type="Resource" id="Spawn03"]
+script = ExtResource("2_spawn")
+time = 16.0
+enemy_scene = ExtResource("4_jet")
+distance = Vector2(1900, 2300)
+altitude = Vector2(180, 320)
+formation = ExtResource("8_split")
+
+[sub_resource type="Resource" id="Spawn04"]
+script = ExtResource("2_spawn")
+time = 26.0
+enemy_scene = ExtResource("4_jet")
+distance = Vector2(2100, 2400)
+altitude = Vector2(200, 320)
+formation = ExtResource("9_pincer")
+
+[sub_resource type="Resource" id="Spawn05"]
+script = ExtResource("2_spawn")
+time = 34.0
+enemy_scene = ExtResource("5_interceptor")
+distance = Vector2(2200, 2600)
+altitude = Vector2(200, 380)
+formation = ExtResource("10_trail")
+
+[resource]
+script = ExtResource("1_wave")
+title = "FORMATIONS"
+spawns = Array[ExtResource("2_spawn")]([SubResource("Spawn01"), SubResource("Spawn02"), SubResource("Spawn03"), SubResource("Spawn04"), SubResource("Spawn05")])

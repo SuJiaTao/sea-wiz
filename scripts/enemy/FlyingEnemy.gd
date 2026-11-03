@@ -22,6 +22,8 @@ const BREAK_DIVE_FLOOR: float = 80.0
 @export var break_turn_rate: float = 6.0
 @export var max_g: float = 0.0
 
+var approach: FormationApproach
+
 var _flight_age: float = 0.0
 var _bank: float = 0.0
 var _heading := Vector3.ZERO
@@ -63,6 +65,8 @@ func _on_think(delta: float) -> void:
 	if _destroy_requested:
 		return
 	var desired := _desired_velocity(delta)
+	if approach != null:
+		desired = approach.steer(self, desired, delta)
 	var breaking := _break_remaining > 0.0
 	if breaking:
 		_break_remaining -= delta
