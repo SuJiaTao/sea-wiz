@@ -52,6 +52,17 @@ func active_count() -> int:
 	return _projectiles.size()
 
 
+func push_in_radius(center: Vector3, radius: float, strength: float) -> void:
+	if radius <= 0.0:
+		return
+	for projectile in _projectiles:
+		var offset := projectile.position - center
+		var distance := offset.length()
+		if distance >= radius or distance <= 0.0:
+			continue
+		projectile._on_pushed(offset / distance * strength * (1.0 - distance / radius))
+
+
 func clear_all() -> void:
 	if _clearing:
 		return
