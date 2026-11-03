@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PhosphorPalette" format=3]
+
+[ext_resource type="Script" path="res://scripts/display/PhosphorPalette.gd" id="1_palette"]
+
+[resource]
+resource_name = "Night Ops"
+script = ExtResource("1_palette")
+display_name = "NIGHT OPS"
+phosphor = Color(1.0, 0.93, 0.72, 1)
+highlight_bleach = 0.5
+shadow = Color(0.0, 0.035, 0.045, 1)
+midtone = Color(0.16, 0.52, 0.36, 1)
+mid_point = 0.45
