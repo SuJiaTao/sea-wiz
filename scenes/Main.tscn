@@ -9,7 +9,7 @@
 [ext_resource type="Script" uid="uid://p4lc42i4uqjs" path="res://scripts/ThermalView.gd" id="7_thermal"]
 [ext_resource type="Script" uid="uid://dhvo8e35dfs0g" path="res://scripts/ballistics/ProjectileBatch.gd" id="8_batch"]
 [ext_resource type="Script" uid="uid://dkmwr4afokdk7" path="res://scripts/FXManager.gd" id="9_fx"]
-[ext_resource type="PackedScene" path="res://scenes/world/Warship.tscn" id="10_warship"]
+[ext_resource type="PackedScene" path="res://scenes/world/PicketShip.tscn" id="10_warship"]
 [ext_resource type="Script" uid="uid://b2ap6okbtqnal" path="res://scripts/waves/WaveDefinition.gd" id="11_wave_type"]
 [ext_resource type="Resource" uid="uid://blmh1ka3ro1ff" path="res://levels/FirstContact.tres" id="12_first"]
 [ext_resource type="Resource" uid="uid://bo5sd0cld6x1a" path="res://levels/Saturation.tres" id="13_second"]
