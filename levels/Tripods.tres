@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="WaveDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Tripod.tscn" id="3_tripod"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Drone.tscn" id="4_drone"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Helo.tscn" id="5_helo"]
+
+[sub_resource type="Resource" id="Spawn01"]
+script = ExtResource("2_spawn")
+time = 0.0
+enemy_scene = ExtResource("3_tripod")
+distance = Vector2(1300, 1600)
+altitude = Vector2(0, 0)
+
+[sub_resource type="Resource" id="Spawn02"]
+script = ExtResource("2_spawn")
+time = 4.0
+enemy_scene = ExtResource("4_drone")
+distance = Vector2(1100, 1400)
+altitude = Vector2(80, 150)
+
+[sub_resource type="Resource" id="Spawn03"]
+script = ExtResource("2_spawn")
+time = 8.0
+enemy_scene = ExtResource("3_tripod")
+distance = Vector2(1400, 1700)
+altitude = Vector2(0, 0)
+
+[sub_resource type="Resource" id="Spawn04"]
+script = ExtResource("2_spawn")
+time = 12.0
+enemy_scene = ExtResource("5_helo")
+distance = Vector2(900, 1300)
+altitude = Vector2(45, 160)
+
+[sub_resource type="Resource" id="Spawn05"]
+script = ExtResource("2_spawn")
+time = 16.0
+enemy_scene = ExtResource("3_tripod")
+distance = Vector2(1500, 1800)
+altitude = Vector2(0, 0)
+
+[sub_resource type="Resource" id="Spawn06"]
+script = ExtResource("2_spawn")
+time = 20.0
+enemy_scene = ExtResource("4_drone")
+distance = Vector2(1100, 1400)
+altitude = Vector2(80, 150)
+
+[resource]
+script = ExtResource("1_wave")
+title = "TRIPODS"
+spawns = Array[ExtResource("2_spawn")]([SubResource("Spawn01"), SubResource("Spawn02"), SubResource("Spawn03"), SubResource("Spawn04"), SubResource("Spawn05"), SubResource("Spawn06")])

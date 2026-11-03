@@ -62,6 +62,10 @@ func detach_visuals() -> Node3D:
 	return detached
 
 
+func impact_point() -> Vector3:
+	return global_position
+
+
 func score_points() -> int:
 	return score_value
 
