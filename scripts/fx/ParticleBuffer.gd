@@ -50,6 +50,22 @@ func advance(delta: float, acceleration: Vector3, carried_by: Vector3, drag: flo
 		index += 1
 
 
+func part_along(start: Vector3, end: Vector3, radius: float, speed: float, thinning: float) -> void:
+	var line := end - start
+	var length_squared := line.length_squared()
+	if length_squared <= 0.0 or radius <= 0.0:
+		return
+	for index in count:
+		var along := clampf((positions[index] - start).dot(line) / length_squared, 0.0, 1.0)
+		var away := positions[index] - (start + line * along)
+		var distance := away.length()
+		if distance >= radius or distance <= 0.0:
+			continue
+		var closeness := 1.0 - distance / radius
+		velocities[index] += away / distance * speed * closeness
+		ages[index] = minf(ages[index] + lifetimes[index] * thinning * closeness, lifetimes[index])
+
+
 func clear() -> void:
 	count = 0
 

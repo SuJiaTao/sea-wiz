@@ -24,6 +24,7 @@
 [ext_resource type="Script" uid="uid://p0e7licgkygc" path="res://scripts/weapons/SalvoManager.gd" id="22_salvos"]
 [ext_resource type="Script" uid="uid://cu8tlm5bchc3w" path="res://scripts/hud/WeaponFeedback.gd" id="23_weapon_feedback"]
 [ext_resource type="Script" uid="uid://dru4raaqnben3" path="res://scripts/ballistics/MissileSmokeRenderer.gd" id="24_smoke"]
+[ext_resource type="Script" path="res://scripts/weapons/SmokeParting.gd" id="96_smoke_parting"]
 [ext_resource type="CylinderMesh" uid="uid://cwascpljj1bw1" path="res://scenes/ballistics/InterceptorMesh.tres" id="25_interceptor"]
 [ext_resource type="Resource" path="res://resources/damage_sources/Missile.tres" id="27_missile_source"]
 [ext_resource type="PackedScene" path="res://scenes/ui/TitleScreen.tscn" id="28_title"]
@@ -561,6 +562,11 @@ damage_source = ExtResource("27_missile_source")
 script = ExtResource("22_salvos")
 launcher = NodePath("../MissileLauncher")
 enemies = NodePath("../../Enemies")
+
+[node name="SmokeParting" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "smoke_batches")]
+script = ExtResource("96_smoke_parting")
+turret = NodePath("../../Vessel/Turret")
+smoke_batches = [NodePath("../../MissileSmoke"), NodePath("../../Effects/Smoke"), NodePath("../../Effects/FlareSmoke")]
 
 [node name="CasingEjector" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=1707288516 node_paths=PackedStringArray("turret", "pile")]
 script = ExtResource("59_ejector")
