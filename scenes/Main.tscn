@@ -78,6 +78,8 @@
 [ext_resource type="Script" uid="uid://bedv8jb775n4s" path="res://scripts/world/Starfield.gd" id="73_starfield"]
 [ext_resource type="QuadMesh" path="res://resources/world/StarMesh.tres" id="74_star_mesh"]
 [ext_resource type="Script" uid="uid://8ekyivo2ib3l" path="res://scripts/weather/WeatherDirector.gd" id="75_weather"]
+[ext_resource type="Resource" path="res://levels/GhostFleet.tres" id="100_ghost_fleet"]
+[ext_resource type="Script" path="res://scripts/weather/BloodMoonWeather.gd" id="101_blood_moon"]
 [ext_resource type="Script" uid="uid://by43us4v0axgy" path="res://scripts/weather/FogWeather.gd" id="76_fog"]
 [ext_resource type="Script" uid="uid://usya6rum4kq0" path="res://scripts/weather/RadarClutterWeather.gd" id="77_clutter"]
 [ext_resource type="Script" uid="uid://s6brnnco0uig" path="res://scripts/hud/WeatherHUD.gd" id="78_weather_hud"]
@@ -272,7 +274,7 @@ script = ExtResource("1_session")
 [node name="WaveOrchestrator" type="Node" parent="." unique_id=1833867121]
 process_mode = 1
 script = ExtResource("6_waves")
-levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResource("97_formations"), ExtResource("13_second"), ExtResource("69_escort"), ExtResource("72_falling_stars")])
+levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResource("97_formations"), ExtResource("13_second"), ExtResource("69_escort"), ExtResource("72_falling_stars"), ExtResource("100_ghost_fleet")])
 
 [node name="Score" type="Node" parent="." unique_id=668317612 node_paths=PackedStringArray("enemies")]
 process_mode = 1
@@ -349,6 +351,10 @@ sway = NodePath("../../ViewportContainer/SubViewport/World/ShipSway")
 
 [node name="Aurora" type="Node" parent="Weather" unique_id=568588842 node_paths=PackedStringArray("environment")]
 script = ExtResource("98_aurora")
+environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
+
+[node name="BloodMoon" type="Node" parent="Weather" node_paths=PackedStringArray("environment")]
+script = ExtResource("101_blood_moon")
 environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
 
 [node name="ViewportContainer" type="SubViewportContainer" parent="." unique_id=721477771 node_paths=PackedStringArray("turret")]

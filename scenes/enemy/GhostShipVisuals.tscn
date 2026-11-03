@@ -1,0 +1,126 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="Material_hull"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.24, 0.24, 0.24, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_sail"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.3, 0.3, 0.3, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_mast"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.3, 0.3, 0.3, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_lantern"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(1.0, 1.0, 1.0, 1)
+
+[sub_resource type="PrismMesh" id="Mesh_bow"]
+material = SubResource("Material_hull")
+size = Vector3(9, 9, 6)
+
+[sub_resource type="BoxMesh" id="Mesh_hull"]
+material = SubResource("Material_hull")
+size = Vector3(9, 6, 34)
+
+[sub_resource type="BoxMesh" id="Mesh_stern"]
+material = SubResource("Material_hull")
+size = Vector3(10, 5, 8)
+
+[sub_resource type="CylinderMesh" id="Mesh_mast"]
+material = SubResource("Material_mast")
+top_radius = 0.25
+bottom_radius = 0.4
+height = 30.0
+radial_segments = 6
+rings = 1
+
+[sub_resource type="BoxMesh" id="Mesh_sail"]
+material = SubResource("Material_sail")
+size = Vector3(14, 8, 0.2)
+
+[sub_resource type="BoxMesh" id="Mesh_torn_sail"]
+material = SubResource("Material_sail")
+size = Vector3(10, 6, 0.2)
+
+[sub_resource type="BoxMesh" id="Mesh_lantern"]
+material = SubResource("Material_lantern")
+size = Vector3(0.8, 1.0, 0.8)
+
+[node name="GhostShipVisuals" type="Node3D"]
+
+[node name="Hull" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh_hull")
+
+[node name="Bow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, -20)
+mesh = SubResource("Mesh_bow")
+
+[node name="Stern" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 14)
+mesh = SubResource("Mesh_stern")
+
+[node name="Mast1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17, -10)
+mesh = SubResource("Mesh_mast")
+
+[node name="Sail1A" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0.15, 1, 0, 22, -9.4)
+mesh = SubResource("Mesh_sail")
+
+[node name="Sail1B" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.95, 0, 0.3, 0, 1, 0, -0.3, 0, 0.95, 0.8, 12, -9.4)
+mesh = SubResource("Mesh_torn_sail")
+
+[node name="Mast2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17, 2)
+mesh = SubResource("Mesh_mast")
+
+[node name="Sail2A" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0.15, 1, 0, 22, 2.6)
+mesh = SubResource("Mesh_sail")
+
+[node name="Sail2B" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.95, 0, 0.3, 0, 1, 0, -0.3, 0, 0.95, 0.8, 12, 2.6)
+mesh = SubResource("Mesh_torn_sail")
+
+[node name="Mast3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17, 12)
+mesh = SubResource("Mesh_mast")
+
+[node name="Sail3A" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0.15, 1, 0, 22, 12.6)
+mesh = SubResource("Mesh_sail")
+
+[node name="Sail3B" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.95, 0, 0.3, 0, 1, 0, -0.3, 0, 0.95, 0.8, 12, 12.6)
+mesh = SubResource("Mesh_torn_sail")
+
+[node name="Lantern1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 2, -12)
+mesh = SubResource("Mesh_lantern")
+
+[node name="Lantern2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8, 2, -12)
+mesh = SubResource("Mesh_lantern")
+
+[node name="Lantern3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 15)
+mesh = SubResource("Mesh_lantern")
+
+[node name="Lantern4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 2, 6)
+mesh = SubResource("Mesh_lantern")
+
+[node name="Lantern5" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8, 2, 6)
+mesh = SubResource("Mesh_lantern")
