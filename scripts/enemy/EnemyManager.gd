@@ -7,6 +7,11 @@ signal enemy_killed(enemy: AbstractEnemy, weapon_source: DamageSource)
 var _enemies: Array[AbstractEnemy] = []
 var _clearing: bool = false
 var _exiting: bool = false
+var _spawn_command: EnemySpawnCommand
+
+
+func _ready() -> void:
+	_spawn_command = EnemySpawnCommand.new(self)
 
 
 func create(
