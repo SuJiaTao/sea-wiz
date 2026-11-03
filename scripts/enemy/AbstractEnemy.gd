@@ -6,6 +6,7 @@ signal damaged(amount: float, world_point: Vector3)
 signal reached_target(damage: float)
 signal missed(world_point: Vector3)
 signal countermeasures_released(flares: Array[DecoyFlare])
+signal deployed(child: AbstractEnemy, world_transform: Transform3D)
 
 enum State { CREATING, ALIVE, DEAD, DESTROYED }
 enum ContactKind { AIRCRAFT, MISSILE }
@@ -59,6 +60,10 @@ func detach_visuals() -> Node3D:
 	detached.transform = world_transform
 	visuals = null
 	return detached
+
+
+func impact_point() -> Vector3:
+	return global_position
 
 
 func score_points() -> int:

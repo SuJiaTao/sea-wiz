@@ -3,16 +3,19 @@
 [ext_resource type="Script" uid="uid://b5n1fqsayfih1" path="res://scripts/GameSession.gd" id="1_session"]
 [ext_resource type="PackedScene" uid="uid://bfbwp5hakbdf0" path="res://scenes/turret/Turret.tscn" id="2_turret"]
 [ext_resource type="Script" uid="uid://bytbtjjkyux8j" path="res://scripts/ballistics/BallisticManager.gd" id="3_ballistics"]
+[ext_resource type="Script" path="res://scripts/ballistics/BlastDrift.gd" id="94_blast_drift"]
+[ext_resource type="Script" path="res://scripts/weapons/MuzzleMotion.gd" id="95_muzzle_motion"]
 [ext_resource type="Script" uid="uid://4a1tm2qbhkt2" path="res://scripts/GameplayHUD.gd" id="4_hud"]
 [ext_resource type="Script" uid="uid://bxu6ydmsivscv" path="res://scripts/enemy/EnemyManager.gd" id="5_enemies"]
 [ext_resource type="Script" uid="uid://18s4i6def6h0" path="res://scripts/waves/WaveOrchestrator.gd" id="6_waves"]
 [ext_resource type="Script" uid="uid://p4lc42i4uqjs" path="res://scripts/ThermalView.gd" id="7_thermal"]
 [ext_resource type="Script" uid="uid://dhvo8e35dfs0g" path="res://scripts/ballistics/ProjectileBatch.gd" id="8_batch"]
 [ext_resource type="Script" uid="uid://dkmwr4afokdk7" path="res://scripts/FXManager.gd" id="9_fx"]
-[ext_resource type="PackedScene" path="res://scenes/world/Warship.tscn" id="10_warship"]
+[ext_resource type="PackedScene" path="res://scenes/world/PicketShip.tscn" id="10_warship"]
 [ext_resource type="Script" uid="uid://b2ap6okbtqnal" path="res://scripts/waves/WaveDefinition.gd" id="11_wave_type"]
 [ext_resource type="Resource" uid="uid://blmh1ka3ro1ff" path="res://levels/FirstContact.tres" id="12_first"]
 [ext_resource type="Resource" uid="uid://bo5sd0cld6x1a" path="res://levels/Saturation.tres" id="13_second"]
+[ext_resource type="Resource" path="res://levels/Formations.tres" id="97_formations"]
 [ext_resource type="Shader" uid="uid://b4v53wi6xsomg" path="res://shaders/thermal.gdshader" id="14_thermal_shader"]
 [ext_resource type="Shader" uid="uid://c62jnvd10xwhp" path="res://shaders/sea.gdshader" id="15_sea_shader"]
 [ext_resource type="Script" uid="uid://cnlhuaro2rmrv" path="res://scripts/hud/PlayerHUD.gd" id="16_player_hud"]
@@ -24,6 +27,7 @@
 [ext_resource type="Script" uid="uid://p0e7licgkygc" path="res://scripts/weapons/SalvoManager.gd" id="22_salvos"]
 [ext_resource type="Script" uid="uid://cu8tlm5bchc3w" path="res://scripts/hud/WeaponFeedback.gd" id="23_weapon_feedback"]
 [ext_resource type="Script" uid="uid://dru4raaqnben3" path="res://scripts/ballistics/MissileSmokeRenderer.gd" id="24_smoke"]
+[ext_resource type="Script" path="res://scripts/weapons/SmokeParting.gd" id="96_smoke_parting"]
 [ext_resource type="CylinderMesh" uid="uid://cwascpljj1bw1" path="res://scenes/ballistics/InterceptorMesh.tres" id="25_interceptor"]
 [ext_resource type="Resource" path="res://resources/damage_sources/Missile.tres" id="27_missile_source"]
 [ext_resource type="PackedScene" path="res://scenes/ui/TitleScreen.tscn" id="28_title"]
@@ -33,6 +37,9 @@
 [ext_resource type="Resource" path="res://resources/phosphors/WhitePhosphor.tres" id="32_white"]
 [ext_resource type="Resource" path="res://resources/phosphors/GreenPhosphor.tres" id="33_green"]
 [ext_resource type="Resource" path="res://resources/phosphors/RedPhosphor.tres" id="34_red"]
+[ext_resource type="Resource" path="res://resources/phosphors/NightOpsPalette.tres" id="34_night_ops"]
+[ext_resource type="Resource" path="res://resources/phosphors/EmberPalette.tres" id="34_ember"]
+[ext_resource type="Resource" path="res://resources/phosphors/CrimsonPalette.tres" id="34_crimson"]
 [ext_resource type="Script" uid="uid://fwmfhw2nut5h" path="res://scripts/sensors/SearchRadar.gd" id="35_search"]
 [ext_resource type="Script" uid="uid://du21xtyvbxthh" path="res://scripts/sensors/TrackManager.gd" id="36_tracks"]
 [ext_resource type="Script" uid="uid://j1vexdi14cv6" path="res://scripts/sensors/Spotter.gd" id="37_spotter"]
@@ -68,12 +75,16 @@
 [ext_resource type="Script" uid="uid://dx83hhfgf7en7" path="res://scripts/enemy/WreckHazards.gd" id="67_wreck_hazards"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Wreck.tscn" id="68_wreck"]
 [ext_resource type="Resource" uid="uid://hycbbhc1h8kc" path="res://levels/Escort.tres" id="69_escort"]
+[ext_resource type="Resource" path="res://levels/Tripods.tres" id="105_tripods"]
 [ext_resource type="Script" uid="uid://dxecqktkhiq04" path="res://scripts/display/LensSpray.gd" id="70_lens"]
 [ext_resource type="Script" uid="uid://d1eiyouy38af8" path="res://scripts/ship/NearMissReactions.gd" id="71_near_miss"]
 [ext_resource type="Resource" uid="uid://craphhve3bg4h" path="res://levels/FallingStars.tres" id="72_falling_stars"]
+[ext_resource type="Resource" path="res://levels/Skyfall.tres" id="104_skyfall"]
 [ext_resource type="Script" uid="uid://bedv8jb775n4s" path="res://scripts/world/Starfield.gd" id="73_starfield"]
 [ext_resource type="QuadMesh" path="res://resources/world/StarMesh.tres" id="74_star_mesh"]
 [ext_resource type="Script" uid="uid://8ekyivo2ib3l" path="res://scripts/weather/WeatherDirector.gd" id="75_weather"]
+[ext_resource type="Resource" path="res://levels/GhostFleet.tres" id="100_ghost_fleet"]
+[ext_resource type="Script" path="res://scripts/weather/BloodMoonWeather.gd" id="101_blood_moon"]
 [ext_resource type="Script" uid="uid://by43us4v0axgy" path="res://scripts/weather/FogWeather.gd" id="76_fog"]
 [ext_resource type="Script" uid="uid://usya6rum4kq0" path="res://scripts/weather/RadarClutterWeather.gd" id="77_clutter"]
 [ext_resource type="Script" uid="uid://s6brnnco0uig" path="res://scripts/hud/WeatherHUD.gd" id="78_weather_hud"]
@@ -93,6 +104,7 @@
 [ext_resource type="Script" uid="uid://oy8exuaddm5e" path="res://scripts/weather/LightningWeather.gd" id="92_lightning"]
 [ext_resource type="Script" uid="uid://bxqxvlgg1ujtf" path="res://scripts/weather/SeaStateWeather.gd" id="93_sea_state"]
 [ext_resource type="Script" uid="uid://bofiqnylnyqxx" path="res://scripts/ship/ShipSway.gd" id="94_sway"]
+[ext_resource type="Script" path="res://scripts/ship/SplashRocking.gd" id="98_splash_rocking"]
 [ext_resource type="Resource" path="res://resources/weather/Thunderstorm.tres" id="95_storm"]
 [ext_resource type="Material" path="res://resources/weather/LightningMaterial.tres" id="96_bolt_material"]
 [ext_resource type="PackedScene" uid="uid://dr2blsow1udrq" path="res://scenes/ui/ConsoleUI.tscn" id="97_jhuvt"]
@@ -103,6 +115,10 @@
 [ext_resource type="Script" uid="uid://bvsg4xcbl4fq0" path="res://scripts/display/BlastFeel.gd" id="101_blast_feel"]
 [ext_resource type="SphereMesh" uid="uid://cw666x1bbx6fi" path="res://resources/fx/ShockDomeMesh.tres" id="102_dome"]
 [ext_resource type="AudioStream" uid="uid://b7xkm47bl56ms" path="res://audio/explosion.wav" id="103_boom"]
+[ext_resource type="Script" path="res://scripts/hud/CameraStamp.gd" id="90_camera_stamp"]
+[ext_resource type="Script" path="res://scripts/display/SignalDropout.gd" id="91_signal_dropout"]
+[ext_resource type="Script" path="res://scripts/display/FocusHunt.gd" id="92_focus_hunt"]
+[ext_resource type="Script" path="res://scripts/display/CameraDamage.gd" id="93_camera_damage"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -135,16 +151,16 @@ resource_local_to_scene = true
 shader = ExtResource("14_thermal_shader")
 shader_parameter/gain = 1.35
 shader_parameter/black_level = 0.02
-shader_parameter/levels = 64.0
+shader_parameter/levels = 160.0
 shader_parameter/sensor_floor = 0.0
 shader_parameter/optical_blur = 0.55
-shader_parameter/optical_blur_texels = 0.7
+shader_parameter/optical_blur_texels = 1.6
 shader_parameter/polarity = 0.0
 shader_parameter/bloom_amount = 0.9
 shader_parameter/bloom_floor = 0.42
-shader_parameter/bloom_radius_texels = 1.4
+shader_parameter/bloom_radius_texels = 4.0
 shader_parameter/halo_amount = 0.75
-shader_parameter/halo_radius_texels = 2.8
+shader_parameter/halo_radius_texels = 8.0
 shader_parameter/shake_x = 0.0
 shader_parameter/shake_y = 0.0
 shader_parameter/sensor_size = Vector2(320, 180)
@@ -230,29 +246,29 @@ shader = ExtResource("30_video_shader")
 shader_parameter/phosphor = Color(1, 1, 0.985, 1)
 shader_parameter/highlight_bleach = 0.0
 shader_parameter/frame_rate = 29.97
-shader_parameter/video_lines = 480.0
-shader_parameter/line_samples = 900.0
-shader_parameter/sample_hold = 0.15
-shader_parameter/tail_samples = 0.4
+shader_parameter/video_lines = 1080.0
+shader_parameter/line_samples = 1920.0
+shader_parameter/sample_hold = 0.06
+shader_parameter/tail_samples = 0.25
 shader_parameter/streak_length = 36.0
 shader_parameter/streak_amount = 0.35
 shader_parameter/streak_floor = 0.5
-shader_parameter/black_lift = 0.0
-shader_parameter/head_switch_lines = 5.0
-shader_parameter/head_switch_samples = 6.0
+shader_parameter/black_lift = 0.025
+shader_parameter/head_switch_lines = 2.0
+shader_parameter/head_switch_samples = 3.0
 shader_parameter/capture_border = 0.006
-shader_parameter/sharpening = 0.45
+shader_parameter/sharpening = 0.3
 shader_parameter/sharpening_coring = 0.02
-shader_parameter/grain_amount = 0.06
-shader_parameter/dark_grain = 1.6
-shader_parameter/beam_sigma_dark = 0.36
+shader_parameter/grain_amount = 0.03
+shader_parameter/dark_grain = 1.2
+shader_parameter/beam_sigma_dark = 0.45
 shader_parameter/beam_sigma_bright = 0.5
 shader_parameter/bloom_amount = 0.3
 shader_parameter/bloom_floor = 0.4
 shader_parameter/bloom_lines = 8.0
-shader_parameter/wobble_samples = 0.25
+shader_parameter/wobble_samples = 0.08
 shader_parameter/wobble_lines = 30.0
-shader_parameter/level_flicker = 0.01
+shader_parameter/level_flicker = 0.004
 shader_parameter/chroma_amount = 0.9
 shader_parameter/chroma_lines = 3.0
 
@@ -263,7 +279,7 @@ script = ExtResource("1_session")
 [node name="WaveOrchestrator" type="Node" parent="." unique_id=1833867121]
 process_mode = 1
 script = ExtResource("6_waves")
-levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResource("13_second"), ExtResource("69_escort"), ExtResource("72_falling_stars")])
+levels = Array[ExtResource("11_wave_type")]([ExtResource("12_first"), ExtResource("97_formations"), ExtResource("13_second"), ExtResource("69_escort"), ExtResource("72_falling_stars"), ExtResource("100_ghost_fleet"), ExtResource("104_skyfall"), ExtResource("105_tripods")])
 
 [node name="Score" type="Node" parent="." unique_id=668317612 node_paths=PackedStringArray("enemies")]
 process_mode = 1
@@ -281,6 +297,11 @@ script = ExtResource("100_shock_lens")
 thermal = NodePath("../ViewportContainer")
 turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
 effects = NodePath("../ViewportContainer/SubViewport/World/Effects")
+
+[node name="FocusHunt" type="Node" parent="." node_paths=PackedStringArray("turret", "thermal")]
+script = ExtResource("92_focus_hunt")
+turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
+thermal = NodePath("../ViewportContainer")
 
 [node name="BlastFeel" type="Node" parent="." unique_id=71931798 node_paths=PackedStringArray("effects", "turret", "boom")]
 process_mode = 1
@@ -337,6 +358,10 @@ sway = NodePath("../../ViewportContainer/SubViewport/World/ShipSway")
 script = ExtResource("98_aurora")
 environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
 
+[node name="BloodMoon" type="Node" parent="Weather" node_paths=PackedStringArray("environment")]
+script = ExtResource("101_blood_moon")
+environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
+
 [node name="ViewportContainer" type="SubViewportContainer" parent="." unique_id=721477771 node_paths=PackedStringArray("turret")]
 process_mode = 1
 texture_filter = 2
@@ -347,7 +372,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 stretch = true
-stretch_shrink = 4
+stretch_shrink = 1
 script = ExtResource("7_thermal")
 turret = NodePath("SubViewport/World/Vessel/Turret")
 
@@ -386,6 +411,12 @@ script = ExtResource("91_bolt")
 
 [node name="ShipSway" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1159628755]
 script = ExtResource("94_sway")
+
+[node name="SplashRocking" type="Node" parent="ViewportContainer/SubViewport/World/ShipSway" node_paths=PackedStringArray("effects", "sway", "vessel")]
+script = ExtResource("98_splash_rocking")
+effects = NodePath("../../Effects")
+sway = NodePath("..")
+vessel = NodePath("../../Vessel")
 
 [node name="Sea" type="MeshInstance3D" parent="ViewportContainer/SubViewport/World" unique_id=155310161]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.6, 0)
@@ -447,6 +478,11 @@ wreck_scene = ExtResource("68_wreck")
 [node name="Ballistics" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1151087077 node_paths=PackedStringArray("sea")]
 script = ExtResource("3_ballistics")
 sea = NodePath("../Sea")
+
+[node name="BlastDrift" type="Node" parent="ViewportContainer/SubViewport/World/Ballistics" node_paths=PackedStringArray("effects", "ballistics")]
+script = ExtResource("94_blast_drift")
+effects = NodePath("../../Effects")
+ballistics = NodePath("..")
 
 [node name="Tracers" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World" unique_id=692512813]
 script = ExtResource("8_batch")
@@ -538,7 +574,7 @@ capacity = 5000
 near_cull = 7.0
 zoom_near_cull = 45.0
 
-[node name="Weapons" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1054982500 node_paths=PackedStringArray("turret", "ballistics", "tracers", "missile_launcher", "salvos", "waves", "enemies")]
+[node name="Weapons" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1054982500 node_paths=PackedStringArray("turret", "ballistics", "tracers", "missile_launcher", "salvos", "waves", "enemies", "muzzle_motion")]
 script = ExtResource("20_weapons")
 turret = NodePath("../Vessel/Turret")
 ballistics = NodePath("../Ballistics")
@@ -547,6 +583,11 @@ missile_launcher = NodePath("MissileLauncher")
 salvos = NodePath("SalvoManager")
 waves = NodePath("../../../../WaveOrchestrator")
 enemies = NodePath("../Enemies")
+muzzle_motion = NodePath("MuzzleMotion")
+
+[node name="MuzzleMotion" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret")]
+script = ExtResource("95_muzzle_motion")
+turret = NodePath("../../Vessel/Turret")
 
 [node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=803649068 node_paths=PackedStringArray("turret", "enemies", "ballistics", "renderer", "smoke")]
 script = ExtResource("21_launcher")
@@ -561,6 +602,11 @@ damage_source = ExtResource("27_missile_source")
 script = ExtResource("22_salvos")
 launcher = NodePath("../MissileLauncher")
 enemies = NodePath("../../Enemies")
+
+[node name="SmokeParting" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "smoke_batches")]
+script = ExtResource("96_smoke_parting")
+turret = NodePath("../../Vessel/Turret")
+smoke_batches = [NodePath("../../MissileSmoke"), NodePath("../../Effects/Smoke"), NodePath("../../Effects/FlareSmoke")]
 
 [node name="CasingEjector" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=1707288516 node_paths=PackedStringArray("turret", "pile")]
 script = ExtResource("59_ejector")
@@ -629,6 +675,16 @@ script = ExtResource("16_player_hud")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 thermal = NodePath("../../../ViewportContainer")
 video = NodePath("../../../VideoSignal/AnalogVideo")
+
+[node name="CameraStamp" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("turret")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("90_camera_stamp")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 
 [node name="WaveHUD" type="Control" parent="HUD/HUDRoot" unique_id=1961425847 node_paths=PackedStringArray("waves", "enemies")]
 anchors_preset = 0
@@ -705,4 +761,14 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("29_video")
-palettes = Array[ExtResource("31_palette_type")]([ExtResource("32_white"), ExtResource("33_green"), ExtResource("34_red")])
+palettes = Array[ExtResource("31_palette_type")]([ExtResource("34_night_ops"), ExtResource("34_ember"), ExtResource("34_crimson"), ExtResource("33_green"), ExtResource("32_white"), ExtResource("34_red")])
+
+[node name="SignalDropout" type="Node" parent="VideoSignal" node_paths=PackedStringArray("integrity", "video")]
+script = ExtResource("91_signal_dropout")
+integrity = NodePath("../../ViewportContainer/SubViewport/World/ShipDamage/Integrity")
+video = NodePath("../AnalogVideo")
+
+[node name="CameraDamage" type="Node" parent="VideoSignal" node_paths=PackedStringArray("integrity", "video")]
+script = ExtResource("93_camera_damage")
+integrity = NodePath("../../ViewportContainer/SubViewport/World/ShipDamage/Integrity")
+video = NodePath("../AnalogVideo")

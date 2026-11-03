@@ -11,3 +11,4 @@ class_name WeatherProfile
 @export var sea_roughness: float = 0.0
 @export var ship_roll_deg: float = 0.0
 @export var aurora: float = 0.0
+@export var blood_moon: float = 0.0

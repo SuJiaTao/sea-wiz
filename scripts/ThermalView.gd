@@ -12,14 +12,17 @@ const GAIN_RECOVERY := 1.2
 @export var turret: Turret
 
 var polarity: float = 0.0
+var focus_error: float = 0.0
 
 var _flash: float = 0.0
 var _gain_dip: float = 0.0
+var _sharp_blur: float = 0.0
 
 @onready var _thermal: ShaderMaterial = material as ShaderMaterial
 
 
 func _ready() -> void:
+	_sharp_blur = _thermal.get_shader_parameter("optical_blur")
 	resized.connect(_update_sensor_size)
 	_update_sensor_size()
 
@@ -39,6 +42,7 @@ func _process(delta: float) -> void:
 	_thermal.set_shader_parameter("shake_y", randf_range(-shake, shake) * SHAKE_OFFSET)
 	_thermal.set_shader_parameter("polarity", polarity)
 	_thermal.set_shader_parameter("flash", _flash)
+	_thermal.set_shader_parameter("optical_blur", clampf(_sharp_blur + focus_error, 0.0, 1.0))
 	_thermal.set_shader_parameter(
 		"gain", (BASE_GAIN + shake * SHAKE_GAIN) * (1.0 - BURST_GAIN_DROP * _gain_dip)
 	)

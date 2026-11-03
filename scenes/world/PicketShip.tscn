@@ -1,0 +1,205 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ship/HullMesh.gd" id="1_hull"]
+[ext_resource type="PackedScene" path="res://scenes/world/Deck.tscn" id="2_platform"]
+
+[sub_resource type="StandardMaterial3D" id="Material_hull"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.24, 0.24, 0.24, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_deck"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.2, 0.2, 0.2, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_superstructure"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.28, 0.28, 0.28, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_window"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.08, 0.08, 0.08, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_mast"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.3, 0.3, 0.3, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_funnel"]
+shading_mode = 0
+cull_mode = 2
+specular_mode = 2
+albedo_color = Color(0.42, 0.42, 0.42, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_Deckhouse"]
+material = SubResource("Material_superstructure")
+size = Vector3(11, 4, 26)
+
+[sub_resource type="BoxMesh" id="Mesh_Bridge"]
+material = SubResource("Material_superstructure")
+size = Vector3(9, 2.5, 8)
+
+[sub_resource type="BoxMesh" id="Mesh_BridgeWindows"]
+material = SubResource("Material_window")
+size = Vector3(9.1, 0.8, 0.2)
+
+[sub_resource type="BoxMesh" id="Mesh_Funnel"]
+material = SubResource("Material_funnel")
+size = Vector3(4, 3, 6)
+
+[sub_resource type="BoxMesh" id="Mesh_Pedestal"]
+material = SubResource("Material_superstructure")
+size = Vector3(5, 11, 5)
+
+[sub_resource type="BoxMesh" id="Mesh_PedestalSkirt"]
+material = SubResource("Material_superstructure")
+size = Vector3(8, 2, 8)
+
+[sub_resource type="BoxMesh" id="Mesh_Hangar"]
+material = SubResource("Material_superstructure")
+size = Vector3(12, 3.5, 22)
+
+[sub_resource type="BoxMesh" id="Mesh_GunMount"]
+material = SubResource("Material_superstructure")
+size = Vector3(3.4, 1.8, 4)
+
+[sub_resource type="CylinderMesh" id="Mesh_Mast"]
+material = SubResource("Material_mast")
+top_radius = 0.25
+bottom_radius = 0.35
+height = 5
+radial_segments = 6
+rings = 1
+
+[sub_resource type="CylinderMesh" id="Mesh_Yard"]
+material = SubResource("Material_mast")
+top_radius = 0.12
+bottom_radius = 0.12
+height = 7
+radial_segments = 6
+rings = 1
+
+[sub_resource type="CylinderMesh" id="Mesh_GunBarrel"]
+material = SubResource("Material_mast")
+top_radius = 0.15
+bottom_radius = 0.2
+height = 5
+radial_segments = 6
+rings = 1
+
+[node name="PicketShip" type="Node3D"]
+
+[node name="Hull" type="MeshInstance3D" parent="."]
+script = ExtResource("1_hull")
+half_breadths = PackedVector2Array(70, 6.5, 50, 8, 0, 8.5, -40, 7.5, -60, 5, -74, 2, -80, 0)
+deck_height = 5.0
+bow_sheer = 2.5
+sheer_start = -40.0
+keel_depth = -3.5
+waterline_tuck = 0.85
+side_material = SubResource("Material_hull")
+deck_material = SubResource("Material_deck")
+
+[node name="Deckhouse" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -28)
+mesh = SubResource("Mesh_Deckhouse")
+cast_shadow = 0
+
+[node name="Bridge" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.25, -36)
+mesh = SubResource("Mesh_Bridge")
+cast_shadow = 0
+
+[node name="BridgeWindows" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.6, -40.05)
+mesh = SubResource("Mesh_BridgeWindows")
+cast_shadow = 0
+
+[node name="Funnel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.5, -18)
+mesh = SubResource("Mesh_Funnel")
+cast_shadow = 0
+
+[node name="Pedestal" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11, 0)
+mesh = SubResource("Mesh_Pedestal")
+cast_shadow = 0
+
+[node name="PedestalSkirt" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
+mesh = SubResource("Mesh_PedestalSkirt")
+cast_shadow = 0
+
+[node name="Hangar" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.75, 24)
+mesh = SubResource("Mesh_Hangar")
+cast_shadow = 0
+
+[node name="GunMount" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.9, -62)
+mesh = SubResource("Mesh_GunMount")
+cast_shadow = 0
+
+[node name="Mast" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.5, -30)
+mesh = SubResource("Mesh_Mast")
+cast_shadow = 0
+
+[node name="Yard" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 13.6, -30)
+mesh = SubResource("Mesh_Yard")
+cast_shadow = 0
+
+[node name="GunBarrel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 6.2, -65)
+mesh = SubResource("Mesh_GunBarrel")
+cast_shadow = 0
+
+[node name="CiwsPlatform" parent="." instance=ExtResource("2_platform")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17, 0)
+
+[node name="FireSpots" type="Node3D" parent="."]
+
+[node name="Bow" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.8, -72)
+
+[node name="Foredeck" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 5.6, -52)
+
+[node name="GunMount" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.9, -62)
+
+[node name="DeckhouseRoof" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.1, -24)
+
+[node name="BridgeTop" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.6, -36)
+
+[node name="Funnel" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, -18)
+
+[node name="PedestalBase" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 7.1, 2)
+
+[node name="HangarRoof" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.6, 24)
+
+[node name="HangarPort" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 7, 30)
+
+[node name="FlightDeck" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 5.2, 48)
+
+[node name="Fantail" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.1, 64)
+
+[node name="WaistStarboard" type="Marker3D" parent="FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 5.2, -6)

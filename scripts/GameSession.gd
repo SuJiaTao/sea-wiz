@@ -149,9 +149,10 @@ func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: DamageSource) -> voi
 func _on_target_reached(damage: float, enemy: AbstractEnemy) -> void:
 	if state != State.RUNNING:
 		return
-	integrity.take_hit(damage, enemy.global_position)
+	var hit_at := enemy.impact_point()
+	integrity.take_hit(damage, hit_at)
 	if enemy.blast_size > 0.0:
-		effects.spawn(BigExplosionEffect.new(_on_ship(enemy.global_position), enemy.blast_size))
+		effects.spawn(BigExplosionEffect.new(_on_ship(hit_at), enemy.blast_size))
 	turret.apply_camera_shake_impulse(HIT_IMPULSE)
 	thermal.heat_burst(HIT_FLASH)
 
