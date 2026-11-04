@@ -9,9 +9,15 @@ signal repaired(damage_left_fraction: float)
 
 var damage: float = 0.0
 
+var _repair_command: ShipRepairCommand
+
 var flooding: float:
 	get:
 		return clampf(damage / capacity, 0.0, 1.0)
+
+
+func _ready() -> void:
+	_repair_command = ShipRepairCommand.new(self)
 
 
 func take_hit(amount: float, from_position: Vector3) -> void:
