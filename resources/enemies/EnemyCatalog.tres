@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyCatalog" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/EnemyCatalog.gd" id="1_cat"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Drone.tscn" id="2_a"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/HeavyJet.tscn" id="3_a"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Helo.tscn" id="4_a"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Interceptor.tscn" id="5_a"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="6_a"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="7_a"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/StarMissile.tscn" id="8_a"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Supersonic.tscn" id="9_a"]
+
+[resource]
+script = ExtResource("1_cat")
+scenes = Array[PackedScene]([ExtResource("2_a"), ExtResource("3_a"), ExtResource("4_a"), ExtResource("5_a"), ExtResource("6_a"), ExtResource("7_a"), ExtResource("8_a"), ExtResource("9_a")])
