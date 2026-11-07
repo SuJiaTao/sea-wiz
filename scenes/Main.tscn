@@ -31,11 +31,8 @@
 [ext_resource type="Shader" uid="uid://bcla1v3fxev5c" path="res://shaders/analog_video.gdshader" id="30_video_shader"]
 [ext_resource type="Script" uid="uid://de201pkfgp4pk" path="res://scripts/display/PhosphorPalette.gd" id="31_palette_type"]
 [ext_resource type="Resource" path="res://resources/phosphors/WhitePhosphor.tres" id="32_white"]
-[ext_resource type="Resource" path="res://resources/phosphors/GreenPhosphor.tres" id="33_green"]
-[ext_resource type="Resource" path="res://resources/phosphors/RedPhosphor.tres" id="34_red"]
 [ext_resource type="Resource" path="res://resources/phosphors/NightOpsPalette.tres" id="34_night_ops"]
-[ext_resource type="Resource" path="res://resources/phosphors/EmberPalette.tres" id="34_ember"]
-[ext_resource type="Resource" path="res://resources/phosphors/CrimsonPalette.tres" id="34_crimson"]
+[ext_resource type="Resource" path="res://resources/phosphors/NvgPalette.tres" id="34_nvg"]
 [ext_resource type="Script" uid="uid://fwmfhw2nut5h" path="res://scripts/sensors/SearchRadar.gd" id="35_search"]
 [ext_resource type="Script" uid="uid://du21xtyvbxthh" path="res://scripts/sensors/TrackManager.gd" id="36_tracks"]
 [ext_resource type="Script" uid="uid://j1vexdi14cv6" path="res://scripts/sensors/Spotter.gd" id="37_spotter"]
@@ -144,11 +141,11 @@ shader_parameter/gain = 1.35
 shader_parameter/black_level = 0.02
 shader_parameter/levels = 160.0
 shader_parameter/sensor_floor = 0.0
-shader_parameter/optical_blur = 0.55
+shader_parameter/optical_blur = 0.7
 shader_parameter/optical_blur_texels = 1.6
 shader_parameter/polarity = 0.0
-shader_parameter/bloom_amount = 0.9
-shader_parameter/bloom_floor = 0.42
+shader_parameter/bloom_amount = 1.3
+shader_parameter/bloom_floor = 0.35
 shader_parameter/bloom_radius_texels = 4.0
 shader_parameter/halo_amount = 0.75
 shader_parameter/halo_radius_texels = 8.0
@@ -250,17 +247,17 @@ shader_parameter/head_switch_samples = 3.0
 shader_parameter/capture_border = 0.006
 shader_parameter/sharpening = 0.3
 shader_parameter/sharpening_coring = 0.02
-shader_parameter/grain_amount = 0.03
-shader_parameter/dark_grain = 1.2
+shader_parameter/grain_amount = 0.05
+shader_parameter/dark_grain = 1.8
 shader_parameter/beam_sigma_dark = 0.45
 shader_parameter/beam_sigma_bright = 0.5
-shader_parameter/bloom_amount = 0.3
-shader_parameter/bloom_floor = 0.4
-shader_parameter/bloom_lines = 8.0
+shader_parameter/bloom_amount = 0.65
+shader_parameter/bloom_floor = 0.3
+shader_parameter/bloom_lines = 26.0
 shader_parameter/wobble_samples = 0.08
 shader_parameter/wobble_lines = 30.0
 shader_parameter/level_flicker = 0.004
-shader_parameter/chroma_amount = 0.9
+shader_parameter/chroma_amount = 0.4
 shader_parameter/chroma_lines = 3.0
 
 [node name="Main" type="Node" unique_id=135968832]
@@ -727,7 +724,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("29_video")
-palettes = Array[ExtResource("31_palette_type")]([ExtResource("34_night_ops"), ExtResource("34_ember"), ExtResource("34_crimson"), ExtResource("33_green"), ExtResource("32_white"), ExtResource("34_red")])
+palettes = Array[ExtResource("31_palette_type")]([ExtResource("34_nvg"), ExtResource("34_night_ops"), ExtResource("32_white")])
 
 [node name="SignalDropout" type="Node" parent="VideoSignal" node_paths=PackedStringArray("integrity", "video")]
 script = ExtResource("91_signal_dropout")
