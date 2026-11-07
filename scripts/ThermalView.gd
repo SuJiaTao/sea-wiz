@@ -10,6 +10,7 @@ const FLASH_RECOVERY := 6.0
 const GAIN_RECOVERY := 1.2
 
 @export var turret: Turret
+@export var afterglow: AfterglowBuffer
 
 var polarity: float = 0.0
 var focus_error: float = 0.0
@@ -22,6 +23,8 @@ var _sharp_blur: float = 0.0
 
 
 func _ready() -> void:
+	var image: Texture2D = afterglow.get_texture() if afterglow != null else $SubViewport.get_texture()
+	_thermal.set_shader_parameter("sensor_image", image)
 	_sharp_blur = _thermal.get_shader_parameter("optical_blur")
 	resized.connect(_update_sensor_size)
 	_update_sensor_size()
@@ -51,3 +54,5 @@ func _process(delta: float) -> void:
 func _update_sensor_size() -> void:
 	var sensor_size := size / float(stretch_shrink)
 	_thermal.set_shader_parameter("sensor_size", sensor_size.max(Vector2(64, 36)))
+	if afterglow != null:
+		afterglow.size = Vector2i(sensor_size)
