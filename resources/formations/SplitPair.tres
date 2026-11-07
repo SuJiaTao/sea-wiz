@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Formation" format=3]
+
+[ext_resource type="Script" path="res://scripts/waves/Formation.gd" id="1_formation"]
+
+[resource]
+resource_name = "SplitPair"
+script = ExtResource("1_formation")
+slots = Array[Vector3]([Vector3(-30, 0, 0), Vector3(30, 0, 0), Vector3(-60, 5, 40), Vector3(60, 5, 40)])
+break_turns_deg = Array[float]([-70.0, 70.0, -70.0, 70.0])
+break_range = 1300.0
+break_time = 4.0
