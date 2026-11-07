@@ -66,6 +66,10 @@ func burst(
 		emit(position, carried + random_direction() * randf_range(speed.x, speed.y), size_scale)
 
 
+func part_along(start: Vector3, end: Vector3, radius: float, speed: float, thinning: float) -> void:
+	_particles.part_along(start, end, radius, speed, thinning)
+
+
 func clear_all() -> void:
 	_particles.clear()
 	multimesh.visible_instance_count = 0
