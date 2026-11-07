@@ -4,6 +4,7 @@ render_mode unshaded;
 // Sensor stage: what the FLIR head itself produces, before the video chain.
 // Optical softness, bloom on hot bodies and detail-peaking halos.
 
+uniform sampler2D sensor_image : filter_linear, repeat_disable;
 uniform float gain : hint_range(0.2, 4.0) = 1.35;
 uniform float black_level : hint_range(0.0, 0.5) = 0.02;
 uniform float levels : hint_range(2.0, 256.0) = 64.0;
@@ -34,6 +35,16 @@ uniform float column_banding : hint_range(0.0, 0.1) = 0.008;
 uniform float banding_drift_speed : hint_range(0.0, 1.0) = 0.05;
 uniform float stuck_pixel_rate : hint_range(0.0, 0.01) = 0.0;
 uniform float vignette_amount : hint_range(0.0, 1.0) = 0.22;
+
+// Night vision: an intensifier sees starlight, not heat. The cool sky glows,
+// bodies stand dark against it and only real light sources burn bright.
+uniform float nvg_amount : hint_range(0.0, 1.0) = 1.0;
+uniform float nvg_sky_level : hint_range(0.0, 1.0) = 0.36;
+uniform float nvg_sky_band : hint_range(0.01, 0.4) = 0.1;
+uniform float nvg_body_level : hint_range(0.0, 1.0) = 0.1;
+uniform float nvg_hot_start : hint_range(0.3, 1.0) = 0.62;
+uniform float scintillation : hint_range(0.0, 1.0) = 0.35;
+uniform float scintillation_sharpness : hint_range(1.0, 32.0) = 10.0;
 
 // Glints: the brightest points split into clean star rays with a faint spectral edge.
 uniform float glint_threshold : hint_range(0.0, 1.0) = 0.7;
@@ -73,6 +84,17 @@ float column_gain(float column) {
 	float drift = TIME * banding_drift_speed;
 	float slow = mix(hash12(vec2(column, floor(drift))), hash12(vec2(column, floor(drift) + 1.0)), fract(drift));
 	return 1.0 + (hash12(vec2(column, COLUMN_SEED)) + slow - 1.0) * column_banding;
+}
+
+float night_vision(float l) {
+	float sky = smoothstep(0.0, nvg_sky_band, l) * nvg_sky_level;
+	float body = mix(sky, nvg_body_level, smoothstep(nvg_sky_band, nvg_sky_band * 2.0, l));
+	return mix(body, 1.0, smoothstep(nvg_hot_start, 1.0, l));
+}
+
+float sparkle(vec2 uv, float l) {
+	float spark = pow(hash12(floor(uv * sensor_size) + fract(TIME) * 811.0), scintillation_sharpness);
+	return spark * scintillation * (1.0 - l);
 }
 
 float detector_flaws(float l, vec2 uv) {
@@ -137,16 +159,16 @@ void fragment() {
 	vec2 uv = clamp(UV + bend + vec2(shake_x, shake_y), vec2(0.0), vec2(1.0));
 	vec2 texel = 1.0 / sensor_size;
 
-	vec3 centre_colour = texture(TEXTURE, uv).rgb;
+	vec3 centre_colour = texture(sensor_image, uv).rgb;
 	float centre = dot(centre_colour, LUMA);
 	float soft = 0.0;
 	float near = 0.0;
 	float far = 0.0;
 	for (int i = 0; i < RING_TAPS; i++) {
 		vec2 direction = ring_direction(i) * texel;
-		soft += dot(texture(TEXTURE, uv + direction * optical_blur_texels).rgb, LUMA);
-		near += dot(texture(TEXTURE, uv + direction * bloom_radius_texels).rgb, LUMA);
-		far += dot(texture(TEXTURE, uv + direction * halo_radius_texels).rgb, LUMA);
+		soft += dot(texture(sensor_image, uv + direction * optical_blur_texels).rgb, LUMA);
+		near += dot(texture(sensor_image, uv + direction * bloom_radius_texels).rgb, LUMA);
+		far += dot(texture(sensor_image, uv + direction * halo_radius_texels).rgb, LUMA);
 	}
 	soft /= float(RING_TAPS);
 	near /= float(RING_TAPS);
@@ -160,6 +182,8 @@ void fragment() {
 	l = l * (1.0 - droplet_cooling * wet) + droplet_rim * rim;
 	l = clamp(detector_flaws(l + flash + shock_light * shock_glow, UV), 0.0, 1.0);
 
+	l = mix(l, night_vision(l), nvg_amount);
+	l = clamp(l + sparkle(UV, l) * nvg_amount, 0.0, 1.0);
 	l = floor(l * levels + 0.5) / levels;
 	l = mix(l, 1.0 - l, polarity);
 
@@ -175,8 +199,8 @@ void fragment() {
 			float along = float(step) / float(GLINT_STEPS);
 			vec2 at = uv - direction * along;
 			float point = glint_point(
-				dot(texture(TEXTURE, at).rgb, LUMA),
-				max(dot(texture(TEXTURE, at + across).rgb, LUMA), dot(texture(TEXTURE, at - across).rgb, LUMA))
+				dot(texture(sensor_image, at).rgb, LUMA),
+				max(dot(texture(sensor_image, at + across).rgb, LUMA), dot(texture(sensor_image, at - across).rgb, LUMA))
 			);
 			glint += point * exp(-along * GLINT_FALLOFF) * shimmer * glint_spectrum(along);
 		}
