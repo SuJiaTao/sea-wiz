@@ -30,14 +30,20 @@ uniform float droplet_rim : hint_range(0.0, 1.0) = 0.12;
 uniform float chroma_keep : hint_range(0.0, 3.0) = 1.0;
 
 // Detector flaws: uneven column gain, a few dead or stuck elements, lens falloff.
-uniform float column_banding : hint_range(0.0, 0.1) = 0.018;
+uniform float column_banding : hint_range(0.0, 0.1) = 0.008;
 uniform float banding_drift_speed : hint_range(0.0, 1.0) = 0.05;
-uniform float stuck_pixel_rate : hint_range(0.0, 0.01) = 0.0001;
+uniform float stuck_pixel_rate : hint_range(0.0, 0.01) = 0.0;
 uniform float vignette_amount : hint_range(0.0, 1.0) = 0.22;
+
+// Night vision tube: the picture sits in a soft round eyepiece.
+uniform float tube_amount : hint_range(0.0, 1.0) = 1.0;
+uniform float tube_radius : hint_range(0.2, 1.0) = 0.62;
+uniform float tube_softness : hint_range(0.0, 0.3) = 0.07;
+uniform vec2 tube_centre = vec2(0.5, 0.5);
 
 // Glints: the brightest points split into clean star rays with a faint spectral edge.
 uniform float glint_threshold : hint_range(0.0, 1.0) = 0.7;
-uniform float glint_strength : hint_range(0.0, 8.0) = 4.0;
+uniform float glint_strength : hint_range(0.0, 8.0) = 1.5;
 uniform float glint_length_texels : hint_range(2.0, 128.0) = 64.0;
 uniform float glint_rotation : hint_range(0.0, 3.1416) = 0.26;
 uniform float glint_dispersion : hint_range(0.0, 0.5) = 0.18;
@@ -98,6 +104,12 @@ vec3 glint_spectrum(float along) {
 
 float glint_point(float l, float side) {
 	return max(l - max(side, glint_threshold), 0.0) / (1.0 - glint_threshold);
+}
+
+float tube_mask(vec2 screen_uv) {
+	vec2 offset = (screen_uv - tube_centre) * vec2(sensor_size.x / sensor_size.y, 1.0);
+	float edge = smoothstep(tube_radius, tube_radius - tube_softness, length(offset));
+	return mix(1.0, edge, tube_amount);
 }
 
 void fragment() {
@@ -183,5 +195,5 @@ void fragment() {
 	}
 	glint *= glint_strength / float(GLINT_STEPS);
 
-	COLOR = vec4(clamp(vec3(l) + chroma + glint, 0.0, 1.0), 1.0);
+	COLOR = vec4(clamp(vec3(l) + chroma + glint, 0.0, 1.0) * tube_mask(UV), 1.0);
 }
