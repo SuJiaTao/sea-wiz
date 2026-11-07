@@ -6,8 +6,8 @@
 resource_name = "Nvg"
 script = ExtResource("1_palette")
 display_name = "NVG"
-phosphor = Color(0.78, 1, 0.62, 1)
+phosphor = Color(0.82, 1, 0.7, 1)
 highlight_bleach = 0.25
-shadow = Color(0, 0.012, 0.004, 1)
-midtone = Color(0.12, 0.62, 0.14, 1)
-mid_point = 0.42
+shadow = Color(0, 0, 0, 1)
+midtone = Color(0.07, 0.4, 0.08, 1)
+mid_point = 0.5
