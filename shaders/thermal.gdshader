@@ -43,8 +43,7 @@ uniform float nvg_sky_level : hint_range(0.0, 1.0) = 0.36;
 uniform float nvg_sky_band : hint_range(0.01, 0.4) = 0.1;
 uniform float nvg_body_level : hint_range(0.0, 1.0) = 0.1;
 uniform float nvg_hot_start : hint_range(0.3, 1.0) = 0.62;
-uniform float scintillation : hint_range(0.0, 1.0) = 0.35;
-uniform float scintillation_sharpness : hint_range(1.0, 32.0) = 10.0;
+uniform float shot_noise : hint_range(0.0, 0.5) = 0.16;
 
 // Glints: the brightest points split into clean star rays with a faint spectral edge.
 uniform float glint_threshold : hint_range(0.0, 1.0) = 0.7;
@@ -64,6 +63,7 @@ const vec3 LUMA = vec3(0.30, 0.59, 0.11);
 const int RING_TAPS = 8;
 const float COLUMN_SEED = 17.3;
 const float STUCK_SEED = 91.7;
+const float SHOT_SEED = 811.0;
 const float STUCK_BRIGHT_SHARE = 0.3;
 const int GLINT_RAYS = 6;
 const int GLINT_STEPS = 8;
@@ -92,9 +92,9 @@ float night_vision(float l) {
 	return mix(body, 1.0, smoothstep(nvg_hot_start, 1.0, l));
 }
 
-float sparkle(vec2 uv, float l) {
-	float spark = pow(hash12(floor(uv * sensor_size) + fract(TIME) * 811.0), scintillation_sharpness);
-	return spark * scintillation * (1.0 - l);
+float shot(vec2 uv, float l) {
+	float jitter = hash12(floor(uv * sensor_size) + fract(TIME) * SHOT_SEED) - 0.5;
+	return jitter * shot_noise * sqrt(l);
 }
 
 float detector_flaws(float l, vec2 uv) {
@@ -183,7 +183,7 @@ void fragment() {
 	l = clamp(detector_flaws(l + flash + shock_light * shock_glow, UV), 0.0, 1.0);
 
 	l = mix(l, night_vision(l), nvg_amount);
-	l = clamp(l + sparkle(UV, l) * nvg_amount, 0.0, 1.0);
+	l = clamp(l + shot(UV, l) * nvg_amount, 0.0, 1.0);
 	l = floor(l * levels + 0.5) / levels;
 	l = mix(l, 1.0 - l, polarity);
 
