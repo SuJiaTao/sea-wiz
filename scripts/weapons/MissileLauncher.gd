@@ -15,6 +15,7 @@ const LOCK_CONE_DEG: float = 3.2
 const MIN_RANGE: float = 130.0
 const MAX_RANGE: float = 2800.0
 const REFIRE_TIME: float = 0.55
+const VERTICAL_CLIMB: float = 0.75
 
 @export var turret: Turret
 @export var enemies: EnemyManager
@@ -22,6 +23,7 @@ const REFIRE_TIME: float = 0.55
 @export var renderer: ProjectileBatch
 @export var smoke: MissileSmokeRenderer
 @export var damage_source: DamageSource
+@export var cells: VerticalLaunchSystem
 
 var missiles: int = CAPACITY
 var lock_target: AbstractEnemy
@@ -182,9 +184,14 @@ func _try_launch(target: AbstractEnemy, mode: LaunchMode) -> bool:
 		+ forward * randf_range(-spread, spread) * 2.0
 	).normalized()
 
+	if cells != null:
+		origin = cells.launch_point(smoke)
+		direction = Vector3.UP
 	var projectile := MissileProjectile.new(
 		renderer, smoke, ballistics, origin, direction, target
 	)
+	if cells != null:
+		projectile.vertical_climb = VERTICAL_CLIMB
 	projectile.weapon_source = damage_source
 	projectile.detonated.connect(_on_detonated)
 	if not ballistics.fire(projectile):
