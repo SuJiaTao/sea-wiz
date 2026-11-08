@@ -107,8 +107,8 @@
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
 shader = ExtResource("15_sea_shader")
-shader_parameter/base_level = 0.08
-shader_parameter/clutter_level = 0.02
+shader_parameter/base_level = 0.03
+shader_parameter/clutter_level = 0.01
 shader_parameter/clutter_scale = 0.006
 shader_parameter/clutter_speed = 0.09
 shader_parameter/falloff = 520.0
@@ -173,9 +173,9 @@ shader_parameter/moon_color = Color(0.9, 0.9, 0.9, 1)
 shader_parameter/moon_phase_deg = 55.0
 shader_parameter/moon_maria = 0.35
 shader_parameter/moon_maria_scale = 3.0
-shader_parameter/moon_glow = 0.22
+shader_parameter/moon_glow = 0.07
 shader_parameter/moon_glow_width_deg = 1.4
-shader_parameter/moon_halo = 0.035
+shader_parameter/moon_halo = 0.015
 shader_parameter/moon_halo_width_deg = 9.0
 shader_parameter/lightning_flash = 0.0
 shader_parameter/lightning_direction = Vector3(0, 0.3, -1)
