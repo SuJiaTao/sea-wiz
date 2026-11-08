@@ -270,3 +270,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 5.1, 28)
 
 [node name="Fantail" type="Marker3D" parent="FireSpots"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.1, 44)
+
+[node name="DecoyTubes" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, -30)
+
+[node name="Port" type="Marker3D" parent="DecoyTubes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 0)
+
+[node name="Starboard" type="Marker3D" parent="DecoyTubes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)

@@ -27,6 +27,7 @@ var _bank: float = 0.0
 var _heading := Vector3.ZERO
 var _break_remaining: float = 0.0
 var _break_from := Vector3.ZERO
+var _lured: bool = false
 
 
 func _create() -> void:
@@ -38,6 +39,14 @@ func _create() -> void:
 	if flares != null:
 		flares.released.connect(countermeasures_released.emit)
 	_on_flight_created()
+
+
+func lure(point: Vector3) -> bool:
+	if _lured or not alive:
+		return false
+	_lured = true
+	target_position = point
+	return true
 
 
 func evade_missile(missile_position: Vector3) -> DecoyFlare:
@@ -116,6 +125,9 @@ func _flat(direction: Vector3) -> Vector3:
 
 func _on_arrival() -> void:
 	request_destroy()
+	if _lured:
+		missed.emit(global_position)
+		return
 	reached_target.emit(contact_damage)
 
 

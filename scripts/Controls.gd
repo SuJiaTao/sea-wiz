@@ -29,6 +29,10 @@ const ACTIONS := {
 	"ciws_palette": [
 		{"type": "key", "key": KEY_C},
 	],
+	# Chaff to both beams; pulls incoming missiles off the ship.
+	"ciws_decoy": [
+		{"type": "key", "key": KEY_X},
+	],
 	# Hold while zoomed to build a seeker lock; it launches on the tone.
 	"ciws_missile": [
 		{"type": "mouse", "button": MOUSE_BUTTON_XBUTTON1},
