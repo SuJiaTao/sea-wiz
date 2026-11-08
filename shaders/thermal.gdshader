@@ -5,6 +5,8 @@ render_mode unshaded;
 // Optical softness, bloom on hot bodies and detail-peaking halos.
 
 uniform sampler2D sensor_image : filter_linear, repeat_disable;
+uniform sampler2D trail_image : filter_linear, repeat_disable;
+uniform float trail_level : hint_range(0.0, 1.0) = 0.3;
 uniform float gain : hint_range(0.2, 4.0) = 1.35;
 uniform float black_level : hint_range(0.0, 0.5) = 0.02;
 uniform float levels : hint_range(2.0, 256.0) = 64.0;
@@ -39,11 +41,11 @@ uniform float vignette_amount : hint_range(0.0, 1.0) = 0.22;
 // Night vision: an intensifier sees starlight, not heat. The cool sky glows,
 // bodies stand dark against it and only real light sources burn bright.
 uniform float nvg_amount : hint_range(0.0, 1.0) = 1.0;
-uniform float nvg_sky_level : hint_range(0.0, 1.0) = 0.36;
+uniform float nvg_sky_level : hint_range(0.0, 1.0) = 0.2;
 uniform float nvg_sky_band : hint_range(0.01, 0.4) = 0.16;
 uniform float nvg_body_level : hint_range(0.0, 1.0) = 0.1;
 uniform float nvg_hot_start : hint_range(0.3, 1.0) = 0.62;
-uniform float shot_noise : hint_range(0.0, 0.5) = 0.16;
+uniform float shot_noise : hint_range(0.0, 0.8) = 0.38;
 
 // Glints: the brightest points split into clean star rays with a faint spectral edge.
 uniform float glint_threshold : hint_range(0.0, 1.0) = 0.7;
@@ -164,7 +166,7 @@ void fragment() {
 	vec2 uv = clamp(UV + bend + vec2(shake_x, shake_y), vec2(0.0), vec2(1.0));
 	vec2 texel = 1.0 / sensor_size;
 
-	vec3 centre_colour = texture(sensor_image, uv).rgb;
+	vec3 centre_colour = max(texture(sensor_image, uv).rgb, texture(trail_image, uv).rgb * trail_level);
 	float centre = sense(centre_colour);
 	float soft = 0.0;
 	float near = 0.0;

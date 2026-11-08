@@ -10,7 +10,7 @@ uniform float bloom_radius_pixels : hint_range(0.5, 12.0) = 2.5;
 uniform float bloom_amount : hint_range(0.0, 3.0) = 0.7;
 uniform float glow_radius_pixels : hint_range(1.0, 40.0) = 9.0;
 uniform float glow_amount : hint_range(0.0, 3.0) = 0.45;
-uniform float grain_amount : hint_range(0.0, 0.5) = 0.12;
+uniform float grain_amount : hint_range(0.0, 0.5) = 0.25;
 
 const int RING_TAPS = 8;
 const float GRAIN_TILE = 512.0;

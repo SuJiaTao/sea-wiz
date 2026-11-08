@@ -4,7 +4,7 @@ render_mode unshaded;
 // Video stage: the gun-camera picture recorded to tape and shown on a CRT.
 // Runs over the whole screen, symbology included.
 // Tape: each scan line holds a limited number of samples, so fine detail
-// smudges slightly; bright detail leaves a dark streak to its right; grain
+// smudges slightly; bright detail smears faintly to its right; grain
 // sits on the samples, mostly in the dark parts.
 // CRT: every line is drawn by a beam that fattens with brightness, so dark
 // areas show the line structure and bright areas fill in.
@@ -188,7 +188,8 @@ float line_signal(float xs, float line, vec2 grain_offset) {
 	float s1 = cored_sharpen(t1 / w1, wide1 / ww1);
 	float blend = smoothstep(0.5 - sample_hold, 0.5 + sample_hold, fract(xs - 0.5));
 	float held = mix(s0, s1, blend);
-	return held - streak(xs, line) * streak_amount * (1.0 - clamp(held, 0.0, 1.0));
+	float smear = streak(xs, line) * streak_amount;
+	return held + smear * (1.0 - clamp(held, 0.0, 1.0));
 }
 
 float beam(float distance_lines, float value) {

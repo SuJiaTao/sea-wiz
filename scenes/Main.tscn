@@ -168,7 +168,7 @@ shader_parameter/chroma_keep = 1.0
 shader_parameter/shock_rings = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/shock_width = 0.025
 shader_parameter/shock_glow = 4.0
-shader_parameter/nvg_sky_level = 0.45
+shader_parameter/nvg_sky_level = 0.2
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -246,14 +246,14 @@ shader_parameter/video_lines = 1080.0
 shader_parameter/line_samples = 1920.0
 shader_parameter/sample_hold = 0.06
 shader_parameter/tail_samples = 0.25
-shader_parameter/streak_length = 36.0
-shader_parameter/streak_amount = 0.15
-shader_parameter/streak_floor = 0.5
+shader_parameter/streak_length = 60.0
+shader_parameter/streak_amount = 0.25
+shader_parameter/streak_floor = 0.7
 shader_parameter/black_lift = 0.0
 shader_parameter/head_switch_lines = 2.0
 shader_parameter/head_switch_samples = 3.0
 shader_parameter/capture_border = 0.006
-shader_parameter/sharpening = 0.3
+shader_parameter/sharpening = 0.0
 shader_parameter/sharpening_coring = 0.02
 shader_parameter/grain_amount = 0.0
 shader_parameter/dark_grain = 1.6
