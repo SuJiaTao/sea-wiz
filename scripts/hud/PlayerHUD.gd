@@ -2,6 +2,7 @@ extends HUDPanel
 class_name PlayerHUD
 
 @export var turret: Turret
+@export var barrel_heat: BarrelHeat
 @export var thermal: ThermalView
 @export var video: AnalogVideo
 
@@ -100,21 +101,20 @@ func _draw_compass() -> void:
 
 func _draw_gauges() -> void:
 	var origin := Vector2(28, size.y - 154)
-	var ammo_fraction := float(turret.ammo) / float(Turret.MAGAZINE)
+	var heat := barrel_heat.heat
 	var warning := Color(1, 1, 1, 0.65 + 0.35 * sin(_phase * 8.0))
+	var hot := turret.overheated or barrel_heat.warning()
 
-	_text(origin + Vector2(0, 44), "MAGAZINE", 12, DIM)
-	_bar(
-		origin + Vector2(0, 52), Vector2(190, 12), ammo_fraction,
-		warning if ammo_fraction < 0.15 else MAIN
-	)
-	_text(
-		origin + Vector2(198, 62),
-		"%d / %d" % [turret.ammo, Turret.MAGAZINE], 12
-	)
+	_text(origin + Vector2(0, 44), "BARREL HEAT", 12, DIM)
+	_bar(origin + Vector2(0, 52), Vector2(190, 12), heat, warning if hot else MAIN)
+	_text(origin + Vector2(198, 62), "%d%%" % int(heat * 100.0), 12)
 
-	if turret.reloading:
-		_text(origin + Vector2(0, 96), "RELOADING", 16, warning)
+	if turret.overheated:
+		_text(origin + Vector2(0, 96), "OVERHEAT  COOLING", 16, warning)
+	elif barrel_heat.warning():
+		_text(origin + Vector2(0, 96), "HEAT WARNING", 16, warning)
+	elif barrel_heat.icing > BarrelHeat.WARM_LEVEL:
+		_text(origin + Vector2(0, 96), "BARRELS ICING %d%%" % int(barrel_heat.icing * 100.0), 14, warning)
 	elif turret.spin > 0.05:
 		_text(
 			origin + Vector2(0, 96),
@@ -139,5 +139,5 @@ func _draw_view_info() -> void:
 	var help := Color(FAINT, FAINT.a * help_fade)
 	_text(origin + Vector2(0, 48), "MOUSE / WASD  AIM", 11, help)
 	_text(origin + Vector2(0, 64), "LEFT  GUN    RIGHT / SHIFT  ZOOM", 11, help)
-	_text(origin + Vector2(0, 80), "WHEEL  ZOOM    MIDDLE / R  RELOAD", 11, help)
+	_text(origin + Vector2(0, 80), "WHEEL  ZOOM    DON'T OVERHEAT", 11, help)
 	_text(origin + Vector2(0, 96), "F  POLARITY    C  COLOUR    ESC  PAUSE", 11, help)

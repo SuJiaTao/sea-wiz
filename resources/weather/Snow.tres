@@ -9,3 +9,4 @@ fog_density = 0.0009
 snow_rate = 6000.0
 lens_drops_per_second = 0.2
 radar_clutter = 0.15
+barrel_cold = 1.0
