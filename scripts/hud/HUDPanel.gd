@@ -1,9 +1,9 @@
 extends Control
 class_name HUDPanel
 
-const MAIN := Color(0.93, 0.98, 0.93, 0.95)
-const DIM := Color(0.62, 0.70, 0.62, 0.70)
-const FAINT := Color(0.45, 0.52, 0.45, 0.45)
+const MAIN := Color(0.55, 1.0, 0.55, 0.95)
+const DIM := Color(0.4, 0.86, 0.42, 0.75)
+const FAINT := Color(0.32, 0.7, 0.34, 0.5)
 
 
 func _process(delta: float) -> void:
