@@ -405,7 +405,9 @@ script = ExtResource("58_casings")
 casing_mesh = ExtResource("60_casing_mesh")
 casing_material = ExtResource("61_casing_material")
 platform_centre = Vector3(0, 16.94, 0)
-deck_half_beam = 13.5
+platform_radius = 2.8
+deck_height = 10.0
+deck_half_beam = 6.5
 
 [node name="ShipDamage" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1929357541]
 
