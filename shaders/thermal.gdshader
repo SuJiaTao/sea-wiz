@@ -40,7 +40,7 @@ uniform float vignette_amount : hint_range(0.0, 1.0) = 0.22;
 // bodies stand dark against it and only real light sources burn bright.
 uniform float nvg_amount : hint_range(0.0, 1.0) = 1.0;
 uniform float nvg_sky_level : hint_range(0.0, 1.0) = 0.36;
-uniform float nvg_sky_band : hint_range(0.01, 0.4) = 0.1;
+uniform float nvg_sky_band : hint_range(0.01, 0.4) = 0.16;
 uniform float nvg_body_level : hint_range(0.0, 1.0) = 0.1;
 uniform float nvg_hot_start : hint_range(0.3, 1.0) = 0.62;
 uniform float shot_noise : hint_range(0.0, 0.5) = 0.16;
