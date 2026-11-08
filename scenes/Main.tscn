@@ -20,6 +20,8 @@
 [ext_resource type="Shader" uid="uid://b4v53wi6xsomg" path="res://shaders/thermal.gdshader" id="14_thermal_shader"]
 [ext_resource type="Shader" uid="uid://c62jnvd10xwhp" path="res://shaders/sea.gdshader" id="15_sea_shader"]
 [ext_resource type="Script" uid="uid://cnlhuaro2rmrv" path="res://scripts/hud/PlayerHUD.gd" id="16_player_hud"]
+[ext_resource type="Script" path="res://scripts/hud/LaserHUD.gd" id="16_laser_hud"]
+[ext_resource type="Script" path="res://scripts/hud/QuartzStamp.gd" id="16_quartz_stamp"]
 [ext_resource type="Script" uid="uid://5tpmswxer4mm" path="res://scripts/hud/CombatFeedbackHUD.gd" id="17_feedback_hud"]
 [ext_resource type="Script" uid="uid://5v68cijhwppy" path="res://scripts/hud/WaveHUD.gd" id="18_wave_hud"]
 [ext_resource type="Script" uid="uid://m6u3455fgobo" path="res://scripts/hud/TrackHUD.gd" id="19_track_hud"]
@@ -147,7 +149,7 @@ shader_parameter/gain = 1.35
 shader_parameter/black_level = 0.04
 shader_parameter/levels = 160.0
 shader_parameter/sensor_floor = 0.0
-shader_parameter/optical_blur = 0.7
+shader_parameter/optical_blur = 0.8
 shader_parameter/optical_blur_texels = 1.6
 shader_parameter/polarity = 0.0
 shader_parameter/bloom_amount = 1.3
@@ -167,6 +169,8 @@ shader_parameter/chroma_keep = 1.0
 shader_parameter/shock_rings = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/shock_width = 0.025
 shader_parameter/shock_glow = 4.0
+shader_parameter/scintillation = 0.5
+shader_parameter/nvg_sky_level = 0.45
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -253,8 +257,8 @@ shader_parameter/head_switch_samples = 3.0
 shader_parameter/capture_border = 0.006
 shader_parameter/sharpening = 0.3
 shader_parameter/sharpening_coring = 0.02
-shader_parameter/grain_amount = 0.035
-shader_parameter/dark_grain = 1.0
+shader_parameter/grain_amount = 0.07
+shader_parameter/dark_grain = 1.6
 shader_parameter/beam_sigma_dark = 0.45
 shader_parameter/beam_sigma_bright = 0.5
 shader_parameter/bloom_amount = 0.65
@@ -636,6 +640,7 @@ script = ExtResource("40_barrel_heat")
 turret = NodePath("../Vessel/Turret")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1527846984]
+layer = 11
 
 [node name="HUDRoot" type="Control" parent="HUD" unique_id=1876096288]
 layout_mode = 3
@@ -681,6 +686,15 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("90_camera_stamp")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
+
+[node name="QuartzStamp" type="Control" parent="HUD/HUDRoot"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("16_quartz_stamp")
 
 [node name="WaveHUD" type="Control" parent="HUD/HUDRoot" unique_id=1961425847 node_paths=PackedStringArray("waves", "enemies")]
 anchors_preset = 0
@@ -739,6 +753,11 @@ fx = NodePath("../../../ViewportContainer/SubViewport/World/FX")
 
 [node name="SeekerAudio" type="AudioStreamPlayer" parent="HUD/HUDRoot/WeaponFeedback" unique_id=282199234]
 volume_db = -9.0
+
+[node name="LaserHUD" type="Node" parent="HUD" node_paths=PackedStringArray("hud_root", "layer")]
+script = ExtResource("16_laser_hud")
+hud_root = NodePath("../HUDRoot")
+layer = NodePath("..")
 
 [node name="TitleScreen" parent="HUD" unique_id=109323306 instance=ExtResource("28_title")]
 layout_mode = 3
