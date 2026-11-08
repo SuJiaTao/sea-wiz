@@ -1,6 +1,8 @@
 extends Node
 class_name WeaponsOrchestrator
 
+const DECK_WEAPONS := &"deck_weapons"
+
 @export var turret: Turret
 @export var ballistics: BallisticManager
 @export var tracers: ProjectileBatch
@@ -25,6 +27,7 @@ func set_enabled(value: bool) -> void:
 	turret.set_enabled(value)
 	missile_launcher.set_enabled(value)
 	salvos.set_enabled(value)
+	get_tree().call_group(DECK_WEAPONS, "set_enabled", value)
 
 
 func handle_input(event: InputEvent) -> bool:
@@ -33,6 +36,9 @@ func handle_input(event: InputEvent) -> bool:
 	if event.is_action_pressed("ciws_salvo"):
 		salvos.request_salvo()
 		return true
+	for weapon in get_tree().get_nodes_in_group(DECK_WEAPONS):
+		if weapon.handle_input(event):
+			return true
 	return false
 
 

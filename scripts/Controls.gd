@@ -39,6 +39,10 @@ const ACTIONS := {
 		{"type": "mouse", "button": MOUSE_BUTTON_XBUTTON2},
 		{"type": "key", "key": KEY_E},
 	],
+	# The bow gun fires one heavy shell where the sight is looking.
+	"ciws_cannon": [
+		{"type": "key", "key": KEY_SPACE},
+	],
 	"ciws_pause": [
 		{"type": "key", "key": KEY_ESCAPE},
 	],

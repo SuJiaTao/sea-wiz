@@ -25,6 +25,9 @@
 [ext_resource type="Script" uid="uid://5v68cijhwppy" path="res://scripts/hud/WaveHUD.gd" id="18_wave_hud"]
 [ext_resource type="Script" uid="uid://m6u3455fgobo" path="res://scripts/hud/TrackHUD.gd" id="19_track_hud"]
 [ext_resource type="Script" uid="uid://dmxo1e4m8x4uj" path="res://scripts/weapons/WeaponsOrchestrator.gd" id="20_weapons"]
+[ext_resource type="Script" path="res://scripts/weapons/DeckCannon.gd" id="20_deck_cannon"]
+[ext_resource type="Resource" path="res://resources/damage_sources/DeckGun.tres" id="20_deck_gun_source"]
+[ext_resource type="Script" path="res://scripts/hud/DeckCannonHUD.gd" id="20_deck_cannon_hud"]
 [ext_resource type="Script" uid="uid://3isdddaon66x" path="res://scripts/weapons/MissileLauncher.gd" id="21_launcher"]
 [ext_resource type="Script" uid="uid://p0e7licgkygc" path="res://scripts/weapons/SalvoManager.gd" id="22_salvos"]
 [ext_resource type="Script" uid="uid://cu8tlm5bchc3w" path="res://scripts/hud/WeaponFeedback.gd" id="23_weapon_feedback"]
@@ -600,6 +603,18 @@ smoke = NodePath("../../MissileSmoke")
 damage_source = ExtResource("27_missile_source")
 cells = NodePath("../../Vessel/Warship/ForwardVLS")
 
+[node name="DeckCannon" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "enemies", "ballistics", "tracers", "fx", "mount", "barrel", "muzzle")]
+script = ExtResource("20_deck_cannon")
+turret = NodePath("../../Vessel/Turret")
+enemies = NodePath("../../Enemies")
+ballistics = NodePath("../../Ballistics")
+tracers = NodePath("../../Tracers")
+fx = NodePath("../../FX")
+damage_source = ExtResource("20_deck_gun_source")
+mount = NodePath("../../Vessel/Warship/DeckGun")
+barrel = NodePath("../../Vessel/Warship/DeckGun/Barrel")
+muzzle = NodePath("../../Vessel/Warship/DeckGun/Barrel/Muzzle")
+
 [node name="SalvoManager" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=981589763 node_paths=PackedStringArray("launcher", "enemies")]
 script = ExtResource("22_salvos")
 launcher = NodePath("../MissileLauncher")
@@ -719,6 +734,17 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("78_weather_hud")
 weather = NodePath("../../../Weather")
+
+[node name="DeckCannonHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("cannon", "turret")]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("20_deck_cannon_hud")
+cannon = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/DeckCannon")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 
 [node name="CombatFeedbackHUD" type="Control" parent="HUD/HUDRoot" unique_id=1805534994 node_paths=PackedStringArray("enemies")]
 anchors_preset = 0
