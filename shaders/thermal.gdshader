@@ -92,6 +92,11 @@ float night_vision(float l) {
 	return mix(body, 1.0, smoothstep(nvg_hot_start, 1.0, l));
 }
 
+float sense(vec3 colour) {
+	float raw = dot(colour, LUMA);
+	return mix(raw, night_vision(max(raw - black_level, 0.0) * gain), nvg_amount);
+}
+
 float shot(vec2 uv, float l) {
 	float jitter = hash12(floor(uv * sensor_size) + fract(TIME) * SHOT_SEED) - 0.5;
 	return jitter * shot_noise * sqrt(l);
@@ -160,15 +165,15 @@ void fragment() {
 	vec2 texel = 1.0 / sensor_size;
 
 	vec3 centre_colour = texture(sensor_image, uv).rgb;
-	float centre = dot(centre_colour, LUMA);
+	float centre = sense(centre_colour);
 	float soft = 0.0;
 	float near = 0.0;
 	float far = 0.0;
 	for (int i = 0; i < RING_TAPS; i++) {
 		vec2 direction = ring_direction(i) * texel;
-		soft += dot(texture(sensor_image, uv + direction * optical_blur_texels).rgb, LUMA);
-		near += dot(texture(sensor_image, uv + direction * bloom_radius_texels).rgb, LUMA);
-		far += dot(texture(sensor_image, uv + direction * halo_radius_texels).rgb, LUMA);
+		soft += sense(texture(sensor_image, uv + direction * optical_blur_texels).rgb);
+		near += sense(texture(sensor_image, uv + direction * bloom_radius_texels).rgb);
+		far += sense(texture(sensor_image, uv + direction * halo_radius_texels).rgb);
 	}
 	soft /= float(RING_TAPS);
 	near /= float(RING_TAPS);
@@ -176,18 +181,17 @@ void fragment() {
 
 	float base = mix(centre, soft, mix(optical_blur, 1.0, wet));
 	float l = base + max(near - bloom_floor, 0.0) * bloom_amount;
-	l = max(l - black_level, 0.0) * gain;
-	l = sensor_floor + l + (base - far) * halo_amount;
+	l = mix(max(l - black_level, 0.0) * gain, l, nvg_amount);
+	l = sensor_floor + l + (base - far) * halo_amount * (1.0 - nvg_amount);
 
 	l = l * (1.0 - droplet_cooling * wet) + droplet_rim * rim;
 	l = clamp(detector_flaws(l + flash + shock_light * shock_glow, UV), 0.0, 1.0);
 
-	l = mix(l, night_vision(l), nvg_amount);
 	l = clamp(l + shot(UV, l) * nvg_amount, 0.0, 1.0);
 	l = floor(l * levels + 0.5) / levels;
 	l = mix(l, 1.0 - l, polarity);
 
-	vec3 chroma = (centre_colour - vec3(centre)) * chroma_keep;
+	vec3 chroma = (centre_colour - vec3(dot(centre_colour, LUMA))) * chroma_keep;
 	vec3 glint = vec3(0.0);
 	for (int ray = 0; ray < GLINT_RAYS; ray++) {
 		float angle = glint_rotation + TAU * float(ray) / float(GLINT_RAYS);
