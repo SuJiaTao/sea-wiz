@@ -40,11 +40,10 @@ uniform float vignette_amount : hint_range(0.0, 1.0) = 0.22;
 // bodies stand dark against it and only real light sources burn bright.
 uniform float nvg_amount : hint_range(0.0, 1.0) = 1.0;
 uniform float nvg_sky_level : hint_range(0.0, 1.0) = 0.36;
-uniform float nvg_sky_band : hint_range(0.01, 0.4) = 0.1;
+uniform float nvg_sky_band : hint_range(0.01, 0.4) = 0.16;
 uniform float nvg_body_level : hint_range(0.0, 1.0) = 0.1;
 uniform float nvg_hot_start : hint_range(0.3, 1.0) = 0.62;
-uniform float scintillation : hint_range(0.0, 1.0) = 0.35;
-uniform float scintillation_sharpness : hint_range(1.0, 32.0) = 10.0;
+uniform float shot_noise : hint_range(0.0, 0.5) = 0.16;
 
 // Glints: the brightest points split into clean star rays with a faint spectral edge.
 uniform float glint_threshold : hint_range(0.0, 1.0) = 0.7;
@@ -64,6 +63,7 @@ const vec3 LUMA = vec3(0.30, 0.59, 0.11);
 const int RING_TAPS = 8;
 const float COLUMN_SEED = 17.3;
 const float STUCK_SEED = 91.7;
+const float SHOT_SEED = 811.0;
 const float STUCK_BRIGHT_SHARE = 0.3;
 const int GLINT_RAYS = 6;
 const int GLINT_STEPS = 8;
@@ -92,9 +92,14 @@ float night_vision(float l) {
 	return mix(body, 1.0, smoothstep(nvg_hot_start, 1.0, l));
 }
 
-float sparkle(vec2 uv, float l) {
-	float spark = pow(hash12(floor(uv * sensor_size) + fract(TIME) * 811.0), scintillation_sharpness);
-	return spark * scintillation * (1.0 - l);
+float sense(vec3 colour) {
+	float raw = dot(colour, LUMA);
+	return mix(raw, night_vision(max(raw - black_level, 0.0) * gain), nvg_amount);
+}
+
+float shot(vec2 uv, float l) {
+	float jitter = hash12(floor(uv * sensor_size) + fract(TIME) * SHOT_SEED) - 0.5;
+	return jitter * shot_noise * sqrt(l);
 }
 
 float detector_flaws(float l, vec2 uv) {
@@ -160,15 +165,15 @@ void fragment() {
 	vec2 texel = 1.0 / sensor_size;
 
 	vec3 centre_colour = texture(sensor_image, uv).rgb;
-	float centre = dot(centre_colour, LUMA);
+	float centre = sense(centre_colour);
 	float soft = 0.0;
 	float near = 0.0;
 	float far = 0.0;
 	for (int i = 0; i < RING_TAPS; i++) {
 		vec2 direction = ring_direction(i) * texel;
-		soft += dot(texture(sensor_image, uv + direction * optical_blur_texels).rgb, LUMA);
-		near += dot(texture(sensor_image, uv + direction * bloom_radius_texels).rgb, LUMA);
-		far += dot(texture(sensor_image, uv + direction * halo_radius_texels).rgb, LUMA);
+		soft += sense(texture(sensor_image, uv + direction * optical_blur_texels).rgb);
+		near += sense(texture(sensor_image, uv + direction * bloom_radius_texels).rgb);
+		far += sense(texture(sensor_image, uv + direction * halo_radius_texels).rgb);
 	}
 	soft /= float(RING_TAPS);
 	near /= float(RING_TAPS);
@@ -176,18 +181,17 @@ void fragment() {
 
 	float base = mix(centre, soft, mix(optical_blur, 1.0, wet));
 	float l = base + max(near - bloom_floor, 0.0) * bloom_amount;
-	l = max(l - black_level, 0.0) * gain;
-	l = sensor_floor + l + (base - far) * halo_amount;
+	l = mix(max(l - black_level, 0.0) * gain, l, nvg_amount);
+	l = sensor_floor + l + (base - far) * halo_amount * (1.0 - nvg_amount);
 
 	l = l * (1.0 - droplet_cooling * wet) + droplet_rim * rim;
 	l = clamp(detector_flaws(l + flash + shock_light * shock_glow, UV), 0.0, 1.0);
 
-	l = mix(l, night_vision(l), nvg_amount);
-	l = clamp(l + sparkle(UV, l) * nvg_amount, 0.0, 1.0);
+	l = clamp(l + shot(UV, l) * nvg_amount, 0.0, 1.0);
 	l = floor(l * levels + 0.5) / levels;
 	l = mix(l, 1.0 - l, polarity);
 
-	vec3 chroma = (centre_colour - vec3(centre)) * chroma_keep;
+	vec3 chroma = (centre_colour - vec3(dot(centre_colour, LUMA))) * chroma_keep;
 	vec3 glint = vec3(0.0);
 	for (int ray = 0; ray < GLINT_RAYS; ray++) {
 		float angle = glint_rotation + TAU * float(ray) / float(GLINT_RAYS);

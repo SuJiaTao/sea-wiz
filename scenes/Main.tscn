@@ -21,7 +21,6 @@
 [ext_resource type="Shader" uid="uid://c62jnvd10xwhp" path="res://shaders/sea.gdshader" id="15_sea_shader"]
 [ext_resource type="Script" uid="uid://cnlhuaro2rmrv" path="res://scripts/hud/PlayerHUD.gd" id="16_player_hud"]
 [ext_resource type="Script" path="res://scripts/hud/LaserHUD.gd" id="16_laser_hud"]
-[ext_resource type="Script" path="res://scripts/hud/QuartzStamp.gd" id="16_quartz_stamp"]
 [ext_resource type="Script" uid="uid://5tpmswxer4mm" path="res://scripts/hud/CombatFeedbackHUD.gd" id="17_feedback_hud"]
 [ext_resource type="Script" uid="uid://5v68cijhwppy" path="res://scripts/hud/WaveHUD.gd" id="18_wave_hud"]
 [ext_resource type="Script" uid="uid://m6u3455fgobo" path="res://scripts/hud/TrackHUD.gd" id="19_track_hud"]
@@ -169,7 +168,6 @@ shader_parameter/chroma_keep = 1.0
 shader_parameter/shock_rings = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/shock_width = 0.025
 shader_parameter/shock_glow = 4.0
-shader_parameter/scintillation = 0.5
 shader_parameter/nvg_sky_level = 0.45
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
@@ -249,7 +247,7 @@ shader_parameter/line_samples = 1920.0
 shader_parameter/sample_hold = 0.06
 shader_parameter/tail_samples = 0.25
 shader_parameter/streak_length = 36.0
-shader_parameter/streak_amount = 0.45
+shader_parameter/streak_amount = 0.15
 shader_parameter/streak_floor = 0.5
 shader_parameter/black_lift = 0.0
 shader_parameter/head_switch_lines = 2.0
@@ -257,7 +255,7 @@ shader_parameter/head_switch_samples = 3.0
 shader_parameter/capture_border = 0.006
 shader_parameter/sharpening = 0.3
 shader_parameter/sharpening_coring = 0.02
-shader_parameter/grain_amount = 0.07
+shader_parameter/grain_amount = 0.0
 shader_parameter/dark_grain = 1.6
 shader_parameter/beam_sigma_dark = 0.45
 shader_parameter/beam_sigma_bright = 0.5
@@ -686,15 +684,6 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("90_camera_stamp")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
-
-[node name="QuartzStamp" type="Control" parent="HUD/HUDRoot"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-script = ExtResource("16_quartz_stamp")
 
 [node name="WaveHUD" type="Control" parent="HUD/HUDRoot" unique_id=1961425847 node_paths=PackedStringArray("waves", "enemies")]
 anchors_preset = 0

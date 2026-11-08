@@ -4,7 +4,7 @@ class_name AfterglowBuffer
 const AFTERGLOW_SHADER := preload("res://shaders/afterglow.gdshader")
 
 @export var source: SubViewport
-@export_range(0.0, 0.99) var decay: float = 0.82
+@export_range(0.0, 0.99) var decay: float = 0.55
 
 
 func _ready() -> void:
