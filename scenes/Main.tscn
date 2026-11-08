@@ -430,6 +430,7 @@ mesh = SubResource("Mesh_sea")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17, 0)
 
 [node name="Casings" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Vessel" unique_id=1766620478]
+visible = false
 script = ExtResource("58_casings")
 casing_mesh = ExtResource("60_casing_mesh")
 casing_material = ExtResource("61_casing_material")
