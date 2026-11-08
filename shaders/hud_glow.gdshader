@@ -21,22 +21,21 @@ float hash12(vec2 p) {
 	return fract((p3.x + p3.y) * p3.z);
 }
 
-vec4 ring(sampler2D image, vec2 uv, vec2 step) {
-	vec4 total = vec4(0.0);
-	for (int tap = 0; tap < RING_TAPS; tap++) {
-		float angle = TAU * float(tap) / float(RING_TAPS);
-		total += texture(image, uv + vec2(cos(angle), sin(angle)) * step);
-	}
-	return total / float(RING_TAPS);
-}
-
 void fragment() {
 	vec4 sharp = texture(TEXTURE, UV);
-	vec4 core = mix(sharp, ring(TEXTURE, UV, TEXTURE_PIXEL_SIZE * core_softness_pixels), 0.5);
-	vec4 bloom = (ring(TEXTURE, UV, TEXTURE_PIXEL_SIZE * bloom_radius_pixels)
-		+ ring(TEXTURE, UV, TEXTURE_PIXEL_SIZE * bloom_radius_pixels * 0.5)) * 0.5;
-	vec4 glow = (ring(TEXTURE, UV, TEXTURE_PIXEL_SIZE * glow_radius_pixels)
-		+ ring(TEXTURE, UV, TEXTURE_PIXEL_SIZE * glow_radius_pixels * 0.5)) * 0.5;
+	vec4 soft = vec4(0.0);
+	vec4 bloom = vec4(0.0);
+	vec4 glow = vec4(0.0);
+	for (int tap = 0; tap < RING_TAPS; tap++) {
+		float angle = TAU * float(tap) / float(RING_TAPS);
+		vec2 heading = vec2(cos(angle), sin(angle)) * TEXTURE_PIXEL_SIZE;
+		soft += texture(TEXTURE, UV + heading * core_softness_pixels);
+		bloom += texture(TEXTURE, UV + heading * bloom_radius_pixels) + texture(TEXTURE, UV + heading * bloom_radius_pixels * 0.5);
+		glow += texture(TEXTURE, UV + heading * glow_radius_pixels) + texture(TEXTURE, UV + heading * glow_radius_pixels * 0.5);
+	}
+	vec4 core = mix(sharp, soft / float(RING_TAPS), 0.5);
+	bloom /= float(RING_TAPS * 2);
+	glow /= float(RING_TAPS * 2);
 	vec4 light = core + bloom * bloom_amount + glow * glow_amount;
 	float grain = 1.0 + (hash12(UV / TEXTURE_PIXEL_SIZE + fract(TIME) * GRAIN_TILE) - 0.5) * 2.0 * grain_amount;
 	COLOR = vec4(light.rgb * grain, clamp(light.a, 0.0, 1.0));
