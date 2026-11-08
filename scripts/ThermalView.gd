@@ -23,8 +23,9 @@ var _sharp_blur: float = 0.0
 
 
 func _ready() -> void:
-	var image: Texture2D = afterglow.get_texture() if afterglow != null else $SubViewport.get_texture()
+	var image: Texture2D = $SubViewport.get_texture()
 	_thermal.set_shader_parameter("sensor_image", image)
+	_thermal.set_shader_parameter("trail_image", afterglow.get_texture() if afterglow != null else image)
 	_sharp_blur = _thermal.get_shader_parameter("optical_blur")
 	resized.connect(_update_sensor_size)
 	_update_sensor_size()
