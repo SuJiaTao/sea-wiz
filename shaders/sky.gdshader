@@ -116,9 +116,8 @@ void sky() {
 		vec3 sun = vec3(sin(phase), 0.0, cos(phase));
 		float lit = smoothstep(-0.05, 0.25, dot(surface, sun));
 		float maria = 1.0 - moon_maria * value_noise(disc * moon_maria_scale);
-		vec3 moon = moon_color * lit * maria;
 		float coverage = 1.0 - smoothstep(1.0 - EDGE_SOFTNESS, 1.0 + EDGE_SOFTNESS, from_centre);
-		colour = mix(colour, moon, coverage);
+		colour += moon_color * lit * maria * coverage;
 	}
 	float off_bolt = degrees(acos(clamp(dot(EYEDIR, normalize(lightning_direction)), -1.0, 1.0)));
 	colour += lightning_flash * (lightning_ambient + exp(-off_bolt / lightning_spread_deg));
