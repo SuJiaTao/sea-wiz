@@ -211,8 +211,7 @@ glow_intensity = 0.45
 glow_strength = 0.8
 glow_blend_mode = 0
 fog_enabled = true
-fog_light_color = Color(0, 0, 0, 1)
-fog_light_energy = 0.0
+fog_light_color = Color(0.16, 0.16, 0.16, 1)
 fog_density = 0.00025
 fog_sky_affect = 0.0
 
