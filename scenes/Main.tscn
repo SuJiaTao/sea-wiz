@@ -84,6 +84,7 @@
 [ext_resource type="Script" uid="uid://cpjkfm8fhl845" path="res://scripts/weather/PrecipitationField.gd" id="83_precip_field"]
 [ext_resource type="Script" uid="uid://byx13np1h1yml" path="res://scripts/weather/PrecipitationWeather.gd" id="84_precip"]
 [ext_resource type="Script" uid="uid://dbslkmkup63ge" path="res://scripts/weather/LensRainWeather.gd" id="85_lens_rain"]
+[ext_resource type="Script" path="res://scripts/weather/BarrelClimateWeather.gd" id="85_barrel_climate"]
 [ext_resource type="QuadMesh" uid="uid://efqwkh210cn1" path="res://resources/weather/RainStreak.tres" id="86_rain_mesh"]
 [ext_resource type="QuadMesh" uid="uid://bd5fur0cuaei0" path="res://resources/weather/SnowFlake.tres" id="87_snow_mesh"]
 [ext_resource type="Resource" path="res://resources/weather/Rain.tres" id="88_rain"]
@@ -316,6 +317,10 @@ snow = NodePath("../../ViewportContainer/SubViewport/World/Snow")
 [node name="LensRain" type="Node" parent="Weather" unique_id=609978638 node_paths=PackedStringArray("lens")]
 script = ExtResource("85_lens_rain")
 lens = NodePath("../../LensSpray")
+
+[node name="BarrelClimate" type="Node" parent="Weather" node_paths=PackedStringArray("barrel_heat")]
+script = ExtResource("85_barrel_climate")
+barrel_heat = NodePath("../../ViewportContainer/SubViewport/World/BarrelHeat")
 
 [node name="Lightning" type="Node" parent="Weather" unique_id=1248630760 node_paths=PackedStringArray("bolt", "environment", "thermal", "thunder")]
 script = ExtResource("92_lightning")
@@ -618,7 +623,7 @@ tracks = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/Tracks")
 spotter = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/Spotter")
 gun_director = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/GunDirector")
 
-[node name="PlayerHUD" type="Control" parent="HUD/HUDRoot" unique_id=354245544 node_paths=PackedStringArray("turret", "thermal", "video")]
+[node name="PlayerHUD" type="Control" parent="HUD/HUDRoot" unique_id=354245544 node_paths=PackedStringArray("turret", "barrel_heat", "thermal", "video")]
 anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -629,6 +634,7 @@ script = ExtResource("16_player_hud")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 thermal = NodePath("../../../ViewportContainer")
 video = NodePath("../../../VideoSignal/AnalogVideo")
+barrel_heat = NodePath("../../../ViewportContainer/SubViewport/World/BarrelHeat")
 
 [node name="WaveHUD" type="Control" parent="HUD/HUDRoot" unique_id=1961425847 node_paths=PackedStringArray("waves", "enemies")]
 anchors_preset = 0
