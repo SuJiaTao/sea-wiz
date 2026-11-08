@@ -17,6 +17,8 @@
 [ext_resource type="Shader" uid="uid://b4v53wi6xsomg" path="res://shaders/thermal.gdshader" id="14_thermal_shader"]
 [ext_resource type="Shader" uid="uid://c62jnvd10xwhp" path="res://shaders/sea.gdshader" id="15_sea_shader"]
 [ext_resource type="Script" uid="uid://cnlhuaro2rmrv" path="res://scripts/hud/PlayerHUD.gd" id="16_player_hud"]
+[ext_resource type="Script" path="res://scripts/hud/LaserHUD.gd" id="16_laser_hud"]
+[ext_resource type="Script" path="res://scripts/hud/QuartzStamp.gd" id="16_quartz_stamp"]
 [ext_resource type="Script" uid="uid://5tpmswxer4mm" path="res://scripts/hud/CombatFeedbackHUD.gd" id="17_feedback_hud"]
 [ext_resource type="Script" uid="uid://5v68cijhwppy" path="res://scripts/hud/WaveHUD.gd" id="18_wave_hud"]
 [ext_resource type="Script" uid="uid://m6u3455fgobo" path="res://scripts/hud/TrackHUD.gd" id="19_track_hud"]
@@ -612,6 +614,7 @@ script = ExtResource("40_barrel_heat")
 turret = NodePath("../Vessel/Turret")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1527846984]
+layer = 11
 
 [node name="HUDRoot" type="Control" parent="HUD" unique_id=1876096288]
 layout_mode = 3
@@ -657,6 +660,15 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("90_camera_stamp")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
+
+[node name="QuartzStamp" type="Control" parent="HUD/HUDRoot"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("16_quartz_stamp")
 
 [node name="WaveHUD" type="Control" parent="HUD/HUDRoot" unique_id=1961425847 node_paths=PackedStringArray("waves", "enemies")]
 anchors_preset = 0
@@ -715,6 +727,11 @@ fx = NodePath("../../../ViewportContainer/SubViewport/World/FX")
 
 [node name="SeekerAudio" type="AudioStreamPlayer" parent="HUD/HUDRoot/WeaponFeedback" unique_id=282199234]
 volume_db = -9.0
+
+[node name="LaserHUD" type="Node" parent="HUD" node_paths=PackedStringArray("hud_root", "layer")]
+script = ExtResource("16_laser_hud")
+hud_root = NodePath("../HUDRoot")
+layer = NodePath("..")
 
 [node name="TitleScreen" parent="HUD" unique_id=109323306 instance=ExtResource("28_title")]
 layout_mode = 3
