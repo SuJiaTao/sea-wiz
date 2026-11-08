@@ -567,17 +567,17 @@ script = ExtResource("22_salvos")
 launcher = NodePath("../MissileLauncher")
 enemies = NodePath("../../Enemies")
 
+[node name="CasingEjector" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=1707288516 node_paths=PackedStringArray("turret", "pile")]
+script = ExtResource("59_ejector")
+turret = NodePath("../../Vessel/Turret")
+pile = NodePath("../../Vessel/Casings")
+
 [node name="DecoyLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("enemies", "smoke", "fx", "tubes")]
 script = ExtResource("21_decoys")
 enemies = NodePath("../../Enemies")
 smoke = NodePath("../../MissileSmoke")
 fx = NodePath("../../FX")
 tubes = NodePath("../../Vessel/Warship/DecoyTubes")
-
-[node name="CasingEjector" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=1707288516 node_paths=PackedStringArray("turret", "pile")]
-script = ExtResource("59_ejector")
-turret = NodePath("../../Vessel/Turret")
-pile = NodePath("../../Vessel/Casings")
 
 [node name="Sensors" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1704323909]
 
