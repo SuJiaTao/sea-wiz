@@ -34,7 +34,6 @@
 [ext_resource type="Resource" path="res://resources/phosphors/WhitePhosphor.tres" id="32_white"]
 [ext_resource type="Resource" path="res://resources/phosphors/NightOpsPalette.tres" id="34_night_ops"]
 [ext_resource type="Resource" path="res://resources/phosphors/NvgPalette.tres" id="34_nvg"]
-[ext_resource type="Resource" path="res://resources/phosphors/WhitePhosphorNvgPalette.tres" id="34_nvg_wp"]
 [ext_resource type="Script" uid="uid://fwmfhw2nut5h" path="res://scripts/sensors/SearchRadar.gd" id="35_search"]
 [ext_resource type="Script" uid="uid://du21xtyvbxthh" path="res://scripts/sensors/TrackManager.gd" id="36_tracks"]
 [ext_resource type="Script" uid="uid://j1vexdi14cv6" path="res://scripts/sensors/Spotter.gd" id="37_spotter"]
@@ -734,7 +733,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("29_video")
-palettes = Array[ExtResource("31_palette_type")]([ExtResource("34_nvg_wp"), ExtResource("34_nvg"), ExtResource("34_night_ops"), ExtResource("32_white")])
+palettes = Array[ExtResource("31_palette_type")]([ExtResource("34_nvg"), ExtResource("34_night_ops"), ExtResource("32_white")])
 
 [node name="SignalDropout" type="Node" parent="VideoSignal" node_paths=PackedStringArray("integrity", "video")]
 script = ExtResource("91_signal_dropout")
