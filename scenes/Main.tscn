@@ -173,10 +173,10 @@ shader_parameter/moon_color = Color(0.9, 0.9, 0.9, 1)
 shader_parameter/moon_phase_deg = 55.0
 shader_parameter/moon_maria = 0.35
 shader_parameter/moon_maria_scale = 3.0
-shader_parameter/moon_glow = 0.35
-shader_parameter/moon_glow_width_deg = 3.0
-shader_parameter/moon_halo = 0.1
-shader_parameter/moon_halo_width_deg = 20.0
+shader_parameter/moon_glow = 0.22
+shader_parameter/moon_glow_width_deg = 1.4
+shader_parameter/moon_halo = 0.035
+shader_parameter/moon_halo_width_deg = 9.0
 shader_parameter/lightning_flash = 0.0
 shader_parameter/lightning_direction = Vector3(0, 0.3, -1)
 shader_parameter/lightning_spread_deg = 25.0
@@ -353,6 +353,7 @@ turret = NodePath("SubViewport/World/Vessel/Turret")
 
 [node name="SubViewport" type="SubViewport" parent="ViewportContainer" unique_id=696814784]
 handle_input_locally = false
+use_hdr_2d = true
 positional_shadow_atlas_size = 0
 size = Vector2i(320, 180)
 render_target_update_mode = 4
