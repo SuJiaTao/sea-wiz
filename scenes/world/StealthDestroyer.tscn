@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/ship/HullMesh.gd" id="1_hull"]
 [ext_resource type="PackedScene" path="res://scenes/world/Deck.tscn" id="2_platform"]
+[ext_resource type="Script" path="res://scripts/weapons/VerticalLaunchSystem.gd" id="3_vls"]
 
 [sub_resource type="StandardMaterial3D" id="Material_hull"]
 shading_mode = 0
@@ -130,6 +131,10 @@ size = Vector3(6, 0.3, 6)
 material = SubResource("Material_hatch")
 size = Vector3(9, 0.05, 14)
 
+[sub_resource type="BoxMesh" id="Mesh_Lid"]
+material = SubResource("Material_panel")
+size = Vector3(1.3, 0.12, 1.5)
+
 [node name="StealthDestroyer" type="Node3D"]
 
 [node name="Hull" type="MeshInstance3D" parent="."]
@@ -232,6 +237,82 @@ cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.05, 26)
 mesh = SubResource("Mesh_FlightDeckMark")
 cast_shadow = 0
+
+[node name="ForwardVLS" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.32, -68)
+script = ExtResource("3_vls")
+
+[node name="Cell1" type="Node3D" parent="ForwardVLS"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -2.25)
+
+[node name="Lid" type="Node3D" parent="ForwardVLS/Cell1"]
+
+[node name="Hatch" type="MeshInstance3D" parent="ForwardVLS/Cell1/Lid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
+mesh = SubResource("Mesh_Lid")
+
+[node name="Cell2" type="Node3D" parent="ForwardVLS"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -0.25)
+
+[node name="Lid" type="Node3D" parent="ForwardVLS/Cell2"]
+
+[node name="Hatch" type="MeshInstance3D" parent="ForwardVLS/Cell2/Lid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
+mesh = SubResource("Mesh_Lid")
+
+[node name="Cell3" type="Node3D" parent="ForwardVLS"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 1.75)
+
+[node name="Lid" type="Node3D" parent="ForwardVLS/Cell3"]
+
+[node name="Hatch" type="MeshInstance3D" parent="ForwardVLS/Cell3/Lid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
+mesh = SubResource("Mesh_Lid")
+
+[node name="Cell4" type="Node3D" parent="ForwardVLS"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 3.75)
+
+[node name="Lid" type="Node3D" parent="ForwardVLS/Cell4"]
+
+[node name="Hatch" type="MeshInstance3D" parent="ForwardVLS/Cell4/Lid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
+mesh = SubResource("Mesh_Lid")
+
+[node name="Cell5" type="Node3D" parent="ForwardVLS"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -2.25)
+
+[node name="Lid" type="Node3D" parent="ForwardVLS/Cell5"]
+
+[node name="Hatch" type="MeshInstance3D" parent="ForwardVLS/Cell5/Lid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
+mesh = SubResource("Mesh_Lid")
+
+[node name="Cell6" type="Node3D" parent="ForwardVLS"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -0.25)
+
+[node name="Lid" type="Node3D" parent="ForwardVLS/Cell6"]
+
+[node name="Hatch" type="MeshInstance3D" parent="ForwardVLS/Cell6/Lid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
+mesh = SubResource("Mesh_Lid")
+
+[node name="Cell7" type="Node3D" parent="ForwardVLS"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 1.75)
+
+[node name="Lid" type="Node3D" parent="ForwardVLS/Cell7"]
+
+[node name="Hatch" type="MeshInstance3D" parent="ForwardVLS/Cell7/Lid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
+mesh = SubResource("Mesh_Lid")
+
+[node name="Cell8" type="Node3D" parent="ForwardVLS"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 3.75)
+
+[node name="Lid" type="Node3D" parent="ForwardVLS/Cell8"]
+
+[node name="Hatch" type="MeshInstance3D" parent="ForwardVLS/Cell8/Lid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
+mesh = SubResource("Mesh_Lid")
 
 [node name="CiwsPlatform" parent="." instance=ExtResource("2_platform")]
 transform = Transform3D(0.32, 0, 0, 0, 1, 0, 0, 0, 0.32, 0, 17, 0)

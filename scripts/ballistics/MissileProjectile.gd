@@ -18,6 +18,8 @@ const WARHEAD: float = 260.0
 const WATER_SPLASH_SIZE: float = 1.2
 const THREAT_RANGE: float = 650.0
 
+var vertical_climb: float = 0.0
+
 var _target: AbstractEnemy
 var _ballistics: BallisticManager
 var _smoke: MissileSmokeRenderer
@@ -56,7 +58,10 @@ func _on_propel(delta: float) -> void:
 	_announce_threat()
 
 	var previous := position
-	if age < BOOST_DELAY:
+	if age < vertical_climb:
+		_speed = minf(_speed + ACCELERATION * delta, CRUISE_SPEED)
+		velocity = Vector3.UP * _speed
+	elif age < BOOST_DELAY:
 		velocity.y -= GRAVITY * delta
 	else:
 		_speed = minf(_speed + ACCELERATION * delta, CRUISE_SPEED)
@@ -76,7 +81,7 @@ func _on_propel(delta: float) -> void:
 
 	position += velocity * delta
 	if is_instance_valid(_smoke):
-		_smoke.emit_trail(previous, position, age < BOOST_DELAY)
+		_smoke.emit_trail(previous, position, age < maxf(BOOST_DELAY, vertical_climb))
 
 	_check_fuze()
 	_check_decoy()
