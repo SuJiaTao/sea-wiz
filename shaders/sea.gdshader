@@ -25,8 +25,8 @@ uniform float moon_bearing_deg : hint_range(0.0, 360.0) = 140.0;
 uniform float moon_elevation_deg : hint_range(0.0, 90.0) = 22.0;
 uniform float moon_path : hint_range(0.0, 2.0) = 0.25;
 uniform float moon_path_sharpness : hint_range(1.0, 2000.0) = 25.0;
-uniform float glitter : hint_range(0.0, 4.0) = 1.6;
-uniform float glitter_sharpness : hint_range(1.0, 4000.0) = 300.0;
+uniform float glitter : hint_range(0.0, 12.0) = 7.0;
+uniform float glitter_sharpness : hint_range(1.0, 8000.0) = 3000.0;
 uniform float ripple_speed : hint_range(0.0, 4.0) = 1.0;
 uniform float rain : hint_range(0.0, 1.0) = 0.0;
 uniform float rain_ripple_strength : hint_range(0.0, 2.0) = 0.6;
@@ -35,8 +35,8 @@ uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
 
 const int RIPPLE_LAYERS = 3;
 const float RIPPLE_TILES[3] = float[](14.0, 6.0, 2.5);
-const float RIPPLE_ANGLES[3] = float[](0.0, 0.65, -0.55);
-const float RIPPLE_SPEEDS[3] = float[](3.2, 2.4, 1.6);
+const float RIPPLE_ANGLES[3] = float[](0.0, 2.2, -1.9);
+const float RIPPLE_SPEEDS[3] = float[](3.0, 2.2, 2.6);
 const float RIPPLE_STRETCH = 0.45;
 const float SWELL_TILE = 90.0;
 const float SWELL_ANGLE = 0.3;
@@ -44,6 +44,7 @@ const float SWELL_SPEED = 4.0;
 const float GUST_SIZE = 140.0;
 const vec2 GUST_DRIFT = vec2(0.012, 0.02);
 const float FOAM_DRIFT = 0.15;
+const float GLINT_FLOOR = 0.5;
 const float RAIN_CELL = 2.5;
 const float RAIN_RATE = 1.3;
 const float RAIN_REACH = 0.45;
@@ -147,7 +148,7 @@ void fragment() {
 
 	float toward_moon = max(dot(bounce, moon_direction()), 0.0);
 	v += pow(toward_moon, moon_path_sharpness) * moon_path * fresnel;
-	v += pow(toward_moon, glitter_sharpness) * glitter * fresnel;
+	v += pow(toward_moon, glitter_sharpness) * glitter * (GLINT_FLOOR + fresnel);
 
 	if (roughness > 0.0) {
 		vec2 p = world_pos.xz * foam_scale;
