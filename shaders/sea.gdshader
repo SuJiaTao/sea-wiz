@@ -12,9 +12,10 @@ uniform float sky_top_level : hint_range(0.0, 1.0) = 0.09;
 uniform float sky_curve : hint_range(0.001, 1.0) = 0.12;
 uniform float reflectance : hint_range(0.0, 0.2) = 0.06;
 uniform float wind_bearing_deg : hint_range(0.0, 360.0) = 60.0;
-uniform float longest_wave = 30.0;
+uniform sampler2D wave_normals : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform float swell_strength : hint_range(0.0, 2.0) = 0.4;
+uniform float ripple_strength : hint_range(0.0, 2.0) = 0.5;
 uniform float gustiness : hint_range(0.0, 1.0) = 0.55;
-uniform float steepness : hint_range(0.0, 1.0) = 0.14;
 uniform float roughness : hint_range(0.0, 1.0) = 0.0;
 uniform float storm_steepness : hint_range(0.0, 2.0) = 1.4;
 uniform float foam_level : hint_range(0.0, 1.0) = 0.45;
@@ -26,34 +27,32 @@ uniform float moon_path : hint_range(0.0, 2.0) = 0.25;
 uniform float moon_path_sharpness : hint_range(1.0, 2000.0) = 25.0;
 uniform float glitter : hint_range(0.0, 4.0) = 1.6;
 uniform float glitter_sharpness : hint_range(1.0, 4000.0) = 300.0;
-uniform float ripple_strength : hint_range(0.0, 1.0) = 0.08;
 uniform float ripple_speed : hint_range(0.0, 4.0) = 1.0;
+uniform float rain : hint_range(0.0, 1.0) = 0.0;
+uniform float rain_ripple_strength : hint_range(0.0, 2.0) = 0.6;
 uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
 uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
 
-const int OCTAVES = 6;
 const int RIPPLE_LAYERS = 3;
-const float RIPPLE_WAVES[3] = float[](3.5, 1.4, 0.6);
-const float RIPPLE_ANGLES[3] = float[](0.0, 1.2, -0.9);
-const float RIPPLE_SPEEDS[3] = float[](2.6, 1.9, 1.3);
-const float RIPPLE_STRETCH = 0.55;
-const float RIPPLE_STEP = 0.05;
-const float RIPPLE_PIXELS = 1.0;
-const int WARPED_OCTAVES = 3;
-const float OCTAVE_STEP = 0.55;
-const float CHOP_WAVE = 6.0;
+const float RIPPLE_TILES[3] = float[](14.0, 6.0, 2.5);
+const float RIPPLE_ANGLES[3] = float[](0.0, 0.65, -0.55);
+const float RIPPLE_SPEEDS[3] = float[](3.2, 2.4, 1.6);
+const float RIPPLE_STRETCH = 0.45;
+const float SWELL_TILE = 90.0;
+const float SWELL_ANGLE = 0.3;
+const float SWELL_SPEED = 4.0;
 const float GUST_SIZE = 140.0;
 const vec2 GUST_DRIFT = vec2(0.012, 0.02);
-const float OCTAVE_SEED = 7.31;
-const float WARP = 1.4;
-const float CREST_STRETCH = 0.7;
-const float SLOPE_STEP = 0.15;
 const float FOAM_DRIFT = 0.15;
+const float RAIN_CELL = 2.5;
+const float RAIN_RATE = 1.3;
+const float RAIN_REACH = 0.45;
+const float RAIN_WAVES = 60.0;
+const float RAIN_SHARPNESS = 400.0;
+const float RAIN_SEED = 13.7;
 const float FOAM_LEVEL = 0.32;
-const float GRAVITY = 9.81;
 const float DISPLAY_GAMMA = 2.2;
 const float DITHER_STEP = 1.0 / 255.0;
-const float PIXELS_PER_WAVE = 1.0;
 const float FOAM_FOOTPRINT = 2.0;
 
 varying vec3 world_pos;
@@ -62,11 +61,6 @@ float hash21(vec2 p) {
 	p = fract(p * vec2(233.34, 851.73));
 	p += dot(p, p + 23.45);
 	return fract(p.x * p.y);
-}
-
-vec2 corner_slope(vec2 cell) {
-	float angle = hash21(cell) * TAU;
-	return vec2(cos(angle), sin(angle));
 }
 
 float value_noise(vec2 p) {
@@ -80,18 +74,6 @@ float value_noise(vec2 p) {
 	);
 }
 
-// Gradient noise: smoother than value noise and free of its grid creases.
-float wave_noise(vec2 p) {
-	vec2 i = floor(p);
-	vec2 f = fract(p);
-	vec2 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
-	float a = dot(corner_slope(i), f);
-	float b = dot(corner_slope(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0));
-	float c = dot(corner_slope(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0));
-	float d = dot(corner_slope(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0));
-	return mix(mix(a, b, u.x), mix(c, d, u.x), u.y) + 0.5;
-}
-
 vec3 moon_direction() {
 	float bearing = radians(moon_bearing_deg);
 	float elevation = radians(moon_elevation_deg);
@@ -103,69 +85,39 @@ float sky_level(vec3 ray) {
 	return mix(sky_horizon_level, sky_top_level, clamp(1.0 - pow(1.0 - c, 1.0 / sky_curve), 0.0, 1.0));
 }
 
-// Smooth gradient-like noise built from value noise, warped so crests
-// never line up into the regular stripes a sum of sines gives.
-float swell_noise(vec2 p) {
-	vec2 warp = vec2(wave_noise(p * 0.5 + 3.1), wave_noise(p * 0.5 - 1.7)) - 0.5;
-	return wave_noise(p + warp * WARP);
+// One tileable wave normal map, sampled as a slow swell plus three ripple
+// sheets crossing from different directions. Mipmaps keep it clean all the
+// way to the horizon, and five texture reads cost almost nothing.
+vec2 wave_layer(vec2 xz, float angle, float tile, float speed, float stretch, float strength) {
+	vec2 heading = vec2(sin(angle), -cos(angle));
+	vec2 across = vec2(-heading.y, heading.x);
+	vec2 uv = vec2(dot(xz, across) * stretch, dot(xz, heading) - speed * TIME) / tile;
+	vec3 n = texture(wave_normals, uv).xyz * 2.0 - 1.0;
+	vec2 local = n.xy / max(n.z, 0.2) * vec2(stretch, 1.0);
+	return (across * local.x + heading * local.y) * strength;
 }
 
-// Wave height in metres: octaves from long swell down to chop, each drifting
-// downwind at its own deep-water speed, each dropped once it is below a pixel.
+// Raindrop rings: every cell gets a drop at its own moment, and the ring
+// spreads out and fades before the next one lands there.
+vec2 rain_rings(vec2 xz, float cell_size, float footprint) {
+	vec2 cell = floor(xz / cell_size);
+	vec2 within = fract(xz / cell_size);
+	float seed = hash21(cell);
+	vec2 centre = vec2(hash21(cell + RAIN_SEED), hash21(cell - RAIN_SEED)) * 0.6 + 0.2;
+	float age = fract(TIME * RAIN_RATE + seed);
+	vec2 offset = within - centre;
+	float distance = length(offset);
+	float front = distance - age * RAIN_REACH;
+	float ring = sin(front * RAIN_WAVES) * exp(-front * front * RAIN_SHARPNESS) * (1.0 - age);
+	float visible = smoothstep(footprint * 3.0, footprint * 6.0, cell_size);
+	return offset / max(distance, 1e-3) * ring * visible;
+}
+
 // Gusts roughen the water in drifting patches: rough patches catch more of
 // the sky, calm slicks stay dark.
 float gust(vec2 xz) {
 	vec2 p = xz / GUST_SIZE + TIME * GUST_DRIFT;
 	return mix(1.0 - gustiness, 1.0 + gustiness, value_noise(p) * 0.7 + value_noise(p * 2.3 + 4.7) * 0.3);
-}
-
-// Wave height in metres: octaves from swell down to chop, each drifting
-// downwind at its own deep-water speed, each dropped once it is below a pixel.
-float sea_height(vec2 xz, float footprint, float chop) {
-	float wind = radians(wind_bearing_deg);
-	vec2 downwind = vec2(sin(wind), -cos(wind));
-	vec2 across = vec2(-downwind.y, downwind.x);
-	vec2 local = vec2(dot(xz, across) * CREST_STRETCH, dot(xz, downwind));
-	float sharp = steepness * (1.0 + roughness * storm_steepness);
-	float height = 0.0;
-	float wavelength = longest_wave;
-	for (int i = 0; i < OCTAVES; i++) {
-		float resolved = smoothstep(footprint * PIXELS_PER_WAVE, footprint * PIXELS_PER_WAVE * 2.0, wavelength);
-		if (resolved <= 0.0) {
-			break;
-		}
-		float speed = sqrt(GRAVITY * wavelength / TAU);
-		vec2 p = (local - vec2(0.0, speed * TIME)) / wavelength + float(i) * OCTAVE_SEED;
-		float shape = i < WARPED_OCTAVES ? swell_noise(p) : wave_noise(p);
-		float boost = wavelength < CHOP_WAVE ? chop : 1.0;
-		height += (shape - 0.5) * wavelength * sharp * boost * resolved;
-		wavelength *= OCTAVE_STEP;
-	}
-	return height;
-}
-
-// Fast capillary ripples: three sheets crossing from different directions,
-// sliding faster than the swell beneath them. These are what catch the moon.
-vec2 ripple_slope(vec2 xz, float footprint) {
-	float wind = radians(wind_bearing_deg);
-	vec2 slope = vec2(0.0);
-	for (int i = 0; i < RIPPLE_LAYERS; i++) {
-		float wavelength = RIPPLE_WAVES[i];
-		float resolved = smoothstep(footprint * RIPPLE_PIXELS, footprint * RIPPLE_PIXELS * 2.0, wavelength);
-		if (resolved <= 0.0) {
-			continue;
-		}
-		float angle = wind + RIPPLE_ANGLES[i];
-		vec2 heading = vec2(sin(angle), -cos(angle));
-		vec2 across = vec2(-heading.y, heading.x);
-		vec2 p = vec2(dot(xz, across) * RIPPLE_STRETCH, dot(xz, heading) - RIPPLE_SPEEDS[i] * ripple_speed * TIME) / wavelength + float(i) * OCTAVE_SEED;
-		float centre = wave_noise(p);
-		float dx = wave_noise(p + vec2(RIPPLE_STEP, 0.0)) - centre;
-		float dy = wave_noise(p + vec2(0.0, RIPPLE_STEP)) - centre;
-		vec2 local = vec2(dx * RIPPLE_STRETCH, dy) / RIPPLE_STEP;
-		slope += (across * local.x + heading * local.y) * ripple_strength * resolved;
-	}
-	return slope;
 }
 
 void vertex() {
@@ -174,14 +126,18 @@ void vertex() {
 
 void fragment() {
 	vec3 view_ray = normalize(world_pos - CAMERA_POSITION_WORLD);
-	float footprint = length(fwidth(world_pos.xz));
-	float step_size = max(footprint, SLOPE_STEP);
-	float chop = gust(world_pos.xz);
-	float centre = sea_height(world_pos.xz, footprint, chop);
-	float east = sea_height(world_pos.xz + vec2(step_size, 0.0), footprint, chop);
-	float north = sea_height(world_pos.xz + vec2(0.0, step_size), footprint, chop);
-	vec2 ripples = ripple_slope(world_pos.xz, footprint) * chop;
-	vec3 normal = normalize(vec3((centre - east) / step_size - ripples.x, 1.0, (centre - north) / step_size - ripples.y));
+	float wind = radians(wind_bearing_deg);
+	float sea = 1.0 + roughness * storm_steepness;
+	float chop = gust(world_pos.xz) * sea;
+	vec2 slope = wave_layer(world_pos.xz, wind + SWELL_ANGLE, SWELL_TILE, SWELL_SPEED, 1.0, swell_strength * sea);
+	for (int i = 0; i < RIPPLE_LAYERS; i++) {
+		slope += wave_layer(world_pos.xz, wind + RIPPLE_ANGLES[i], RIPPLE_TILES[i], RIPPLE_SPEEDS[i] * ripple_speed, RIPPLE_STRETCH, ripple_strength * chop);
+	}
+	if (rain > 0.0) {
+		float footprint = length(fwidth(world_pos.xz));
+		slope += (rain_rings(world_pos.xz, RAIN_CELL, footprint) + rain_rings(world_pos.xz + RAIN_SEED, RAIN_CELL * 0.6, footprint)) * rain * rain_ripple_strength;
+	}
+	vec3 normal = normalize(vec3(-slope.x, 1.0, -slope.y));
 	vec3 bounce = reflect(view_ray, normal);
 	bounce.y = abs(bounce.y);
 
@@ -195,9 +151,9 @@ void fragment() {
 
 	if (roughness > 0.0) {
 		vec2 p = world_pos.xz * foam_scale;
-		float lace = wave_noise(p + TIME * FOAM_DRIFT) * wave_noise(p * 2.7 - TIME * FOAM_DRIFT);
-		float crest = smoothstep(0.0, 1.0, centre / (longest_wave * steepness * 0.25) + 0.5);
-		float foam = smoothstep(foam_threshold, 1.0, lace * 2.0) * roughness * (0.4 + crest);
+		float lace = value_noise(p + TIME * FOAM_DRIFT) * value_noise(p * 2.7 - TIME * FOAM_DRIFT);
+		float foam = smoothstep(foam_threshold, 1.0, lace * 2.0) * roughness;
+		float footprint = length(fwidth(world_pos.xz));
 		v = mix(v, FOAM_LEVEL, foam * foam_level * smoothstep(FOAM_FOOTPRINT, FOAM_FOOTPRINT * 0.25, footprint));
 	}
 
