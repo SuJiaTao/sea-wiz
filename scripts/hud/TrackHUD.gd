@@ -33,6 +33,8 @@ const MISSILE_SCOPE_MARK: float = 4.0
 const LEADER_SECONDS: float = 4.0
 const LEADER_MAX_SHARE: float = 0.6
 const LEADER_MIN_PIXELS: float = 2.0
+const STALE_SECONDS: float = 2.2
+const RING_FRACTIONS: Array[float] = [0.25, 0.5, 0.75]
 
 @export var turret: Turret
 @export var tracks: TrackManager
@@ -177,8 +179,9 @@ func _draw_gate() -> void:
 func _draw_scope() -> void:
 	var centre := Vector2(size.x - SCOPE_RADIUS - SCOPE_MARGIN, size.y - SCOPE_RADIUS - SCOPE_MARGIN)
 	draw_arc(centre, SCOPE_RADIUS, 0, TAU, 64, DIM)
-	for fraction in [0.33, 0.66]:
+	for fraction in RING_FRACTIONS:
 		draw_arc(centre, SCOPE_RADIUS * fraction, 0, TAU, 48, FAINT)
+		_text(centre + Vector2(3, -SCOPE_RADIUS * fraction - 2), "%d" % roundi(RADAR_RANGE * fraction / 1000.0), 9, FAINT)
 	for i in SCOPE_TICKS:
 		var tick := TAU * float(i) / float(SCOPE_TICKS)
 		var direction := Vector2(sin(tick), -cos(tick))
@@ -233,12 +236,13 @@ func _draw_cloud(centre: Vector2, track: RadarTrack) -> void:
 	var metres := maxf(track.uncertainty, CLOUD_MIN_METRES)
 	var radius := maxf(metres / RADAR_RANGE * SCOPE_RADIUS, CLOUD_MIN_PIXELS)
 	var point := _scope_point(centre, track.position)
+	var freshness := clampf(1.0 - track.since_update / STALE_SECONDS, 0.2, 1.0)
 	var scatter := RandomNumberGenerator.new()
 	scatter.seed = track.id
 	for i in CLOUD_PUFFS:
 		var drift := Vector2(scatter.randf_range(-1, 1), scatter.randf_range(-1, 1)) * radius * CLOUD_SPREAD
 		var puff := radius * scatter.randf_range(0.5, 1.0)
-		draw_circle(point + drift, puff, Color(DIM, CLOUD_ALPHA))
+		draw_circle(point + drift, puff, Color(DIM, CLOUD_ALPHA * freshness))
 
 
 func _draw_field_of_view(centre: Vector2) -> void:
