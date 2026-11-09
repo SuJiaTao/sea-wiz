@@ -42,7 +42,11 @@ uniform float aurora_speed = 0.05;
 
 const float HALF_PI = 1.5707963;
 const float EDGE_SOFTNESS = 0.08;
-const float CLOUD_HORIZON = 0.08;
+const float CLOUD_HORIZON = 0.35;
+// One display step of triangular noise, so the 8-bit sky never bands
+// once the night vision gain stretches it.
+const float DITHER_STEP = 1.0 / 255.0;
+const float DISPLAY_GAMMA = 2.2;
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -133,5 +137,7 @@ void sky() {
 	float off_bolt = degrees(acos(clamp(dot(EYEDIR, normalize(lightning_direction)), -1.0, 1.0)));
 	colour += lightning_flash * (lightning_ambient + exp(-off_bolt / lightning_spread_deg));
 	colour += aurora * aurora_light(EYEDIR);
-	COLOR = colour;
+	vec2 cell = FRAGCOORD.xy + fract(TIME) * 431.0;
+	float dither = (hash12(cell) + hash12(cell + 17.0) - 1.0) * DITHER_STEP;
+	COLOR = pow(max(pow(colour, vec3(1.0 / DISPLAY_GAMMA)) + dither, vec3(0.0)), vec3(DISPLAY_GAMMA));
 }
