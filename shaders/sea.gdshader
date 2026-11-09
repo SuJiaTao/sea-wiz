@@ -8,12 +8,13 @@ render_mode unshaded, cull_disabled, depth_draw_opaque;
 
 uniform float base_level : hint_range(0.0, 0.5) = 0.03;
 uniform float sky_horizon_level : hint_range(0.0, 1.0) = 0.16;
-uniform float sky_top_level : hint_range(0.0, 1.0) = 0.07;
+uniform float sky_top_level : hint_range(0.0, 1.0) = 0.1;
 uniform float sky_curve : hint_range(0.001, 1.0) = 0.25;
-uniform float reflectance : hint_range(0.0, 0.2) = 0.02;
+uniform float reflectance : hint_range(0.0, 0.2) = 0.06;
 uniform float wind_bearing_deg : hint_range(0.0, 360.0) = 60.0;
-uniform float longest_wave = 90.0;
-uniform float steepness : hint_range(0.0, 1.0) = 0.12;
+uniform float longest_wave = 30.0;
+uniform float gustiness : hint_range(0.0, 1.0) = 0.55;
+uniform float steepness : hint_range(0.0, 1.0) = 0.2;
 uniform float roughness : hint_range(0.0, 1.0) = 0.0;
 uniform float storm_steepness : hint_range(0.0, 2.0) = 1.4;
 uniform float foam_level : hint_range(0.0, 1.0) = 0.45;
@@ -28,11 +29,15 @@ uniform float glitter_sharpness : hint_range(1.0, 4000.0) = 400.0;
 uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
 uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
 
-const int OCTAVES = 8;
-const float OCTAVE_STEP = 0.48;
+const int OCTAVES = 9;
+const int WARPED_OCTAVES = 3;
+const float OCTAVE_STEP = 0.55;
+const float CHOP_WAVE = 6.0;
+const float GUST_SIZE = 140.0;
+const vec2 GUST_DRIFT = vec2(0.012, 0.02);
 const float OCTAVE_SEED = 7.31;
 const float WARP = 1.4;
-const float CREST_STRETCH = 0.45;
+const float CREST_STRETCH = 0.7;
 const float SLOPE_STEP = 0.15;
 const float FOAM_STREAK = 0.25;
 const float FOAM_LEVEL = 0.32;
@@ -40,7 +45,7 @@ const float CALM_FOAM = 0.25;
 const float GRAVITY = 9.81;
 const float DISPLAY_GAMMA = 2.2;
 const float DITHER_STEP = 1.0 / 255.0;
-const float PIXELS_PER_WAVE = 3.0;
+const float PIXELS_PER_WAVE = 2.0;
 const float FOAM_FOOTPRINT = 2.0;
 
 varying vec3 world_pos;
@@ -49,6 +54,11 @@ float hash21(vec2 p) {
 	p = fract(p * vec2(233.34, 851.73));
 	p += dot(p, p + 23.45);
 	return fract(p.x * p.y);
+}
+
+vec2 corner_slope(vec2 cell) {
+	float angle = hash21(cell) * TAU;
+	return vec2(cos(angle), sin(angle));
 }
 
 float value_noise(vec2 p) {
@@ -60,6 +70,18 @@ float value_noise(vec2 p) {
 		mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), f.x),
 		f.y
 	);
+}
+
+// Gradient noise: smoother than value noise and free of its grid creases.
+float wave_noise(vec2 p) {
+	vec2 i = floor(p);
+	vec2 f = fract(p);
+	vec2 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+	float a = dot(corner_slope(i), f);
+	float b = dot(corner_slope(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0));
+	float c = dot(corner_slope(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0));
+	float d = dot(corner_slope(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0));
+	return mix(mix(a, b, u.x), mix(c, d, u.x), u.y) + 0.5;
 }
 
 vec3 moon_direction() {
@@ -76,13 +98,22 @@ float sky_level(vec3 ray) {
 // Smooth gradient-like noise built from value noise, warped so crests
 // never line up into the regular stripes a sum of sines gives.
 float swell_noise(vec2 p) {
-	vec2 warp = vec2(value_noise(p * 0.5 + 3.1), value_noise(p * 0.5 - 1.7)) - 0.5;
-	return value_noise(p + warp * WARP);
+	vec2 warp = vec2(wave_noise(p * 0.5 + 3.1), wave_noise(p * 0.5 - 1.7)) - 0.5;
+	return wave_noise(p + warp * WARP);
 }
 
 // Wave height in metres: octaves from long swell down to chop, each drifting
 // downwind at its own deep-water speed, each dropped once it is below a pixel.
-float sea_height(vec2 xz, float footprint) {
+// Gusts roughen the water in drifting patches: rough patches catch more of
+// the sky, calm slicks stay dark.
+float gust(vec2 xz) {
+	vec2 p = xz / GUST_SIZE + TIME * GUST_DRIFT;
+	return mix(1.0 - gustiness, 1.0 + gustiness, value_noise(p) * 0.7 + value_noise(p * 2.3 + 4.7) * 0.3);
+}
+
+// Wave height in metres: octaves from swell down to chop, each drifting
+// downwind at its own deep-water speed, each dropped once it is below a pixel.
+float sea_height(vec2 xz, float footprint, float chop) {
 	float wind = radians(wind_bearing_deg);
 	vec2 downwind = vec2(sin(wind), -cos(wind));
 	vec2 across = vec2(-downwind.y, downwind.x);
@@ -97,7 +128,9 @@ float sea_height(vec2 xz, float footprint) {
 		}
 		float speed = sqrt(GRAVITY * wavelength / TAU);
 		vec2 p = (local - vec2(0.0, speed * TIME)) / wavelength + float(i) * OCTAVE_SEED;
-		height += (swell_noise(p) - 0.5) * wavelength * sharp * resolved;
+		float shape = i < WARPED_OCTAVES ? swell_noise(p) : wave_noise(p);
+		float boost = wavelength < CHOP_WAVE ? chop : 1.0;
+		height += (shape - 0.5) * wavelength * sharp * boost * resolved;
 		wavelength *= OCTAVE_STEP;
 	}
 	return height;
@@ -111,9 +144,10 @@ void fragment() {
 	vec3 view_ray = normalize(world_pos - CAMERA_POSITION_WORLD);
 	float footprint = length(fwidth(world_pos.xz));
 	float step_size = max(footprint, SLOPE_STEP);
-	float centre = sea_height(world_pos.xz, footprint);
-	float east = sea_height(world_pos.xz + vec2(step_size, 0.0), footprint);
-	float north = sea_height(world_pos.xz + vec2(0.0, step_size), footprint);
+	float chop = gust(world_pos.xz);
+	float centre = sea_height(world_pos.xz, footprint, chop);
+	float east = sea_height(world_pos.xz + vec2(step_size, 0.0), footprint, chop);
+	float north = sea_height(world_pos.xz + vec2(0.0, step_size), footprint, chop);
 	vec3 normal = normalize(vec3(centre - east, step_size, centre - north));
 	vec3 bounce = reflect(view_ray, normal);
 	bounce.y = abs(bounce.y);
