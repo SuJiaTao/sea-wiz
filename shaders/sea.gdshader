@@ -12,39 +12,38 @@ uniform float sky_top_level : hint_range(0.0, 1.0) = 0.07;
 uniform float sky_curve : hint_range(0.001, 1.0) = 0.25;
 uniform float reflectance : hint_range(0.0, 0.2) = 0.02;
 uniform float wind_bearing_deg : hint_range(0.0, 360.0) = 60.0;
-uniform float wave_spread : hint_range(0.0, 3.1416) = 1.1;
-uniform float longest_wave = 70.0;
-uniform float shortest_wave = 0.6;
-uniform float steepness : hint_range(0.0, 1.0) = 0.22;
+uniform float longest_wave = 90.0;
+uniform float steepness : hint_range(0.0, 1.0) = 0.12;
 uniform float roughness : hint_range(0.0, 1.0) = 0.0;
 uniform float storm_steepness : hint_range(0.0, 2.0) = 1.4;
 uniform float foam_level : hint_range(0.0, 1.0) = 0.45;
-uniform float foam_threshold : hint_range(0.0, 1.0) = 0.4;
-uniform float foam_scale = 0.35;
+uniform float foam_threshold : hint_range(0.0, 1.0) = 0.45;
+uniform float foam_scale = 0.08;
 uniform float moon_bearing_deg : hint_range(0.0, 360.0) = 140.0;
 uniform float moon_elevation_deg : hint_range(0.0, 90.0) = 22.0;
-uniform float moon_path : hint_range(0.0, 2.0) = 0.35;
-uniform float moon_path_sharpness : hint_range(1.0, 2000.0) = 60.0;
-uniform float glitter : hint_range(0.0, 4.0) = 1.2;
-uniform float glitter_sharpness : hint_range(1.0, 4000.0) = 900.0;
+uniform float moon_path : hint_range(0.0, 2.0) = 0.25;
+uniform float moon_path_sharpness : hint_range(1.0, 2000.0) = 25.0;
+uniform float glitter : hint_range(0.0, 4.0) = 0.5;
+uniform float glitter_sharpness : hint_range(1.0, 4000.0) = 400.0;
 uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
 uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
 
-const int WAVES = 14;
+const int OCTAVES = 8;
+const float OCTAVE_STEP = 0.48;
+const float OCTAVE_SEED = 7.31;
+const float WARP = 1.4;
+const float CREST_STRETCH = 0.45;
+const float SLOPE_STEP = 0.15;
+const float FOAM_STREAK = 0.25;
+const float FOAM_LEVEL = 0.32;
+const float CALM_FOAM = 0.25;
 const float GRAVITY = 9.81;
 const float DISPLAY_GAMMA = 2.2;
 const float DITHER_STEP = 1.0 / 255.0;
 const float PIXELS_PER_WAVE = 3.0;
-const float SPREAD_SEED = 12.9898;
-const float PHASE_SEED = 78.233;
 const float FOAM_FOOTPRINT = 2.0;
-const float CREST_GAIN = 1.6;
 
 varying vec3 world_pos;
-
-float hash11(float n) {
-	return fract(sin(n) * 43758.5453);
-}
 
 float hash21(vec2 p) {
 	p = fract(p * vec2(233.34, 851.73));
@@ -55,7 +54,7 @@ float hash21(vec2 p) {
 float value_noise(vec2 p) {
 	vec2 i = floor(p);
 	vec2 f = fract(p);
-	f = f * f * (3.0 - 2.0 * f);
+	f = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
 	return mix(
 		mix(hash21(i), hash21(i + vec2(1.0, 0.0)), f.x),
 		mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), f.x),
@@ -74,30 +73,34 @@ float sky_level(vec3 ray) {
 	return mix(sky_horizon_level, sky_top_level, clamp(1.0 - pow(1.0 - c, 1.0 / sky_curve), 0.0, 1.0));
 }
 
-// Sum of deep-water waves. xy: surface slope, z: crest height in -1..1.
-vec3 waves(vec2 xz, float footprint) {
+// Smooth gradient-like noise built from value noise, warped so crests
+// never line up into the regular stripes a sum of sines gives.
+float swell_noise(vec2 p) {
+	vec2 warp = vec2(value_noise(p * 0.5 + 3.1), value_noise(p * 0.5 - 1.7)) - 0.5;
+	return value_noise(p + warp * WARP);
+}
+
+// Wave height in metres: octaves from long swell down to chop, each drifting
+// downwind at its own deep-water speed, each dropped once it is below a pixel.
+float sea_height(vec2 xz, float footprint) {
 	float wind = radians(wind_bearing_deg);
+	vec2 downwind = vec2(sin(wind), -cos(wind));
+	vec2 across = vec2(-downwind.y, downwind.x);
+	vec2 local = vec2(dot(xz, across) * CREST_STRETCH, dot(xz, downwind));
 	float sharp = steepness * (1.0 + roughness * storm_steepness);
-	vec2 slope = vec2(0.0);
-	float crest = 0.0;
-	float weight = 0.0;
-	for (int i = 0; i < WAVES; i++) {
-		float share = float(i) / float(WAVES - 1);
-		float wavelength = longest_wave * pow(shortest_wave / longest_wave, share);
+	float height = 0.0;
+	float wavelength = longest_wave;
+	for (int i = 0; i < OCTAVES; i++) {
 		float resolved = smoothstep(footprint * PIXELS_PER_WAVE, footprint * PIXELS_PER_WAVE * 2.0, wavelength);
 		if (resolved <= 0.0) {
-			continue;
+			break;
 		}
-		float k = TAU / wavelength;
-		float angle = wind + (hash11(float(i) * SPREAD_SEED) - 0.5) * wave_spread;
-		vec2 heading = vec2(sin(angle), -cos(angle));
-		float phase = dot(xz, heading) * k - sqrt(GRAVITY * k) * TIME + hash11(float(i) * PHASE_SEED) * TAU;
-		float amplitude = sharp / k / float(WAVES) * 4.0 * resolved;
-		slope += heading * k * amplitude * cos(phase);
-		crest += sin(phase) * resolved * (1.0 - share);
-		weight += resolved * (1.0 - share);
+		float speed = sqrt(GRAVITY * wavelength / TAU);
+		vec2 p = (local - vec2(0.0, speed * TIME)) / wavelength + float(i) * OCTAVE_SEED;
+		height += (swell_noise(p) - 0.5) * wavelength * sharp * resolved;
+		wavelength *= OCTAVE_STEP;
 	}
-	return vec3(slope, crest / max(weight, 1e-3));
+	return height;
 }
 
 void vertex() {
@@ -107,8 +110,11 @@ void vertex() {
 void fragment() {
 	vec3 view_ray = normalize(world_pos - CAMERA_POSITION_WORLD);
 	float footprint = length(fwidth(world_pos.xz));
-	vec3 surface = waves(world_pos.xz, footprint);
-	vec3 normal = normalize(vec3(-surface.x, 1.0, -surface.y));
+	float step_size = max(footprint, SLOPE_STEP);
+	float centre = sea_height(world_pos.xz, footprint);
+	float east = sea_height(world_pos.xz + vec2(step_size, 0.0), footprint);
+	float north = sea_height(world_pos.xz + vec2(0.0, step_size), footprint);
+	vec3 normal = normalize(vec3(centre - east, step_size, centre - north));
 	vec3 bounce = reflect(view_ray, normal);
 	bounce.y = abs(bounce.y);
 
@@ -118,11 +124,15 @@ void fragment() {
 
 	float toward_moon = max(dot(bounce, moon_direction()), 0.0);
 	v += pow(toward_moon, moon_path_sharpness) * moon_path * fresnel;
-	v += pow(toward_moon, glitter_sharpness) * glitter;
+	v += pow(toward_moon, glitter_sharpness) * glitter * fresnel;
 
-	float breakup = value_noise(world_pos.xz * foam_scale + TIME * 0.2) * value_noise(world_pos.xz * foam_scale * 2.7 - TIME * 0.15);
-	float whitecap = smoothstep(foam_threshold, 1.0, surface.z * CREST_GAIN) * smoothstep(0.1, 0.4, breakup);
-	v += whitecap * foam_level * (0.15 + roughness) * smoothstep(FOAM_FOOTPRINT, FOAM_FOOTPRINT * 0.25, footprint);
+	float wind = radians(wind_bearing_deg);
+	vec2 downwind = vec2(sin(wind), -cos(wind));
+	vec2 streak = vec2(dot(world_pos.xz, vec2(-downwind.y, downwind.x)), dot(world_pos.xz, downwind) * FOAM_STREAK) * foam_scale;
+	float lace = value_noise(streak + vec2(0.0, TIME * 0.05)) * value_noise(streak * 3.1 - vec2(TIME * 0.03, 0.0));
+	float crest = smoothstep(0.0, 1.0, centre / (longest_wave * steepness * 0.25) + 0.5);
+	float foam = smoothstep(foam_threshold, 1.0, lace * 2.0) * mix(CALM_FOAM, 1.0, roughness) * (0.4 + crest);
+	v = mix(v, FOAM_LEVEL, foam * foam_level * smoothstep(FOAM_FOOTPRINT, FOAM_FOOTPRINT * 0.25, footprint));
 
 	v = max(v, 0.0) + lightning_flash * lightning_reflection;
 	vec2 cell = FRAGCOORD.xy + fract(TIME) * 431.0;
