@@ -121,26 +121,10 @@
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
 shader = ExtResource("15_sea_shader")
-shader_parameter/base_level = 0.09
-shader_parameter/clutter_level = 0.04
-shader_parameter/clutter_scale = 0.12
-shader_parameter/clutter_speed = 0.09
-shader_parameter/falloff = 900.0
+shader_parameter/base_level = 0.05
 shader_parameter/moon_bearing_deg = 140.0
 shader_parameter/moon_elevation_deg = 22.0
-shader_parameter/glitter = 2.2
-shader_parameter/glitter_sharpness = 120.0
-shader_parameter/ripple_scale = 0.35
-shader_parameter/ripple_slope = 0.22
-shader_parameter/ripple_speed = 0.6
 shader_parameter/roughness = 0.0
-shader_parameter/swell_wavelength = 140.0
-shader_parameter/swell_speed = 9.0
-shader_parameter/swell_level = 0.04
-shader_parameter/whitecap_level = 0.16
-shader_parameter/foam_scale = 0.22
-shader_parameter/storm_falloff = 1600.0
-shader_parameter/storm_slope = 2.5
 shader_parameter/lightning_flash = 0.0
 shader_parameter/lightning_reflection = 0.3
 
