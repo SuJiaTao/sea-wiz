@@ -10,6 +10,10 @@ uniform float sky_curve : hint_range(0.001, 1.0) = 0.06;
 uniform vec3 ground_horizon_color : source_color = vec3(0.16);
 uniform vec3 ground_bottom_color : source_color = vec3(0.0);
 uniform float ground_curve : hint_range(0.001, 1.0) = 0.02;
+// Broken overcast lit by starlight: soft patches that drift across the glow.
+uniform float cloud_contrast : hint_range(0.0, 1.0) = 0.0;
+uniform float cloud_scale = 0.6;
+uniform vec2 cloud_drift = vec2(0.004, 0.001);
 
 uniform float moon_bearing_deg : hint_range(0.0, 360.0) = 140.0;
 uniform float moon_elevation_deg : hint_range(0.0, 90.0) = 22.0;
@@ -38,6 +42,7 @@ uniform float aurora_speed = 0.05;
 
 const float HALF_PI = 1.5707963;
 const float EDGE_SOFTNESS = 0.08;
+const float CLOUD_HORIZON = 0.08;
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -96,8 +101,14 @@ vec3 aurora_light(vec3 direction) {
 	return tint * band * curtain * rays * folds * aurora_brightness;
 }
 
+float cloud_cover(vec3 direction) {
+	vec2 plane = direction.xz / max(direction.y, CLOUD_HORIZON) * cloud_scale + TIME * cloud_drift;
+	float n = value_noise(plane) * 0.65 + value_noise(plane * 2.3 + vec2(5.2, 1.3)) * 0.35;
+	return 1.0 + (n - 0.5) * 2.0 * cloud_contrast * smoothstep(0.0, CLOUD_HORIZON, direction.y);
+}
+
 void sky() {
-	vec3 colour = atmosphere(EYEDIR);
+	vec3 colour = atmosphere(EYEDIR) * cloud_cover(EYEDIR);
 
 	vec3 toward = moon_direction();
 	float off_moon = degrees(acos(clamp(dot(EYEDIR, toward), -1.0, 1.0)));
