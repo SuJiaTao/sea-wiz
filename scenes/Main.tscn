@@ -161,10 +161,10 @@ shader_parameter/shot_noise = 0.3
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
-shader_parameter/sky_top_color = Color(0.07, 0.07, 0.07, 1)
+shader_parameter/sky_top_color = Color(0.035, 0.035, 0.035, 1)
 shader_parameter/sky_horizon_color = Color(0.16, 0.16, 0.16, 1)
-shader_parameter/sky_curve = 0.25
-shader_parameter/cloud_contrast = 0.35
+shader_parameter/sky_curve = 0.12
+shader_parameter/cloud_contrast = 0.2
 shader_parameter/ground_horizon_color = Color(0.16, 0.16, 0.16, 1)
 shader_parameter/ground_bottom_color = Color(0, 0, 0, 1)
 shader_parameter/ground_curve = 0.02
@@ -207,7 +207,7 @@ glow_strength = 0.8
 glow_blend_mode = 0
 fog_enabled = true
 fog_light_color = Color(0.12, 0.12, 0.12, 1)
-fog_density = 0.00025
+fog_density = 0.00012
 fog_sky_affect = 0.0
 
 [sub_resource type="PlaneMesh" id="Mesh_sea"]

@@ -8,28 +8,37 @@ render_mode unshaded, cull_disabled, depth_draw_opaque;
 
 uniform float base_level : hint_range(0.0, 0.5) = 0.03;
 uniform float sky_horizon_level : hint_range(0.0, 1.0) = 0.16;
-uniform float sky_top_level : hint_range(0.0, 1.0) = 0.1;
-uniform float sky_curve : hint_range(0.001, 1.0) = 0.25;
+uniform float sky_top_level : hint_range(0.0, 1.0) = 0.09;
+uniform float sky_curve : hint_range(0.001, 1.0) = 0.12;
 uniform float reflectance : hint_range(0.0, 0.2) = 0.06;
 uniform float wind_bearing_deg : hint_range(0.0, 360.0) = 60.0;
 uniform float longest_wave = 30.0;
 uniform float gustiness : hint_range(0.0, 1.0) = 0.55;
-uniform float steepness : hint_range(0.0, 1.0) = 0.2;
+uniform float steepness : hint_range(0.0, 1.0) = 0.14;
 uniform float roughness : hint_range(0.0, 1.0) = 0.0;
 uniform float storm_steepness : hint_range(0.0, 2.0) = 1.4;
 uniform float foam_level : hint_range(0.0, 1.0) = 0.45;
 uniform float foam_threshold : hint_range(0.0, 1.0) = 0.45;
-uniform float foam_scale = 0.08;
+uniform float foam_scale = 0.12;
 uniform float moon_bearing_deg : hint_range(0.0, 360.0) = 140.0;
 uniform float moon_elevation_deg : hint_range(0.0, 90.0) = 22.0;
 uniform float moon_path : hint_range(0.0, 2.0) = 0.25;
 uniform float moon_path_sharpness : hint_range(1.0, 2000.0) = 25.0;
-uniform float glitter : hint_range(0.0, 4.0) = 0.5;
-uniform float glitter_sharpness : hint_range(1.0, 4000.0) = 400.0;
+uniform float glitter : hint_range(0.0, 4.0) = 1.6;
+uniform float glitter_sharpness : hint_range(1.0, 4000.0) = 300.0;
+uniform float ripple_strength : hint_range(0.0, 1.0) = 0.08;
+uniform float ripple_speed : hint_range(0.0, 4.0) = 1.0;
 uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
 uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
 
-const int OCTAVES = 9;
+const int OCTAVES = 6;
+const int RIPPLE_LAYERS = 3;
+const float RIPPLE_WAVES[3] = float[](3.5, 1.4, 0.6);
+const float RIPPLE_ANGLES[3] = float[](0.0, 1.2, -0.9);
+const float RIPPLE_SPEEDS[3] = float[](2.6, 1.9, 1.3);
+const float RIPPLE_STRETCH = 0.55;
+const float RIPPLE_STEP = 0.05;
+const float RIPPLE_PIXELS = 1.0;
 const int WARPED_OCTAVES = 3;
 const float OCTAVE_STEP = 0.55;
 const float CHOP_WAVE = 6.0;
@@ -39,13 +48,12 @@ const float OCTAVE_SEED = 7.31;
 const float WARP = 1.4;
 const float CREST_STRETCH = 0.7;
 const float SLOPE_STEP = 0.15;
-const float FOAM_STREAK = 0.25;
+const float FOAM_DRIFT = 0.15;
 const float FOAM_LEVEL = 0.32;
-const float CALM_FOAM = 0.25;
 const float GRAVITY = 9.81;
 const float DISPLAY_GAMMA = 2.2;
 const float DITHER_STEP = 1.0 / 255.0;
-const float PIXELS_PER_WAVE = 2.0;
+const float PIXELS_PER_WAVE = 1.0;
 const float FOAM_FOOTPRINT = 2.0;
 
 varying vec3 world_pos;
@@ -136,6 +144,30 @@ float sea_height(vec2 xz, float footprint, float chop) {
 	return height;
 }
 
+// Fast capillary ripples: three sheets crossing from different directions,
+// sliding faster than the swell beneath them. These are what catch the moon.
+vec2 ripple_slope(vec2 xz, float footprint) {
+	float wind = radians(wind_bearing_deg);
+	vec2 slope = vec2(0.0);
+	for (int i = 0; i < RIPPLE_LAYERS; i++) {
+		float wavelength = RIPPLE_WAVES[i];
+		float resolved = smoothstep(footprint * RIPPLE_PIXELS, footprint * RIPPLE_PIXELS * 2.0, wavelength);
+		if (resolved <= 0.0) {
+			continue;
+		}
+		float angle = wind + RIPPLE_ANGLES[i];
+		vec2 heading = vec2(sin(angle), -cos(angle));
+		vec2 across = vec2(-heading.y, heading.x);
+		vec2 p = vec2(dot(xz, across) * RIPPLE_STRETCH, dot(xz, heading) - RIPPLE_SPEEDS[i] * ripple_speed * TIME) / wavelength + float(i) * OCTAVE_SEED;
+		float centre = wave_noise(p);
+		float dx = wave_noise(p + vec2(RIPPLE_STEP, 0.0)) - centre;
+		float dy = wave_noise(p + vec2(0.0, RIPPLE_STEP)) - centre;
+		vec2 local = vec2(dx * RIPPLE_STRETCH, dy) / RIPPLE_STEP;
+		slope += (across * local.x + heading * local.y) * ripple_strength * resolved;
+	}
+	return slope;
+}
+
 void vertex() {
 	world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
@@ -148,7 +180,8 @@ void fragment() {
 	float centre = sea_height(world_pos.xz, footprint, chop);
 	float east = sea_height(world_pos.xz + vec2(step_size, 0.0), footprint, chop);
 	float north = sea_height(world_pos.xz + vec2(0.0, step_size), footprint, chop);
-	vec3 normal = normalize(vec3(centre - east, step_size, centre - north));
+	vec2 ripples = ripple_slope(world_pos.xz, footprint) * chop;
+	vec3 normal = normalize(vec3((centre - east) / step_size - ripples.x, 1.0, (centre - north) / step_size - ripples.y));
 	vec3 bounce = reflect(view_ray, normal);
 	bounce.y = abs(bounce.y);
 
@@ -160,13 +193,13 @@ void fragment() {
 	v += pow(toward_moon, moon_path_sharpness) * moon_path * fresnel;
 	v += pow(toward_moon, glitter_sharpness) * glitter * fresnel;
 
-	float wind = radians(wind_bearing_deg);
-	vec2 downwind = vec2(sin(wind), -cos(wind));
-	vec2 streak = vec2(dot(world_pos.xz, vec2(-downwind.y, downwind.x)), dot(world_pos.xz, downwind) * FOAM_STREAK) * foam_scale;
-	float lace = value_noise(streak + vec2(0.0, TIME * 0.05)) * value_noise(streak * 3.1 - vec2(TIME * 0.03, 0.0));
-	float crest = smoothstep(0.0, 1.0, centre / (longest_wave * steepness * 0.25) + 0.5);
-	float foam = smoothstep(foam_threshold, 1.0, lace * 2.0) * mix(CALM_FOAM, 1.0, roughness) * (0.4 + crest);
-	v = mix(v, FOAM_LEVEL, foam * foam_level * smoothstep(FOAM_FOOTPRINT, FOAM_FOOTPRINT * 0.25, footprint));
+	if (roughness > 0.0) {
+		vec2 p = world_pos.xz * foam_scale;
+		float lace = wave_noise(p + TIME * FOAM_DRIFT) * wave_noise(p * 2.7 - TIME * FOAM_DRIFT);
+		float crest = smoothstep(0.0, 1.0, centre / (longest_wave * steepness * 0.25) + 0.5);
+		float foam = smoothstep(foam_threshold, 1.0, lace * 2.0) * roughness * (0.4 + crest);
+		v = mix(v, FOAM_LEVEL, foam * foam_level * smoothstep(FOAM_FOOTPRINT, FOAM_FOOTPRINT * 0.25, footprint));
+	}
 
 	v = max(v, 0.0) + lightning_flash * lightning_reflection;
 	vec2 cell = FRAGCOORD.xy + fract(TIME) * 431.0;
