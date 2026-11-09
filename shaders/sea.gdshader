@@ -36,6 +36,7 @@ uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
 uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
 
 const float DISPLAY_GAMMA = 2.2;
+const float DITHER_STEP = 1.0 / 255.0;
 
 float hash21(vec2 p) {
 	p = fract(p * vec2(233.34, 851.73));
@@ -136,5 +137,7 @@ void fragment() {
 	v += moon_light(normalize(world_pos - CAMERA_POSITION_WORLD), length(world_pos.xz - CAMERA_POSITION_WORLD.xz));
 	v += roughness * rough_water(world_pos.xz);
 	v = max(v, 0.0) + lightning_flash * lightning_reflection;
-	ALBEDO = vec3(pow(v, DISPLAY_GAMMA));
+	vec2 cell = FRAGCOORD.xy + fract(TIME) * 431.0;
+	v += (hash21(cell) + hash21(cell + 17.0) - 1.0) * DITHER_STEP;
+	ALBEDO = vec3(pow(max(v, 0.0), DISPLAY_GAMMA));
 }
