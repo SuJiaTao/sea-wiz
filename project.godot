@@ -60,5 +60,5 @@ enter_text={
 
 [rendering]
 
-textures/default_filters/anisotropic_filtering_level=0
+textures/default_filters/anisotropic_filtering_level=3
 environment/defaults/default_clear_color=Color(0, 0, 0, 1)

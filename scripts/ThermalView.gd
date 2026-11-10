@@ -11,6 +11,7 @@ const GAIN_RECOVERY := 1.2
 
 @export var turret: Turret
 @export var afterglow: AfterglowBuffer
+@export var resolution: RenderResolution
 
 var polarity: float = 0.0
 var focus_error: float = 0.0
@@ -23,11 +24,16 @@ var _sharp_blur: float = 0.0
 
 
 func _ready() -> void:
+	stretch = false
+	set_anchors_preset(Control.PRESET_TOP_LEFT)
+	position = Vector2.ZERO
 	var image: Texture2D = $SubViewport.get_texture()
 	_thermal.set_shader_parameter("sensor_image", image)
 	_thermal.set_shader_parameter("trail_image", afterglow.get_texture() if afterglow != null else image)
 	_sharp_blur = _thermal.get_shader_parameter("optical_blur")
-	resized.connect(_update_sensor_size)
+	get_viewport().size_changed.connect(_update_sensor_size)
+	if resolution != null:
+		resolution.changed.connect(_update_sensor_size)
 	_update_sensor_size()
 
 
@@ -53,7 +59,13 @@ func _process(delta: float) -> void:
 
 
 func _update_sensor_size() -> void:
-	var sensor_size := size / float(stretch_shrink)
+	var sensor_size := get_viewport().get_visible_rect().size
+	var pixels := resolution.pixels_per_unit(sensor_size) if resolution != null else 1.0
+	var render_size := (sensor_size * pixels).round()
+	$SubViewport.size = Vector2i(render_size)
+	size = render_size
+	scale = Vector2.ONE / pixels
 	_thermal.set_shader_parameter("sensor_size", sensor_size.max(Vector2(64, 36)))
 	if afterglow != null:
 		afterglow.size = Vector2i(sensor_size)
+
