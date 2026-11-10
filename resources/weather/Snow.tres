@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_profile")
 display_name = "SNOW"
-fog_density = 0.0009
+fog_density = 0.0018
 snow_rate = 6000.0
 lens_drops_per_second = 0.2
 radar_clutter = 0.15
