@@ -3,6 +3,7 @@ class_name LensSpray
 
 const MAX_DROPLETS: int = 12
 const UNIFORM := "droplets"
+const SHAPE_UNIFORM := "droplet_shapes"
 const GRAVITY: float = 0.6
 const INERTIA: float = 0.5
 const STICKING: float = 0.025
@@ -76,8 +77,12 @@ func _on_lens(droplet: LensDroplet) -> bool:
 
 func _upload() -> void:
 	var packed := PackedVector4Array()
+	var shapes := PackedVector4Array()
 	packed.resize(MAX_DROPLETS)
+	shapes.resize(MAX_DROPLETS)
 	for index in _droplets.size():
 		var droplet := _droplets[index]
 		packed[index] = Vector4(droplet.position.x, droplet.position.y, droplet.radius, droplet.strength)
+		shapes[index] = droplet.shape()
 	_thermal.set_shader_parameter(UNIFORM, packed)
+	_thermal.set_shader_parameter(SHAPE_UNIFORM, shapes)
