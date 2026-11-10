@@ -55,7 +55,7 @@ uniform float damage_jitter_samples : hint_range(0.0, 20.0) = 3.0;
 
 const vec3 LUMA = vec3(0.299, 0.587, 0.114);
 const int TAIL_TAPS = 4;
-const int STREAK_TAPS = 8;
+const int STREAK_TAPS = 5;
 const float STREAK_FALLOFF = 2.0;
 const float HEAD_SWITCH_JITTER = 0.35;
 const float BORDER_JAGGIES = 0.0015;
