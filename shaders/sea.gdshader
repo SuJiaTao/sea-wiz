@@ -11,7 +11,7 @@ uniform float reflectance : hint_range(0.0, 0.2) = 0.06;
 uniform float wind_bearing_deg : hint_range(0.0, 360.0) = 60.0;
 uniform sampler2D wave_normals : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform float swell_strength : hint_range(0.0, 2.0) = 0.25;
-uniform float ripple_strength : hint_range(0.0, 2.0) = 0.55;
+uniform float ripple_strength : hint_range(0.0, 2.0) = 0.35;
 uniform float glint_ripple : hint_range(0.0, 2.0) = 0.9;
 uniform float gustiness : hint_range(0.0, 1.0) = 0.55;
 uniform float roughness : hint_range(0.0, 1.0) = 0.0;
@@ -24,9 +24,6 @@ uniform float moon_elevation_deg : hint_range(0.0, 90.0) = 22.0;
 uniform float moon_path : hint_range(0.0, 2.0) = 0.25;
 uniform float moon_path_sharpness : hint_range(1.0, 2000.0) = 25.0;
 uniform float glitter : hint_range(0.0, 12.0) = 4.0;
-uniform float sheen : hint_range(0.0, 8.0) = 1.4;
-uniform float sheen_sharpness : hint_range(1.0, 2000.0) = 120.0;
-uniform float crinkle_sharpness : hint_range(1.0, 4000.0) = 250.0;
 uniform float glitter_sharpness : hint_range(1.0, 8000.0) = 3000.0;
 uniform float ripple_speed : hint_range(0.0, 4.0) = 1.0;
 uniform float rain : hint_range(0.0, 1.0) = 0.0;
@@ -51,8 +48,6 @@ const float GUST_SIZE = 140.0;
 const vec2 GUST_DRIFT = vec2(0.012, 0.02);
 const float FOAM_DRIFT = 0.15;
 const float GLINT_FLOOR = 0.5;
-const float CRINKLE_FLOOR = 0.04;
-const float CRINKLE_STRETCH = 0.8;
 const float GLINT_SPREAD = 6.0;
 const float GLINT_SPREAD_MAX = 2.5;
 const float RAIN_CELL = 2.5;
@@ -162,7 +157,7 @@ void fragment() {
 	// Fine sparkle ripples only tilt the glints; the body of the water stays glassy.
 	vec2 sparkle = slope;
 	for (int i = 0; i < GLINT_LAYERS; i++) {
-		sparkle += wave_layer(world_pos.xz, wind + GLINT_ANGLES[i], GLINT_TILES[i], GLINT_SPEED * ripple_speed, CRINKLE_STRETCH, glint_ripple * chop);
+		sparkle += wave_layer(world_pos.xz, wind + GLINT_ANGLES[i], GLINT_TILES[i], GLINT_SPEED * ripple_speed, RIPPLE_STRETCH, glint_ripple * chop);
 	}
 	vec3 glint_bounce = reflect(view_ray, normalize(vec3(-sparkle.x, 1.0, -sparkle.y)));
 	vec3 bounce = reflect(view_ray, normal);
@@ -174,10 +169,6 @@ void fragment() {
 
 	float toward_moon = max(dot(bounce, moon_direction()), 0.0);
 	v += pow(toward_moon, moon_path_sharpness) * moon_path * fresnel;
-	// Swell faces turned to the moon light up as patches, crinkled by the fine ripples.
-	float sheen_face = pow(toward_moon, sheen_sharpness);
-	float crinkle = pow(max(dot(glint_bounce, moon_direction()), 0.0), crinkle_sharpness);
-	v += sheen_face * (CRINKLE_FLOOR + crinkle) * sheen * fresnel;
 	// Sub-pixel sparkle ripples: widen the glint lobe so the moon path still twinkles far out.
 	float glint_footprint = length(fwidth(world_pos.xz));
 	float spread = min(1.0 + glint_footprint * GLINT_SPREAD, GLINT_SPREAD_MAX);
