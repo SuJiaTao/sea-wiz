@@ -97,6 +97,7 @@
 [ext_resource type="Script" uid="uid://byx13np1h1yml" path="res://scripts/weather/PrecipitationWeather.gd" id="84_precip"]
 [ext_resource type="Script" uid="uid://dbslkmkup63ge" path="res://scripts/weather/LensRainWeather.gd" id="85_lens_rain"]
 [ext_resource type="Script" path="res://scripts/weather/BarrelClimateWeather.gd" id="85_barrel_climate"]
+[ext_resource type="Script" path="res://scripts/weather/CloudWeather.gd" id="85_clouds"]
 [ext_resource type="QuadMesh" uid="uid://efqwkh210cn1" path="res://resources/weather/RainStreak.tres" id="86_rain_mesh"]
 [ext_resource type="QuadMesh" uid="uid://bd5fur0cuaei0" path="res://resources/weather/SnowFlake.tres" id="87_snow_mesh"]
 [ext_resource type="Resource" path="res://resources/weather/Rain.tres" id="88_rain"]
@@ -167,6 +168,7 @@ shader_parameter/sky_top_color = Color(0.035, 0.035, 0.035, 1)
 shader_parameter/sky_horizon_color = Color(0.16, 0.16, 0.16, 1)
 shader_parameter/sky_curve = 0.12
 shader_parameter/cloud_contrast = 0.2
+shader_parameter/cloud_drift = Vector2(0, -0.006)
 shader_parameter/ground_horizon_color = Color(0.16, 0.16, 0.16, 1)
 shader_parameter/ground_bottom_color = Color(0, 0, 0, 1)
 shader_parameter/ground_curve = 0.02
@@ -319,6 +321,10 @@ lens = NodePath("../../LensSpray")
 [node name="BarrelClimate" type="Node" parent="Weather" node_paths=PackedStringArray("barrel_heat")]
 script = ExtResource("85_barrel_climate")
 barrel_heat = NodePath("../../ViewportContainer/SubViewport/World/BarrelHeat")
+
+[node name="Clouds" type="Node" parent="Weather" node_paths=PackedStringArray("environment")]
+script = ExtResource("85_clouds")
+environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
 
 [node name="Lightning" type="Node" parent="Weather" unique_id=1248630760 node_paths=PackedStringArray("bolt", "environment", "thermal", "thunder")]
 script = ExtResource("92_lightning")

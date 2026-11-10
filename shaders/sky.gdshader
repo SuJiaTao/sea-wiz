@@ -14,6 +14,8 @@ uniform float ground_curve : hint_range(0.001, 1.0) = 0.02;
 uniform float cloud_contrast : hint_range(0.0, 1.0) = 0.0;
 uniform float cloud_scale = 0.6;
 uniform vec2 cloud_drift = vec2(0.004, 0.001);
+// Cloud lit from below by the night glow: overcast reads as brighter patches.
+uniform float cloud_brightness : hint_range(0.0, 0.5) = 0.045;
 
 uniform float moon_bearing_deg : hint_range(0.0, 360.0) = 140.0;
 uniform float moon_elevation_deg : hint_range(0.0, 90.0) = 22.0;
@@ -43,6 +45,7 @@ const float DITHER_OFFSET = 17.0;
 const float CLOUD_DETAIL = 2.3;
 const vec2 CLOUD_SEED = vec2(5.2, 1.3);
 const float CLOUD_DETAIL_SHARE = 0.35;
+const float CLOUD_FILL = 0.15;
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -82,8 +85,15 @@ float cloud_cover(vec3 direction) {
 	return 1.0 + (n - 0.5) * 2.0 * cloud_contrast * smoothstep(0.0, CLOUD_HORIZON, direction.y);
 }
 
+float cloud_body(vec3 direction) {
+	vec2 plane = direction.xz / max(direction.y, CLOUD_HORIZON) * cloud_scale + TIME * cloud_drift;
+	float n = mix(value_noise(plane), value_noise(plane * CLOUD_DETAIL + CLOUD_SEED), CLOUD_DETAIL_SHARE);
+	float thickness = smoothstep(1.0 - cloud_contrast, 1.2 - cloud_contrast * 0.6, n + cloud_contrast * CLOUD_FILL);
+	return thickness * cloud_contrast * smoothstep(0.0, CLOUD_HORIZON, direction.y);
+}
+
 void sky() {
-	vec3 colour = atmosphere(EYEDIR) * cloud_cover(EYEDIR);
+	vec3 colour = atmosphere(EYEDIR) * cloud_cover(EYEDIR) + vec3(cloud_body(EYEDIR) * cloud_brightness);
 
 	vec3 toward = moon_direction();
 	float off_moon = degrees(acos(clamp(dot(EYEDIR, toward), -1.0, 1.0)));
