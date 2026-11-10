@@ -90,8 +90,9 @@ float column_gain(float column) {
 
 float night_vision(float l) {
 	float sky = smoothstep(0.0, nvg_sky_band, l) * nvg_sky_level;
-	float body = mix(sky, max(nvg_body_level, nvg_sky_level), smoothstep(nvg_sky_band, nvg_sky_band * 2.0, l));
-	return mix(body, 1.0, smoothstep(nvg_hot_start, 1.0, l));
+	float warmth = clamp((l - nvg_sky_band) / (nvg_hot_start - nvg_sky_band), 0.0, 1.0);
+	float body = mix(nvg_sky_level, max(nvg_body_level, nvg_sky_level), warmth);
+	return mix(l < nvg_sky_band ? sky : body, 1.0, smoothstep(nvg_hot_start, 1.0, l));
 }
 
 float sense(vec3 colour) {

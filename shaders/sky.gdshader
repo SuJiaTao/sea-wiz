@@ -10,6 +10,10 @@ uniform float sky_curve : hint_range(0.001, 1.0) = 0.06;
 uniform vec3 ground_horizon_color : source_color = vec3(0.16);
 uniform vec3 ground_bottom_color : source_color = vec3(0.0);
 uniform float ground_curve : hint_range(0.001, 1.0) = 0.02;
+// Broken overcast lit by starlight: soft patches that drift across the glow.
+uniform float cloud_contrast : hint_range(0.0, 1.0) = 0.0;
+uniform float cloud_scale = 0.6;
+uniform vec2 cloud_drift = vec2(0.004, 0.001);
 
 uniform float moon_bearing_deg : hint_range(0.0, 360.0) = 140.0;
 uniform float moon_elevation_deg : hint_range(0.0, 90.0) = 22.0;
@@ -38,6 +42,16 @@ uniform float aurora_speed = 0.05;
 
 const float HALF_PI = 1.5707963;
 const float EDGE_SOFTNESS = 0.08;
+const float CLOUD_HORIZON = 0.35;
+// One display step of triangular noise, so the 8-bit sky never bands
+// once the night vision gain stretches it.
+const float DITHER_STEP = 1.0 / 255.0;
+const float DISPLAY_GAMMA = 2.2;
+const float DITHER_SEED = 431.0;
+const float DITHER_OFFSET = 17.0;
+const float CLOUD_DETAIL = 2.3;
+const vec2 CLOUD_SEED = vec2(5.2, 1.3);
+const float CLOUD_DETAIL_SHARE = 0.35;
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -96,8 +110,14 @@ vec3 aurora_light(vec3 direction) {
 	return tint * band * curtain * rays * folds * aurora_brightness;
 }
 
+float cloud_cover(vec3 direction) {
+	vec2 plane = direction.xz / max(direction.y, CLOUD_HORIZON) * cloud_scale + TIME * cloud_drift;
+	float n = mix(value_noise(plane), value_noise(plane * CLOUD_DETAIL + CLOUD_SEED), CLOUD_DETAIL_SHARE);
+	return 1.0 + (n - 0.5) * 2.0 * cloud_contrast * smoothstep(0.0, CLOUD_HORIZON, direction.y);
+}
+
 void sky() {
-	vec3 colour = atmosphere(EYEDIR);
+	vec3 colour = atmosphere(EYEDIR) * cloud_cover(EYEDIR);
 
 	vec3 toward = moon_direction();
 	float off_moon = degrees(acos(clamp(dot(EYEDIR, toward), -1.0, 1.0)));
@@ -122,5 +142,7 @@ void sky() {
 	float off_bolt = degrees(acos(clamp(dot(EYEDIR, normalize(lightning_direction)), -1.0, 1.0)));
 	colour += lightning_flash * (lightning_ambient + exp(-off_bolt / lightning_spread_deg));
 	colour += aurora * aurora_light(EYEDIR);
-	COLOR = colour;
+	vec2 cell = FRAGCOORD.xy + fract(TIME) * DITHER_SEED;
+	float dither = (hash12(cell) + hash12(cell + DITHER_OFFSET) - 1.0) * DITHER_STEP;
+	COLOR = pow(max(pow(colour, vec3(1.0 / DISPLAY_GAMMA)) + dither, vec3(0.0)), vec3(DISPLAY_GAMMA));
 }
