@@ -27,6 +27,8 @@ uniform float flash : hint_range(0.0, 1.0) = 0.0;
 // Water on the lens: xy centre in UV, z radius (fraction of height), w strength.
 const int MAX_DROPLETS = 12;
 uniform vec4 droplets[MAX_DROPLETS];
+// Drop shape: xy stretch across and down, zw trail back along its run (UV).
+uniform vec4 droplet_shapes[MAX_DROPLETS];
 uniform float droplet_refraction : hint_range(0.0, 3.0) = 1.6;
 uniform float droplet_cooling : hint_range(0.0, 1.0) = 0.65;
 uniform float droplet_rim : hint_range(0.0, 1.0) = 0.12;
@@ -62,6 +64,11 @@ uniform float shock_width : hint_range(0.005, 0.2) = 0.025;
 uniform float shock_glow : hint_range(0.0, 20.0) = 4.0;
 
 const vec3 LUMA = vec3(0.30, 0.59, 0.11);
+const float MIN_STRETCH = 0.3;
+const float DROP_SAG = 0.45;
+const float TRAIL_WIDTH = 0.35;
+const float TRAIL_TAPER = 0.6;
+const float TRAIL_WET = 0.45;
 const int RING_TAPS = 8;
 const float COLUMN_SEED = 17.3;
 const float STUCK_SEED = 91.7;
@@ -141,8 +148,19 @@ void fragment() {
 		if (drop.w <= 0.0) {
 			continue;
 		}
-		vec2 offset = (UV - drop.xy) * aspect / drop.z;
+		vec4 shape = droplet_shapes[i];
+		vec2 offset = (UV - drop.xy) * aspect / drop.z / max(shape.xy, vec2(MIN_STRETCH));
+		offset.x /= max(1.0 + offset.y * DROP_SAG, MIN_STRETCH);
 		float r2 = dot(offset, offset);
+		vec2 trail = shape.zw;
+		float trail_reach = dot(trail, trail);
+		if (trail_reach > 0.0) {
+			float along = clamp(dot(UV - drop.xy, trail) / trail_reach, 0.0, 1.0);
+			float across = length((UV - drop.xy - trail * along) * aspect) / (drop.z * TRAIL_WIDTH * (1.0 - along * TRAIL_TAPER));
+			if (across < 1.0 && along > 0.0) {
+				wet = max(wet, (1.0 - across * across) * (1.0 - along) * TRAIL_WET * drop.w);
+			}
+		}
 		if (r2 < 1.0) {
 			float bulge = sqrt(1.0 - r2);
 			bend -= (UV - drop.xy) * droplet_refraction * bulge * drop.w;
