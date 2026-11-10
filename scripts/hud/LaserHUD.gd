@@ -33,5 +33,9 @@ func _project() -> void:
 	get_viewport().size_changed.connect(_fit)
 
 
+func glass_material() -> ShaderMaterial:
+	return _glass.material as ShaderMaterial if _glass != null else null
+
+
 func _fit() -> void:
 	_projector.size = get_viewport().get_visible_rect().size

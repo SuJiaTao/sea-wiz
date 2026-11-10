@@ -23,6 +23,7 @@
 [ext_resource type="Texture2D" path="res://resources/world/WaveNormals.tres" id="15_wave_normals"]
 [ext_resource type="Script" uid="uid://cnlhuaro2rmrv" path="res://scripts/hud/PlayerHUD.gd" id="16_player_hud"]
 [ext_resource type="Script" path="res://scripts/hud/LaserHUD.gd" id="16_laser_hud"]
+[ext_resource type="Script" path="res://scripts/hud/HUDCorruption.gd" id="16_hud_corruption"]
 [ext_resource type="Script" uid="uid://5tpmswxer4mm" path="res://scripts/hud/CombatFeedbackHUD.gd" id="17_feedback_hud"]
 [ext_resource type="Script" uid="uid://5v68cijhwppy" path="res://scripts/hud/WaveHUD.gd" id="18_wave_hud"]
 [ext_resource type="Script" uid="uid://m6u3455fgobo" path="res://scripts/hud/TrackHUD.gd" id="19_track_hud"]
@@ -778,6 +779,11 @@ volume_db = -9.0
 script = ExtResource("16_laser_hud")
 hud_root = NodePath("../HUDRoot")
 layer = NodePath("..")
+
+[node name="HUDCorruption" type="Node" parent="HUD" node_paths=PackedStringArray("integrity", "laser")]
+script = ExtResource("16_hud_corruption")
+integrity = NodePath("../../ViewportContainer/SubViewport/World/ShipDamage/Integrity")
+laser = NodePath("../LaserHUD")
 
 [node name="TitleScreen" parent="HUD" unique_id=109323306 instance=ExtResource("28_title")]
 layout_mode = 3
