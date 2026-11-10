@@ -51,6 +51,8 @@ const float GUST_SIZE = 140.0;
 const vec2 GUST_DRIFT = vec2(0.012, 0.02);
 const float FOAM_DRIFT = 0.15;
 const float GLINT_FLOOR = 0.5;
+const float GLINT_SPREAD = 6.0;
+const float GLINT_SPREAD_MAX = 5.0;
 const float RAIN_CELL = 2.5;
 const float RAIN_RATE = 1.3;
 const float RAIN_REACH = 0.45;
@@ -162,7 +164,11 @@ void fragment() {
 
 	float toward_moon = max(dot(bounce, moon_direction()), 0.0);
 	v += pow(toward_moon, moon_path_sharpness) * moon_path * fresnel;
-	v += pow(max(dot(glint_bounce, moon_direction()), 0.0), glitter_sharpness) * glitter * (GLINT_FLOOR + fresnel);
+	// Far away the sparkle ripples are smaller than a pixel: widen the glint
+	// lobe instead of losing it, so the moon path still twinkles at range.
+	float glint_footprint = length(fwidth(world_pos.xz));
+	float spread = min(1.0 + glint_footprint * GLINT_SPREAD, GLINT_SPREAD_MAX);
+	v += pow(max(dot(glint_bounce, moon_direction()), 0.0), glitter_sharpness / spread) * glitter * (GLINT_FLOOR + fresnel) / sqrt(spread);
 
 	if (roughness > 0.0) {
 		vec2 p = world_pos.xz * foam_scale;
