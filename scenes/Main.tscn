@@ -590,7 +590,7 @@ muzzle_motion = NodePath("MuzzleMotion")
 script = ExtResource("95_muzzle_motion")
 turret = NodePath("../../Vessel/Turret")
 
-[node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=803649068 node_paths=PackedStringArray("turret", "enemies", "ballistics", "renderer", "smoke")]
+[node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=803649068 node_paths=PackedStringArray("turret", "enemies", "ballistics", "renderer", "smoke", "cells")]
 script = ExtResource("21_launcher")
 turret = NodePath("../../Vessel/Turret")
 enemies = NodePath("../../Enemies")
@@ -598,6 +598,7 @@ ballistics = NodePath("../../Ballistics")
 renderer = NodePath("../../Missiles")
 smoke = NodePath("../../MissileSmoke")
 damage_source = ExtResource("27_missile_source")
+cells = NodePath("../../Vessel/Warship/ForwardVLS")
 
 [node name="SalvoManager" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=981589763 node_paths=PackedStringArray("launcher", "enemies")]
 script = ExtResource("22_salvos")
