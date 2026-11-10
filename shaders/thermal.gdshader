@@ -27,7 +27,7 @@ uniform float flash : hint_range(0.0, 1.0) = 0.0;
 // Water on the lens: xy centre in UV, z radius (fraction of height), w strength.
 const int MAX_DROPLETS = 12;
 uniform vec4 droplets[MAX_DROPLETS];
-// Drop shape: xy stretch across and down, zw trail back along its run (UV).
+// Drop shape: xy jiggle stretch, zw the neck back to where it first landed (UV).
 uniform vec4 droplet_shapes[MAX_DROPLETS];
 uniform float droplet_refraction : hint_range(0.0, 3.0) = 1.6;
 uniform float droplet_cooling : hint_range(0.0, 1.0) = 0.65;
@@ -65,10 +65,10 @@ uniform float shock_glow : hint_range(0.0, 20.0) = 4.0;
 
 const vec3 LUMA = vec3(0.30, 0.59, 0.11);
 const float MIN_STRETCH = 0.3;
-const float DROP_SAG = 0.45;
-const float TRAIL_WIDTH = 0.35;
-const float TRAIL_TAPER = 0.6;
-const float TRAIL_WET = 0.45;
+const float TOP_WEIGHT = 0.35;
+const float NECK_HEAD_WIDTH = 0.8;
+const float NECK_TAIL_WIDTH = 0.35;
+const float NECK_STRENGTH = 0.7;
 const int RING_TAPS = 8;
 const float COLUMN_SEED = 17.3;
 const float STUCK_SEED = 91.7;
@@ -150,20 +150,24 @@ void fragment() {
 		}
 		vec4 shape = droplet_shapes[i];
 		vec2 offset = (UV - drop.xy) * aspect / drop.z / max(shape.xy, vec2(MIN_STRETCH));
-		offset.x /= max(1.0 + offset.y * DROP_SAG, MIN_STRETCH);
 		float r2 = dot(offset, offset);
-		vec2 trail = shape.zw;
-		float trail_reach = dot(trail, trail);
-		if (trail_reach > 0.0) {
-			float along = clamp(dot(UV - drop.xy, trail) / trail_reach, 0.0, 1.0);
-			float across = length((UV - drop.xy - trail * along) * aspect) / (drop.z * TRAIL_WIDTH * (1.0 - along * TRAIL_TAPER));
+		float heavy = mix(TOP_WEIGHT, 1.0, smoothstep(-1.0, 1.0, offset.y));
+		vec2 neck = shape.zw;
+		float neck_reach = dot(neck, neck);
+		if (neck_reach > 0.0) {
+			float along = clamp(dot(UV - drop.xy, neck) / neck_reach, 0.0, 1.0);
+			vec2 from_neck = (UV - drop.xy - neck * along) * aspect;
+			float width = drop.z * mix(NECK_HEAD_WIDTH, NECK_TAIL_WIDTH, along);
+			float across = length(from_neck) / width;
 			if (across < 1.0 && along > 0.0) {
-				wet = max(wet, (1.0 - across * across) * (1.0 - along) * TRAIL_WET * drop.w);
+				float body = sqrt(1.0 - across * across) * drop.w * NECK_STRENGTH;
+				bend -= from_neck / aspect * droplet_refraction * body;
+				wet = max(wet, body);
 			}
 		}
 		if (r2 < 1.0) {
 			float bulge = sqrt(1.0 - r2);
-			bend -= (UV - drop.xy) * droplet_refraction * bulge * drop.w;
+			bend -= (UV - drop.xy) * droplet_refraction * bulge * heavy * drop.w;
 			wet = max(wet, bulge * drop.w);
 			rim = max(rim, smoothstep(0.6, 0.95, r2) * (1.0 - r2) * 4.0 * drop.w);
 		}
