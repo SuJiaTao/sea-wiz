@@ -25,6 +25,8 @@ func set_enabled(value: bool) -> void:
 	turret.set_enabled(value)
 	missile_launcher.set_enabled(value)
 	salvos.set_enabled(value)
+	for weapon in _deck_weapons():
+		weapon.set_enabled(value)
 
 
 func handle_input(event: InputEvent) -> bool:
@@ -33,7 +35,19 @@ func handle_input(event: InputEvent) -> bool:
 	if event.is_action_pressed("ciws_salvo"):
 		salvos.request_salvo()
 		return true
+	for weapon in _deck_weapons():
+		if weapon.handle_input(event):
+			return true
 	return false
+
+
+
+func _deck_weapons() -> Array[AbstractDeckWeapon]:
+	var found: Array[AbstractDeckWeapon] = []
+	for child in get_children():
+		if child is AbstractDeckWeapon:
+			found.append(child)
+	return found
 
 
 func _physics_process(_delta: float) -> void:
