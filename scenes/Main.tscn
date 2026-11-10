@@ -19,6 +19,7 @@
 [ext_resource type="Resource" path="res://levels/Formations.tres" id="97_formations"]
 [ext_resource type="Shader" uid="uid://b4v53wi6xsomg" path="res://shaders/thermal.gdshader" id="14_thermal_shader"]
 [ext_resource type="Shader" uid="uid://c62jnvd10xwhp" path="res://shaders/sea.gdshader" id="15_sea_shader"]
+[ext_resource type="Texture2D" path="res://resources/world/WaveNormals.tres" id="15_wave_normals"]
 [ext_resource type="Script" uid="uid://cnlhuaro2rmrv" path="res://scripts/hud/PlayerHUD.gd" id="16_player_hud"]
 [ext_resource type="Script" path="res://scripts/hud/LaserHUD.gd" id="16_laser_hud"]
 [ext_resource type="Script" uid="uid://5tpmswxer4mm" path="res://scripts/hud/CombatFeedbackHUD.gd" id="17_feedback_hud"]
@@ -121,26 +122,11 @@
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
 shader = ExtResource("15_sea_shader")
-shader_parameter/base_level = 0.09
-shader_parameter/clutter_level = 0.04
-shader_parameter/clutter_scale = 0.12
-shader_parameter/clutter_speed = 0.09
-shader_parameter/falloff = 900.0
+shader_parameter/wave_normals = ExtResource("15_wave_normals")
+shader_parameter/base_level = 0.11
 shader_parameter/moon_bearing_deg = 140.0
 shader_parameter/moon_elevation_deg = 22.0
-shader_parameter/glitter = 2.2
-shader_parameter/glitter_sharpness = 120.0
-shader_parameter/ripple_scale = 0.35
-shader_parameter/ripple_slope = 0.22
-shader_parameter/ripple_speed = 0.6
 shader_parameter/roughness = 0.0
-shader_parameter/swell_wavelength = 140.0
-shader_parameter/swell_speed = 9.0
-shader_parameter/swell_level = 0.04
-shader_parameter/whitecap_level = 0.16
-shader_parameter/foam_scale = 0.22
-shader_parameter/storm_falloff = 1600.0
-shader_parameter/storm_slope = 2.5
 shader_parameter/lightning_flash = 0.0
 shader_parameter/lightning_reflection = 0.3
 
@@ -177,10 +163,10 @@ shader_parameter/shot_noise = 0.3
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
-shader_parameter/sky_top_color = Color(0.07, 0.07, 0.07, 1)
+shader_parameter/sky_top_color = Color(0.035, 0.035, 0.035, 1)
 shader_parameter/sky_horizon_color = Color(0.16, 0.16, 0.16, 1)
-shader_parameter/sky_curve = 0.25
-shader_parameter/cloud_contrast = 0.35
+shader_parameter/sky_curve = 0.12
+shader_parameter/cloud_contrast = 0.2
 shader_parameter/ground_horizon_color = Color(0.16, 0.16, 0.16, 1)
 shader_parameter/ground_bottom_color = Color(0, 0, 0, 1)
 shader_parameter/ground_curve = 0.02
@@ -223,7 +209,7 @@ glow_strength = 0.8
 glow_blend_mode = 0
 fog_enabled = true
 fog_light_color = Color(0.12, 0.12, 0.12, 1)
-fog_density = 0.00025
+fog_density = 0.00012
 fog_sky_affect = 0.0
 
 [sub_resource type="PlaneMesh" id="Mesh_sea"]
