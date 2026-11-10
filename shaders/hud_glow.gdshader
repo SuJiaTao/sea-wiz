@@ -12,7 +12,7 @@ uniform float glow_radius_pixels : hint_range(1.0, 40.0) = 9.0;
 uniform float glow_amount : hint_range(0.0, 3.0) = 0.45;
 uniform float grain_amount : hint_range(0.0, 0.5) = 0.25;
 
-const int RING_TAPS = 8;
+const int RING_TAPS = 6;
 const float GRAIN_TILE = 512.0;
 
 float hash12(vec2 p) {

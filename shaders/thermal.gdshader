@@ -204,8 +204,12 @@ void fragment() {
 		for (int step = 1; step <= GLINT_STEPS; step++) {
 			float along = float(step) / float(GLINT_STEPS);
 			vec2 at = uv - direction * along;
+			float source = dot(texture(sensor_image, at).rgb, LUMA);
+			if (source <= glint_threshold) {
+				continue;
+			}
 			float point = glint_point(
-				dot(texture(sensor_image, at).rgb, LUMA),
+				source,
 				max(dot(texture(sensor_image, at + across).rgb, LUMA), dot(texture(sensor_image, at - across).rgb, LUMA))
 			);
 			glint += point * exp(-along * GLINT_FALLOFF) * shimmer * glint_spectrum(along);
