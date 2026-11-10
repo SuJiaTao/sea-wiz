@@ -80,18 +80,42 @@ func _begin_next_level() -> void:
 
 
 func _spawn(entry: WaveSpawn) -> bool:
-	var instance := entry.enemy_scene.instantiate()
-	var enemy := instance as AbstractEnemy
-	if enemy == null:
-		instance.free()
-		_fail("Wave scene root must extend AbstractEnemy.")
-		return false
 	var angle := _bearing_for(entry.group)
 	var distance := randf_range(entry.distance.x, entry.distance.y)
 	var altitude := randf_range(entry.altitude.x, entry.altitude.y)
 	var position := _enemies.global_position + Vector3(
 		cos(angle) * distance, altitude, sin(angle) * distance
 	)
+	if entry.formation == null:
+		return _spawn_one(entry, position, null)
+	var heading := (_enemies.global_position - position) * Vector3(1.0, 0.0, 1.0)
+	heading = heading.normalized()
+	var right := heading.cross(Vector3.UP)
+	for slot in entry.formation.slots.size():
+		var offset := entry.formation.slots[slot]
+		var approach := FormationApproach.new(
+			heading,
+			entry.formation.break_range,
+			entry.formation.break_turn_for(slot),
+			entry.formation.break_time
+		)
+		var slot_position := position + right * offset.x + Vector3.UP * offset.y - heading * offset.z
+		if not _spawn_one(entry, slot_position, approach):
+			return false
+	return true
+
+
+func _spawn_one(entry: WaveSpawn, position: Vector3, approach: FormationApproach) -> bool:
+	var instance := entry.enemy_scene.instantiate()
+	var enemy := instance as AbstractEnemy
+	if enemy == null:
+		instance.free()
+		_fail("Wave scene root must extend AbstractEnemy.")
+		return false
+	if approach != null and enemy is FlyingEnemy:
+		var flyer := enemy as FlyingEnemy
+		flyer.approach = approach
+		flyer.velocity = approach.heading()
 	if not _enemies.create(enemy, Transform3D(Basis.IDENTITY, position)):
 		enemy.free()
 		_fail("EnemyManager rejected a wave spawn.")

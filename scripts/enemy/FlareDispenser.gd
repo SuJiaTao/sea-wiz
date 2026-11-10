@@ -11,13 +11,19 @@ signal released(flares: Array[DecoyFlare])
 @export var carrier_momentum: float = 0.5
 @export var drag: float = 1.2
 @export var burn_time := Vector2(2.5, 3.5)
+@export var salvos: int = 2
 
 var _ready_in: float = 0.0
+var _salvos_left: int = 0
 var _salvo: Array[DecoyFlare] = []
 
 
+func _ready() -> void:
+	_salvos_left = salvos
+
+
 func respond_to_missile(origin: Vector3, carrier_velocity: Vector3) -> DecoyFlare:
-	if _ready_in <= 0.0:
+	if _ready_in <= 0.0 and _salvos_left > 0:
 		_release(origin, carrier_velocity)
 		return _pick_burning(seduce_chance)
 	return _pick_burning(lingering_seduce_chance)
@@ -34,6 +40,7 @@ func _release(origin: Vector3, carrier_velocity: Vector3) -> void:
 		var launch := carrier_velocity * carrier_momentum + throw * randf_range(eject_speed.x, eject_speed.y)
 		_salvo.append(DecoyFlare.new(origin, launch, drag, randf_range(burn_time.x, burn_time.y)))
 	_ready_in = cooldown
+	_salvos_left -= 1
 	released.emit(_salvo.duplicate())
 
 
