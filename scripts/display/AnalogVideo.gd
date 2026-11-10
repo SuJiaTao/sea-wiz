@@ -20,6 +20,10 @@ func set_dropout(amount: float) -> void:
 	_signal.set_shader_parameter("dropout", clampf(amount, 0.0, 1.0))
 
 
+func set_signal_lost(lost: bool) -> void:
+	_signal.set_shader_parameter("signal_lost", 1.0 if lost else 0.0)
+
+
 func set_camera_damage(amount: float) -> void:
 	_signal.set_shader_parameter("camera_damage", clampf(amount, 0.0, 1.0))
 

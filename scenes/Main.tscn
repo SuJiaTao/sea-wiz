@@ -68,7 +68,8 @@
 [ext_resource type="Resource" uid="uid://cf5bolxwnh8vd" path="res://resources/fx/Ripples.tres" id="54_ripples"]
 [ext_resource type="Script" uid="uid://ce51dkanls8jm" path="res://scripts/ship/ShipIntegrity.gd" id="55_integrity"]
 [ext_resource type="Script" uid="uid://dskufvdtdphw4" path="res://scripts/ship/DeckFires.gd" id="56_deck_fires"]
-[ext_resource type="Script" uid="uid://bgp4ryufj3anv" path="res://scripts/ship/ShipSinking.gd" id="57_sinking"]
+[ext_resource type="Script" path="res://scripts/ship/ShipRocking.gd" id="57_rocking"]
+[ext_resource type="Script" path="res://scripts/ship/ShipLoss.gd" id="57_loss"]
 [ext_resource type="Script" uid="uid://banftaxcp7vju" path="res://scripts/fx/CasingPile.gd" id="58_casings"]
 [ext_resource type="Script" uid="uid://6qspxitp3jx2" path="res://scripts/weapons/CasingEjector.gd" id="59_ejector"]
 [ext_resource type="CylinderMesh" path="res://resources/fx/CasingMesh.tres" id="60_casing_mesh"]
@@ -436,14 +437,19 @@ integrity = NodePath("../Integrity")
 effects = NodePath("../../Effects")
 spots = NodePath("../../Vessel/Warship/FireSpots")
 
-[node name="Sinking" type="Node" parent="ViewportContainer/SubViewport/World/ShipDamage" unique_id=608323343 node_paths=PackedStringArray("integrity", "vessel", "gun", "sea", "sway")]
-script = ExtResource("57_sinking")
-integrity = NodePath("../Integrity")
+[node name="Rocking" type="Node" parent="ViewportContainer/SubViewport/World/ShipDamage" node_paths=PackedStringArray("vessel", "sway")]
+script = ExtResource("57_rocking")
 vessel = NodePath("../../Vessel")
-gun = NodePath("../../Vessel/Turret")
-sea = NodePath("../../Sea")
 sway = NodePath("../../ShipSway")
-max_depth = 20.0
+
+[node name="Loss" type="Node" parent="ViewportContainer/SubViewport/World/ShipDamage" node_paths=PackedStringArray("integrity", "fires", "effects", "turret", "thermal", "feed")]
+script = ExtResource("57_loss")
+integrity = NodePath("../Integrity")
+fires = NodePath("../DeckFires")
+effects = NodePath("../../Effects")
+turret = NodePath("../../Vessel/Turret")
+thermal = NodePath("../../../..")
+feed = NodePath("../../../../../VideoSignal/SignalDropout")
 
 [node name="NearMisses" type="Node" parent="ViewportContainer/SubViewport/World/ShipDamage" unique_id=281220440 node_paths=PackedStringArray("enemies", "effects", "integrity", "turret", "lens")]
 script = ExtResource("71_near_miss")

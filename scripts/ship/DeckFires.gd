@@ -30,6 +30,28 @@ func _on_damaged(amount: float, from_position: Vector3) -> void:
 		_burning[spot] = fire
 
 
+func engulf() -> void:
+	for child in spots.get_children():
+		var spot := child as Node3D
+		if spot == null:
+			continue
+		if _burning.has(spot):
+			_burning[spot].grow(1.0)
+			continue
+		var fire := DeckFireEffect.new(spot, 1.0)
+		if effects.spawn(fire):
+			_burning[spot] = fire
+
+
+func spot_nearest(point: Vector3) -> Vector3:
+	var best := spots.global_position
+	for child in spots.get_children():
+		var spot := child as Node3D
+		if spot != null and spot.global_position.distance_to(point) < best.distance_to(point):
+			best = spot.global_position
+	return best
+
+
 func _on_repaired(damage_left_fraction: float) -> void:
 	for spot in _burning.keys():
 		if not _burning[spot].dampen(damage_left_fraction):

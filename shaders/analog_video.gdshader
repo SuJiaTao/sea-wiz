@@ -47,6 +47,8 @@ uniform float dropout : hint_range(0.0, 1.0) = 0.0;
 uniform float dropout_tear_samples : hint_range(0.0, 200.0) = 60.0;
 uniform float dropout_band_lines : hint_range(1.0, 64.0) = 12.0;
 uniform float dropout_snow : hint_range(0.0, 1.0) = 0.3;
+uniform float signal_lost : hint_range(0.0, 1.0) = 0.0;
+uniform float lost_snow_level : hint_range(0.0, 1.0) = 0.22;
 uniform float camera_damage : hint_range(0.0, 1.0) = 0.0;
 uniform float damage_fringe_pixels : hint_range(0.0, 12.0) = 4.0;
 uniform float damage_warp_samples : hint_range(0.0, 40.0) = 10.0;
@@ -233,5 +235,7 @@ void fragment() {
 	float lead = dot(textureLod(screen_texture, SCREEN_UV + fringe, 0.0).rgb, LUMA);
 	float trail = dot(textureLod(screen_texture, SCREEN_UV - fringe, 0.0).rgb, LUMA);
 	colour += (FRINGE_LEAD * max(lead - l, 0.0) + FRINGE_TRAIL * max(trail - l, 0.0)) * camera_damage;
+	float snow = hash12(vec2(xs, line) + grain_offset) * lost_snow_level;
+	colour = mix(colour, mix(tone_shadow, tone_mid, snow / tone_mid_point), signal_lost);
 	COLOR = vec4(clamp(colour, 0.0, 1.0), 1.0);
 }
