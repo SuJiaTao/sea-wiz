@@ -13,7 +13,7 @@ uniform sampler2D wave_normals : hint_normal, filter_linear_mipmap_anisotropic, 
 uniform sampler2D sparkle_normals : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform float swell_strength : hint_range(0.0, 2.0) = 0.25;
 uniform float ripple_strength : hint_range(0.0, 2.0) = 0.35;
-uniform float glint_ripple : hint_range(0.0, 2.0) = 0.6;
+uniform float glint_ripple : hint_range(0.0, 3.0) = 0.8;
 uniform float gustiness : hint_range(0.0, 1.0) = 0.55;
 uniform float roughness : hint_range(0.0, 1.0) = 0.0;
 uniform float storm_steepness : hint_range(0.0, 2.0) = 1.4;
@@ -37,10 +37,10 @@ const float RIPPLE_TILES[3] = float[](26.0, 17.0, 11.0);
 const float RIPPLE_ANGLES[3] = float[](0.0, 2.094, -2.094);
 const float RIPPLE_SPEEDS[3] = float[](0.7, 0.7, 0.7);
 const float RIPPLE_STRETCH = 0.3;
-const int GLINT_LAYERS = 2;
-const float GLINT_TILES[2] = float[](3.0, 1.6);
-const float GLINT_STRETCH = 0.6;
-const float GLINT_ANGLES[2] = float[](1.0, -2.1);
+const int GLINT_LAYERS = 3;
+const float GLINT_TILES[3] = float[](7.0, 3.0, 1.6);
+const float GLINT_STRETCH = 1.0;
+const float GLINT_ANGLES[3] = float[](0.4, 1.0, -2.1);
 const float GLINT_SPEED = 0.8;
 const float SWELL_TILE = 90.0;
 const float SWELL_ANGLE = 0.3;
@@ -146,6 +146,7 @@ void fragment() {
 	// Two swells meeting head on: the sea heaves in place instead of flowing.
 	vec2 slope = wave_layer(wave_normals, world_pos.xz, wind + SWELL_ANGLE, SWELL_TILE, SWELL_SPEED, 1.0, swell_strength * sea * SWELL_SHARE)
 		+ wave_layer(wave_normals, world_pos.xz + SWELL_OFFSET, wind + SWELL_ANGLE + PI, SWELL_TILE * COUNTER_SWELL_SCALE, SWELL_SPEED, 1.0, swell_strength * sea * SWELL_SHARE);
+	vec2 swell = slope;
 	for (int i = 0; i < RIPPLE_LAYERS; i++) {
 		slope += wave_layer(wave_normals, world_pos.xz, wind + RIPPLE_ANGLES[i], RIPPLE_TILES[i], RIPPLE_SPEEDS[i] * ripple_speed, RIPPLE_STRETCH, ripple_strength * chop);
 	}
@@ -154,8 +155,8 @@ void fragment() {
 		slope += (rain_rings(world_pos.xz, RAIN_CELL, footprint) + rain_rings(world_pos.xz + RAIN_SEED, RAIN_CELL * FINE_RAIN_SCALE, footprint)) * rain * rain_ripple_strength;
 	}
 	vec3 normal = normalize(vec3(-slope.x, 1.0, -slope.y));
-	// Fine sparkle ripples only tilt the glints; the body of the water stays glassy.
-	vec2 sparkle = slope;
+	// Glints ride the swell and their own fine ripples, not the crest lines, so they never cross-hatch.
+	vec2 sparkle = swell;
 	for (int i = 0; i < GLINT_LAYERS; i++) {
 		sparkle += wave_layer(sparkle_normals, world_pos.xz, wind + GLINT_ANGLES[i], GLINT_TILES[i], GLINT_SPEED * ripple_speed, GLINT_STRETCH, glint_ripple * chop);
 	}
