@@ -1,6 +1,6 @@
 [gd_resource type="NoiseTexture2D" load_steps=2 format=3]
 
-[sub_resource type="FastNoiseLite" id="Noise_sparkle"]
+[sub_resource type="FastNoiseLite" id="Noise_waves"]
 noise_type = 1
 frequency = 0.02
 fractal_octaves = 3
@@ -14,4 +14,4 @@ seamless_blend_skirt = 0.2
 as_normal_map = true
 bump_strength = 10.0
 generate_mipmaps = true
-noise = SubResource("Noise_sparkle")
+noise = SubResource("Noise_waves")
