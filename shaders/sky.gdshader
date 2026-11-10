@@ -24,6 +24,8 @@ uniform vec3 moon_color : source_color = vec3(0.9);
 uniform float moon_phase_deg : hint_range(0.0, 180.0) = 55.0;
 uniform float moon_maria : hint_range(0.0, 1.0) = 0.35;
 uniform float moon_maria_scale = 3.0;
+uniform float moon_tilt_deg : hint_range(-180.0, 180.0) = -35.0;
+uniform float moon_craters : hint_range(0.0, 1.0) = 0.6;
 uniform float moon_glow : hint_range(0.0, 2.0) = 0.35;
 uniform float moon_glow_width_deg : hint_range(0.1, 30.0) = 3.0;
 uniform float moon_halo : hint_range(0.0, 1.0) = 0.1;
@@ -39,6 +41,15 @@ const float CLOUD_HORIZON = 0.35;
 // One display step of triangular noise, so the 8-bit sky never bands
 // once the night vision gain stretches it.
 const float DITHER_STEP = 1.0 / 255.0;
+const float TERMINATOR_DIM = 0.55;
+const vec2 MARIA_SEED = vec2(1.7, 3.1);
+const float CRATER_SCALE = 3.2;
+const float CRATER_FINE = 2.2;
+const float CRATER_FINE_SHARE = 0.6;
+const float CRATER_SEED = 19.1;
+const float CRATER_MIN = 0.12;
+const float CRATER_MAX = 0.4;
+const float CRATER_RIM = 1.2;
 const float DISPLAY_GAMMA = 2.2;
 const float DITHER_SEED = 431.0;
 const float DITHER_OFFSET = 17.0;
@@ -92,6 +103,22 @@ float cloud_body(vec3 direction) {
 	return thickness * cloud_contrast * smoothstep(0.0, CLOUD_HORIZON, direction.y);
 }
 
+// Pocked surface: each cell holds one crater, a dark floor with a bright rim.
+float craters(vec2 p) {
+	vec2 cell = floor(p);
+	float marks = 0.0;
+	for (int y = -1; y <= 1; y++) {
+		for (int x = -1; x <= 1; x++) {
+			vec2 c = cell + vec2(float(x), float(y));
+			vec2 centre = c + vec2(hash12(c), hash12(c + CRATER_SEED));
+			float size = mix(CRATER_MIN, CRATER_MAX, hash12(c - CRATER_SEED));
+			float d = length(p - centre) / size;
+			marks += (1.0 - smoothstep(0.6, 1.0, d)) - smoothstep(0.85, 1.0, d) * (1.0 - smoothstep(1.0, 1.15, d)) * CRATER_RIM;
+		}
+	}
+	return clamp(marks, -1.0, 1.0);
+}
+
 void sky() {
 	vec3 colour = atmosphere(EYEDIR) * cloud_cover(EYEDIR) + vec3(cloud_body(EYEDIR) * cloud_brightness);
 
@@ -109,9 +136,11 @@ void sky() {
 	if (dot(EYEDIR, toward) > 0.0 && from_centre < 1.0 + EDGE_SOFTNESS) {
 		vec3 surface = vec3(disc, sqrt(max(1.0 - from_centre * from_centre, 0.0)));
 		float phase = radians(moon_phase_deg);
-		vec3 sun = vec3(sin(phase), 0.0, cos(phase));
-		float lit = smoothstep(-0.05, 0.25, dot(surface, sun));
-		float maria = 1.0 - moon_maria * value_noise(disc * moon_maria_scale);
+		float tilt = radians(moon_tilt_deg);
+		vec3 sun = vec3(sin(phase) * cos(tilt), sin(phase) * sin(tilt), cos(phase));
+		float lit = smoothstep(-0.02, 0.12, dot(surface, sun)) * mix(TERMINATOR_DIM, 1.0, smoothstep(0.0, 0.5, dot(surface, sun)));
+		float maria = 1.0 - moon_maria * smoothstep(0.35, 0.75, value_noise(disc * moon_maria_scale + MARIA_SEED));
+		maria *= 1.0 - moon_craters * (craters(disc * CRATER_SCALE) + craters(disc * CRATER_SCALE * CRATER_FINE + MARIA_SEED) * CRATER_FINE_SHARE);
 		float coverage = 1.0 - smoothstep(1.0 - EDGE_SOFTNESS, 1.0 + EDGE_SOFTNESS, from_centre);
 		colour += moon_color * lit * maria * coverage;
 	}
