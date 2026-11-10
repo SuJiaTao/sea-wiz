@@ -1,33 +1,54 @@
+@tool
 extends MeshInstance3D
 class_name RakedHouse
-## A deckhouse built from its floor plan: walls rise from the outline and
-## lean back toward the stern by `rake` metres at the roof, so faced and
-## chamfered fronts slope the way a warship's superstructure does.
+## A deckhouse built from its floor plan. Every wall leans inward by `lean`
+## metres at the roof and the whole roof can slide aft by `rake`, so a flat
+## front with 45 degree corner faces reads like a warship's superstructure.
+## Edit the outline points in the Inspector and the house rebuilds live.
 
-@export var outline := PackedVector2Array()
-@export var height: float = 4.0
-@export var rake: float = 0.0
-@export var material: Material
+const MIN_SPAN := 0.001
+
+@export var outline := PackedVector2Array():
+	set(value):
+		outline = value
+		_rebuild()
+@export var height: float = 4.0:
+	set(value):
+		height = value
+		_rebuild()
+@export var lean: float = 0.0:
+	set(value):
+		lean = value
+		_rebuild()
+@export var rake: float = 0.0:
+	set(value):
+		rake = value
+		_rebuild()
+@export var material: Material:
+	set(value):
+		material = value
+		_rebuild()
 
 
 func _ready() -> void:
+	_rebuild()
+
+
+func _rebuild() -> void:
+	if not is_inside_tree() or outline.size() < 3:
+		return
+	var roof := _roof_outline()
 	var house := SurfaceTool.new()
 	house.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var front := _front_z()
-	var back := _back_z()
+	house.set_smooth_group(-1)
 	for index in outline.size():
-		var a := outline[index]
-		var b := outline[(index + 1) % outline.size()]
-		var low_a := Vector3(a.x, 0.0, a.y)
-		var low_b := Vector3(b.x, 0.0, b.y)
-		var top_a := _roof(a, front, back)
-		var top_b := _roof(b, front, back)
+		var next := (index + 1) % outline.size()
+		var low_a := Vector3(outline[index].x, 0.0, outline[index].y)
+		var low_b := Vector3(outline[next].x, 0.0, outline[next].y)
+		var top_a := Vector3(roof[index].x, height, roof[index].y)
+		var top_b := Vector3(roof[next].x, height, roof[next].y)
 		for corner in [low_a, top_a, top_b, low_a, top_b, low_b]:
 			house.add_vertex(corner)
-	var roof := PackedVector2Array()
-	for point in outline:
-		var lifted := _roof(point, front, back)
-		roof.append(Vector2(lifted.x, lifted.z))
 	for corner in Geometry2D.triangulate_polygon(roof):
 		house.add_vertex(Vector3(roof[corner].x, height, roof[corner].y))
 	house.generate_normals()
@@ -36,20 +57,27 @@ func _ready() -> void:
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
-func _roof(point: Vector2, front: float, back: float) -> Vector3:
-	var share := clampf((back - point.y) / maxf(back - front, 0.001), 0.0, 1.0)
-	return Vector3(point.x, height, point.y + rake * share)
-
-
-func _front_z() -> float:
-	var lowest := INF
+func _roof_outline() -> PackedVector2Array:
+	var centre := Vector2.ZERO
+	var front := INF
+	var back := -INF
 	for point in outline:
-		lowest = minf(lowest, point.y)
-	return lowest
+		centre += point / outline.size()
+		front = minf(front, point.y)
+		back = maxf(back, point.y)
+	var roof := PackedVector2Array()
+	for index in outline.size():
+		var point := outline[index]
+		var before := _inward(outline[index - 1], point, centre)
+		var after := _inward(point, outline[(index + 1) % outline.size()], centre)
+		var shift := (before + after) * lean / (1.0 + before.dot(after))
+		var share := clampf((back - point.y) / maxf(back - front, MIN_SPAN), 0.0, 1.0)
+		roof.append(point + shift + Vector2(0.0, rake * share))
+	return roof
 
 
-func _back_z() -> float:
-	var highest := -INF
-	for point in outline:
-		highest = maxf(highest, point.y)
-	return highest
+func _inward(from: Vector2, to: Vector2, centre: Vector2) -> Vector2:
+	var normal := (to - from).orthogonal().normalized()
+	if normal.dot(centre - (from + to) * 0.5) < 0.0:
+		normal = -normal
+	return normal
