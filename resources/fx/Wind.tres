@@ -5,4 +5,4 @@
 [resource]
 resource_name = "Wind"
 script = ExtResource("1_wind")
-velocity = Vector3(3, 0, -1.5)
+velocity = Vector3(1.5, 0, 9)
