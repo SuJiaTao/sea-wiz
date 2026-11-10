@@ -13,8 +13,9 @@ uniform float sky_curve : hint_range(0.001, 1.0) = 0.12;
 uniform float reflectance : hint_range(0.0, 0.2) = 0.06;
 uniform float wind_bearing_deg : hint_range(0.0, 360.0) = 60.0;
 uniform sampler2D wave_normals : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
-uniform float swell_strength : hint_range(0.0, 2.0) = 0.4;
-uniform float ripple_strength : hint_range(0.0, 2.0) = 0.5;
+uniform float swell_strength : hint_range(0.0, 2.0) = 0.25;
+uniform float ripple_strength : hint_range(0.0, 2.0) = 0.35;
+uniform float glint_ripple : hint_range(0.0, 2.0) = 0.6;
 uniform float gustiness : hint_range(0.0, 1.0) = 0.55;
 uniform float roughness : hint_range(0.0, 1.0) = 0.0;
 uniform float storm_steepness : hint_range(0.0, 2.0) = 1.4;
@@ -34,10 +35,14 @@ uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
 uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
 
 const int RIPPLE_LAYERS = 3;
-const float RIPPLE_TILES[3] = float[](9.0, 5.0, 3.0);
+const float RIPPLE_TILES[3] = float[](26.0, 17.0, 11.0);
 const float RIPPLE_ANGLES[3] = float[](0.0, 2.094, -2.094);
-const float RIPPLE_SPEEDS[3] = float[](1.4, 1.4, 1.4);
-const float RIPPLE_STRETCH = 0.45;
+const float RIPPLE_SPEEDS[3] = float[](0.7, 0.7, 0.7);
+const float RIPPLE_STRETCH = 0.6;
+const int GLINT_LAYERS = 2;
+const float GLINT_TILES[2] = float[](3.0, 1.6);
+const float GLINT_ANGLES[2] = float[](1.0, -2.1);
+const float GLINT_SPEED = 0.8;
 const float SWELL_TILE = 90.0;
 const float SWELL_ANGLE = 0.3;
 const float SWELL_SPEED = 1.5;
@@ -142,6 +147,12 @@ void fragment() {
 		slope += (rain_rings(world_pos.xz, RAIN_CELL, footprint) + rain_rings(world_pos.xz + RAIN_SEED, RAIN_CELL * 0.6, footprint)) * rain * rain_ripple_strength;
 	}
 	vec3 normal = normalize(vec3(-slope.x, 1.0, -slope.y));
+	// Fine sparkle ripples only tilt the glints; the body of the water stays glassy.
+	vec2 sparkle = slope;
+	for (int i = 0; i < GLINT_LAYERS; i++) {
+		sparkle += wave_layer(world_pos.xz, wind + GLINT_ANGLES[i], GLINT_TILES[i], GLINT_SPEED * ripple_speed, RIPPLE_STRETCH, glint_ripple * chop);
+	}
+	vec3 glint_bounce = reflect(view_ray, normalize(vec3(-sparkle.x, 1.0, -sparkle.y)));
 	vec3 bounce = reflect(view_ray, normal);
 	bounce.y = abs(bounce.y);
 
@@ -151,7 +162,7 @@ void fragment() {
 
 	float toward_moon = max(dot(bounce, moon_direction()), 0.0);
 	v += pow(toward_moon, moon_path_sharpness) * moon_path * fresnel;
-	v += pow(toward_moon, glitter_sharpness) * glitter * (GLINT_FLOOR + fresnel);
+	v += pow(max(dot(glint_bounce, moon_direction()), 0.0), glitter_sharpness) * glitter * (GLINT_FLOOR + fresnel);
 
 	if (roughness > 0.0) {
 		vec2 p = world_pos.xz * foam_scale;
