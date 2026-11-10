@@ -442,10 +442,13 @@ script = ExtResource("57_rocking")
 vessel = NodePath("../../Vessel")
 sway = NodePath("../../ShipSway")
 
-[node name="Loss" type="Node" parent="ViewportContainer/SubViewport/World/ShipDamage" node_paths=PackedStringArray("integrity", "fires", "effects", "turret", "thermal", "feed")]
+[node name="Loss" type="Node" parent="ViewportContainer/SubViewport/World/ShipDamage" node_paths=PackedStringArray("integrity", "fires", "bridge", "rocking", "sway", "effects", "turret", "thermal", "feed")]
 script = ExtResource("57_loss")
 integrity = NodePath("../Integrity")
 fires = NodePath("../DeckFires")
+bridge = NodePath("../../Vessel/Warship/FireSpots/BridgeRoof")
+rocking = NodePath("../Rocking")
+sway = NodePath("../../ShipSway")
 effects = NodePath("../../Effects")
 turret = NodePath("../../Vessel/Turret")
 thermal = NodePath("../../../..")

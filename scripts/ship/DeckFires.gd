@@ -43,14 +43,6 @@ func engulf() -> void:
 			_burning[spot] = fire
 
 
-func spot_nearest(point: Vector3) -> Vector3:
-	var best := spots.global_position
-	for child in spots.get_children():
-		var spot := child as Node3D
-		if spot != null and spot.global_position.distance_to(point) < best.distance_to(point):
-			best = spot.global_position
-	return best
-
 
 func _on_repaired(damage_left_fraction: float) -> void:
 	for spot in _burning.keys():
