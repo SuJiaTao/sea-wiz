@@ -3,6 +3,7 @@ class_name WeatherProfile
 
 @export var display_name: String = "CLEAR"
 @export var fog_density: float = 0.0
+@export_range(0.0, 1.0) var cloud_cover: float = 0.0
 @export var rain_rate: float = 0.0
 @export var snow_rate: float = 0.0
 @export var lens_drops_per_second: float = 0.0
