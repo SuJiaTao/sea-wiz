@@ -68,7 +68,7 @@ func _slide(droplet: LensDroplet, push: Vector2, delta: float) -> void:
 		terminal = along * (drive.length() - STICKING) * MOBILITY
 		terminal += along.orthogonal() * randfn(0.0, WOBBLE) * terminal.length()
 	droplet.velocity = droplet.velocity.lerp(terminal, clampf(GRIP * delta, 0.0, 1.0))
-	droplet.position += droplet.velocity * delta
+	droplet.move(delta)
 
 
 func _on_lens(droplet: LensDroplet) -> bool:

@@ -1,20 +1,23 @@
 extends RefCounted
 class_name LensDroplet
-## One water drop on the lens. It jiggles when it lands, sags bottom-heavy,
-## stretches as it runs and leaves a thin wet trail, then dries away.
+## One water drop on the lens: round, heavier at the bottom. It jiggles when
+## it lands, then the camera's motion drags its heavy body away from where it
+## landed, stretching a neck, until it lets go and runs off the glass.
 
 const JIGGLE_RATE: float = 38.0
 const JIGGLE_SETTLE: float = 7.0
-const JIGGLE_SIZE: float = 0.35
-const RUN_STRETCH: float = 0.12
-const TRAIL_TIME: float = 0.35
-const DRY_START: float = 0.7
+const JIGGLE_SIZE: float = 0.25
+const BREAK_STRETCH: float = 2.2
+const NECK_RELEASE: float = 4.0
+const DRY_START: float = 0.75
 
 var position: Vector2
+var anchor: Vector2
 var radius: float
 var life: float
 var age: float = 0.0
 var velocity := Vector2.ZERO
+var attached: bool = true
 
 var strength: float:
 	get:
@@ -23,13 +26,21 @@ var strength: float:
 
 func _init(at: Vector2, size: float, lifetime: float) -> void:
 	position = at
+	anchor = at
 	radius = size
 	life = lifetime
 
 
-## xy: how far the drop is stretched across and down; zw: its trail back along the run.
+func move(delta: float) -> void:
+	position += velocity * delta
+	if attached and position.distance_to(anchor) > radius * BREAK_STRETCH:
+		attached = false
+	if not attached:
+		anchor = anchor.lerp(position, clampf(NECK_RELEASE * delta, 0.0, 1.0))
+
+
+## xy: jiggle stretch across and down; zw: the neck back to where it landed.
 func shape() -> Vector4:
 	var jiggle := exp(-age * JIGGLE_SETTLE) * sin(age * JIGGLE_RATE) * JIGGLE_SIZE
-	var run := velocity.abs() / radius * RUN_STRETCH
-	var trail := -velocity * TRAIL_TIME
-	return Vector4((1.0 + jiggle) * (1.0 + run.x), (1.0 - jiggle) * (1.0 + run.y), trail.x, trail.y)
+	var neck := anchor - position
+	return Vector4(1.0 + jiggle, 1.0 - jiggle, neck.x, neck.y)
