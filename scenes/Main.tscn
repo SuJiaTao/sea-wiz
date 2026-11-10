@@ -20,7 +20,6 @@
 [ext_resource type="Resource" path="res://levels/Formations.tres" id="97_formations"]
 [ext_resource type="Shader" uid="uid://b4v53wi6xsomg" path="res://shaders/thermal.gdshader" id="14_thermal_shader"]
 [ext_resource type="Shader" uid="uid://c62jnvd10xwhp" path="res://shaders/sea.gdshader" id="15_sea_shader"]
-[ext_resource type="Texture2D" path="res://resources/world/WaveNormals.tres" id="15_wave_normals"]
 [ext_resource type="Texture2D" path="res://resources/world/SparkleNormals.tres" id="15_sparkle_normals"]
 [ext_resource type="Script" uid="uid://cnlhuaro2rmrv" path="res://scripts/hud/PlayerHUD.gd" id="16_player_hud"]
 [ext_resource type="Script" path="res://scripts/hud/LaserHUD.gd" id="16_laser_hud"]
@@ -123,7 +122,6 @@
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
 shader = ExtResource("15_sea_shader")
-shader_parameter/wave_normals = ExtResource("15_wave_normals")
 shader_parameter/sparkle_normals = ExtResource("15_sparkle_normals")
 shader_parameter/base_level = 0.11
 shader_parameter/moon_bearing_deg = 140.0
