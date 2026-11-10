@@ -13,7 +13,7 @@
 [ext_resource type="Script" path="res://scripts/display/RenderResolution.gd" id="7_resolution"]
 [ext_resource type="Script" uid="uid://dhvo8e35dfs0g" path="res://scripts/ballistics/ProjectileBatch.gd" id="8_batch"]
 [ext_resource type="Script" uid="uid://dkmwr4afokdk7" path="res://scripts/FXManager.gd" id="9_fx"]
-[ext_resource type="PackedScene" path="res://scenes/world/StealthDestroyer.tscn" id="10_warship"]
+[ext_resource type="PackedScene" path="res://scenes/world/GuidedMissileDestroyer.tscn" id="10_warship"]
 [ext_resource type="Script" uid="uid://b2ap6okbtqnal" path="res://scripts/waves/WaveDefinition.gd" id="11_wave_type"]
 [ext_resource type="Resource" uid="uid://blmh1ka3ro1ff" path="res://levels/FirstContact.tres" id="12_first"]
 [ext_resource type="Resource" uid="uid://bo5sd0cld6x1a" path="res://levels/Saturation.tres" id="13_second"]
@@ -584,7 +584,7 @@ ballistics = NodePath("../../Ballistics")
 renderer = NodePath("../../Missiles")
 smoke = NodePath("../../MissileSmoke")
 damage_source = ExtResource("27_missile_source")
-cells = NodePath("../../Vessel/Warship/ForwardVLS")
+cells = NodePath("../../Vessel/Warship/LaunchCells")
 
 [node name="DeckCannon" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "enemies", "ballistics", "tracers", "fx", "mount", "barrel", "muzzle")]
 script = ExtResource("20_deck_cannon")
