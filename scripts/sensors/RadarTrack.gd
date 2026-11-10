@@ -3,8 +3,10 @@ class_name RadarTrack
 
 const CONFIRM_HITS := 2
 const MIN_UPDATE_INTERVAL := 0.01
-const TENTATIVE_GROWTH := 300.0
+const TENTATIVE_GROWTH := 150.0
 const CONFIRMED_GROWTH := 35.0
+const COAST_LIMIT := 1.2
+const MAX_SPEED := 600.0
 
 var id: int
 var position: Vector3
@@ -32,7 +34,8 @@ func predicted(after: float) -> Vector3:
 
 
 func coast(delta: float) -> void:
-	position += velocity * delta
+	if since_update < COAST_LIMIT:
+		position += velocity * delta
 	since_update += delta
 	uncertainty += (CONFIRMED_GROWTH if confirmed else TENTATIVE_GROWTH) * delta
 
@@ -44,6 +47,7 @@ func correct(measured: Vector3, error: float, alpha: float, beta: float) -> void
 		velocity = residual / interval
 	else:
 		velocity += residual * (beta / interval)
+	velocity = velocity.limit_length(MAX_SPEED)
 	position += residual * alpha
 	uncertainty = lerpf(uncertainty, error, alpha)
 	hits += 1
