@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://18s4i6def6h0" path="res://scripts/waves/WaveOrchestrator.gd" id="6_waves"]
 [ext_resource type="Script" uid="uid://p4lc42i4uqjs" path="res://scripts/ThermalView.gd" id="7_thermal"]
 [ext_resource type="Script" path="res://scripts/display/AfterglowBuffer.gd" id="7_afterglow"]
+[ext_resource type="Script" path="res://scripts/display/RenderResolution.gd" id="7_resolution"]
 [ext_resource type="Script" uid="uid://dhvo8e35dfs0g" path="res://scripts/ballistics/ProjectileBatch.gd" id="8_batch"]
 [ext_resource type="Script" uid="uid://dkmwr4afokdk7" path="res://scripts/FXManager.gd" id="9_fx"]
 [ext_resource type="PackedScene" path="res://scenes/world/Warship.tscn" id="10_warship"]
@@ -349,12 +350,15 @@ sway = NodePath("../../ViewportContainer/SubViewport/World/ShipSway")
 script = ExtResource("98_aurora")
 environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
 
+[node name="RenderResolution" type="Node" parent="."]
+script = ExtResource("7_resolution")
+
 [node name="Afterglow" type="SubViewport" parent="." node_paths=PackedStringArray("source")]
 size = Vector2i(1280, 720)
 script = ExtResource("7_afterglow")
 source = NodePath("../ViewportContainer/SubViewport")
 
-[node name="ViewportContainer" type="SubViewportContainer" parent="." unique_id=721477771 node_paths=PackedStringArray("turret", "afterglow")]
+[node name="ViewportContainer" type="SubViewportContainer" parent="." unique_id=721477771 node_paths=PackedStringArray("turret", "afterglow", "resolution")]
 process_mode = 1
 texture_filter = 2
 material = SubResource("Material_thermal")
@@ -368,6 +372,7 @@ stretch_shrink = 1
 script = ExtResource("7_thermal")
 turret = NodePath("SubViewport/World/Vessel/Turret")
 afterglow = NodePath("../Afterglow")
+resolution = NodePath("../RenderResolution")
 
 [node name="SubViewport" type="SubViewport" parent="ViewportContainer" unique_id=696814784]
 handle_input_locally = false
