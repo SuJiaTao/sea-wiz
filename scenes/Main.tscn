@@ -31,6 +31,8 @@
 [ext_resource type="Resource" path="res://resources/damage_sources/DeckGun.tres" id="20_deck_gun_source"]
 [ext_resource type="Script" path="res://scripts/hud/DeckCannonHUD.gd" id="20_deck_cannon_hud"]
 [ext_resource type="Script" uid="uid://3isdddaon66x" path="res://scripts/weapons/MissileLauncher.gd" id="21_launcher"]
+[ext_resource type="Script" path="res://scripts/weapons/FireCutout.gd" id="21_cutout"]
+[ext_resource type="Script" path="res://scripts/hud/CutoutHUD.gd" id="21_cutout_hud"]
 [ext_resource type="Script" path="res://scripts/weapons/DecoyLauncher.gd" id="21_decoys"]
 [ext_resource type="Script" path="res://scripts/hud/DecoyHUD.gd" id="21_decoy_hud"]
 [ext_resource type="Script" uid="uid://p0e7licgkygc" path="res://scripts/weapons/SalvoManager.gd" id="22_salvos"]
@@ -620,6 +622,12 @@ smoke = NodePath("../../MissileSmoke")
 fx = NodePath("../../FX")
 tubes = NodePath("../../Vessel/Warship/DecoyTubes")
 
+[node name="FireCutout" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "ship", "exempt")]
+script = ExtResource("21_cutout")
+turret = NodePath("../../Vessel/Turret")
+ship = NodePath("../../Vessel/Warship")
+exempt = [NodePath("../../Vessel/Warship/CiwsPlatform"), NodePath("../../Vessel/Warship/CiwsPedestal")]
+
 [node name="Sensors" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1704323909]
 
 [node name="SearchRadar" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" unique_id=1824492703 node_paths=PackedStringArray("enemies", "antenna")]
@@ -756,6 +764,16 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("21_decoy_hud")
 decoys = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/DecoyLauncher")
+
+[node name="CutoutHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("turret")]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("21_cutout_hud")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 
 [node name="WeaponFeedback" type="Control" parent="HUD/HUDRoot" unique_id=56369314 node_paths=PackedStringArray("launcher", "salvos", "turret", "smoke", "fx")]
 anchors_preset = 0

@@ -39,6 +39,7 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export var _spin_audio_volume_db_range: Vector2 = Vector2(-30.0, -13.0)
 
 var overheated: bool = false
+var cut_out: bool = false
 var spinup_scale: float = 1.0
 var firing: bool = false
 var spin: float = 0.0
@@ -201,7 +202,8 @@ func _fire(delta: float) -> void:
 		_fire_accum += rate * delta
 		while _fire_accum >= 1.0:
 			_fire_accum -= 1.0
-			_emit_round()
+			if not cut_out:
+				_emit_round()
 	else:
 		_fire_accum = 0.0
 
