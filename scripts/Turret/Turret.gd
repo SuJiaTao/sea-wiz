@@ -2,13 +2,9 @@ extends Node3D
 class_name Turret
 
 signal fired(origin: Vector3, direction: Vector3)
-signal reload_started()
-signal reload_finished()
 
 const MUZZLE_VELOCITY := 1100.0
 const ROUNDS_PER_MIN := 4500.0
-const MAGAZINE := 1550
-const RELOAD_TIME := 2.4
 const SPINUP_TIME := 0.32
 const SPINDOWN_TIME := 0.8
 
@@ -33,20 +29,17 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export var camera: TurretCamera
 @export var flash: MeshInstance3D
 @export var launcher: Node3D
-@export_category("Timers")
-@export var _reload_timer : Timer
 @export_category("Audio Players")
 @export var _gun_audio: AudioStreamPlayer
 @export var _spin_audio: AudioStreamPlayer
-@export var _reload_audio: AudioStreamPlayer
 @export var _wind_down_audio: AudioStreamPlayer
 @export_category("Audio Properties")
 @export var _gun_audio_pitch_range: Vector2 = Vector2(0.72, 1.0)
 @export var _spin_audio_pitch_range: Vector2 = Vector2(0.55, 1.15)
 @export var _spin_audio_volume_db_range: Vector2 = Vector2(-30.0, -13.0)
 
-var ammo: int = MAGAZINE
-var reloading: bool = false
+var overheated: bool = false
+var spinup_scale: float = 1.0
 var firing: bool = false
 var spin: float = 0.0
 var hide_gun: bool = false
@@ -64,7 +57,6 @@ var _enabled: bool = true
 func _ready() -> void:
 	if not barrels:
 		barrels = gun.get_node_or_null("BarrelCluster")
-	_reload_timer.timeout.connect(_stop_reload)
 
 
 func set_enabled(value: bool) -> void:
@@ -164,11 +156,8 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_released("ciws_fire"):
 		_stop_firing()
 
-	if event.is_action_pressed("ciws_reload"):
-		_start_reload()
-
 func _start_firing() -> void:
-	if firing or ammo <= 0 or reloading:
+	if firing or overheated:
 		return
 	firing = true
 
@@ -178,24 +167,12 @@ func _stop_firing() -> void:
 	_wind_down_audio.play()
 	firing = false
 
-func _start_reload() -> void:
-	if reloading or ammo >= MAGAZINE:
-		return
-	_stop_firing()
-	reloading = true
-	_reload_timer.start(RELOAD_TIME)
-	if _reload_audio:
-		_reload_audio.play()
-	reload_started.emit()
-
-func _stop_reload() -> void:
-	if not reloading:
-		return
-	reloading = false
-	ammo = MAGAZINE
-	if _reload_audio:
-		_reload_audio.stop()
-	reload_finished.emit()
+func set_overheated(value: bool) -> void:
+	overheated = value
+	if overheated:
+		_stop_firing()
+	elif _enabled and Input.is_action_pressed("ciws_fire"):
+		_start_firing()
 
 
 func _set_wander(delta: float) -> void:
@@ -210,7 +187,7 @@ func _set_wander(delta: float) -> void:
 
 func _spin_gun(delta: float) -> void:
 	if firing:
-		spin = move_toward(spin, 1.0, delta / SPINUP_TIME)
+		spin = move_toward(spin, 1.0, delta / (SPINUP_TIME * spinup_scale))
 	else:
 		spin = move_toward(spin, 0.0, delta / SPINDOWN_TIME)
 
@@ -222,16 +199,13 @@ func _fire(delta: float) -> void:
 	if firing:
 		var rate: float = (ROUNDS_PER_MIN / 60.0) * spin
 		_fire_accum += rate * delta
-		while _fire_accum >= 1.0 and ammo > 0:
+		while _fire_accum >= 1.0:
 			_fire_accum -= 1.0
 			_emit_round()
-		if ammo <= 0:
-			_start_reload()
 	else:
 		_fire_accum = 0.0
 
 func _emit_round() -> void:
-	ammo -= 1
 	var origin := muzzle.global_position
 	var forward := -muzzle.global_transform.basis.z
 	var sigma := deg_to_rad(dispersion_deg)

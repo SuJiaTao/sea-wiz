@@ -19,10 +19,6 @@ const ACTIONS := {
 	"ciws_zoom_out": [
 		{"type": "mouse", "button": MOUSE_BUTTON_WHEEL_DOWN},
 	],
-	"ciws_reload": [
-		{"type": "mouse", "button": MOUSE_BUTTON_MIDDLE},
-		{"type": "key", "key": KEY_R},
-	],
 	"ciws_polarity": [
 		{"type": "key", "key": KEY_F},
 	],
