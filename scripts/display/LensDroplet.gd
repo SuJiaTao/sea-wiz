@@ -5,6 +5,7 @@ var position: Vector2
 var radius: float
 var life: float
 var age: float = 0.0
+var velocity := Vector2.ZERO
 
 var strength: float:
 	get:
