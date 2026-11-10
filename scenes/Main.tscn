@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://18s4i6def6h0" path="res://scripts/waves/WaveOrchestrator.gd" id="6_waves"]
 [ext_resource type="Script" uid="uid://p4lc42i4uqjs" path="res://scripts/ThermalView.gd" id="7_thermal"]
 [ext_resource type="Script" path="res://scripts/display/AfterglowBuffer.gd" id="7_afterglow"]
+[ext_resource type="Script" path="res://scripts/display/RenderResolution.gd" id="7_resolution"]
 [ext_resource type="Script" uid="uid://dhvo8e35dfs0g" path="res://scripts/ballistics/ProjectileBatch.gd" id="8_batch"]
 [ext_resource type="Script" uid="uid://dkmwr4afokdk7" path="res://scripts/FXManager.gd" id="9_fx"]
 [ext_resource type="PackedScene" path="res://scenes/world/StealthDestroyer.tscn" id="10_warship"]
@@ -109,7 +110,6 @@
 [ext_resource type="Material" path="res://resources/weather/LightningMaterial.tres" id="96_bolt_material"]
 [ext_resource type="PackedScene" uid="uid://dr2blsow1udrq" path="res://scenes/ui/ConsoleUI.tscn" id="97_jhuvt"]
 [ext_resource type="AudioStream" uid="uid://bpprgi1upse2" path="res://audio/thunder.wav" id="97_thunder"]
-[ext_resource type="Script" uid="uid://db1bppp4p2kx6" path="res://scripts/weather/AuroraWeather.gd" id="98_aurora"]
 [ext_resource type="Script" uid="uid://bx4fvtq2e0hww" path="res://scripts/display/ShockwaveLens.gd" id="100_shock_lens"]
 [ext_resource type="Script" uid="uid://bvsg4xcbl4fq0" path="res://scripts/display/BlastFeel.gd" id="101_blast_feel"]
 [ext_resource type="SphereMesh" uid="uid://cw666x1bbx6fi" path="res://resources/fx/ShockDomeMesh.tres" id="102_dome"]
@@ -185,15 +185,6 @@ shader_parameter/lightning_flash = 0.0
 shader_parameter/lightning_direction = Vector3(0, 0.3, -1)
 shader_parameter/lightning_spread_deg = 25.0
 shader_parameter/lightning_ambient = 0.25
-shader_parameter/aurora = 0.0
-shader_parameter/aurora_bearing_deg = 345.0
-shader_parameter/aurora_width_deg = 75.0
-shader_parameter/aurora_base_deg = 10.0
-shader_parameter/aurora_height = 0.28
-shader_parameter/aurora_low = Color(0.25, 1, 0.5, 1)
-shader_parameter/aurora_high = Color(0.75, 0.3, 1, 1)
-shader_parameter/aurora_brightness = 0.32
-shader_parameter/aurora_speed = 0.05
 
 [sub_resource type="Sky" id="Sky_thermal"]
 sky_material = SubResource("SkyMaterial_thermal")
@@ -345,16 +336,15 @@ script = ExtResource("93_sea_state")
 sea_material = SubResource("Material_sea")
 sway = NodePath("../../ViewportContainer/SubViewport/World/ShipSway")
 
-[node name="Aurora" type="Node" parent="Weather" unique_id=568588842 node_paths=PackedStringArray("environment")]
-script = ExtResource("98_aurora")
-environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
+[node name="RenderResolution" type="Node" parent="."]
+script = ExtResource("7_resolution")
 
 [node name="Afterglow" type="SubViewport" parent="." node_paths=PackedStringArray("source")]
 size = Vector2i(1280, 720)
 script = ExtResource("7_afterglow")
 source = NodePath("../ViewportContainer/SubViewport")
 
-[node name="ViewportContainer" type="SubViewportContainer" parent="." unique_id=721477771 node_paths=PackedStringArray("turret", "afterglow")]
+[node name="ViewportContainer" type="SubViewportContainer" parent="." unique_id=721477771 node_paths=PackedStringArray("turret", "afterglow", "resolution")]
 process_mode = 1
 texture_filter = 2
 material = SubResource("Material_thermal")
@@ -368,6 +358,7 @@ stretch_shrink = 1
 script = ExtResource("7_thermal")
 turret = NodePath("SubViewport/World/Vessel/Turret")
 afterglow = NodePath("../Afterglow")
+resolution = NodePath("../RenderResolution")
 
 [node name="SubViewport" type="SubViewport" parent="ViewportContainer" unique_id=696814784]
 handle_input_locally = false

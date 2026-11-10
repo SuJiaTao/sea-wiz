@@ -1,8 +1,15 @@
 extends HUDPanel
 class_name DeckCannonHUD
 
+const LABEL_LIFT := Vector2(0, 20)
+const BAR_OFFSET := Vector2(62, -10)
+const BAR_SIZE := Vector2(128, 12)
+const STATUS_OFFSET := Vector2(198, 0)
+const HINT_FONT: int = 11
+const LABEL_FONT: int = 12
 const ORIGIN_OFFSET := Vector2(28, -330)
 const MARKER_SIZE: float = 7.0
+const MARKER_WIDTH: float = 1.5
 
 @export var cannon: DeckCannon
 @export var turret: Turret
@@ -15,10 +22,10 @@ func _draw() -> void:
 	var loaded := cannon.reload_left <= 0.0
 	var status := "READY" if loaded else "LOADING"
 	var fill := 1.0 - cannon.reload_left / DeckCannon.RELOAD_TIME
-	_text(origin - Vector2(0, 20), "SPACE  DECK GUN", 11, FAINT)
-	_text(origin, "GUN", 12, DIM)
-	_bar(origin + Vector2(62, -10), Vector2(128, 12), fill, MAIN if loaded else DIM)
-	_text(origin + Vector2(198, 0), status, 12, MAIN if loaded else DIM)
+	_text(origin - LABEL_LIFT, "SPACE  DECK GUN", HINT_FONT, FAINT)
+	_text(origin, "GUN", LABEL_FONT, DIM)
+	_bar(origin + BAR_OFFSET, BAR_SIZE, fill, MAIN if loaded else DIM)
+	_text(origin + STATUS_OFFSET, status, LABEL_FONT, MAIN if loaded else DIM)
 	_draw_fall_of_shot()
 
 
@@ -38,4 +45,4 @@ func _draw_fall_of_shot() -> void:
 		screen + Vector2(-MARKER_SIZE, 0),
 		screen + Vector2(0, -MARKER_SIZE),
 	])
-	draw_polyline(corners, color, 1.5)
+	draw_polyline(corners, color, MARKER_WIDTH)

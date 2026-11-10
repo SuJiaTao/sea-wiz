@@ -1,4 +1,4 @@
-extends Node
+extends AbstractDeckWeapon
 class_name DeckCannon
 ## A slow bow gun slaved to the CIWS sight. It aims at the point the
 ## sight is looking at, not along the sight, so the two lines cross.
@@ -34,22 +34,12 @@ var reload_left: float = 0.0
 var aim_point: Vector3
 var on_target: bool = false
 
-var _enabled: bool = true
+func _action() -> StringName:
+	return &"ciws_cannon"
 
 
-func _ready() -> void:
-	add_to_group(WeaponsOrchestrator.DECK_WEAPONS)
-
-
-func set_enabled(value: bool) -> void:
-	_enabled = value
-
-
-func handle_input(event: InputEvent) -> bool:
-	if event.is_action_pressed("ciws_cannon"):
-		request_fire()
-		return true
-	return false
+func _trigger() -> void:
+	request_fire()
 
 
 func request_fire() -> bool:

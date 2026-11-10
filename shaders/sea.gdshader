@@ -1,10 +1,7 @@
 shader_type spatial;
 render_mode unshaded, cull_disabled, depth_draw_opaque;
 
-// Open ocean as the intensifier sees it: a dark water body that mirrors the
-// glowing sky. A spectrum of wind waves sets the surface normal; each wave
-// fades out once it is smaller than a pixel, so the far sea settles into a
-// clean mirror of the horizon instead of shimmering.
+// Night sea: a dark water body mirroring the sky glow, with moon glints.
 
 uniform float base_level : hint_range(0.0, 0.5) = 0.03;
 uniform float sky_horizon_level : hint_range(0.0, 1.0) = 0.16;
@@ -62,6 +59,21 @@ const float RAIN_SEED = 13.7;
 const float FOAM_LEVEL = 0.32;
 const float DISPLAY_GAMMA = 2.2;
 const float DITHER_STEP = 1.0 / 255.0;
+const float DITHER_SEED = 431.0;
+const float DITHER_OFFSET = 17.0;
+const float MIN_NORMAL_Z = 0.2;
+const float RAIN_MARGIN = 0.2;
+const float RAIN_PIXELS = 3.0;
+const float FINE_RAIN_SCALE = 0.6;
+const float GUST_DETAIL = 2.3;
+const vec2 GUST_SEED = vec2(4.7);
+const float GUST_DETAIL_SHARE = 0.3;
+const float SWELL_SHARE = 0.7;
+const float COUNTER_SWELL_SCALE = 0.8;
+const float FRESNEL_POWER = 5.0;
+const float FOAM_DETAIL = 2.7;
+const float FOAM_GAIN = 2.0;
+const float FOAM_SHARP_SHARE = 0.25;
 const float FOAM_FOOTPRINT = 2.0;
 
 varying vec3 world_pos;
@@ -94,39 +106,32 @@ float sky_level(vec3 ray) {
 	return mix(sky_horizon_level, sky_top_level, clamp(1.0 - pow(1.0 - c, 1.0 / sky_curve), 0.0, 1.0));
 }
 
-// One tileable wave normal map, sampled as a slow swell plus three ripple
-// sheets crossing from different directions. Mipmaps keep it clean all the
-// way to the horizon, and five texture reads cost almost nothing.
 vec2 wave_layer(vec2 xz, float angle, float tile, float speed, float stretch, float strength) {
 	vec2 heading = vec2(sin(angle), -cos(angle));
 	vec2 across = vec2(-heading.y, heading.x);
 	vec2 uv = vec2(dot(xz, across) * stretch, dot(xz, heading) - speed * TIME) / tile;
 	vec3 n = texture(wave_normals, uv).xyz * 2.0 - 1.0;
-	vec2 local = n.xy / max(n.z, 0.2) * vec2(stretch, 1.0);
+	vec2 local = n.xy / max(n.z, MIN_NORMAL_Z) * vec2(stretch, 1.0);
 	return (across * local.x + heading * local.y) * strength;
 }
 
-// Raindrop rings: every cell gets a drop at its own moment, and the ring
-// spreads out and fades before the next one lands there.
 vec2 rain_rings(vec2 xz, float cell_size, float footprint) {
 	vec2 cell = floor(xz / cell_size);
 	vec2 within = fract(xz / cell_size);
 	float seed = hash21(cell);
-	vec2 centre = vec2(hash21(cell + RAIN_SEED), hash21(cell - RAIN_SEED)) * 0.6 + 0.2;
+	vec2 centre = vec2(hash21(cell + RAIN_SEED), hash21(cell - RAIN_SEED)) * (1.0 - 2.0 * RAIN_MARGIN) + RAIN_MARGIN;
 	float age = fract(TIME * RAIN_RATE + seed);
 	vec2 offset = within - centre;
 	float distance = length(offset);
 	float front = distance - age * RAIN_REACH;
 	float ring = sin(front * RAIN_WAVES) * exp(-front * front * RAIN_SHARPNESS) * (1.0 - age);
-	float visible = smoothstep(footprint * 3.0, footprint * 6.0, cell_size);
+	float visible = smoothstep(footprint * RAIN_PIXELS, footprint * RAIN_PIXELS * 2.0, cell_size);
 	return offset / max(distance, 1e-3) * ring * visible;
 }
 
-// Gusts roughen the water in drifting patches: rough patches catch more of
-// the sky, calm slicks stay dark.
 float gust(vec2 xz) {
 	vec2 p = xz / GUST_SIZE + TIME * GUST_DRIFT;
-	return mix(1.0 - gustiness, 1.0 + gustiness, value_noise(p) * 0.7 + value_noise(p * 2.3 + 4.7) * 0.3);
+	return mix(1.0 - gustiness, 1.0 + gustiness, mix(value_noise(p), value_noise(p * GUST_DETAIL + GUST_SEED), GUST_DETAIL_SHARE));
 }
 
 void vertex() {
@@ -139,14 +144,14 @@ void fragment() {
 	float sea = 1.0 + roughness * storm_steepness;
 	float chop = gust(world_pos.xz) * sea;
 	// Two swells meeting head on: the sea heaves in place instead of flowing.
-	vec2 slope = wave_layer(world_pos.xz, wind + SWELL_ANGLE, SWELL_TILE, SWELL_SPEED, 1.0, swell_strength * sea * 0.7)
-		+ wave_layer(world_pos.xz + SWELL_OFFSET, wind + SWELL_ANGLE + PI, SWELL_TILE * 0.8, SWELL_SPEED, 1.0, swell_strength * sea * 0.7);
+	vec2 slope = wave_layer(world_pos.xz, wind + SWELL_ANGLE, SWELL_TILE, SWELL_SPEED, 1.0, swell_strength * sea * SWELL_SHARE)
+		+ wave_layer(world_pos.xz + SWELL_OFFSET, wind + SWELL_ANGLE + PI, SWELL_TILE * COUNTER_SWELL_SCALE, SWELL_SPEED, 1.0, swell_strength * sea * SWELL_SHARE);
 	for (int i = 0; i < RIPPLE_LAYERS; i++) {
 		slope += wave_layer(world_pos.xz, wind + RIPPLE_ANGLES[i], RIPPLE_TILES[i], RIPPLE_SPEEDS[i] * ripple_speed, RIPPLE_STRETCH, ripple_strength * chop);
 	}
 	if (rain > 0.0) {
 		float footprint = length(fwidth(world_pos.xz));
-		slope += (rain_rings(world_pos.xz, RAIN_CELL, footprint) + rain_rings(world_pos.xz + RAIN_SEED, RAIN_CELL * 0.6, footprint)) * rain * rain_ripple_strength;
+		slope += (rain_rings(world_pos.xz, RAIN_CELL, footprint) + rain_rings(world_pos.xz + RAIN_SEED, RAIN_CELL * FINE_RAIN_SCALE, footprint)) * rain * rain_ripple_strength;
 	}
 	vec3 normal = normalize(vec3(-slope.x, 1.0, -slope.y));
 	// Fine sparkle ripples only tilt the glints; the body of the water stays glassy.
@@ -159,27 +164,26 @@ void fragment() {
 	bounce.y = abs(bounce.y);
 
 	float facing = clamp(dot(normal, -view_ray), 0.0, 1.0);
-	float fresnel = reflectance + (1.0 - reflectance) * pow(1.0 - facing, 5.0);
+	float fresnel = reflectance + (1.0 - reflectance) * pow(1.0 - facing, FRESNEL_POWER);
 	float v = mix(base_level, sky_level(bounce), fresnel);
 
 	float toward_moon = max(dot(bounce, moon_direction()), 0.0);
 	v += pow(toward_moon, moon_path_sharpness) * moon_path * fresnel;
-	// Far away the sparkle ripples are smaller than a pixel: widen the glint
-	// lobe instead of losing it, so the moon path still twinkles at range.
+	// Sub-pixel sparkle ripples: widen the glint lobe so the moon path still twinkles far out.
 	float glint_footprint = length(fwidth(world_pos.xz));
 	float spread = min(1.0 + glint_footprint * GLINT_SPREAD, GLINT_SPREAD_MAX);
 	v += pow(max(dot(glint_bounce, moon_direction()), 0.0), glitter_sharpness / spread) * glitter * (GLINT_FLOOR + fresnel) / sqrt(spread);
 
 	if (roughness > 0.0) {
 		vec2 p = world_pos.xz * foam_scale;
-		float lace = value_noise(p + TIME * FOAM_DRIFT) * value_noise(p * 2.7 - TIME * FOAM_DRIFT);
-		float foam = smoothstep(foam_threshold, 1.0, lace * 2.0) * roughness;
+		float lace = value_noise(p + TIME * FOAM_DRIFT) * value_noise(p * FOAM_DETAIL - TIME * FOAM_DRIFT);
+		float foam = smoothstep(foam_threshold, 1.0, lace * FOAM_GAIN) * roughness;
 		float footprint = length(fwidth(world_pos.xz));
-		v = mix(v, FOAM_LEVEL, foam * foam_level * smoothstep(FOAM_FOOTPRINT, FOAM_FOOTPRINT * 0.25, footprint));
+		v = mix(v, FOAM_LEVEL, foam * foam_level * smoothstep(FOAM_FOOTPRINT, FOAM_FOOTPRINT * FOAM_SHARP_SHARE, footprint));
 	}
 
 	v = max(v, 0.0) + lightning_flash * lightning_reflection;
-	vec2 cell = FRAGCOORD.xy + fract(TIME) * 431.0;
-	v += (hash21(cell) + hash21(cell + 17.0) - 1.0) * DITHER_STEP;
+	vec2 cell = FRAGCOORD.xy + fract(TIME) * DITHER_SEED;
+	v += (hash21(cell) + hash21(cell + DITHER_OFFSET) - 1.0) * DITHER_STEP;
 	ALBEDO = vec3(pow(max(v, 0.0), DISPLAY_GAMMA));
 }
