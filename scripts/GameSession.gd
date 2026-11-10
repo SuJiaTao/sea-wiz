@@ -12,7 +12,7 @@ const WRECK_DAMAGE_PER_SIZE: float = 12.0
 
 @onready var turret: Turret = $ViewportContainer/SubViewport/World/Vessel/Turret
 @onready var integrity: ShipIntegrity = $ViewportContainer/SubViewport/World/ShipDamage/Integrity
-@onready var sinking: ShipSinking = $ViewportContainer/SubViewport/World/ShipDamage/Sinking
+@onready var loss: ShipLoss = $ViewportContainer/SubViewport/World/ShipDamage/Loss
 @onready var enemies: EnemyManager = $ViewportContainer/SubViewport/World/Enemies
 @onready var weapons: WeaponsOrchestrator = $ViewportContainer/SubViewport/World/Weapons
 @onready var fx: FXManager = $ViewportContainer/SubViewport/World/FX
@@ -39,7 +39,7 @@ func _ready() -> void:
 	waves.completed.connect(_on_completed)
 	waves.failed.connect(_on_wave_failed)
 	title_screen.start_requested.connect(_on_start_requested)
-	sinking.sunk.connect(_on_ship_sunk)
+	loss.lost.connect(_on_ship_lost)
 	waves.level_prepared.connect(_on_level_prepared)
 	hud.hide()
 	title_screen.show()
@@ -166,8 +166,8 @@ func _on_wreck_hit_ship(position: Vector3, size: float) -> void:
 		integrity.take_hit(WRECK_DAMAGE_PER_SIZE * size, position)
 
 
-func _on_ship_sunk() -> void:
-	_finish(State.LOST, "SHIP LOST")
+func _on_ship_lost() -> void:
+	_finish(State.LOST, "SIGNAL LOST")
 
 
 func _on_completed() -> void:

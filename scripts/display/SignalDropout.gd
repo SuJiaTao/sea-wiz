@@ -9,13 +9,23 @@ const RECOVERY_PER_SECOND := 1.2
 @export var video: AnalogVideo
 
 var _amount: float = 0.0
+var _cut: bool = false
 
 
 func _ready() -> void:
 	integrity.damaged.connect(_on_damaged)
 
 
+func cut() -> void:
+	_cut = true
+	video.set_dropout(1.0)
+	video.set_signal_lost(true)
+
+
 func _process(delta: float) -> void:
+	if _cut:
+		video.set_dropout(1.0)
+		return
 	if _amount <= 0.0:
 		return
 	_amount = maxf(_amount - RECOVERY_PER_SECOND * delta, 0.0)
