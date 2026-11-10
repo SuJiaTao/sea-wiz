@@ -14,6 +14,13 @@ uniform float moon_bearing_deg : hint_range(0.0, 360.0) = 140.0;
 uniform float moon_elevation_deg : hint_range(0.0, 90.0) = 22.0;
 uniform float glitter : hint_range(0.0, 4.0) = 0.8;
 uniform float glitter_sharpness : hint_range(1.0, 400.0) = 120.0;
+uniform float moon_path : hint_range(0.0, 1.0) = 0.08;
+uniform float moon_path_sharpness : hint_range(1.0, 200.0) = 18.0;
+uniform float facet_size : hint_range(0.05, 4.0) = 0.6;
+uniform float facet_growth : hint_range(10.0, 2000.0) = 120.0;
+uniform float facet_tilt : hint_range(0.0, 0.6) = 0.22;
+uniform float facet_twinkle : hint_range(0.0, 10.0) = 2.5;
+uniform float facet_point : hint_range(0.0, 1.0) = 0.55;
 uniform float ripple_scale = 0.35;
 uniform float ripple_slope : hint_range(0.0, 1.0) = 0.22;
 uniform float ripple_speed = 0.6;
@@ -48,6 +55,10 @@ float value_noise(vec2 p) {
 }
 
 const float SLOPE_STEP = 0.5;
+const vec2 FACET_SEED_X = vec2(17.1, 3.7);
+const vec2 FACET_SEED_Z = vec2(5.3, 29.9);
+const float FACET_SPIN = 1.3;
+const float FACET_SWAY = 0.35;
 
 varying vec3 world_pos;
 
@@ -62,15 +73,35 @@ float ripples(vec2 p) {
 	return value_noise(p + drift) * 0.6 + value_noise(p * 2.3 - drift) * 0.4;
 }
 
-float moon_glitter(vec3 view_ray) {
+vec3 ripple_normal() {
 	vec2 p = world_pos.xz * ripple_scale;
 	float centre = ripples(p);
 	float dx = ripples(p + vec2(SLOPE_STEP, 0.0)) - centre;
 	float dz = ripples(p + vec2(0.0, SLOPE_STEP)) - centre;
 	float slope = ripple_slope * (1.0 + roughness * storm_slope);
-	vec3 normal = normalize(vec3(-dx * slope / SLOPE_STEP, 1.0, -dz * slope / SLOPE_STEP));
+	return normalize(vec3(-dx * slope / SLOPE_STEP, 1.0, -dz * slope / SLOPE_STEP));
+}
+
+// Countless small wave facets: each tips at its own angle and twinkles, so the
+// moon breaks into points of light along a soft path toward it.
+float facet_sparkle(vec3 view_ray, vec3 base_normal, float distance) {
+	float size = facet_size * (1.0 + distance / facet_growth);
+	vec2 cell = floor(world_pos.xz / size);
+	vec2 within = fract(world_pos.xz / size) - 0.5;
+	float seed = hash21(cell);
+	float phase = TIME * facet_twinkle + seed * TAU;
+	vec2 tilt = (vec2(hash21(cell + FACET_SEED_X), hash21(cell + FACET_SEED_Z)) - 0.5) * 2.0 * facet_tilt;
+	tilt += vec2(sin(phase), cos(phase * FACET_SPIN)) * facet_tilt * FACET_SWAY;
+	vec3 normal = normalize(base_normal + vec3(tilt.x, 0.0, tilt.y));
 	float facing = max(dot(reflect(view_ray, normal), moon_direction()), 0.0);
-	return pow(facing, glitter_sharpness) * glitter;
+	float point = 1.0 - smoothstep(0.0, 0.5, length(within)) * facet_point;
+	return pow(facing, glitter_sharpness) * glitter * point;
+}
+
+float moon_light(vec3 view_ray, float distance) {
+	vec3 normal = ripple_normal();
+	float facing = max(dot(reflect(view_ray, normal), moon_direction()), 0.0);
+	return pow(facing, moon_path_sharpness) * moon_path + facet_sparkle(view_ray, normal, distance);
 }
 
 float swell(vec2 xz, vec2 heading, float wavelength) {
@@ -102,7 +133,7 @@ void fragment() {
 	fade = fade * fade;
 
 	float v = base_level + n * clutter_level * fade;
-	v += moon_glitter(normalize(world_pos - CAMERA_POSITION_WORLD));
+	v += moon_light(normalize(world_pos - CAMERA_POSITION_WORLD), length(world_pos.xz - CAMERA_POSITION_WORLD.xz));
 	v += roughness * rough_water(world_pos.xz);
 	v = max(v, 0.0) + lightning_flash * lightning_reflection;
 	ALBEDO = vec3(pow(v, DISPLAY_GAMMA));
