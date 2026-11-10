@@ -8,8 +8,8 @@ const ROUNDS_PER_MIN := 4500.0
 const SPINUP_TIME := 0.32
 const SPINDOWN_TIME := 0.8
 
-const PITCH_MIN := deg_to_rad(-12.0)
-const PITCH_MAX := deg_to_rad(80.0)
+const PITCH_MIN := deg_to_rad(-40.0)
+const PITCH_MAX := deg_to_rad(88.0)
 
 const CAMERA_SHAKE_PER_ROUND := 0.22
 
