@@ -43,7 +43,7 @@ uniform float vignette_amount : hint_range(0.0, 1.0) = 0.22;
 uniform float nvg_amount : hint_range(0.0, 1.0) = 1.0;
 uniform float nvg_sky_level : hint_range(0.0, 1.0) = 0.2;
 uniform float nvg_sky_band : hint_range(0.01, 0.4) = 0.16;
-uniform float nvg_body_level : hint_range(0.0, 1.0) = 0.1;
+uniform float nvg_body_level : hint_range(0.0, 1.0) = 0.22;
 uniform float nvg_hot_start : hint_range(0.3, 1.0) = 0.62;
 uniform float shot_noise : hint_range(0.0, 0.8) = 0.38;
 
@@ -90,7 +90,7 @@ float column_gain(float column) {
 
 float night_vision(float l) {
 	float sky = smoothstep(0.0, nvg_sky_band, l) * nvg_sky_level;
-	float body = mix(sky, nvg_body_level, smoothstep(nvg_sky_band, nvg_sky_band * 2.0, l));
+	float body = mix(sky, max(nvg_body_level, nvg_sky_level), smoothstep(nvg_sky_band, nvg_sky_band * 2.0, l));
 	return mix(body, 1.0, smoothstep(nvg_hot_start, 1.0, l));
 }
 
