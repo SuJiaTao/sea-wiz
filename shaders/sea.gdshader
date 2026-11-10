@@ -9,10 +9,9 @@ uniform float sky_top_level : hint_range(0.0, 1.0) = 0.09;
 uniform float sky_curve : hint_range(0.001, 1.0) = 0.12;
 uniform float reflectance : hint_range(0.0, 0.2) = 0.06;
 uniform float wind_bearing_deg : hint_range(0.0, 360.0) = 60.0;
-uniform sampler2D wave_normals : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D sparkle_normals : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
-uniform float swell_strength : hint_range(0.0, 2.0) = 0.25;
-uniform float ripple_strength : hint_range(0.0, 2.0) = 0.35;
+uniform float wave_steepness : hint_range(0.0, 1.0) = 0.14;
+uniform float wave_evolve : hint_range(0.0, 4.0) = 0.6;
 uniform float glint_ripple : hint_range(0.0, 3.0) = 0.8;
 uniform float gustiness : hint_range(0.0, 1.0) = 0.55;
 uniform float roughness : hint_range(0.0, 1.0) = 0.0;
@@ -32,20 +31,17 @@ uniform float rain_ripple_strength : hint_range(0.0, 2.0) = 0.6;
 uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
 uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
 
-const int RIPPLE_LAYERS = 3;
-const float RIPPLE_TILES[3] = float[](26.0, 17.0, 11.0);
-const float RIPPLE_ANGLES[3] = float[](0.0, 2.094, -2.094);
-const float RIPPLE_SPEEDS[3] = float[](0.7, 0.7, 0.7);
-const float RIPPLE_STRETCH = 0.3;
+const int WAVE_OCTAVES = 4;
+const float WAVE_LENGTHS[4] = float[](12.0, 5.5, 2.5, 1.2);
+const float WAVE_WEIGHTS[4] = float[](1.0, 0.8, 0.6, 0.45);
+const float WAVE_SEED = 17.3;
+const float WAVE_PIXELS = 2.0;
+const float GRAVITY = 9.81;
 const int GLINT_LAYERS = 3;
 const float GLINT_TILES[3] = float[](7.0, 3.0, 1.6);
 const float GLINT_STRETCH = 1.0;
 const float GLINT_ANGLES[3] = float[](0.4, 1.0, -2.1);
 const float GLINT_SPEED = 0.8;
-const float SWELL_TILE = 90.0;
-const float SWELL_ANGLE = 0.3;
-const float SWELL_SPEED = 1.5;
-const vec2 SWELL_OFFSET = vec2(37.0, 11.0);
 const float GUST_SIZE = 140.0;
 const vec2 GUST_DRIFT = vec2(0.012, 0.02);
 const float FOAM_DRIFT = 0.15;
@@ -68,8 +64,6 @@ const float FINE_RAIN_SCALE = 0.6;
 const float GUST_DETAIL = 2.3;
 const vec2 GUST_SEED = vec2(4.7);
 const float GUST_DETAIL_SHARE = 0.3;
-const float SWELL_SHARE = 0.7;
-const float COUNTER_SWELL_SCALE = 0.8;
 const float FRESNEL_POWER = 5.0;
 const float FOAM_DETAIL = 2.7;
 const float FOAM_GAIN = 2.0;
@@ -95,6 +89,63 @@ float value_noise(vec2 p) {
 	);
 }
 
+vec3 corner_gradient(vec3 p) {
+	p = vec3(dot(p, vec3(127.1, 311.7, 74.7)), dot(p, vec3(269.5, 183.3, 246.1)), dot(p, vec3(113.5, 271.9, 124.6)));
+	return fract(sin(p) * 43758.5453) * 2.0 - 1.0;
+}
+
+// 3D gradient noise with its derivatives (x: value, yzw: gradient).
+vec4 gradient_noise(vec3 x) {
+	vec3 i = floor(x);
+	vec3 f = fract(x);
+	vec3 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+	vec3 du = 30.0 * f * f * (f * (f - 2.0) + 1.0);
+	vec3 ga = corner_gradient(i);
+	vec3 gb = corner_gradient(i + vec3(1.0, 0.0, 0.0));
+	vec3 gc = corner_gradient(i + vec3(0.0, 1.0, 0.0));
+	vec3 gd = corner_gradient(i + vec3(1.0, 1.0, 0.0));
+	vec3 ge = corner_gradient(i + vec3(0.0, 0.0, 1.0));
+	vec3 gf = corner_gradient(i + vec3(1.0, 0.0, 1.0));
+	vec3 gg = corner_gradient(i + vec3(0.0, 1.0, 1.0));
+	vec3 gh = corner_gradient(i + vec3(1.0, 1.0, 1.0));
+	float va = dot(ga, f);
+	float vb = dot(gb, f - vec3(1.0, 0.0, 0.0));
+	float vc = dot(gc, f - vec3(0.0, 1.0, 0.0));
+	float vd = dot(gd, f - vec3(1.0, 1.0, 0.0));
+	float ve = dot(ge, f - vec3(0.0, 0.0, 1.0));
+	float vf = dot(gf, f - vec3(1.0, 0.0, 1.0));
+	float vg = dot(gg, f - vec3(0.0, 1.0, 1.0));
+	float vh = dot(gh, f - vec3(1.0, 1.0, 1.0));
+	float value = va + u.x * (vb - va) + u.y * (vc - va) + u.z * (ve - va)
+		+ u.x * u.y * (va - vb - vc + vd) + u.y * u.z * (va - vc - ve + vg)
+		+ u.z * u.x * (va - vb - ve + vf) + (-va + vb + vc - vd + ve - vf - vg + vh) * u.x * u.y * u.z;
+	vec3 gradient = ga + u.x * (gb - ga) + u.y * (gc - ga) + u.z * (ge - ga)
+		+ u.x * u.y * (ga - gb - gc + gd) + u.y * u.z * (ga - gc - ge + gg)
+		+ u.z * u.x * (ga - gb - ge + gf) + (-ga + gb + gc - gd + ge - gf - gg + gh) * u.x * u.y * u.z
+		+ du * (vec3(vb, vc, ve) - va
+			+ u.yzx * vec3(va - vb - vc + vd, va - vc - ve + vg, va - vb - ve + vf)
+			+ u.zxy * vec3(va - vb - ve + vf, va - vb - vc + vd, va - vc - ve + vg)
+			+ u.yzx * u.zxy * (-va + vb + vc - vd + ve - vf - vg + vh));
+	return vec4(value, gradient);
+}
+
+// Calm open water: round wavelets at a few sizes that swell and fade where they
+// are, without travelling, the way still water moves under light wind.
+vec2 water_slope(vec2 xz, float footprint, float strength) {
+	vec2 slope = vec2(0.0);
+	for (int i = 0; i < WAVE_OCTAVES; i++) {
+		float wavelength = WAVE_LENGTHS[i];
+		float resolved = smoothstep(footprint * WAVE_PIXELS, footprint * WAVE_PIXELS * 2.0, wavelength);
+		if (resolved <= 0.0) {
+			break;
+		}
+		float rate = sqrt(GRAVITY * TAU / wavelength) / TAU * wave_evolve;
+		vec4 n = gradient_noise(vec3(xz / wavelength, TIME * rate + float(i) * WAVE_SEED));
+		slope += n.yz * WAVE_WEIGHTS[i] * resolved;
+	}
+	return slope * strength;
+}
+
 vec3 moon_direction() {
 	float bearing = radians(moon_bearing_deg);
 	float elevation = radians(moon_elevation_deg);
@@ -106,11 +157,11 @@ float sky_level(vec3 ray) {
 	return mix(sky_horizon_level, sky_top_level, clamp(1.0 - pow(1.0 - c, 1.0 / sky_curve), 0.0, 1.0));
 }
 
-vec2 wave_layer(sampler2D normals, vec2 xz, float angle, float tile, float speed, float stretch, float strength) {
+vec2 sparkle_layer(vec2 xz, float angle, float tile, float speed, float stretch, float strength) {
 	vec2 heading = vec2(sin(angle), -cos(angle));
 	vec2 across = vec2(-heading.y, heading.x);
 	vec2 uv = vec2(dot(xz, across) * stretch, dot(xz, heading) - speed * TIME) / tile;
-	vec3 n = texture(normals, uv).xyz * 2.0 - 1.0;
+	vec3 n = texture(sparkle_normals, uv).xyz * 2.0 - 1.0;
 	vec2 local = n.xy / max(n.z, MIN_NORMAL_Z) * vec2(stretch, 1.0);
 	return (across * local.x + heading * local.y) * strength;
 }
@@ -143,22 +194,17 @@ void fragment() {
 	float wind = radians(wind_bearing_deg);
 	float sea = 1.0 + roughness * storm_steepness;
 	float chop = gust(world_pos.xz) * sea;
-	// Two swells meeting head on: the sea heaves in place instead of flowing.
-	vec2 slope = wave_layer(wave_normals, world_pos.xz, wind + SWELL_ANGLE, SWELL_TILE, SWELL_SPEED, 1.0, swell_strength * sea * SWELL_SHARE)
-		+ wave_layer(wave_normals, world_pos.xz + SWELL_OFFSET, wind + SWELL_ANGLE + PI, SWELL_TILE * COUNTER_SWELL_SCALE, SWELL_SPEED, 1.0, swell_strength * sea * SWELL_SHARE);
-	vec2 swell = slope;
-	for (int i = 0; i < RIPPLE_LAYERS; i++) {
-		slope += wave_layer(wave_normals, world_pos.xz, wind + RIPPLE_ANGLES[i], RIPPLE_TILES[i], RIPPLE_SPEEDS[i] * ripple_speed, RIPPLE_STRETCH, ripple_strength * chop);
-	}
+	float footprint = length(fwidth(world_pos.xz));
+	vec2 slope = water_slope(world_pos.xz, footprint, wave_steepness * chop);
+	vec2 water = slope;
 	if (rain > 0.0) {
-		float footprint = length(fwidth(world_pos.xz));
 		slope += (rain_rings(world_pos.xz, RAIN_CELL, footprint) + rain_rings(world_pos.xz + RAIN_SEED, RAIN_CELL * FINE_RAIN_SCALE, footprint)) * rain * rain_ripple_strength;
 	}
 	vec3 normal = normalize(vec3(-slope.x, 1.0, -slope.y));
-	// Glints ride the swell and their own fine ripples, not the crest lines, so they never cross-hatch.
-	vec2 sparkle = swell;
+	// Glints ride the water plus their own fine sparkle ripples.
+	vec2 sparkle = water;
 	for (int i = 0; i < GLINT_LAYERS; i++) {
-		sparkle += wave_layer(sparkle_normals, world_pos.xz, wind + GLINT_ANGLES[i], GLINT_TILES[i], GLINT_SPEED * ripple_speed, GLINT_STRETCH, glint_ripple * chop);
+		sparkle += sparkle_layer( world_pos.xz, wind + GLINT_ANGLES[i], GLINT_TILES[i], GLINT_SPEED * ripple_speed, GLINT_STRETCH, glint_ripple * chop);
 	}
 	vec3 glint_bounce = reflect(view_ray, normalize(vec3(-sparkle.x, 1.0, -sparkle.y)));
 	vec3 bounce = reflect(view_ray, normal);
@@ -176,7 +222,6 @@ void fragment() {
 		vec2 p = world_pos.xz * foam_scale;
 		float lace = value_noise(p + TIME * FOAM_DRIFT) * value_noise(p * FOAM_DETAIL - TIME * FOAM_DRIFT);
 		float foam = smoothstep(foam_threshold, 1.0, lace * FOAM_GAIN) * roughness;
-		float footprint = length(fwidth(world_pos.xz));
 		v = mix(v, FOAM_LEVEL, foam * foam_level * smoothstep(FOAM_FOOTPRINT, FOAM_FOOTPRINT * FOAM_SHARP_SHARE, footprint));
 	}
 
