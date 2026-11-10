@@ -69,6 +69,10 @@ func score_label() -> String:
 	return display_name
 
 
+func lure(_point: Vector3) -> bool:
+	return false
+
+
 func evade_missile(_missile_position: Vector3) -> DecoyFlare:
 	return null
 

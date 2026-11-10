@@ -29,6 +29,8 @@
 [ext_resource type="Resource" path="res://resources/damage_sources/DeckGun.tres" id="20_deck_gun_source"]
 [ext_resource type="Script" path="res://scripts/hud/DeckCannonHUD.gd" id="20_deck_cannon_hud"]
 [ext_resource type="Script" uid="uid://3isdddaon66x" path="res://scripts/weapons/MissileLauncher.gd" id="21_launcher"]
+[ext_resource type="Script" path="res://scripts/weapons/DecoyLauncher.gd" id="21_decoys"]
+[ext_resource type="Script" path="res://scripts/hud/DecoyHUD.gd" id="21_decoy_hud"]
 [ext_resource type="Script" uid="uid://p0e7licgkygc" path="res://scripts/weapons/SalvoManager.gd" id="22_salvos"]
 [ext_resource type="Script" uid="uid://cu8tlm5bchc3w" path="res://scripts/hud/WeaponFeedback.gd" id="23_weapon_feedback"]
 [ext_resource type="Script" uid="uid://dru4raaqnben3" path="res://scripts/ballistics/MissileSmokeRenderer.gd" id="24_smoke"]
@@ -630,6 +632,13 @@ script = ExtResource("59_ejector")
 turret = NodePath("../../Vessel/Turret")
 pile = NodePath("../../Vessel/Casings")
 
+[node name="DecoyLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("enemies", "smoke", "fx", "tubes")]
+script = ExtResource("21_decoys")
+enemies = NodePath("../../Enemies")
+smoke = NodePath("../../MissileSmoke")
+fx = NodePath("../../FX")
+tubes = NodePath("../../Vessel/Warship/DecoyTubes")
+
 [node name="Sensors" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1704323909]
 
 [node name="SearchRadar" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" unique_id=1824492703 node_paths=PackedStringArray("enemies", "antenna")]
@@ -755,6 +764,16 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("17_feedback_hud")
 enemies = NodePath("../../../ViewportContainer/SubViewport/World/Enemies")
+
+[node name="DecoyHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("decoys")]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("21_decoy_hud")
+decoys = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/DecoyLauncher")
 
 [node name="WeaponFeedback" type="Control" parent="HUD/HUDRoot" unique_id=56369314 node_paths=PackedStringArray("launcher", "salvos", "turret", "smoke", "fx")]
 anchors_preset = 0
