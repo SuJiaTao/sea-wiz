@@ -49,7 +49,7 @@ uniform float shot_noise : hint_range(0.0, 0.8) = 0.38;
 
 // Glints: the brightest points split into clean star rays with a faint spectral edge.
 uniform float glint_threshold : hint_range(0.0, 1.0) = 0.7;
-uniform float glint_strength : hint_range(0.0, 8.0) = 1.5;
+uniform float glint_strength : hint_range(0.0, 8.0) = 2.5;
 uniform float glint_length_texels : hint_range(2.0, 128.0) = 64.0;
 uniform float glint_rotation : hint_range(0.0, 3.1416) = 0.26;
 uniform float glint_dispersion : hint_range(0.0, 0.5) = 0.18;
@@ -75,6 +75,7 @@ const float GLINT_HUE_STRENGTH = 3.0;
 const float GLINT_SHIMMER_PHASE = 2.1;
 const float GLINT_FALLOFF = 2.2;
 const float GLINT_SHIMMER_DEPTH = 0.35;
+const float GLINT_JITTER_SEED = 7.7;
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -202,8 +203,9 @@ void fragment() {
 		vec2 direction = heading * texel * glint_length_texels;
 		vec2 across = vec2(-heading.y, heading.x) * texel * GLINT_POINT_TEXELS;
 		float shimmer = 1.0 - GLINT_SHIMMER_DEPTH * (0.5 + 0.5 * sin(TIME * glint_shimmer_speed + float(ray) * GLINT_SHIMMER_PHASE));
+		float jitter = hash12(UV * sensor_size + float(ray) * GLINT_JITTER_SEED);
 		for (int step = 1; step <= GLINT_STEPS; step++) {
-			float along = float(step) / float(GLINT_STEPS);
+			float along = (float(step) - jitter) / float(GLINT_STEPS);
 			vec2 at = uv - direction * along;
 			float source = dot(texture(sensor_image, at).rgb, LUMA);
 			if (source <= glint_threshold) {

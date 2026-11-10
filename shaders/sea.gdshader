@@ -27,6 +27,9 @@ uniform float moon_path : hint_range(0.0, 2.0) = 0.25;
 uniform float moon_path_sharpness : hint_range(1.0, 2000.0) = 25.0;
 uniform float glitter : hint_range(0.0, 4.0) = 1.6;
 uniform float glitter_sharpness : hint_range(1.0, 4000.0) = 300.0;
+uniform float star_glints : hint_range(0.0, 8.0) = 3.0;
+uniform float star_glint_chance : hint_range(0.0, 1.0) = 0.03;
+uniform float star_glint_spread : hint_range(1.0, 400.0) = 40.0;
 uniform float ripple_speed : hint_range(0.0, 4.0) = 1.0;
 uniform float rain : hint_range(0.0, 1.0) = 0.0;
 uniform float rain_ripple_strength : hint_range(0.0, 2.0) = 0.6;
@@ -52,6 +55,12 @@ const float RAIN_SHARPNESS = 400.0;
 const float RAIN_SEED = 13.7;
 const float FOAM_LEVEL = 0.32;
 const float DISPLAY_GAMMA = 2.2;
+const float STAR_CELL = 3.0;
+const float STAR_SEED = 41.3;
+const float STAR_RATE = 0.9;
+const float STAR_RISE = 0.15;
+const float STAR_RADIUS = 0.08;
+const float STAR_PIXELS = 3.5;
 const float DITHER_STEP = 1.0 / 255.0;
 const float FOAM_FOOTPRINT = 2.0;
 
@@ -120,6 +129,22 @@ float gust(vec2 xz) {
 	return mix(1.0 - gustiness, 1.0 + gustiness, value_noise(p) * 0.7 + value_noise(p * 2.3 + 4.7) * 0.3);
 }
 
+// Rare pinpoint flashes on the moon path: bright enough, and alone enough,
+// for the sensor's glint rays to fire on them.
+float star_glint(vec2 xz, float facing_moon, vec2 footprint) {
+	vec2 cell = floor(xz / STAR_CELL);
+	float seed = hash21(cell + STAR_SEED);
+	if (seed > star_glint_chance) {
+		return 0.0;
+	}
+	float life = fract(TIME * STAR_RATE + hash21(cell - STAR_SEED));
+	float flash = smoothstep(0.0, STAR_RISE, life) * (1.0 - smoothstep(STAR_RISE, 1.0, life));
+	vec2 centre = (cell + 0.5) * STAR_CELL;
+	vec2 radius = max(vec2(STAR_RADIUS), footprint * STAR_PIXELS);
+	float point = 1.0 - smoothstep(0.0, 1.0, length((xz - centre) / radius));
+	return point * flash * pow(facing_moon, star_glint_spread);
+}
+
 void vertex() {
 	world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
@@ -148,6 +173,7 @@ void fragment() {
 	float toward_moon = max(dot(bounce, moon_direction()), 0.0);
 	v += pow(toward_moon, moon_path_sharpness) * moon_path * fresnel;
 	v += pow(toward_moon, glitter_sharpness) * glitter * fresnel;
+	v += star_glint(world_pos.xz, toward_moon, fwidth(world_pos.xz)) * star_glints;
 
 	if (roughness > 0.0) {
 		vec2 p = world_pos.xz * foam_scale;
