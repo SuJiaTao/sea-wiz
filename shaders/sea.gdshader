@@ -34,13 +34,14 @@ uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
 uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
 
 const int RIPPLE_LAYERS = 3;
-const float RIPPLE_TILES[3] = float[](14.0, 6.0, 2.5);
-const float RIPPLE_ANGLES[3] = float[](0.0, 2.2, -1.9);
-const float RIPPLE_SPEEDS[3] = float[](3.0, 2.2, 2.6);
+const float RIPPLE_TILES[3] = float[](9.0, 5.0, 3.0);
+const float RIPPLE_ANGLES[3] = float[](0.0, 2.094, -2.094);
+const float RIPPLE_SPEEDS[3] = float[](1.4, 1.4, 1.4);
 const float RIPPLE_STRETCH = 0.45;
 const float SWELL_TILE = 90.0;
 const float SWELL_ANGLE = 0.3;
-const float SWELL_SPEED = 4.0;
+const float SWELL_SPEED = 1.5;
+const vec2 SWELL_OFFSET = vec2(37.0, 11.0);
 const float GUST_SIZE = 140.0;
 const vec2 GUST_DRIFT = vec2(0.012, 0.02);
 const float FOAM_DRIFT = 0.15;
@@ -130,7 +131,9 @@ void fragment() {
 	float wind = radians(wind_bearing_deg);
 	float sea = 1.0 + roughness * storm_steepness;
 	float chop = gust(world_pos.xz) * sea;
-	vec2 slope = wave_layer(world_pos.xz, wind + SWELL_ANGLE, SWELL_TILE, SWELL_SPEED, 1.0, swell_strength * sea);
+	// Two swells meeting head on: the sea heaves in place instead of flowing.
+	vec2 slope = wave_layer(world_pos.xz, wind + SWELL_ANGLE, SWELL_TILE, SWELL_SPEED, 1.0, swell_strength * sea * 0.7)
+		+ wave_layer(world_pos.xz + SWELL_OFFSET, wind + SWELL_ANGLE + PI, SWELL_TILE * 0.8, SWELL_SPEED, 1.0, swell_strength * sea * 0.7);
 	for (int i = 0; i < RIPPLE_LAYERS; i++) {
 		slope += wave_layer(world_pos.xz, wind + RIPPLE_ANGLES[i], RIPPLE_TILES[i], RIPPLE_SPEEDS[i] * ripple_speed, RIPPLE_STRETCH, ripple_strength * chop);
 	}
