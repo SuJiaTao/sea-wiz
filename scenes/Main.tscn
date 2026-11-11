@@ -310,8 +310,9 @@ waves = NodePath("../WaveOrchestrator")
 clear = ExtResource("79_clear")
 fronts = Array[ExtResource("81_profile_type")]([ExtResource("88_rain"), ExtResource("89_snow"), ExtResource("95_storm")])
 
-[node name="Fog" type="Node" parent="Weather" unique_id=1716444370 node_paths=PackedStringArray("environment")]
+[node name="Fog" type="Node" parent="Weather" unique_id=1716444370 node_paths=PackedStringArray("environment", "camera")]
 script = ExtResource("76_fog")
+camera = NodePath("../../ViewportContainer/SubViewport/World/Vessel/Turret/Mount/Sensor")
 environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
 star_material = ExtResource("82_star_material")
 
