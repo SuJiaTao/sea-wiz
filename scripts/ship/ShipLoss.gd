@@ -1,7 +1,5 @@
 extends Node
 class_name ShipLoss
-## The end of the ship: fire takes every deck, the bridge goes up, the hull
-## lurches into a list and the camera feed dies.
 
 signal lost
 
