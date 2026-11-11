@@ -11,7 +11,6 @@ const ELEVATE_RATE: float = deg_to_rad(24.0)
 const MIN_ELEVATION: float = deg_to_rad(-5.0)
 const MAX_ELEVATION: float = deg_to_rad(70.0)
 const DEFAULT_RANGE: float = 1500.0
-const ACQUIRE_CONE_DEG: float = 5.0
 const ON_TARGET_DEG: float = 2.0
 const GRAVITY: float = 9.81
 const MUZZLE_SHAKE: float = 2.2
@@ -19,7 +18,7 @@ const BLAST_SHAKE: float = 1.2
 const BLAST_VISUAL_SCALE: float = 0.7
 
 @export var turret: Turret
-@export var enemies: EnemyManager
+@export var fire_control: FireControl
 @export var ballistics: BallisticManager
 @export var tracers: ProjectileBatch
 @export var fx: FXManager
@@ -80,22 +79,8 @@ func _physics_process(delta: float) -> void:
 
 func _sight_point() -> Vector3:
 	var camera := turret.camera
-	var eye := camera.global_position
-	var sight := -camera.global_basis.z
-	var best_range := DEFAULT_RANGE
-	var best_angle := ACQUIRE_CONE_DEG
-	var best: AbstractEnemy = null
-	for enemy in enemies.live_enemies():
-		var offset := enemy.global_position - eye
-		var angle := rad_to_deg(sight.angle_to(offset))
-		if angle < best_angle:
-			best_angle = angle
-			best_range = offset.length()
-			best = enemy
-	if best == null:
-		return eye + sight * best_range
-	var flight := best_range / SHELL_SPEED
-	return best.global_position + best.velocity * flight
+	var reach := fire_control.lock_range() if fire_control.is_locked() else DEFAULT_RANGE
+	return camera.global_position - camera.global_basis.z * reach
 
 
 func _with_drop(point: Vector3) -> Vector3:

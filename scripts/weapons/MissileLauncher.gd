@@ -8,9 +8,9 @@ signal detonated(position: Vector3, radius: float)
 
 const CAPACITY: int = 8
 const REARM_TIME: float = 9.0
-const LOCK_TIME := Vector2(0.8, 1.3)
 const NO_TARGET_REASON := "NO TARGET"
 const GUN_TARGET_REASON := "GUNS ONLY"
+const RANGE_REASON := "OUT OF RANGE"
 const LOCK_CONE_DEG: float = 3.2
 const MIN_RANGE: float = 130.0
 const MAX_RANGE: float = 2800.0
@@ -18,6 +18,7 @@ const REFIRE_TIME: float = 0.55
 const VERTICAL_CLIMB: float = 0.75
 
 @export var turret: Turret
+@export var fire_control: FireControl
 @export var enemies: EnemyManager
 @export var ballistics: BallisticManager
 @export var renderer: ProjectileBatch
@@ -33,8 +34,8 @@ var trigger_held: bool = false
 
 var _enabled: bool = true
 var _rearm_elapsed: float = 0.0
+var _fired_this_pull: bool = false
 var _refire_remaining: float = 0.0
-var _lock_duration: float = LOCK_TIME.y
 
 
 func _ready() -> void:
@@ -75,67 +76,36 @@ func _physics_process(delta: float) -> void:
 	_run_lock(delta)
 
 
-func _run_lock(delta: float) -> void:
+func _run_lock(_delta: float) -> void:
 	if not trigger_held:
 		_clear_lock()
+		_fired_this_pull = false
 		return
 	if missiles <= 0:
 		_clear_lock("NO MISSILES")
 		return
-	if _refire_remaining > 0.0:
-		_clear_lock()
+	if not fire_control.is_locked():
+		_clear_lock(GUN_TARGET_REASON if _missile_in_cone() else NO_TARGET_REASON)
 		return
-
-	var candidate := _best_candidate()
-	if candidate == null:
-		lock_denied_reason = GUN_TARGET_REASON if _missile_in_cone() else NO_TARGET_REASON
-		lock_progress = maxf(lock_progress - delta * 2.5, 0.0)
-		if lock_progress <= 0.0 or not is_instance_valid(lock_target):
-			lock_target = null
-		return
-
+	lock_target = fire_control.locked
+	lock_progress = 1.0
 	lock_denied_reason = ""
-	if candidate != lock_target:
-		lock_target = candidate
-		lock_progress = 0.0
-		_lock_duration = randf_range(LOCK_TIME.x, LOCK_TIME.y)
-
-	lock_progress = minf(lock_progress + delta / _lock_duration, 1.0)
-	if lock_progress >= 1.0:
-		if Input.is_action_pressed("ciws_fire"):
-			if try_launch(lock_target):
-				_clear_lock()
-				_refire_remaining = REFIRE_TIME
-			else:
-				lock_denied_reason = "LAUNCH UNAVAILABLE"
+	if _refire_remaining > 0.0 or _fired_this_pull:
+		return
+	var reach := fire_control.lock_range()
+	if reach < MIN_RANGE or reach > MAX_RANGE:
+		lock_denied_reason = RANGE_REASON
+	elif try_launch(lock_target):
+		_refire_remaining = REFIRE_TIME
+		_fired_this_pull = true
+	else:
+		lock_denied_reason = "LAUNCH UNAVAILABLE"
 
 
 func _clear_lock(reason: String = "") -> void:
 	lock_target = null
 	lock_progress = 0.0
 	lock_denied_reason = reason
-
-
-func _best_candidate() -> AbstractEnemy:
-	var forward := -turret.muzzle.global_basis.z
-	var origin := turret.camera.global_position
-	var best: AbstractEnemy
-	var best_angle := LOCK_CONE_DEG
-
-	for enemy in enemies.live_enemies():
-		if enemy.contact_kind == AbstractEnemy.ContactKind.MISSILE:
-			continue
-		var offset := enemy.global_position - origin
-		var distance := offset.length()
-		if distance < MIN_RANGE or distance > MAX_RANGE:
-			continue
-		var angle := rad_to_deg(acos(clampf(
-			forward.dot(offset / distance), -1.0, 1.0
-		)))
-		if angle < best_angle:
-			best_angle = angle
-			best = enemy
-	return best
 
 
 func _missile_in_cone() -> bool:

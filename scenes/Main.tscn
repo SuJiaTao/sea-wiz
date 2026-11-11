@@ -132,6 +132,7 @@
 [ext_resource type="Resource" path="res://scripts/upgrade_system/providers/resources/supply_manifest.tres" id="116_manifest_stock"]
 [ext_resource type="PackedScene" path="res://scenes/supply/SupplyCrate.tscn" id="117_crate"]
 [ext_resource type="Resource" path="res://levels/Patrol.tres" id="118_patrol"]
+[ext_resource type="Script" path="res://scripts/sensors/FireControl.gd" id="119_fire_control"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -604,9 +605,10 @@ muzzle_motion = NodePath("MuzzleMotion")
 script = ExtResource("95_muzzle_motion")
 turret = NodePath("../../Vessel/Turret")
 
-[node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=803649068 node_paths=PackedStringArray("turret", "enemies", "ballistics", "renderer", "smoke", "cells")]
+[node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=803649068 node_paths=PackedStringArray("turret", "fire_control", "enemies", "ballistics", "renderer", "smoke", "cells")]
 script = ExtResource("21_launcher")
 turret = NodePath("../../Vessel/Turret")
+fire_control = NodePath("../../Sensors/FireControl")
 enemies = NodePath("../../Enemies")
 ballistics = NodePath("../../Ballistics")
 renderer = NodePath("../../Missiles")
@@ -614,11 +616,11 @@ smoke = NodePath("../../MissileSmoke")
 damage_source = ExtResource("27_missile_source")
 cells = NodePath("../../Vessel/Warship/LaunchCells")
 
-[node name="DeckCannon" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "enemies", "ballistics", "tracers", "fx", "mount", "barrel", "muzzle")]
+[node name="DeckCannon" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "fire_control", "ballistics", "tracers", "fx", "mount", "barrel", "muzzle")]
 script = ExtResource("20_deck_cannon")
 fitting = &"deck_gun"
 turret = NodePath("../../Vessel/Turret")
-enemies = NodePath("../../Enemies")
+fire_control = NodePath("../../Sensors/FireControl")
 ballistics = NodePath("../../Ballistics")
 tracers = NodePath("../../Tracers")
 fx = NodePath("../../FX")
@@ -672,11 +674,15 @@ script = ExtResource("37_spotter")
 turret = NodePath("../../Vessel/Turret")
 enemies = NodePath("../../Enemies")
 
-[node name="GunDirector" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" unique_id=685954536 node_paths=PackedStringArray("turret", "enemies", "spotter")]
+[node name="GunDirector" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" unique_id=685954536 node_paths=PackedStringArray("turret")]
 script = ExtResource("38_gun_director")
 turret = NodePath("../../Vessel/Turret")
-enemies = NodePath("../../Enemies")
+
+[node name="FireControl" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" node_paths=PackedStringArray("turret", "spotter", "gun_director")]
+script = ExtResource("119_fire_control")
+turret = NodePath("../../Vessel/Turret")
 spotter = NodePath("../Spotter")
+gun_director = NodePath("../GunDirector")
 
 [node name="BarrelHeat" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=550869702 node_paths=PackedStringArray("turret")]
 script = ExtResource("40_barrel_heat")
@@ -696,7 +702,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("4_hud")
 
-[node name="TrackHUD" type="Control" parent="HUD/HUDRoot" unique_id=571153524 node_paths=PackedStringArray("turret", "tracks", "spotter", "gun_director")]
+[node name="TrackHUD" type="Control" parent="HUD/HUDRoot" unique_id=571153524 node_paths=PackedStringArray("turret", "tracks", "spotter", "gun_director", "fire_control")]
 anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -708,6 +714,8 @@ turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 tracks = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/Tracks")
 spotter = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/Spotter")
 gun_director = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/GunDirector")
+fire_control = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/FireControl")
+loadout = ExtResource("115_loadout")
 
 [node name="PlayerHUD" type="Control" parent="HUD/HUDRoot" unique_id=354245544 node_paths=PackedStringArray("turret", "barrel_heat", "thermal", "video")]
 anchors_preset = 0

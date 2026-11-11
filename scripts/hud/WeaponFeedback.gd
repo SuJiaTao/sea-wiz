@@ -73,7 +73,7 @@ func _update_hud(delta: float) -> void:
 func _draw() -> void:
 	var origin := Vector2(28, size.y - 205)
 	_draw_salvo_status(origin)
-	_text(origin - Vector2(0, 20), "Q / SIDE 1  HOLD TO LOCK", 11, FAINT)
+	_text(origin - Vector2(0, 20), "Q / SIDE 1  FIRE ON LOCK", 11, FAINT)
 	_text(origin, "CELLS", 12, DIM)
 	for i in range(MissileLauncher.CAPACITY):
 		var rect := Rect2(

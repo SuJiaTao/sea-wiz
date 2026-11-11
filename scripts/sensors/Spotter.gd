@@ -6,8 +6,7 @@ signal marked(enemy: AbstractEnemy)
 @export var turret: Turret
 @export var enemies: EnemyManager
 @export var spot_cone_deg: float = 2.5
-@export var spot_time: float = 0.35
-@export var max_spotting_fov: float = 32.0
+@export var spot_time: float = 0.5
 
 var candidate: AbstractEnemy
 var progress: float = 0.0
@@ -29,9 +28,6 @@ func marked_enemies() -> Array[AbstractEnemy]:
 
 
 func _physics_process(delta: float) -> void:
-	if turret.camera.fov > max_spotting_fov:
-		_reset()
-		return
 	if not is_instance_valid(candidate):
 		candidate = null
 	var nearest := _unmarked_near_bore()
