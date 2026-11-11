@@ -7,6 +7,8 @@ const REC_BLINK_PERIOD := 1.0
 const REC_DOT_RADIUS := 3.5
 const REC_DOT_OFFSET := Vector2(-10.0, -4.0)
 const TIMECODE_FPS := 30
+const SECONDS_PER_HOUR := 3600
+const SECONDS_PER_MINUTE := 60
 const NARROW_FOV_BELOW := 40.0
 const CAMERA_NAME := "CIWS 1  IR"
 
@@ -39,7 +41,7 @@ func _timecode() -> String:
 	var frames := floori(_recording_time * TIMECODE_FPS)
 	var seconds := floori(_recording_time)
 	return "%02d:%02d:%02d:%02d" % [
-		floori(seconds / 3600.0), floori(seconds / 60.0) % 60, seconds % 60, frames % TIMECODE_FPS
+		floori(seconds / float(SECONDS_PER_HOUR)), floori(seconds / float(SECONDS_PER_MINUTE)) % SECONDS_PER_MINUTE, seconds % SECONDS_PER_MINUTE, frames % TIMECODE_FPS
 	]
 
 
