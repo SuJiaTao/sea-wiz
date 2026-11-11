@@ -28,6 +28,7 @@ const LOCK_WIDTH: float = 2.0
 const LEAD_PIP_RADIUS: float = 5.0
 const LEAD_PIP_SEGMENTS: int = 16
 const LEAD_FITTING := &"fire_control"
+const RADAR_FITTING := &"radar"
 const SPOT_RING: float = 16.0
 const SPOT_RING_SEGMENTS: int = 24
 const MISSILE_MARKER: float = 9.0
@@ -73,7 +74,8 @@ func _draw() -> void:
 		_draw_marker(enemy)
 	_draw_spotting()
 	_draw_lock()
-	_draw_scope()
+	if loadout.is_fitted(RADAR_FITTING):
+		_draw_scope()
 
 
 func _on_marked(enemy: AbstractEnemy) -> void:
