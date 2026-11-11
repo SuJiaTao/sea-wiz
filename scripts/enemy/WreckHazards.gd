@@ -23,10 +23,8 @@ func _on_wreck_falling(wreck: WreckEffect) -> void:
 	var floor_height := effects.deck_height_at(target)
 	if is_nan(floor_height):
 		return
-	if not _should_threaten(wreck.predicted_landing(floor_height), ship):
-		return
-	if not wreck.steer_to(target, floor_height, max_steer_change):
-		return
+	if _should_threaten(wreck.predicted_landing(floor_height), ship):
+		wreck.steer_to(target, floor_height, max_steer_change)
 	var hazard := wreck_scene.instantiate() as WreckEnemy
 	hazard.follow(wreck, ship)
 	if not enemies.create(hazard, Transform3D(Basis.IDENTITY, wreck.position)):
