@@ -1,7 +1,5 @@
 extends Node
 class_name HUDCorruption
-## The head-up display breaks up as the ship takes damage: channels split
-## and lines tear, worse with every hit, settling back as it is repaired.
 
 const PARAMETER := "corruption"
 const FIRST_SIGNS_AT := 0.2
