@@ -8,19 +8,73 @@
 cull_mode = 2
 shading_mode = 0
 specular_mode = 2
-albedo_color = Color(0.45, 0.45, 0.45, 1)
+albedo_color = Color(0.2, 0.2, 0.2, 1)
 
 [sub_resource type="StandardMaterial3D" id="Material_canopy"]
 cull_mode = 2
 shading_mode = 0
 specular_mode = 2
-albedo_color = Color(0.68, 0.68, 0.68, 1)
+albedo_color = Color(0.28, 0.28, 0.28, 1)
 
 [sub_resource type="StandardMaterial3D" id="Material_nozzles"]
 cull_mode = 2
 shading_mode = 0
 specular_mode = 2
 albedo_color = Color(2.6, 2.6, 2.6, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_plume"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+depth_draw_mode = 2
+shading_mode = 0
+albedo_color = Color(0.7, 0.7, 0.7, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="Material_diamond"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+depth_draw_mode = 2
+shading_mode = 0
+albedo_color = Color(2.0, 2.0, 2.0, 0.6)
+
+[sub_resource type="CylinderMesh" id="Mesh_plume"]
+material = SubResource("Material_plume")
+top_radius = 0.12
+bottom_radius = 0.7
+height = 7.0
+radial_segments = 12
+rings = 1
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="TorusMesh" id="Mesh_ring0"]
+material = SubResource("Material_diamond")
+inner_radius = 0.23
+outer_radius = 0.42
+rings = 12
+ring_segments = 6
+
+[sub_resource type="TorusMesh" id="Mesh_ring1"]
+material = SubResource("Material_diamond")
+inner_radius = 0.20
+outer_radius = 0.36
+rings = 12
+ring_segments = 6
+
+[sub_resource type="TorusMesh" id="Mesh_ring2"]
+material = SubResource("Material_diamond")
+inner_radius = 0.17
+outer_radius = 0.30
+rings = 12
+ring_segments = 6
+
+[sub_resource type="TorusMesh" id="Mesh_ring3"]
+material = SubResource("Material_diamond")
+inner_radius = 0.13
+outer_radius = 0.23
+rings = 12
+ring_segments = 6
 
 [node name="FlankerVisuals" type="Node3D"]
 
@@ -35,3 +89,59 @@ material_override = SubResource("Material_canopy")
 [node name="Nozzles" type="MeshInstance3D" parent="."]
 mesh = ExtResource("2_nozzles")
 material_override = SubResource("Material_nozzles")
+
+[node name="AfterburnerPort" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.15, -0.5, 0)
+
+[node name="Plume" type="MeshInstance3D" parent="AfterburnerPort"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 12.3)
+mesh = SubResource("Mesh_plume")
+cast_shadow = 0
+
+[node name="ShockRing0" type="MeshInstance3D" parent="AfterburnerPort"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 9.7)
+mesh = SubResource("Mesh_ring0")
+cast_shadow = 0
+
+[node name="ShockRing1" type="MeshInstance3D" parent="AfterburnerPort"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 10.9)
+mesh = SubResource("Mesh_ring1")
+cast_shadow = 0
+
+[node name="ShockRing2" type="MeshInstance3D" parent="AfterburnerPort"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 12.1)
+mesh = SubResource("Mesh_ring2")
+cast_shadow = 0
+
+[node name="ShockRing3" type="MeshInstance3D" parent="AfterburnerPort"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 13.3)
+mesh = SubResource("Mesh_ring3")
+cast_shadow = 0
+
+[node name="AfterburnerStarboard" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.15, -0.5, 0)
+
+[node name="Plume" type="MeshInstance3D" parent="AfterburnerStarboard"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 12.3)
+mesh = SubResource("Mesh_plume")
+cast_shadow = 0
+
+[node name="ShockRing0" type="MeshInstance3D" parent="AfterburnerStarboard"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 9.7)
+mesh = SubResource("Mesh_ring0")
+cast_shadow = 0
+
+[node name="ShockRing1" type="MeshInstance3D" parent="AfterburnerStarboard"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 10.9)
+mesh = SubResource("Mesh_ring1")
+cast_shadow = 0
+
+[node name="ShockRing2" type="MeshInstance3D" parent="AfterburnerStarboard"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 12.1)
+mesh = SubResource("Mesh_ring2")
+cast_shadow = 0
+
+[node name="ShockRing3" type="MeshInstance3D" parent="AfterburnerStarboard"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 13.3)
+mesh = SubResource("Mesh_ring3")
+cast_shadow = 0

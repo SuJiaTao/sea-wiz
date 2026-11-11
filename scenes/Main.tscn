@@ -123,6 +123,7 @@
 [ext_resource type="Script" path="res://scripts/display/SignalDropout.gd" id="91_signal_dropout"]
 [ext_resource type="Script" path="res://scripts/display/FocusHunt.gd" id="92_focus_hunt"]
 [ext_resource type="Script" path="res://scripts/display/CameraDamage.gd" id="93_camera_damage"]
+[ext_resource type="Script" path="res://scripts/world/MeteorShower.gd" id="130_meteors"]
 [ext_resource type="Script" path="res://scripts/supply/SupplyDrops.gd" id="110_supply_drops"]
 [ext_resource type="Script" path="res://scripts/supply/SupplyManifest.gd" id="111_supply_manifest"]
 [ext_resource type="Script" path="res://scripts/hud/SupplyHUD.gd" id="112_supply_hud"]
@@ -883,6 +884,10 @@ video = NodePath("../AnalogVideo")
 script = ExtResource("93_camera_damage")
 integrity = NodePath("../../ViewportContainer/SubViewport/World/ShipDamage/Integrity")
 video = NodePath("../AnalogVideo")
+
+[node name="MeteorShower" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("environment")]
+script = ExtResource("130_meteors")
+environment = NodePath("../WorldEnvironment")
 
 [node name="SupplyHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("supplies", "turret")]
 anchors_preset = 0

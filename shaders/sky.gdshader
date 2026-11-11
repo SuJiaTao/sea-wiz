@@ -4,10 +4,10 @@ shader_type sky;
 // through more air, and the moon. The moon's sunlit side is hot rock and shows
 // bright; its night side is colder than the sky behind it.
 
-uniform vec3 sky_top_color : source_color = vec3(0.0);
-uniform vec3 sky_horizon_color : source_color = vec3(0.16);
+uniform vec3 sky_top_color : source_color = vec3(0.1);
+uniform vec3 sky_horizon_color : source_color = vec3(0.24);
 uniform float sky_curve : hint_range(0.001, 1.0) = 0.06;
-uniform vec3 ground_horizon_color : source_color = vec3(0.16);
+uniform vec3 ground_horizon_color : source_color = vec3(0.02);
 uniform vec3 ground_bottom_color : source_color = vec3(0.0);
 uniform float ground_curve : hint_range(0.001, 1.0) = 0.02;
 // Broken overcast lit by starlight: soft patches that drift across the glow.
@@ -34,6 +34,9 @@ uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
 uniform vec3 lightning_direction = vec3(0.0, 0.3, -1.0);
 uniform float lightning_spread_deg : hint_range(1.0, 90.0) = 25.0;
 uniform float lightning_ambient : hint_range(0.0, 1.0) = 0.25;
+uniform vec3 meteor_head = vec3(0.0, 1.0, 0.0);
+uniform vec3 meteor_tail = vec3(0.0, 1.0, 0.0);
+uniform float meteor_glow : hint_range(0.0, 4.0) = 0.0;
 
 const float HALF_PI = 1.5707963;
 const float EDGE_SOFTNESS = 0.08;
@@ -57,6 +60,7 @@ const float CLOUD_DETAIL = 2.3;
 const vec2 CLOUD_SEED = vec2(5.2, 1.3);
 const float CLOUD_DETAIL_SHARE = 0.35;
 const float CLOUD_FILL = 0.15;
+const float METEOR_WIDTH = 0.0012;
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -119,6 +123,16 @@ float craters(vec2 p) {
 	return clamp(marks, -1.0, 1.0);
 }
 
+float meteor(vec3 direction) {
+	if (meteor_glow <= 0.0) {
+		return 0.0;
+	}
+	vec3 along = meteor_head - meteor_tail;
+	float share = clamp(dot(direction - meteor_tail, along) / max(dot(along, along), 1e-8), 0.0, 1.0);
+	float gap = length(direction - (meteor_tail + along * share)) / METEOR_WIDTH;
+	return meteor_glow * share * share * exp(-gap * gap);
+}
+
 void sky() {
 	vec3 colour = atmosphere(EYEDIR) * cloud_cover(EYEDIR) + vec3(cloud_body(EYEDIR) * cloud_brightness);
 
@@ -146,6 +160,7 @@ void sky() {
 	}
 	float off_bolt = degrees(acos(clamp(dot(EYEDIR, normalize(lightning_direction)), -1.0, 1.0)));
 	colour += lightning_flash * (lightning_ambient + exp(-off_bolt / lightning_spread_deg));
+	colour += vec3(meteor(EYEDIR));
 	vec2 cell = FRAGCOORD.xy + fract(TIME) * DITHER_SEED;
 	float dither = (hash12(cell) + hash12(cell + DITHER_OFFSET) - 1.0) * DITHER_STEP;
 	COLOR = pow(max(pow(colour, vec3(1.0 / DISPLAY_GAMMA)) + dither, vec3(0.0)), vec3(DISPLAY_GAMMA));

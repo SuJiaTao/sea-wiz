@@ -19,8 +19,6 @@ const FOCUS_CONE_DEG: float = 6.0
 const FOCUS_GROWTH: float = 1.3
 const EDGE_MARGIN: float = 28.0
 const EDGE_ARROW: float = 9.0
-const PING_TIME: float = 0.6
-const PING_RADIUS: float = 40.0
 const GATE_MIN: float = 10.0
 const GATE_MAX: float = 70.0
 const GATE_OPEN: float = 2.2
@@ -35,8 +33,6 @@ const CLASSIFIER_FITTING := &"radar_classifier"
 const MISSILE_SIZE_BELOW: float = 3.5
 const FIGHTER_SIZE_BELOW: float = 14.0
 const CLASS_SYMBOL: float = 3.5
-const SPOT_RING: float = 16.0
-const SPOT_RING_SEGMENTS: int = 24
 const MISSILE_MARKER: float = 9.0
 const MISSILE_LABEL := "VAMPIRE"
 const MISSILE_LABEL_SIZE: int = 11
@@ -56,36 +52,25 @@ const RING_FRACTIONS: Array[float] = [0.25, 0.5, 0.75]
 @export var fire_control: FireControl
 @export var loadout: ShipLoadout
 
-var _pings: Dictionary = {}
 var _clock: float = 0.0
 var _lock_age: float = 0.0
 
 
 func _ready() -> void:
-	spotter.marked.connect(_on_marked)
 	fire_control.locked_on.connect(_on_locked_on)
 
 
 func _update_hud(delta: float) -> void:
 	_clock += delta
 	_lock_age += delta
-	for enemy: Variant in _pings.keys():
-		_pings[enemy] += delta
-		if _pings[enemy] > PING_TIME or not is_instance_valid(enemy):
-			_pings.erase(enemy)
 
 
 func _draw() -> void:
 	for enemy in spotter.marked_enemies():
 		_draw_marker(enemy)
-	_draw_spotting()
 	_draw_lock()
 	if loadout.is_fitted(RADAR_FITTING):
 		_draw_scope()
-
-
-func _on_marked(enemy: AbstractEnemy) -> void:
-	_pings[enemy] = 0.0
 
 
 func _on_locked_on(_enemy: AbstractEnemy) -> void:
@@ -116,9 +101,6 @@ func _draw_marker(enemy: AbstractEnemy) -> void:
 		_draw_missile_marker(point, enemy)
 	else:
 		_draw_aircraft_marker(point, enemy)
-	if _pings.has(enemy) and _pings[enemy] < PING_TIME:
-		var age: float = _pings[enemy] / PING_TIME
-		draw_arc(point, PING_RADIUS * age, 0, TAU, 32, Color(MAIN, 1.0 - age), 1.5)
 
 
 func _draw_aircraft_marker(point: Vector2, enemy: AbstractEnemy) -> void:
@@ -183,16 +165,6 @@ func _draw_edge_arrow(world_position: Vector3, colour: Color) -> void:
 	draw_colored_polygon(PackedVector2Array([
 		tip, tip - direction * EDGE_ARROW + side, tip - direction * EDGE_ARROW - side
 	]), colour)
-
-
-func _draw_spotting() -> void:
-	var enemy := spotter.candidate
-	if not is_instance_valid(enemy) or not _on_screen(enemy.global_position):
-		return
-	var point := _project(enemy.global_position)
-	var radius := maxf(_screen_radius(enemy), SPOT_RING)
-	var start := -PI * 0.5
-	draw_arc(point, radius, start, start + TAU * spotter.progress, SPOT_RING_SEGMENTS, MAIN, 1.5)
 
 
 func _draw_lock() -> void:
