@@ -30,6 +30,8 @@ uniform float glitter_sharpness : hint_range(1.0, 4000.0) = 300.0;
 uniform float ripple_speed : hint_range(0.0, 4.0) = 1.0;
 uniform float rain : hint_range(0.0, 1.0) = 0.0;
 uniform float rain_ripple_strength : hint_range(0.0, 2.0) = 0.6;
+uniform float rain_splash_level : hint_range(0.0, 2.0) = 1.0;
+uniform float rain_far_patter : hint_range(0.0, 0.5) = 0.18;
 uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
 uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
 
@@ -50,6 +52,10 @@ const float RAIN_REACH = 0.45;
 const float RAIN_WAVES = 60.0;
 const float RAIN_SHARPNESS = 400.0;
 const float RAIN_SEED = 13.7;
+const float SPLASH_TIME = 0.2;
+const float SPLASH_SHARPNESS = 260.0;
+const float FAR_PATTER_RATE = 14.0;
+const float FAR_PATTER_SHARE = 0.992;
 const float FOAM_LEVEL = 0.32;
 const float DISPLAY_GAMMA = 2.2;
 const float DITHER_STEP = 1.0 / 255.0;
@@ -99,7 +105,8 @@ vec2 wave_layer(vec2 xz, float angle, float tile, float speed, float stretch, fl
 
 // Raindrop rings: every cell gets a drop at its own moment, and the ring
 // spreads out and fades before the next one lands there.
-vec2 rain_rings(vec2 xz, float cell_size, float footprint) {
+// xy: the spreading ring's slope; z: the bright splash where the drop lands.
+vec3 rain_drop(vec2 xz, float cell_size, float footprint) {
 	vec2 cell = floor(xz / cell_size);
 	vec2 within = fract(xz / cell_size);
 	float seed = hash21(cell);
@@ -110,7 +117,8 @@ vec2 rain_rings(vec2 xz, float cell_size, float footprint) {
 	float front = distance - age * RAIN_REACH;
 	float ring = sin(front * RAIN_WAVES) * exp(-front * front * RAIN_SHARPNESS) * (1.0 - age);
 	float visible = smoothstep(footprint * 3.0, footprint * 6.0, cell_size);
-	return offset / max(distance, 1e-3) * ring * visible;
+	float splash = (1.0 - smoothstep(0.0, SPLASH_TIME, age)) * exp(-distance * distance * SPLASH_SHARPNESS);
+	return vec3(offset / max(distance, 1e-3) * ring, splash) * visible;
 }
 
 // Gusts roughen the water in drifting patches: rough patches catch more of
@@ -133,9 +141,16 @@ void fragment() {
 	for (int i = 0; i < RIPPLE_LAYERS; i++) {
 		slope += wave_layer(world_pos.xz, wind + RIPPLE_ANGLES[i], RIPPLE_TILES[i], RIPPLE_SPEEDS[i] * ripple_speed, RIPPLE_STRETCH, ripple_strength * chop);
 	}
+	float splashes = 0.0;
 	if (rain > 0.0) {
 		float footprint = length(fwidth(world_pos.xz));
-		slope += (rain_rings(world_pos.xz, RAIN_CELL, footprint) + rain_rings(world_pos.xz + RAIN_SEED, RAIN_CELL * 0.6, footprint)) * rain * rain_ripple_strength;
+		vec3 drops = rain_drop(world_pos.xz, RAIN_CELL, footprint) + rain_drop(world_pos.xz + RAIN_SEED, RAIN_CELL * 0.6, footprint);
+		slope += drops.xy * rain * rain_ripple_strength;
+		splashes = drops.z * rain_splash_level;
+		float too_far = 1.0 - smoothstep(footprint * 3.0, footprint * 6.0, RAIN_CELL);
+		float patter = step(FAR_PATTER_SHARE, hash21(FRAGCOORD.xy + floor(TIME * FAR_PATTER_RATE) * RAIN_SEED));
+		splashes += too_far * patter * rain_far_patter;
+		splashes *= rain;
 	}
 	vec3 normal = normalize(vec3(-slope.x, 1.0, -slope.y));
 	vec3 bounce = reflect(view_ray, normal);
@@ -157,7 +172,7 @@ void fragment() {
 		v = mix(v, FOAM_LEVEL, foam * foam_level * smoothstep(FOAM_FOOTPRINT, FOAM_FOOTPRINT * 0.25, footprint));
 	}
 
-	v = max(v, 0.0) + lightning_flash * lightning_reflection;
+	v = max(v, 0.0) + splashes + lightning_flash * lightning_reflection;
 	vec2 cell = FRAGCOORD.xy + fract(TIME) * 431.0;
 	v += (hash21(cell) + hash21(cell + 17.0) - 1.0) * DITHER_STEP;
 	ALBEDO = vec3(pow(max(v, 0.0), DISPLAY_GAMMA));
