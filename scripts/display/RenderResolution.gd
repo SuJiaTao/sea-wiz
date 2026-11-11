@@ -1,8 +1,5 @@
 extends Node
 class_name RenderResolution
-## How many real screen pixels the world is drawn with per canvas unit:
-## the display's own density, capped to a pixel budget, and lowered while
-## the frame rate is struggling.
 
 signal changed()
 
