@@ -14,8 +14,10 @@ signal changed(profile: WeatherProfile)
 
 var profile: WeatherProfile
 var strength: float = 0.0
+var forecast: WeatherProfile
 
 var _front: WeatherFront
+var _forecast_waves: int = 0
 var _clear_left: int = 0
 var _target: WeatherProfile
 var _target_strength: float = 0.0
@@ -49,15 +51,20 @@ func _process(delta: float) -> void:
 
 
 func _on_level_prepared(number: int, _title: String) -> void:
-	if number < first_weather_level or fronts.is_empty():
+	if number < first_weather_level - 1 or fronts.is_empty():
 		_settle(clear, 0.0)
+	elif forecast != null:
+		start_front(forecast, _forecast_waves)
+		forecast = null
 	elif _front != null and _front.waves_left > 0:
 		_advance_front()
 	elif _clear_left > 0:
 		_clear_left -= 1
 		_settle(clear, 0.0)
 	elif randf() < front_chance:
-		start_front(_pick_front(), randi_range(front_waves.x, front_waves.y))
+		forecast = _pick_front()
+		_forecast_waves = randi_range(front_waves.x, front_waves.y)
+		_settle(clear, 0.0)
 	else:
 		_clear_left = randi_range(clear_waves.x, clear_waves.y) - 1
 		_settle(clear, 0.0)
