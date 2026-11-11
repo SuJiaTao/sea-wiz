@@ -5,6 +5,8 @@ const LABEL := "CUT-OUT"
 const LABEL_DROP: float = 46.0
 const LABEL_FONT: int = 14
 const BLINK_RATE: float = 8.0
+const BLINK_FLOOR: float = 0.6
+const BLINK_DEPTH: float = 0.4
 
 @export var turret: Turret
 
@@ -20,5 +22,5 @@ func _draw() -> void:
 		return
 	var colour := DIM
 	if turret.firing:
-		colour = Color(MAIN, MAIN.a * (0.6 + 0.4 * sin(_phase * BLINK_RATE)))
+		colour = Color(MAIN, MAIN.a * (BLINK_FLOOR + BLINK_DEPTH * sin(_phase * BLINK_RATE)))
 	_center(size.y * 0.5 + LABEL_DROP, LABEL, LABEL_FONT, colour)

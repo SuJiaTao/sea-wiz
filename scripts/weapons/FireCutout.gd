@@ -1,7 +1,5 @@
 extends Node
 class_name FireCutout
-## The mount's no-fire zones: the gun holds fire whenever the bore points
-## into the ship's own structure, like a real CIWS firing cut-out.
 
 const REACH: float = 300.0
 
