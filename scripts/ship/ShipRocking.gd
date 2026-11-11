@@ -1,7 +1,5 @@
 extends Node
 class_name ShipRocking
-## Rocks the ship on the swell, and lets it take a lasting list and settle
-## lower in the water after heavy damage.
 
 const SETTLE_RATE: float = 1.2
 

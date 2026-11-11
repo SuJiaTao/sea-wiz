@@ -1,7 +1,5 @@
 extends AbstractEffect
 class_name CloseBlastEffect
-## A big blast right beside the camera: fireball, smoke and debris, but no
-## shock dome, which would swallow the whole view from this close.
 
 const FIREBALL_SCALE: float = 0.9
 const STREAMERS := Vector2i(5, 8)
