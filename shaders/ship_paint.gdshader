@@ -2,7 +2,8 @@ shader_type spatial;
 render_mode unshaded, cull_disabled, shadows_disabled;
 
 // Haze grey paint under a night sky: faces turned to the moon catch it,
-// faces turned down or away fall into shade.
+// faces turned down or away fall into shade, and faces angled off the
+// centreline sit a little darker so chamfered corners read as edges.
 
 uniform float tone : hint_range(0.0, 1.0) = 0.35;
 uniform float sky_light : hint_range(0.0, 1.0) = 0.55;
@@ -10,6 +11,7 @@ uniform float moon_light : hint_range(0.0, 1.0) = 0.45;
 uniform float underside : hint_range(0.0, 1.0) = 0.35;
 uniform float moon_bearing_deg : hint_range(0.0, 360.0) = 140.0;
 uniform float moon_elevation_deg : hint_range(0.0, 90.0) = 22.0;
+uniform float facet_shade : hint_range(0.0, 1.0) = 0.2;
 
 const float DISPLAY_GAMMA = 2.2;
 
@@ -27,5 +29,6 @@ void fragment() {
 	float sky = mix(underside, 1.0, normal.y * 0.5 + 0.5);
 	float moon = max(dot(normal, moon_direction()), 0.0);
 	float level = tone * (sky_light * sky + moon_light * moon);
+	level *= 1.0 - facet_shade * abs(normal.x);
 	ALBEDO = vec3(pow(level, DISPLAY_GAMMA));
 }
