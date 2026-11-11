@@ -2,6 +2,7 @@ extends HUDPanel
 class_name TrackHUD
 
 const RADAR_RANGE: float = 4000.0
+const METRES_PER_KM: float = 1000.0
 const SCOPE_RADIUS: float = 96.0
 const SCOPE_MARGIN: float = 34.0
 const SCOPE_TICKS: int = 12
@@ -181,7 +182,7 @@ func _draw_scope() -> void:
 	draw_arc(centre, SCOPE_RADIUS, 0, TAU, 64, DIM)
 	for fraction in RING_FRACTIONS:
 		draw_arc(centre, SCOPE_RADIUS * fraction, 0, TAU, 48, FAINT)
-		_text(centre + Vector2(3, -SCOPE_RADIUS * fraction - 2), "%d" % roundi(RADAR_RANGE * fraction / 1000.0), 9, FAINT)
+		_text(centre + Vector2(3, -SCOPE_RADIUS * fraction - 2), "%d" % roundi(RADAR_RANGE * fraction / METRES_PER_KM), 9, FAINT)
 	for i in SCOPE_TICKS:
 		var tick := TAU * float(i) / float(SCOPE_TICKS)
 		var direction := Vector2(sin(tick), -cos(tick))
