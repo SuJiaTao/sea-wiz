@@ -6,6 +6,9 @@ class_name FogWeather
 @export var full_haze_density: float = 0.0015
 @export var max_sky_wash: float = 0.85
 @export var star_material: ShaderMaterial
+@export var camera: TurretCamera
+
+const ZOOM_CLARITY: float = 0.45
 
 var _base_density: float = 0.0
 var _base_colour: Color
@@ -24,7 +27,7 @@ func _apply(profile: WeatherProfile, strength: float, _delta: float) -> void:
 	var settings := environment.environment
 	var extra := profile.fog_density * strength
 	var haze := clampf(extra / full_haze_density, 0.0, 1.0)
-	settings.fog_density = _base_density + extra
+	settings.fog_density = (_base_density + extra) * lerpf(1.0, ZOOM_CLARITY, camera.magnification())
 	settings.fog_light_color = _base_colour.lerp(haze_colour, haze)
 	settings.fog_sky_affect = lerpf(_base_sky_affect, max_sky_wash, haze)
 	star_material.set_shader_parameter("visibility", 1.0 - haze)

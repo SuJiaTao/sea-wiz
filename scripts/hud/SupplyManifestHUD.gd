@@ -2,6 +2,8 @@ extends HUDPanel
 class_name SupplyManifestHUD
 
 const TITLE := "RESUPPLY MANIFEST  /  SELECT 1 OF %d"
+const REPLACE_TITLE := "SLOTS FULL  /  REPLACE FOR %s"
+const DISCARD_LABEL := "3   KEEP CURRENT, DISCARD %s"
 const HINT := "PRESS 1 / 2 / 3"
 const SELECT_TONE: AudioStream = preload("res://audio/supply/supply_select.wav")
 const PANEL_WIDTH: float = 520.0
@@ -32,14 +34,16 @@ func _draw() -> void:
 	if get_tree().paused or not manifest.is_open():
 		return
 	var offers := manifest.offers
-	var height := TITLE_HEIGHT + ROW_HEIGHT * offers.size() + PADDING.y
+	var rows := offers.size() + (1 if manifest.is_replacing() else 0)
+	var height := TITLE_HEIGHT + ROW_HEIGHT * rows + PADDING.y
 	var panel := Rect2(
 		Vector2((size.x - PANEL_WIDTH) * 0.5, size.y * PANEL_TOP), Vector2(PANEL_WIDTH, height)
 	)
 	draw_rect(panel, BACKING)
 	draw_rect(panel, DIM, false)
 	var origin := panel.position + PADDING
-	_text(origin, TITLE % offers.size(), TITLE_FONT)
+	var title := REPLACE_TITLE % manifest.pending.label if manifest.is_replacing() else TITLE % offers.size()
+	_text(origin, title, TITLE_FONT)
 	_text(origin + Vector2(PANEL_WIDTH - CATEGORY_INSET - PADDING.x, 0), HINT, DESCRIPTION_FONT, FAINT)
 	for index in offers.size():
 		var row := origin + Vector2(0, TITLE_HEIGHT + ROW_HEIGHT * index)
@@ -47,6 +51,9 @@ func _draw() -> void:
 		_text(row, "%d   %s" % [index + 1, offer.label], LABEL_FONT)
 		_text(row + Vector2(PANEL_WIDTH - CATEGORY_INSET - PADDING.x, 0), offer.category.to_upper(), DESCRIPTION_FONT, FAINT)
 		_text(row + Vector2(0, DESCRIPTION_DROP), offer.description, DESCRIPTION_FONT, DIM)
+	if manifest.is_replacing():
+		var last := origin + Vector2(0, TITLE_HEIGHT + ROW_HEIGHT * offers.size())
+		_text(last, DISCARD_LABEL % manifest.pending.label, LABEL_FONT, DIM)
 
 
 func _on_closed(_choice: Upgrade) -> void:

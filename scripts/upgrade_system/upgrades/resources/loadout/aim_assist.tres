@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MountUpgrade" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrade_system/upgrades/loadout/MountUpgrade.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+mount = &"aim_assist"
+slot = 0
+label = "CIWS RADAR GUN LAYING"
+description = "While firing, the mount walks its rounds onto the nearest jet's lead."
+category = "system"
+weight = 0.9
+max_acummulation = 1

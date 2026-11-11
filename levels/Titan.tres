@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="WaveDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Titan.tscn" id="3_titan"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="4_jet"]
+[ext_resource type="Resource" path="res://resources/formations/Echelon.tres" id="5_echelon"]
+
+[sub_resource type="Resource" id="S1"]
+script = ExtResource("2_spawn")
+time = 0.0
+enemy_scene = ExtResource("3_titan")
+distance = Vector2(2000, 2200)
+altitude = Vector2(420, 420)
+group = &"titan"
+
+[sub_resource type="Resource" id="S2"]
+script = ExtResource("2_spawn")
+time = 8.0
+enemy_scene = ExtResource("4_jet")
+distance = Vector2(2200, 2500)
+altitude = Vector2(300, 450)
+formation = ExtResource("5_echelon")
+group = &"titan"
+
+[sub_resource type="Resource" id="S3"]
+script = ExtResource("2_spawn")
+time = 25.0
+enemy_scene = ExtResource("4_jet")
+distance = Vector2(2200, 2500)
+altitude = Vector2(300, 450)
+formation = ExtResource("5_echelon")
+
+[resource]
+script = ExtResource("1_wave")
+title = "TITAN"
+spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2"), SubResource("S3")])

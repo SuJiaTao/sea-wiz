@@ -1,0 +1,68 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/TitanEnemy.gd" id="1_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/TitanVisuals.tscn" id="2_visuals"]
+[ext_resource type="Script" path="res://scripts/enemy/FlareDispenser.gd" id="3_flares"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/AirMissile.tscn" id="4_missile"]
+
+[sub_resource type="SphereShape3D" id="Shape_0"]
+radius = 30
+
+[sub_resource type="SphereShape3D" id="Shape_1"]
+radius = 22
+
+[sub_resource type="SphereShape3D" id="Shape_2"]
+radius = 22
+
+[sub_resource type="SphereShape3D" id="Shape_3"]
+radius = 14
+
+[sub_resource type="SphereShape3D" id="Shape_4"]
+radius = 14
+
+[node name="Titan" type="Node3D" node_paths=PackedStringArray("visuals", "flares")]
+script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
+flares = NodePath("FlareDispenser")
+max_hp = 3200.0
+display_name = "TITAN"
+score_value = 10000
+blast_size = 9.0
+hud_radius = 60.0
+max_bank_deg = 12.0
+speed = 85.0
+agility = 0.1
+contact_damage = 0.0
+max_g = 0.6
+arrival_radius = 1.0
+missile_scene = ExtResource("4_missile")
+
+[node name="Visuals" parent="." instance=ExtResource("2_visuals")]
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="Body0" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+shape = SubResource("Shape_0")
+
+[node name="Body1" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0, 18)
+shape = SubResource("Shape_1")
+
+[node name="Body2" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, 0, 18)
+shape = SubResource("Shape_2")
+
+[node name="Body3" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -66, 0, 30)
+shape = SubResource("Shape_3")
+
+[node name="Body4" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66, 0, 30)
+shape = SubResource("Shape_4")
+
+[node name="FlareDispenser" type="Node" parent="."]
+script = ExtResource("3_flares")

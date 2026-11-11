@@ -1,0 +1,34 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/SeaSkimmerEnemy.gd" id="1_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/MissileVisuals.tscn" id="2_visuals"]
+
+[sub_resource type="SphereShape3D" id="Shape_body"]
+radius = 2.0
+
+[node name="AirMissile" type="Node3D" node_paths=PackedStringArray("visuals")]
+script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
+max_hp = 8.0
+display_name = "AIR-LAUNCHED MISSILE"
+score_value = 150
+blast_size = 1.2
+hud_radius = 2.0
+contact_kind = 1
+max_bank_deg = 0.0
+speed = 270.0
+agility = 0.7
+cruise_altitude = 25.0
+contact_damage = 14.0
+miss_chance = 0.35
+
+[node name="Visuals" parent="." instance=ExtResource("2_visuals")]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox"]
+shape = SubResource("Shape_body")

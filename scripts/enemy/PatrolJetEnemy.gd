@@ -9,8 +9,6 @@ const ORBIT_TIME: float = 18.0
 const SHADOW_TIME: float = 12.0
 const SHADOW_RADIUS_SHARE: float = 0.3
 const SHADOW_ALTITUDE_SHARE: float = 0.5
-const RADIUS_GAIN: float = 250.0
-const ALTITUDE_GAIN: float = 120.0
 const EXIT_CLIMB: float = 0.1
 const EXIT_RANGE: float = 3800.0
 
@@ -65,11 +63,7 @@ func _desired_velocity(delta: float) -> Vector3:
 
 
 func _circle(radius: float, altitude: float) -> Vector3:
-	var outward := _outward()
-	var along := outward.cross(Vector3.UP)
-	var inward := outward * (_flat_range() - radius) / -RADIUS_GAIN
-	var climb := Vector3.UP * (altitude - global_position.y) / ALTITUDE_GAIN
-	return (along + inward + climb).normalized() * speed
+	return OrbitSteering.direction(global_position, target_position, radius, altitude) * speed
 
 
 func _outward() -> Vector3:

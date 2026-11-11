@@ -5,8 +5,8 @@
 [ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="3_drone"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="4_jet"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="5_helo"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="6_missile"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="7_heavy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="6_missile"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/HeavyJet.tscn" id="7_heavy"]
 
 [sub_resource type="Resource" id="Spawn01"]
 script = ExtResource("2_spawn")

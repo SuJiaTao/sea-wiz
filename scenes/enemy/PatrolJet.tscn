@@ -3,6 +3,8 @@
 [ext_resource type="Script" path="res://scripts/enemy/PatrolJetEnemy.gd" id="1_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/FlankerVisuals.tscn" id="2_visuals"]
 [ext_resource type="Script" path="res://scripts/enemy/FlareDispenser.gd" id="3_flares"]
+[ext_resource type="Script" path="res://scripts/fx/VaporTrail.gd" id="4_vapour"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/AirMissile.tscn" id="5_missile"]
 
 [sub_resource type="SphereShape3D" id="Shape_body"]
 radius = 8.25
@@ -21,6 +23,8 @@ contact_damage = 10.0
 max_g = 7.0
 arrival_radius = 150.0
 attack_altitude = 90.0
+missile_scene = ExtResource("5_missile")
+missiles_carried = 2
 
 [node name="Visuals" parent="." instance=ExtResource("2_visuals")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
@@ -35,3 +39,17 @@ shape = SubResource("Shape_body")
 
 [node name="FlareDispenser" type="Node" parent="."]
 script = ExtResource("3_flares")
+
+[node name="WingtipPort" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.3, -0.05, 5)
+
+[node name="Vapour" type="MeshInstance3D" parent="WingtipPort" node_paths=PackedStringArray("aircraft")]
+script = ExtResource("4_vapour")
+aircraft = NodePath("../..")
+
+[node name="WingtipStarboard" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.3, -0.05, 5)
+
+[node name="Vapour" type="MeshInstance3D" parent="WingtipStarboard" node_paths=PackedStringArray("aircraft")]
+script = ExtResource("4_vapour")
+aircraft = NodePath("../..")

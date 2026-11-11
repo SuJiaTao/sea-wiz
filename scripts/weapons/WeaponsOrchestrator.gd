@@ -2,6 +2,7 @@ extends Node
 class_name WeaponsOrchestrator
 
 const MISSILE_MOUNT := &"vls"
+const SALVO_MOUNT := &"salvo"
 
 @export var turret: Turret
 @export var ballistics: BallisticManager
@@ -32,9 +33,8 @@ func set_enabled(value: bool) -> void:
 
 
 func _refit() -> void:
-	var missiles := _missiles_ready()
-	missile_launcher.set_enabled(missiles)
-	salvos.set_enabled(missiles)
+	missile_launcher.set_enabled(_missiles_ready())
+	salvos.set_enabled(_enabled and loadout.is_fitted(SALVO_MOUNT))
 	for weapon in _deck_weapons():
 		weapon.set_enabled(_enabled and loadout.is_fitted(weapon.fitting))
 
@@ -46,14 +46,19 @@ func _missiles_ready() -> bool:
 func handle_input(event: InputEvent) -> bool:
 	if not _enabled or get_tree().paused:
 		return false
-	if _missiles_ready() and event.is_action_pressed("ciws_salvo"):
+	if _pressed(event, SALVO_MOUNT):
 		salvos.request_salvo()
 		return true
 	for weapon in _deck_weapons():
-		if weapon.handle_input(event):
+		if _pressed(event, weapon.fitting):
+			weapon.trigger()
 			return true
 	return false
 
+
+func _pressed(event: InputEvent, mount: StringName) -> bool:
+	var action := loadout.action_for(mount)
+	return action != ShipLoadout.EMPTY and event.is_action_pressed(action)
 
 
 func _deck_weapons() -> Array[AbstractDeckWeapon]:
@@ -66,7 +71,7 @@ func _deck_weapons() -> Array[AbstractDeckWeapon]:
 
 func _physics_process(_delta: float) -> void:
 	missile_launcher.set_trigger(
-		_missiles_ready() and Input.is_action_pressed("ciws_missile")
+		_missiles_ready() and Input.is_action_pressed(loadout.action_for(MISSILE_MOUNT))
 	)
 
 

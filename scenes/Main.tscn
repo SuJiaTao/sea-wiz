@@ -133,6 +133,15 @@
 [ext_resource type="PackedScene" path="res://scenes/supply/SupplyCrate.tscn" id="117_crate"]
 [ext_resource type="Resource" path="res://levels/Patrol.tres" id="118_patrol"]
 [ext_resource type="Script" path="res://scripts/sensors/FireControl.gd" id="119_fire_control"]
+[ext_resource type="Resource" path="res://levels/Titan.tres" id="120_titan"]
+[ext_resource type="Script" path="res://scripts/weapons/EmergencyCoolant.gd" id="121_coolant"]
+[ext_resource type="Script" path="res://scripts/hud/CoolantHUD.gd" id="122_coolant_hud"]
+[ext_resource type="Script" path="res://scripts/enemy/EnemyDoctrine.gd" id="123_doctrine"]
+[ext_resource type="Script" path="res://scripts/hud/IntelHUD.gd" id="124_intel_hud"]
+[ext_resource type="Resource" path="res://resources/counters/flares.tres" id="125_flares"]
+[ext_resource type="Resource" path="res://resources/counters/evasive.tres" id="126_evasive"]
+[ext_resource type="Resource" path="res://resources/counters/stealth.tres" id="127_stealth"]
+[ext_resource type="Script" path="res://scripts/enemy/counters/EnemyCounter.gd" id="128_counter_type"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -273,7 +282,7 @@ script = ExtResource("1_session")
 [node name="WaveOrchestrator" type="Node" parent="." unique_id=1833867121]
 process_mode = 1
 script = ExtResource("6_waves")
-levels = Array[ExtResource("11_wave_type")]([ExtResource("118_patrol"), ExtResource("12_first"), ExtResource("97_formations"), ExtResource("13_second"), ExtResource("69_escort"), ExtResource("72_falling_stars")])
+levels = Array[ExtResource("11_wave_type")]([ExtResource("118_patrol"), ExtResource("12_first"), ExtResource("97_formations"), ExtResource("13_second"), ExtResource("69_escort"), ExtResource("72_falling_stars"), ExtResource("120_titan")])
 
 [node name="Score" type="Node" parent="." unique_id=668317612 node_paths=PackedStringArray("enemies")]
 process_mode = 1
@@ -314,8 +323,9 @@ waves = NodePath("../WaveOrchestrator")
 clear = ExtResource("79_clear")
 fronts = Array[ExtResource("81_profile_type")]([ExtResource("88_rain"), ExtResource("89_snow"), ExtResource("95_storm")])
 
-[node name="Fog" type="Node" parent="Weather" unique_id=1716444370 node_paths=PackedStringArray("environment")]
+[node name="Fog" type="Node" parent="Weather" unique_id=1716444370 node_paths=PackedStringArray("environment", "camera")]
 script = ExtResource("76_fog")
+camera = NodePath("../../ViewportContainer/SubViewport/World/Vessel/Turret/Mount/Sensor")
 environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
 star_material = ExtResource("82_star_material")
 
@@ -674,9 +684,12 @@ script = ExtResource("37_spotter")
 turret = NodePath("../../Vessel/Turret")
 enemies = NodePath("../../Enemies")
 
-[node name="GunDirector" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" unique_id=685954536 node_paths=PackedStringArray("turret")]
+[node name="GunDirector" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" unique_id=685954536 node_paths=PackedStringArray("turret", "enemies", "spotter")]
 script = ExtResource("38_gun_director")
 turret = NodePath("../../Vessel/Turret")
+enemies = NodePath("../../Enemies")
+spotter = NodePath("../Spotter")
+loadout = ExtResource("115_loadout")
 
 [node name="FireControl" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" node_paths=PackedStringArray("turret", "spotter", "gun_director")]
 script = ExtResource("119_fire_control")
@@ -779,6 +792,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("20_deck_cannon_hud")
+loadout = ExtResource("115_loadout")
 cannon = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/DeckCannon")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 
@@ -800,6 +814,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("21_decoy_hud")
+loadout = ExtResource("115_loadout")
 decoys = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/DecoyLauncher")
 
 [node name="CutoutHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("turret")]
@@ -820,6 +835,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("23_weapon_feedback")
+loadout = ExtResource("115_loadout")
 launcher = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/MissileLauncher")
 salvos = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/SalvoManager")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
@@ -915,4 +931,43 @@ loadout = ExtResource("115_loadout")
 
 [node name="Manifest" type="Node" parent="SupplyDrops"]
 script = ExtResource("111_supply_manifest")
+loadout = ExtResource("115_loadout")
 provider = ExtResource("116_manifest_stock")
+
+[node name="EmergencyCoolant" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("barrel_heat", "turret")]
+script = ExtResource("121_coolant")
+fitting = &"coolant"
+barrel_heat = NodePath("../../BarrelHeat")
+turret = NodePath("../../Vessel/Turret")
+
+[node name="CoolantHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("coolant")]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("122_coolant_hud")
+coolant = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/EmergencyCoolant")
+loadout = ExtResource("115_loadout")
+
+[node name="FitGate" type="Node" parent="HUD/HUDRoot/CoolantHUD"]
+script = ExtResource("114_fit_gate")
+loadout = ExtResource("115_loadout")
+mount = &"coolant"
+
+[node name="EnemyDoctrine" type="Node" parent="." node_paths=PackedStringArray("enemies")]
+script = ExtResource("123_doctrine")
+counters = Array[ExtResource("128_counter_type")]([ExtResource("125_flares"), ExtResource("126_evasive"), ExtResource("127_stealth")])
+loadout = ExtResource("115_loadout")
+enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
+
+[node name="IntelHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("doctrine")]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("124_intel_hud")
+doctrine = NodePath("../../../EnemyDoctrine")

@@ -139,5 +139,5 @@ func _draw_view_info() -> void:
 	var help := Color(FAINT, FAINT.a * help_fade)
 	_text(origin + Vector2(0, 48), "MOUSE / WASD  AIM", 11, help)
 	_text(origin + Vector2(0, 64), "LEFT  GUN    RIGHT / SHIFT  ZOOM", 11, help)
-	_text(origin + Vector2(0, 80), "WHEEL  ZOOM    DON'T OVERHEAT", 11, help)
-	_text(origin + Vector2(0, 96), "F  POLARITY    C  COLOUR    ESC  PAUSE", 11, help)
+	_text(origin + Vector2(0, 80), "WHEEL  ZOOM    C  COLOUR    ESC  PAUSE", 11, help)
+	_text(origin + Vector2(0, 96), "Q E  WEAPONS   R F  SYSTEMS   V  POLARITY", 11, help)

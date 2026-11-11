@@ -6,7 +6,8 @@
 script = ExtResource("1_script")
 mount = &"decoys"
 label = "MK 36 SRBOC CHAFF"
-description = "Chaff to both beams pulls missiles off the ship. X to fire."
+description = "Chaff to both beams pulls missiles off the ship."
 category = "weapon"
 weight = 1.0
 max_acummulation = 1
+slot = 2
