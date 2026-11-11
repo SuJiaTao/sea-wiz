@@ -1,7 +1,5 @@
 extends Node
 class_name BarrelHeat
-## Barrels heat while the gun fires and lock it out once they overheat.
-## Rain cools the barrels; snow chills them until the gun is slow to spin up.
 
 const COLD_LEVEL := 0.3
 const HOT_LEVEL := 0.95
