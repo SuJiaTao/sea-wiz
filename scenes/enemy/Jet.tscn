@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemy/JetEnemy.gd" id="1_enemy"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/JetVisuals.tscn" id="2_visuals"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/FlankerVisuals.tscn" id="2_visuals"]
 [ext_resource type="Script" path="res://scripts/enemy/FlareDispenser.gd" id="3_flares"]
 
 [sub_resource type="SphereShape3D" id="Shape_body"]
@@ -23,7 +23,7 @@ arrival_radius = 150.0
 attack_altitude = 90.0
 
 [node name="Visuals" parent="." instance=ExtResource("2_visuals")]
-transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="Hurtbox" type="Area3D" parent="."]
 collision_layer = 0

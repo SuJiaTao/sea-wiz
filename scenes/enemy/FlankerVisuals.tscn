@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="ArrayMesh" path="res://scenes/enemy/flanker/airframe.obj" id="1_airframe"]
+[ext_resource type="ArrayMesh" path="res://scenes/enemy/flanker/nozzles.obj" id="2_nozzles"]
+[ext_resource type="ArrayMesh" path="res://scenes/enemy/flanker/canopy.obj" id="3_canopy"]
+
+[sub_resource type="StandardMaterial3D" id="Material_airframe"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.45, 0.45, 0.45, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_canopy"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.68, 0.68, 0.68, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_nozzles"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(2.6, 2.6, 2.6, 1)
+
+[node name="FlankerVisuals" type="Node3D"]
+
+[node name="Airframe" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_airframe")
+material_override = SubResource("Material_airframe")
+
+[node name="Canopy" type="MeshInstance3D" parent="."]
+mesh = ExtResource("3_canopy")
+material_override = SubResource("Material_canopy")
+
+[node name="Nozzles" type="MeshInstance3D" parent="."]
+mesh = ExtResource("2_nozzles")
+material_override = SubResource("Material_nozzles")
