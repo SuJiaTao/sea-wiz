@@ -7,22 +7,22 @@ const BAR_SIZE := Vector2(128, 12)
 const STATUS_OFFSET := Vector2(198, 0)
 const HINT_FONT: int = 11
 const LABEL_FONT: int = 12
-const ORIGIN_OFFSET := Vector2(28, -330)
 const MARKER_SIZE: float = 7.0
 const MARKER_WIDTH: float = 1.5
 
 @export var cannon: DeckCannon
 @export var turret: Turret
+@export var loadout: ShipLoadout
 
 
 func _draw() -> void:
 	if get_tree().paused:
 		return
-	var origin := Vector2(0, size.y) + ORIGIN_OFFSET
+	var origin := SlotLayout.origin(size, loadout.row_for(cannon.fitting))
 	var loaded := cannon.reload_left <= 0.0
 	var status := "READY" if loaded else "LOADING"
 	var fill := 1.0 - cannon.reload_left / DeckCannon.RELOAD_TIME
-	_text(origin - LABEL_LIFT, "SPACE  DECK GUN", HINT_FONT, FAINT)
+	_text(origin - LABEL_LIFT, "%s  DECK GUN" % loadout.key_for(cannon.fitting), HINT_FONT, FAINT)
 	_text(origin, "GUN", LABEL_FONT, DIM)
 	_bar(origin + BAR_OFFSET, BAR_SIZE, fill, MAIN if loaded else DIM)
 	_text(origin + STATUS_OFFSET, status, LABEL_FONT, MAIN if loaded else DIM)

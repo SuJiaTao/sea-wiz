@@ -1,9 +1,12 @@
 extends Node
 class_name GunDirector
 
+const ASSIST_FITTING := &"aim_assist"
+
 @export var turret: Turret
 @export var enemies: EnemyManager
 @export var spotter: Spotter
+@export var loadout: ShipLoadout
 @export var walk_cone_deg: float = 5.0
 @export var walk_in_time: float = 1.2
 @export var marked_walk_in_time: float = 0.6
@@ -27,7 +30,7 @@ func lead_point(enemy: AbstractEnemy) -> Vector3:
 func _physics_process(delta: float) -> void:
 	if not is_instance_valid(target) or not target.alive:
 		target = null
-	if not turret.firing:
+	if not turret.firing or not loadout.is_fitted(ASSIST_FITTING):
 		_relax(delta)
 		return
 	var nearest := _enemy_near_bore()

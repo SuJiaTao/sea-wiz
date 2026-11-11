@@ -3,6 +3,8 @@ extends Camera3D
 
 const FOV_WIDE := 65.0
 const FOV_NARROW := 20.0
+const FAR_WIDE := 6000.0
+const FAR_NARROW := 12000.0
 
 const SHAKE_DECAY := 7.0
 const SHAKE_TO_OFFSET := 0.015
@@ -33,6 +35,11 @@ func _physics_process(delta: float) -> void:
 	)
 	var desired_fov := lerpf(FOV_WIDE, FOV_NARROW, zoom)
 	fov = lerpf(fov, desired_fov, clampf(delta * 8.0, 0.0, 1.0))
+	far = lerpf(FAR_WIDE, FAR_NARROW, magnification())
+
+
+func magnification() -> float:
+	return clampf((FOV_WIDE - fov) / (FOV_WIDE - FOV_NARROW), 0.0, 1.0)
 
 func nudge_zoom(amount: float) -> void:
 	_zoom_level = clampf(_zoom_level + amount, 0.0, 1.0)

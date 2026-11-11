@@ -22,6 +22,10 @@ func _ready() -> void:
 	_salvos_left = salvos
 
 
+func add_salvos(count: int) -> void:
+	_salvos_left += count
+
+
 func respond_to_missile(origin: Vector3, carrier_velocity: Vector3) -> DecoyFlare:
 	if _ready_in <= 0.0 and _salvos_left > 0:
 		_release(origin, carrier_velocity)

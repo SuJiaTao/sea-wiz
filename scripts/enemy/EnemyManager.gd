@@ -23,6 +23,7 @@ func create(
 		return false
 	enemy.transform = global_transform.affine_inverse() * world_transform
 	_enemies.append(enemy)
+	enemy.weapon_launched.connect(create)
 	add_child(enemy)
 	if is_instance_valid(enemy) and not enemy.is_queued_for_deletion():
 		enemy_created.emit(enemy)
@@ -37,12 +38,20 @@ func active_count() -> int:
 	return _enemies.size()
 
 
+func hostile_count() -> int:
+	return _enemies.filter(
+		func(enemy: AbstractEnemy) -> bool: return is_instance_valid(enemy) and enemy.hostile
+	).size()
+
+
 func live_enemies() -> Array[AbstractEnemy]:
 	var result: Array[AbstractEnemy] = []
 	for enemy in _enemies:
 		if not is_instance_valid(enemy):
 			continue
 		if enemy.is_queued_for_deletion() or enemy._destroy_requested:
+			continue
+		if not enemy.hostile:
 			continue
 		if enemy.alive and enemy.hp > 0.0:
 			result.append(enemy)

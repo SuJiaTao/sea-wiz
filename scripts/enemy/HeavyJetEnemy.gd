@@ -10,6 +10,12 @@ const ENGINE_WEAK_POINTS: Array[Vector3] = [
 
 @export var weak_point_radius: float = 3.0
 @export var weak_point_multiplier: float = 3.0
+@export var bomb_scene: PackedScene
+@export var bombs_carried: int = 4
+@export var bomb_interval: float = 0.4
+@export var stick_lead: float = 75.0
+
+var _bomb_clock: float = 0.0
 
 @onready var _hurtbox: Area3D = $Hurtbox
 @onready var _visuals: Node3D = $Visuals
@@ -17,6 +23,26 @@ const ENGINE_WEAK_POINTS: Array[Vector3] = [
 
 func _on_flight_created() -> void:
 	_hurtbox.collision_layer = COLLISION_LAYER
+
+
+func _on_flight_step(delta: float) -> void:
+	_bomb_clock = maxf(_bomb_clock - delta, 0.0)
+	if bomb_scene == null or bombs_carried <= 0 or _bomb_clock > 0.0:
+		return
+	var height := maxf(global_position.y - target_position.y, 1.0)
+	var fall_time := sqrt(2.0 * height / GRAVITY)
+	var offset := target_position - global_position
+	if Vector2(offset.x, offset.z).length() <= speed * fall_time + stick_lead:
+		_drop_bomb()
+
+
+func _drop_bomb() -> void:
+	bombs_carried -= 1
+	_bomb_clock = bomb_interval
+	var bomb := bomb_scene.instantiate() as BombEnemy
+	bomb.velocity = velocity
+	bomb.target_position = target_position
+	weapon_launched.emit(bomb, Transform3D(Basis.IDENTITY, global_position))
 
 
 func take_damage(

@@ -28,12 +28,12 @@ var _bloom_left: float = 0.0
 var _screen: ChaffScreen
 
 
-func _action() -> StringName:
-	return &"ciws_decoy"
-
-
 func _trigger() -> void:
 	request_launch()
+
+
+func restock() -> void:
+	cooldown_left = 0.0
 
 
 func request_launch() -> bool:

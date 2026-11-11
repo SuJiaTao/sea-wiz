@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MountUpgrade" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrade_system/upgrades/loadout/MountUpgrade.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="2_upgrade"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/search_radar.tres" id="3_radar"]
+
+[resource]
+script = ExtResource("1_script")
+mount = &"radar_classifier"
+predecessors = Array[ExtResource("2_upgrade")]([ExtResource("3_radar")])
+label = "RADAR TARGET CLASSIFIER"
+description = "Radar contacts show as missile, fighter or bomber by size."
+category = "system"
+weight = 0.9
+max_acummulation = 1

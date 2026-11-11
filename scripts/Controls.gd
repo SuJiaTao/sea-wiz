@@ -20,28 +20,33 @@ const ACTIONS := {
 		{"type": "mouse", "button": MOUSE_BUTTON_WHEEL_DOWN},
 	],
 	"ciws_polarity": [
+		{"type": "key", "key": KEY_V},
+	],
+	"weapon_1": [
+		{"type": "key", "key": KEY_Q},
+		{"type": "mouse", "button": MOUSE_BUTTON_XBUTTON1},
+	],
+	"weapon_2": [
+		{"type": "key", "key": KEY_E},
+		{"type": "mouse", "button": MOUSE_BUTTON_XBUTTON2},
+	],
+	"system_1": [
+		{"type": "key", "key": KEY_R},
+	],
+	"system_2": [
 		{"type": "key", "key": KEY_F},
 	],
 	"ciws_palette": [
 		{"type": "key", "key": KEY_C},
 	],
-	# Chaff to both beams; pulls incoming missiles off the ship.
-	"ciws_decoy": [
-		{"type": "key", "key": KEY_X},
+	"supply_pick_1": [
+		{"type": "key", "key": KEY_1},
 	],
-	# Hold while zoomed to build a seeker lock; it launches on the tone.
-	"ciws_missile": [
-		{"type": "mouse", "button": MOUSE_BUTTON_XBUTTON1},
-		{"type": "key", "key": KEY_Q},
+	"supply_pick_2": [
+		{"type": "key", "key": KEY_2},
 	],
-	# The special: lock everything on screen and ripple-fire.
-	"ciws_salvo": [
-		{"type": "mouse", "button": MOUSE_BUTTON_XBUTTON2},
-		{"type": "key", "key": KEY_E},
-	],
-	# The bow gun fires one heavy shell where the sight is looking.
-	"ciws_cannon": [
-		{"type": "key", "key": KEY_SPACE},
+	"supply_pick_3": [
+		{"type": "key", "key": KEY_3},
 	],
 	"ciws_pause": [
 		{"type": "key", "key": KEY_ESCAPE},

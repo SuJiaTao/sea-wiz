@@ -4,6 +4,11 @@ class_name WeaponFeedback
 const LOCK_TONE: AudioStream = preload("res://audio/lock_tone.wav")
 const LOCK_ACQUIRED: AudioStream = preload("res://audio/lock_acquired.wav")
 
+const MISSILE_MOUNT := &"vls"
+const SALVO_MOUNT := &"salvo"
+const SALVO_SHIFT := Vector2(0, 48)
+
+@export var loadout: ShipLoadout
 @export var launcher: MissileLauncher
 @export var salvos: SalvoManager
 @export var turret: Turret
@@ -71,9 +76,10 @@ func _update_hud(delta: float) -> void:
 
 
 func _draw() -> void:
-	var origin := Vector2(28, size.y - 205)
-	_draw_salvo_status(origin)
-	_text(origin - Vector2(0, 20), "Q / SIDE 1  HOLD TO LOCK", 11, FAINT)
+	var origin := SlotLayout.origin(size, loadout.row_for(MISSILE_MOUNT))
+	if loadout.is_fitted(SALVO_MOUNT):
+		_draw_salvo_status(SlotLayout.origin(size, loadout.row_for(SALVO_MOUNT)) + SALVO_SHIFT)
+	_text(origin - Vector2(0, 20), "%s  MISSILE ON LOCK" % loadout.key_for(MISSILE_MOUNT), 11, FAINT)
 	_text(origin, "CELLS", 12, DIM)
 	for i in range(MissileLauncher.CAPACITY):
 		var rect := Rect2(
@@ -174,7 +180,7 @@ func _draw_salvo_status(origin: Vector2) -> void:
 		status = "READY"
 		color = Color(1, 1, 1, 0.55 + 0.45 * sin(_phase * 7.0))
 
-	_text(origin + Vector2(0, -72), "E / SIDE 2  SALVO", 11, FAINT)
+	_text(origin + Vector2(0, -72), "%s  SALVO" % loadout.key_for(SALVO_MOUNT), 11, FAINT)
 	_text(origin + Vector2(0, -48), "SALVO", 12, DIM)
 	_bar(
 		origin + Vector2(62, -58),

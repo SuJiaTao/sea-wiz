@@ -15,16 +15,24 @@ const CLOUD_ALPHA: float = 0.16
 const MARKED_DOT: float = 2.5
 const MARKER_SIZE: float = 7.0
 const MARKER_LIFT: float = 14.0
+const FOCUS_CONE_DEG: float = 6.0
+const FOCUS_GROWTH: float = 1.3
 const EDGE_MARGIN: float = 28.0
 const EDGE_ARROW: float = 9.0
-const PING_TIME: float = 0.6
-const PING_RADIUS: float = 40.0
 const GATE_MIN: float = 10.0
 const GATE_MAX: float = 70.0
 const GATE_OPEN: float = 2.2
-const GATE_CORNER: float = 0.45
-const SPOT_RING: float = 16.0
-const SPOT_RING_SEGMENTS: int = 24
+const GATE_SCALE: float = 1.3
+const LOCK_GROW_TIME: float = 0.2
+const LOCK_WIDTH: float = 2.0
+const LEAD_PIP_RADIUS: float = 5.0
+const LEAD_PIP_SEGMENTS: int = 16
+const LEAD_FITTING := &"fire_control"
+const RADAR_FITTING := &"radar"
+const CLASSIFIER_FITTING := &"radar_classifier"
+const MISSILE_SIZE_BELOW: float = 3.5
+const FIGHTER_SIZE_BELOW: float = 14.0
+const CLASS_SYMBOL: float = 3.5
 const MISSILE_MARKER: float = 9.0
 const MISSILE_LABEL := "VAMPIRE"
 const MISSILE_LABEL_SIZE: int = 11
@@ -41,33 +49,32 @@ const RING_FRACTIONS: Array[float] = [0.25, 0.5, 0.75]
 @export var tracks: TrackManager
 @export var spotter: Spotter
 @export var gun_director: GunDirector
+@export var fire_control: FireControl
+@export var loadout: ShipLoadout
 
-var _pings: Dictionary = {}
 var _clock: float = 0.0
+var _lock_age: float = 0.0
 
 
 func _ready() -> void:
-	spotter.marked.connect(_on_marked)
+	fire_control.locked_on.connect(_on_locked_on)
 
 
 func _update_hud(delta: float) -> void:
 	_clock += delta
-	for enemy: Variant in _pings.keys():
-		_pings[enemy] += delta
-		if _pings[enemy] > PING_TIME or not is_instance_valid(enemy):
-			_pings.erase(enemy)
+	_lock_age += delta
 
 
 func _draw() -> void:
 	for enemy in spotter.marked_enemies():
 		_draw_marker(enemy)
-	_draw_spotting()
-	_draw_gate()
-	_draw_scope()
+	_draw_lock()
+	if loadout.is_fitted(RADAR_FITTING):
+		_draw_scope()
 
 
-func _on_marked(enemy: AbstractEnemy) -> void:
-	_pings[enemy] = 0.0
+func _on_locked_on(_enemy: AbstractEnemy) -> void:
+	_lock_age = 0.0
 
 
 func _project(world_position: Vector3) -> Vector2:
@@ -94,18 +101,27 @@ func _draw_marker(enemy: AbstractEnemy) -> void:
 		_draw_missile_marker(point, enemy)
 	else:
 		_draw_aircraft_marker(point, enemy)
-	if _pings.has(enemy) and _pings[enemy] < PING_TIME:
-		var age: float = _pings[enemy] / PING_TIME
-		draw_arc(point, PING_RADIUS * age, 0, TAU, 32, Color(MAIN, 1.0 - age), 1.5)
 
 
 func _draw_aircraft_marker(point: Vector2, enemy: AbstractEnemy) -> void:
 	var top := point - Vector2(0, _screen_radius(enemy) + MARKER_LIFT)
+	var focused := _is_focused(enemy)
+	var arrow := MARKER_SIZE * (FOCUS_GROWTH if focused else 1.0)
 	draw_colored_polygon(PackedVector2Array([
-		top + Vector2(-MARKER_SIZE, -MARKER_SIZE),
-		top + Vector2(MARKER_SIZE, -MARKER_SIZE),
+		top + Vector2(-arrow, -arrow),
+		top + Vector2(arrow, -arrow),
 		top
-	]), DIM)
+	]), MAIN if focused else FAINT)
+
+
+func _is_focused(enemy: AbstractEnemy) -> bool:
+	if fire_control.is_locked() and fire_control.locked == enemy:
+		return true
+	var eye := turret.camera.global_position
+	var sight := -turret.camera.global_basis.z
+	var at_target := rad_to_deg(sight.angle_to(enemy.global_position - eye))
+	var at_lead := rad_to_deg(sight.angle_to(gun_director.lead_point(enemy) - eye))
+	return minf(at_target, at_lead) <= FOCUS_CONE_DEG
 
 
 func _draw_missile_marker(point: Vector2, enemy: AbstractEnemy) -> void:
@@ -126,9 +142,11 @@ func _diamond(point: Vector2, reach: float) -> PackedVector2Array:
 
 
 func _marker_colour(enemy: AbstractEnemy) -> Color:
+	if _is_focused(enemy):
+		return MAIN
 	if enemy.contact_kind != AbstractEnemy.ContactKind.MISSILE:
-		return DIM
-	return MAIN if _blink_on() else DIM
+		return FAINT
+	return DIM if _blink_on() else FAINT
 
 
 func _blink_on() -> bool:
@@ -149,32 +167,20 @@ func _draw_edge_arrow(world_position: Vector3, colour: Color) -> void:
 	]), colour)
 
 
-func _draw_spotting() -> void:
-	var enemy := spotter.candidate
-	if not is_instance_valid(enemy) or not _on_screen(enemy.global_position):
+func _draw_lock() -> void:
+	if not fire_control.is_locked():
+		return
+	var enemy := fire_control.locked
+	if not _on_screen(enemy.global_position):
 		return
 	var point := _project(enemy.global_position)
-	var radius := maxf(_screen_radius(enemy), SPOT_RING)
-	var start := -PI * 0.5
-	draw_arc(point, radius, start, start + TAU * spotter.progress, SPOT_RING_SEGMENTS, MAIN, 1.5)
-
-
-func _draw_gate() -> void:
-	var enemy := gun_director.target
-	if not is_instance_valid(enemy) or not _on_screen(enemy.global_position):
-		return
-	var convergence := gun_director.convergence
-	var point := _project(enemy.global_position)
-	var half := clampf(_screen_radius(enemy) * 1.3, GATE_MIN, GATE_MAX)
-	half *= lerpf(GATE_OPEN, 1.0, convergence)
-	var corner := half * GATE_CORNER
-	var colour := MAIN if convergence >= 1.0 else DIM
-	var width := 2.0 if convergence >= 1.0 else 1.0
-	for sx in [-1.0, 1.0]:
-		for sy in [-1.0, 1.0]:
-			var at := point + Vector2(sx, sy) * half
-			draw_line(at, at - Vector2(sx * corner, 0), colour, width)
-			draw_line(at, at - Vector2(0, sy * corner), colour, width)
+	var grow := clampf(_lock_age / LOCK_GROW_TIME, 0.0, 1.0)
+	var half := clampf(_screen_radius(enemy) * GATE_SCALE, GATE_MIN, GATE_MAX) * lerpf(GATE_OPEN, 1.0, grow)
+	draw_rect(Rect2(point - Vector2.ONE * half, Vector2.ONE * half * 2.0), MAIN, false, LOCK_WIDTH)
+	if loadout.is_fitted(LEAD_FITTING):
+		var lead := gun_director.lead_point(enemy)
+		if not turret.camera.is_position_behind(lead):
+			draw_arc(_project(lead), LEAD_PIP_RADIUS, 0, TAU, LEAD_PIP_SEGMENTS, MAIN, LOCK_WIDTH)
 
 
 func _draw_scope() -> void:
@@ -193,7 +199,10 @@ func _draw_scope() -> void:
 	var marked := spotter.marked_enemies()
 	for track in tracks.tracks():
 		if not _belongs_to_marked(track, marked):
-			_draw_cloud(centre, track)
+			if track.confirmed and loadout.is_fitted(CLASSIFIER_FITTING):
+				_draw_class_symbol(_scope_point(centre, track.position), track.size_hint)
+			else:
+				_draw_cloud(centre, track)
 			if track.confirmed:
 				_draw_leader(centre, track.position, track.velocity, Color(DIM, CLOUD_ALPHA * 3.0))
 	for enemy in marked:
@@ -208,6 +217,18 @@ func _draw_scope() -> void:
 		centre + Vector2(-SCOPE_RADIUS, SCOPE_RADIUS + 18),
 		"HEAT  %.1f km   MARKED %d" % [RADAR_RANGE / 1000.0, marked.size()], 11, FAINT
 	)
+
+
+func _draw_class_symbol(at: Vector2, size_hint: float) -> void:
+	if size_hint < MISSILE_SIZE_BELOW:
+		draw_polyline(_diamond(at, CLASS_SYMBOL), MAIN if _blink_on() else DIM, 1.5)
+	elif size_hint < FIGHTER_SIZE_BELOW:
+		draw_colored_polygon(PackedVector2Array([
+			at + Vector2(0, -CLASS_SYMBOL), at + Vector2(CLASS_SYMBOL, CLASS_SYMBOL),
+			at + Vector2(-CLASS_SYMBOL, CLASS_SYMBOL)
+		]), DIM)
+	else:
+		draw_rect(Rect2(at - Vector2.ONE * CLASS_SYMBOL, Vector2.ONE * CLASS_SYMBOL * 2.0), DIM)
 
 
 func _scope_point(centre: Vector2, world_position: Vector3) -> Vector2:

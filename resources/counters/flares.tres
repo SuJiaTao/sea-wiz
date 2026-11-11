@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="FlareCounter" format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/counters/FlareCounter.gd" id="1_counter"]
+
+[resource]
+script = ExtResource("1_counter")
+answers = Array[StringName]([&"vls", &"salvo"])
+warning = "SIGINT: ENEMY JETS FITTING FLARE PODS AGAINST YOUR MISSILES"
+tag = "FLARES"

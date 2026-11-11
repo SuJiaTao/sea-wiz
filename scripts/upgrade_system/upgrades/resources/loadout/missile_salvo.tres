@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MountUpgrade" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrade_system/upgrades/loadout/MountUpgrade.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="2_upgrade"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/vertical_launch.tres" id="3_vls"]
+
+[resource]
+script = ExtResource("1_script")
+mount = &"salvo"
+slot = 1
+predecessors = Array[ExtResource("2_upgrade")]([ExtResource("3_vls")])
+label = "MISSILE SALVO"
+description = "Kills charge it; when full, ripple-fires at every jet on screen."
+category = "weapon"
+weight = 0.9
+max_acummulation = 1

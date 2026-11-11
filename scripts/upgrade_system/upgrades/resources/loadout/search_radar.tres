@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="MountUpgrade" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrade_system/upgrades/loadout/MountUpgrade.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+mount = &"radar"
+label = "AN/SPS-49 AIR SEARCH RADAR"
+description = "Radar scope: shows contacts all around the ship, 4 km out."
+category = "system"
+weight = 1.1
+max_acummulation = 1

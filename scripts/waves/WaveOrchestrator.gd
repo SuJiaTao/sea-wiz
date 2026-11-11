@@ -21,6 +21,9 @@ var _enemies: EnemyManager
 var _pending: Array[WaveSpawn] = []
 var _clock: float = 0.0
 var _group_bearings: Dictionary[StringName, float] = {}
+var _level_index: int = 0
+var _current: WaveDefinition
+var _engaged: bool = false
 
 
 func start(enemies: EnemyManager) -> void:
@@ -35,6 +38,8 @@ func start(enemies: EnemyManager) -> void:
 		return
 	_enemies = enemies
 	level_number = 0
+	_level_index = 0
+	_current = null
 	_begin_next_level()
 
 
@@ -58,16 +63,21 @@ func _physics_process(delta: float) -> void:
 		var entry: WaveSpawn = _pending.pop_front()
 		if not _spawn(entry):
 			return
-	if _pending.is_empty() and _enemies.active_count() == 0:
+	if _pending.is_empty() and _enemies.hostile_count() == 0:
 		_begin_next_level()
 
 
 func _begin_next_level() -> void:
-	if level_number >= levels.size():
-		_state = State.FINISHED
-		completed.emit()
-		return
-	var definition := levels[level_number]
+	var definition := _followup()
+	if definition == null:
+		if _level_index >= levels.size():
+			_state = State.FINISHED
+			completed.emit()
+			return
+		definition = levels[_level_index]
+		_level_index += 1
+	_current = definition
+	_engaged = false
 	level_number += 1
 	level_title = definition.title
 	_pending = definition.spawns.duplicate()
@@ -77,6 +87,16 @@ func _begin_next_level() -> void:
 	intermission_remaining = initial_delay if level_number == 1 else intermission
 	_state = State.INTERMISSION
 	level_prepared.emit(level_number, level_title)
+
+
+func _followup() -> WaveDefinition:
+	if _current == null:
+		return null
+	return _current.if_engaged if _engaged else _current.if_ignored
+
+
+func _on_level_enemy_damaged(_amount: float, _point: Vector3) -> void:
+	_engaged = true
 
 
 func _spawn(entry: WaveSpawn) -> bool:
@@ -116,6 +136,7 @@ func _spawn_one(entry: WaveSpawn, position: Vector3, approach: FormationApproach
 		var flyer := enemy as FlyingEnemy
 		flyer.approach = approach
 		flyer.velocity = approach.heading()
+	enemy.damaged.connect(_on_level_enemy_damaged)
 	if not _enemies.create(enemy, Transform3D(Basis.IDENTITY, position)):
 		enemy.free()
 		_fail("EnemyManager rejected a wave spawn.")

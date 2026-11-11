@@ -6,6 +6,7 @@ signal damaged(amount: float, world_point: Vector3)
 signal reached_target(damage: float)
 signal missed(world_point: Vector3)
 signal countermeasures_released(flares: Array[DecoyFlare])
+signal weapon_launched(weapon: AbstractEnemy, at: Transform3D)
 
 enum State { CREATING, ALIVE, DEAD, DESTROYED }
 enum ContactKind { AIRCRAFT, MISSILE }
@@ -21,6 +22,7 @@ const COLLISION_LAYER: int = 1 << 1
 @export var leaves_wreck: bool = true
 @export var radar_reach: float = INF
 @export var blast_size: float = 0.0
+@export var hostile: bool = true
 
 var hp: float = 0.0
 var velocity := Vector3.ZERO
