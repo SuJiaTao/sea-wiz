@@ -23,6 +23,7 @@ func create(
 		return false
 	enemy.transform = global_transform.affine_inverse() * world_transform
 	_enemies.append(enemy)
+	enemy.weapon_launched.connect(create)
 	add_child(enemy)
 	if is_instance_valid(enemy) and not enemy.is_queued_for_deletion():
 		enemy_created.emit(enemy)

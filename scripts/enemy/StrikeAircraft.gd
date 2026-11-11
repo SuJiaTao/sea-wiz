@@ -8,10 +8,15 @@ const MAX_DIVE_SLOPE: float = 0.3
 const MAX_CLIMB_SLOPE: float = 0.4
 const PULL_UP_SHARE: float = 0.6
 const PULL_UP_SLOPE: float = 0.2
+const LAUNCH_DROP := Vector3(0.0, -3.0, 0.0)
 
 @export var attack_altitude: float = 90.0
 @export var egress_distance: float = 1300.0
 @export var egress_climb: float = 0.15
+@export var missile_scene: PackedScene
+@export var missiles_carried: int = 0
+@export var launch_range: float = 2200.0
+@export var launch_turn_deg: float = 130.0
 
 var _leg: Leg = Leg.RUN_IN
 var _egress_heading := Vector3.FORWARD
@@ -31,8 +36,20 @@ func _desired_velocity(_delta: float) -> Vector3:
 		if Vector2(away.x, away.z).length() < egress_distance:
 			return _hold_altitude(_egress_heading + Vector3.UP * egress_climb) * speed
 		_leg = Leg.RUN_IN
+	var range_left := global_position - target_position
+	if missiles_carried > 0 and Vector2(range_left.x, range_left.z).length() < launch_range:
+		_launch_missile()
 	var aim := target_position + Vector3.UP * attack_altitude
 	return _hold_altitude(aim - global_position) * speed
+
+
+func _launch_missile() -> void:
+	missiles_carried -= 1
+	var missile := missile_scene.instantiate() as FlyingEnemy
+	missile.velocity = velocity
+	weapon_launched.emit(missile, Transform3D(Basis.IDENTITY, global_position + LAUNCH_DROP))
+	_leg = Leg.EGRESS
+	_egress_heading = _flat(velocity).rotated(Vector3.UP, deg_to_rad(launch_turn_deg) * signf(randf() - 0.5))
 
 
 func _hold_altitude(direction: Vector3) -> Vector3:

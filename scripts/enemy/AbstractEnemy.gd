@@ -6,6 +6,7 @@ signal damaged(amount: float, world_point: Vector3)
 signal reached_target(damage: float)
 signal missed(world_point: Vector3)
 signal countermeasures_released(flares: Array[DecoyFlare])
+signal weapon_launched(weapon: AbstractEnemy, at: Transform3D)
 
 enum State { CREATING, ALIVE, DEAD, DESTROYED }
 enum ContactKind { AIRCRAFT, MISSILE }
