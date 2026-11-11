@@ -6,7 +6,7 @@
 script = ExtResource("1_script")
 mount = &"deck_gun"
 label = "MK 45 5-INCH BOW GUN"
-description = "Heavy shell where the sight looks. SPACE to fire."
+description = "Heavy shell where the sight looks; converges on the locked range."
 category = "weapon"
 weight = 1.0
 max_acummulation = 1
