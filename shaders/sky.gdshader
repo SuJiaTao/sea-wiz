@@ -16,11 +16,12 @@ uniform float cloud_scale = 0.6;
 uniform vec2 cloud_drift = vec2(0.004, 0.001);
 // Cloud lit from below by the night glow: overcast reads as brighter patches.
 uniform float cloud_brightness : hint_range(0.0, 0.5) = 0.045;
-// Rain cloud deck, ray-marched at its real height: nimbostratus over the sea
-// has its base around a kilometre up and is a kilometre or two thick.
-uniform float cloud_base_m = 900.0;
-uniform float cloud_thickness_m = 1500.0;
-uniform float cloud_feature_m = 1800.0;
+// Rain clouds ray-marched at real heights in three layers: ragged scud low
+// down, the main heaped deck around a kilometre up, a thin sheet above.
+// Each layer: base metres, thickness metres, feature size metres, sparseness.
+uniform vec4 scud_layer = vec4(450.0, 350.0, 650.0, 0.14);
+uniform vec4 deck_layer = vec4(900.0, 1800.0, 1800.0, 0.0);
+uniform vec4 sheet_layer = vec4(3200.0, 450.0, 5200.0, 0.06);
 uniform float cloud_fade_m = 9000.0;
 uniform float camera_height_m = 18.0;
 uniform float cloud_ambient : hint_range(0.0, 0.5) = 0.05;
@@ -69,15 +70,27 @@ const float CLOUD_DETAIL = 2.3;
 const vec2 CLOUD_SEED = vec2(5.2, 1.3);
 const float CLOUD_DETAIL_SHARE = 0.35;
 const float CLOUD_FILL = 0.15;
-const int CLOUD_STEPS = 10;
+const int SCUD_STEPS = 5;
+const int DECK_STEPS = 14;
+const int SHEET_STEPS = 3;
+const float SHEET_DENSITY = 0.35;
 const float CLOUD_EXTINCTION = 0.009;
+const float CLOUD_BOTTOM_ROUND = 0.22;
+const float CLOUD_BOTTOM_REACH = 0.3;
+const float CLOUD_TOP_ROUND = 0.28;
+const float CLUSTER_SCALE = 4.0;
+const float CLUSTER_SHARE = 0.35;
+const float EROSION_SCALE = 3.7;
+const float EROSION_SHARE = 0.16;
+const float POWDER = 2.0;
+const vec2 CLOUD_SLICE_SHIFT = vec2(7.3, 11.9);
 const float CLOUD_HORIZON_FADE = 0.14;
 const float CLOUD_RAIN_FROM = 0.3;
 const float CLOUD_RAIN_FULL = 0.85;
 const float CLOUD_THRESHOLD_CLEAR = 0.78;
 const float CLOUD_THRESHOLD_STORM = 0.38;
-const float CLOUD_TOP_THINNING = 0.3;
-const float CLOUD_LIGHT_PROBE = 0.3;
+const float CLOUD_LIGHT_NEAR = 0.15;
+const float CLOUD_LIGHT_FAR = 0.4;
 const float CLOUD_MIN_RISE = 0.015;
 const vec2 CLOUD_OCTAVE_SHIFT = vec2(3.7, 1.9);
 const float METEOR_WIDTH = 0.0012;
@@ -135,42 +148,71 @@ float rain_cover() {
 	return smoothstep(CLOUD_RAIN_FROM, CLOUD_RAIN_FULL, cloud_contrast);
 }
 
-float cloud_density(vec3 point, float cover) {
-	float height = (point.y - cloud_base_m) / cloud_thickness_m;
+// Two noise slices blended by height, so the shape changes as it rises
+// and the clouds billow instead of being the same outline top to bottom.
+float cloud_noise3(vec3 p) {
+	float slice = floor(p.y);
+	float blend = smoothstep(0.0, 1.0, p.y - slice);
+	return mix(
+		cloud_noise(p.xz + slice * CLOUD_SLICE_SHIFT),
+		cloud_noise(p.xz + (slice + 1.0) * CLOUD_SLICE_SHIFT),
+		blend
+	);
+}
+
+float cloud_density(vec3 point, vec4 layer, float cover) {
+	float height = (point.y - layer.x) / layer.y;
 	if (height < 0.0 || height > 1.0) {
 		return 0.0;
 	}
-	vec2 plane = point.xz / cloud_feature_m + TIME * cloud_drift;
-	float threshold = mix(CLOUD_THRESHOLD_CLEAR, CLOUD_THRESHOLD_STORM, cover) + height * CLOUD_TOP_THINNING;
-	float rounding = smoothstep(0.0, 0.08, height) * (1.0 - smoothstep(0.6, 1.0, height));
-	return max(cloud_noise(plane) - threshold, 0.0) * rounding;
+	vec3 p = vec3(point.x, point.y, point.z) / layer.z;
+	p.xz += TIME * cloud_drift;
+	float cluster = value_noise(p.xz / CLUSTER_SCALE);
+	float threshold = mix(CLOUD_THRESHOLD_CLEAR, CLOUD_THRESHOLD_STORM, cover) + layer.w;
+	threshold += CLOUD_BOTTOM_ROUND * (1.0 - smoothstep(0.0, CLOUD_BOTTOM_REACH, height));
+	threshold += CLOUD_TOP_ROUND * smoothstep(0.35, 1.0, height);
+	threshold += (0.5 - cluster) * CLUSTER_SHARE;
+	float body = cloud_noise3(p) - threshold;
+	body -= cloud_noise(p.xz * EROSION_SCALE + p.y) * EROSION_SHARE * (1.0 - smoothstep(0.0, 0.25, body));
+	return max(body, 0.0);
 }
 
-// Front-to-back march through the deck: returns lit colour and coverage.
+void march_layer(vec3 direction, vec4 layer, int steps, float strength, float cover, float jitter, inout float clear, inout float light) {
+	float enter = (layer.x - camera_height_m) / direction.y;
+	float leave = (layer.x + layer.y - camera_height_m) / direction.y;
+	float stride = (leave - enter) / float(steps);
+	float fade = exp(-enter / cloud_fade_m) * smoothstep(CLOUD_MIN_RISE, CLOUD_HORIZON_FADE, direction.y);
+	for (int i = 0; i < steps; i++) {
+		if (clear < 0.02) {
+			return;
+		}
+		vec3 point = vec3(0.0, camera_height_m, 0.0) + direction * (enter + stride * (float(i) + jitter));
+		float density = cloud_density(point, layer, cover) * strength;
+		if (density <= 0.0) {
+			continue;
+		}
+		float shade = cloud_density(point + vec3(0.0, layer.y * CLOUD_LIGHT_NEAR, 0.0), layer, cover)
+			+ cloud_density(point + vec3(0.0, layer.y * CLOUD_LIGHT_FAR, 0.0), layer, cover);
+		float moonlit = exp(-shade * strength * CLOUD_EXTINCTION * layer.y * CLOUD_LIGHT_NEAR);
+		float powder = 1.0 - exp(-density * CLOUD_EXTINCTION * stride * POWDER);
+		float absorbed = (1.0 - exp(-density * CLOUD_EXTINCTION * stride)) * fade;
+		light += clear * absorbed * (cloud_ambient + cloud_moonlit * moonlit * powder);
+		clear *= 1.0 - absorbed;
+	}
+}
+
+// Front-to-back through the layers, nearest first: returns light and coverage.
 vec2 cloud_deck(vec3 direction, float jitter) {
 	float cover = rain_cover();
 	if (cover <= 0.0 || direction.y < CLOUD_MIN_RISE) {
 		return vec2(0.0);
 	}
-	float enter = (cloud_base_m - camera_height_m) / direction.y;
-	float leave = (cloud_base_m + cloud_thickness_m - camera_height_m) / direction.y;
-	float stride = (leave - enter) / float(CLOUD_STEPS);
 	float clear = 1.0;
 	float light = 0.0;
-	for (int i = 0; i < CLOUD_STEPS; i++) {
-		vec3 point = vec3(0.0, camera_height_m, 0.0) + direction * (enter + stride * (float(i) + jitter));
-		float density = cloud_density(point, cover);
-		if (density <= 0.0) {
-			continue;
-		}
-		float above = cloud_density(point + vec3(0.0, cloud_thickness_m * CLOUD_LIGHT_PROBE, 0.0), cover);
-		float moonlit = exp(-above * CLOUD_EXTINCTION * cloud_thickness_m * CLOUD_LIGHT_PROBE);
-		float absorbed = 1.0 - exp(-density * CLOUD_EXTINCTION * stride);
-		light += clear * absorbed * (cloud_ambient + cloud_moonlit * moonlit);
-		clear *= 1.0 - absorbed;
-	}
-	float distance_fade = exp(-enter / cloud_fade_m) * smoothstep(CLOUD_MIN_RISE, CLOUD_HORIZON_FADE, direction.y);
-	return vec2(light, 1.0 - clear) * distance_fade;
+	march_layer(direction, scud_layer, SCUD_STEPS, 1.0, cover, jitter, clear, light);
+	march_layer(direction, deck_layer, DECK_STEPS, 1.0, cover, jitter, clear, light);
+	march_layer(direction, sheet_layer, SHEET_STEPS, SHEET_DENSITY, cover, jitter, clear, light);
+	return vec2(light, 1.0 - clear);
 }
 
 float cloud_body(vec3 direction) {
