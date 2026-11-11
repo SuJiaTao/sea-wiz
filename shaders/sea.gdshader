@@ -7,8 +7,8 @@ render_mode unshaded, cull_disabled, depth_draw_opaque;
 // clean mirror of the horizon instead of shimmering.
 
 uniform float base_level : hint_range(0.0, 0.5) = 0.03;
-uniform float sky_horizon_level : hint_range(0.0, 1.0) = 0.16;
-uniform float sky_top_level : hint_range(0.0, 1.0) = 0.09;
+uniform float sky_horizon_level : hint_range(0.0, 1.0) = 0.11;
+uniform float sky_top_level : hint_range(0.0, 1.0) = 0.07;
 uniform float sky_curve : hint_range(0.001, 1.0) = 0.12;
 uniform float reflectance : hint_range(0.0, 0.2) = 0.06;
 uniform float wind_bearing_deg : hint_range(0.0, 360.0) = 180.0;
@@ -32,11 +32,6 @@ uniform float rain : hint_range(0.0, 1.0) = 0.0;
 uniform float rain_ripple_strength : hint_range(0.0, 2.0) = 0.6;
 uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
 uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
-// Past the last visible ripples the sea goes dark, so the bright horizon sky
-// separates cleanly from the water.
-uniform float far_dark_start = 500.0;
-uniform float far_dark_end = 2500.0;
-uniform float far_dark_level : hint_range(0.0, 0.2) = 0.01;
 
 const int RIPPLE_LAYERS = 3;
 const float RIPPLE_TILES[3] = float[](14.0, 6.0, 2.5);
@@ -149,8 +144,6 @@ void fragment() {
 	float facing = clamp(dot(normal, -view_ray), 0.0, 1.0);
 	float fresnel = reflectance + (1.0 - reflectance) * pow(1.0 - facing, 5.0);
 	float v = mix(base_level, sky_level(bounce), fresnel);
-	float reach = length(world_pos - CAMERA_POSITION_WORLD);
-	v = mix(v, far_dark_level, smoothstep(far_dark_start, far_dark_end, reach));
 
 	float toward_moon = max(dot(bounce, moon_direction()), 0.0);
 	v += pow(toward_moon, moon_path_sharpness) * moon_path * fresnel;
