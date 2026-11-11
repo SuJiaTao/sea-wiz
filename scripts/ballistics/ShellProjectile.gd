@@ -10,6 +10,7 @@ const BLAST_RADIUS: float = 24.0
 const WARHEAD: float = 420.0
 const FALLOFF_POWER: float = 0.5
 const TRACER_LENGTH: float = 14.0
+const TRACER_WIDTH: float = 1.6
 const TRACER_HEAT := Color(1.6, 1.4, 1.1, 1.0)
 const WATER_SPLASH_SIZE: float = 2.4
 
@@ -55,7 +56,7 @@ func _splash_size() -> float:
 
 func visual_transform() -> Transform3D:
 	var result := super()
-	result.basis *= Basis.from_scale(Vector3(1.6, 1.6, TRACER_LENGTH))
+	result.basis *= Basis.from_scale(Vector3(TRACER_WIDTH, TRACER_WIDTH, TRACER_LENGTH))
 	return result
 
 
