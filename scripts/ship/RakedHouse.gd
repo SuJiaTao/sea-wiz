@@ -1,12 +1,9 @@
 @tool
 extends MeshInstance3D
 class_name RakedHouse
-## A deckhouse built from its floor plan. Every wall leans inward by `lean`
-## metres at the roof and the whole roof can slide aft by `rake`, so a flat
-## front with 45 degree corner faces reads like a warship's superstructure.
-## Edit the outline points in the Inspector and the house rebuilds live.
 
 const MIN_SPAN := 0.001
+const MIN_CORNERS := 3
 
 @export var outline := PackedVector2Array():
 	set(value):
@@ -35,7 +32,7 @@ func _ready() -> void:
 
 
 func _rebuild() -> void:
-	if not is_inside_tree() or outline.size() < 3:
+	if not is_inside_tree() or outline.size() < MIN_CORNERS:
 		return
 	var roof := _roof_outline()
 	var house := SurfaceTool.new()
