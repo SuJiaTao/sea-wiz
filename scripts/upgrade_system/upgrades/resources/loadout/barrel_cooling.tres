@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CoolingUpgrade" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrade_system/upgrades/loadout/CoolingUpgrade.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+heat_factor = 0.75
+label = "BARREL COOLING JACKETS"
+description = "Barrels heat a quarter slower while firing. Stacks twice."
+category = "system"
+weight = 0.8
+max_acummulation = 2

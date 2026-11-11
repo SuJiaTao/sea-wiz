@@ -43,6 +43,15 @@ const ACTIONS := {
 	"ciws_cannon": [
 		{"type": "key", "key": KEY_SPACE},
 	],
+	"supply_pick_1": [
+		{"type": "key", "key": KEY_1},
+	],
+	"supply_pick_2": [
+		{"type": "key", "key": KEY_2},
+	],
+	"supply_pick_3": [
+		{"type": "key", "key": KEY_3},
+	],
 	"ciws_pause": [
 		{"type": "key", "key": KEY_ESCAPE},
 	],

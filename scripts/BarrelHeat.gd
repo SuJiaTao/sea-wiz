@@ -9,6 +9,7 @@ const WARM_LEVEL := 0.2
 const FROZEN_SPINUP := 5.0
 
 @export var turret: Turret
+@export var loadout: ShipLoadout
 @export var heat_per_second: float = 0.11
 @export var cooling_per_second: float = 0.2
 @export var icing_per_second: float = 0.06
@@ -39,7 +40,7 @@ func warning() -> bool:
 
 func _process(delta: float) -> void:
 	if turret.firing:
-		heat += heat_per_second * heat_scale * turret.spin * delta
+		heat += heat_per_second * heat_scale * loadout.heat_scale * turret.spin * delta
 	else:
 		heat -= cooling_per_second * (1.0 + cold) * delta
 	heat = clampf(heat, 0.0, 1.0)

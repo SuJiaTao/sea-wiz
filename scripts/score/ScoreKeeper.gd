@@ -43,5 +43,7 @@ func record_final() -> void:
 
 
 func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: DamageSource) -> void:
+	if not enemy.hostile:
+		return
 	combo.extend()
 	award(enemy.score_points(), enemy.score_label())

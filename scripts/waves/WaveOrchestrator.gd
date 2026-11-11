@@ -58,7 +58,7 @@ func _physics_process(delta: float) -> void:
 		var entry: WaveSpawn = _pending.pop_front()
 		if not _spawn(entry):
 			return
-	if _pending.is_empty() and _enemies.active_count() == 0:
+	if _pending.is_empty() and _enemies.hostile_count() == 0:
 		_begin_next_level()
 
 

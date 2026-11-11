@@ -119,6 +119,14 @@
 [ext_resource type="Script" path="res://scripts/display/SignalDropout.gd" id="91_signal_dropout"]
 [ext_resource type="Script" path="res://scripts/display/FocusHunt.gd" id="92_focus_hunt"]
 [ext_resource type="Script" path="res://scripts/display/CameraDamage.gd" id="93_camera_damage"]
+[ext_resource type="Script" path="res://scripts/supply/SupplyDrops.gd" id="110_supply_drops"]
+[ext_resource type="Script" path="res://scripts/supply/SupplyManifest.gd" id="111_supply_manifest"]
+[ext_resource type="Script" path="res://scripts/hud/SupplyHUD.gd" id="112_supply_hud"]
+[ext_resource type="Script" path="res://scripts/hud/SupplyManifestHUD.gd" id="113_manifest_hud"]
+[ext_resource type="Script" path="res://scripts/hud/FitGate.gd" id="114_fit_gate"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/recievers/resources/ship_loadout.tres" id="115_loadout"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/providers/resources/supply_manifest.tres" id="116_manifest_stock"]
+[ext_resource type="PackedScene" path="res://scenes/supply/SupplyCrate.tscn" id="117_crate"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -564,6 +572,7 @@ zoom_near_cull = 45.0
 
 [node name="Weapons" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1054982500 node_paths=PackedStringArray("turret", "ballistics", "tracers", "missile_launcher", "salvos", "waves", "enemies", "muzzle_motion")]
 script = ExtResource("20_weapons")
+loadout = ExtResource("115_loadout")
 turret = NodePath("../Vessel/Turret")
 ballistics = NodePath("../Ballistics")
 tracers = NodePath("../Tracers")
@@ -589,6 +598,7 @@ cells = NodePath("../../Vessel/Warship/ForwardVLS")
 
 [node name="DeckCannon" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "enemies", "ballistics", "tracers", "fx", "mount", "barrel", "muzzle")]
 script = ExtResource("20_deck_cannon")
+fitting = &"deck_gun"
 turret = NodePath("../../Vessel/Turret")
 enemies = NodePath("../../Enemies")
 ballistics = NodePath("../../Ballistics")
@@ -616,6 +626,7 @@ pile = NodePath("../../Vessel/Casings")
 
 [node name="DecoyLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("enemies", "smoke", "fx", "tubes")]
 script = ExtResource("21_decoys")
+fitting = &"decoys"
 enemies = NodePath("../../Enemies")
 smoke = NodePath("../../MissileSmoke")
 fx = NodePath("../../FX")
@@ -645,6 +656,7 @@ spotter = NodePath("../Spotter")
 
 [node name="BarrelHeat" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=550869702 node_paths=PackedStringArray("turret")]
 script = ExtResource("40_barrel_heat")
+loadout = ExtResource("115_loadout")
 turret = NodePath("../Vessel/Turret")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1527846984]
@@ -813,3 +825,52 @@ video = NodePath("../AnalogVideo")
 script = ExtResource("93_camera_damage")
 integrity = NodePath("../../ViewportContainer/SubViewport/World/ShipDamage/Integrity")
 video = NodePath("../AnalogVideo")
+
+[node name="SupplyHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("supplies", "turret")]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("112_supply_hud")
+supplies = NodePath("../../../SupplyDrops")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
+
+[node name="SupplyManifestHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("manifest")]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("113_manifest_hud")
+manifest = NodePath("../../../SupplyDrops/Manifest")
+
+[node name="FitGate" type="Node" parent="HUD/HUDRoot/DeckCannonHUD"]
+script = ExtResource("114_fit_gate")
+loadout = ExtResource("115_loadout")
+mount = &"deck_gun"
+
+[node name="FitGate" type="Node" parent="HUD/HUDRoot/DecoyHUD"]
+script = ExtResource("114_fit_gate")
+loadout = ExtResource("115_loadout")
+mount = &"decoys"
+
+[node name="FitGate" type="Node" parent="HUD/HUDRoot/WeaponFeedback"]
+script = ExtResource("114_fit_gate")
+loadout = ExtResource("115_loadout")
+mount = &"vls"
+
+[node name="SupplyDrops" type="Node" parent="." node_paths=PackedStringArray("enemies", "waves", "ship", "manifest")]
+script = ExtResource("110_supply_drops")
+crate_scene = ExtResource("117_crate")
+enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
+waves = NodePath("../WaveOrchestrator")
+ship = NodePath("../ViewportContainer/SubViewport/World/Vessel")
+manifest = NodePath("Manifest")
+loadout = ExtResource("115_loadout")
+
+[node name="Manifest" type="Node" parent="SupplyDrops"]
+script = ExtResource("111_supply_manifest")
+provider = ExtResource("116_manifest_stock")

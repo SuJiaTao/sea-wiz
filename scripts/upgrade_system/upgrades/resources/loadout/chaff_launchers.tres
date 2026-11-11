@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="MountUpgrade" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrade_system/upgrades/loadout/MountUpgrade.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+mount = &"decoys"
+label = "MK 36 SRBOC CHAFF"
+description = "Chaff to both beams pulls missiles off the ship. X to fire."
+category = "weapon"
+weight = 1.0
+max_acummulation = 1

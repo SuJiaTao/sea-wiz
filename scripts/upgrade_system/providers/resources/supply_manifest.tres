@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UpgradeProvider" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="1_upgrade"]
+[ext_resource type="Script" path="res://scripts/upgrade_system/providers/UpgradeProvider.gd" id="2_provider"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/deck_gun.tres" id="3_deck_gun"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/vertical_launch.tres" id="4_vls"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/chaff_launchers.tres" id="5_chaff"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/damage_control.tres" id="6_repair"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/barrel_cooling.tres" id="7_cooling"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/chaff_reload.tres" id="8_reload"]
+
+[resource]
+script = ExtResource("2_provider")
+_upgrades = Array[ExtResource("1_upgrade")]([ExtResource("3_deck_gun"), ExtResource("4_vls"), ExtResource("5_chaff"), ExtResource("6_repair"), ExtResource("7_cooling"), ExtResource("8_reload")])

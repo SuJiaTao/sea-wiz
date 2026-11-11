@@ -24,6 +24,7 @@ const WRECK_DAMAGE_PER_SIZE: float = 12.0
 @onready var hud: GameplayHUD = $HUD/HUDRoot
 @onready var title_screen: TitleScreen = $HUD/TitleScreen
 @onready var score: ScoreKeeper = $Score
+@onready var supplies: SupplyDrops = $SupplyDrops
 
 var state: State = State.TITLE
 var _title_time: float = 0.0
@@ -41,6 +42,7 @@ func _ready() -> void:
 	title_screen.start_requested.connect(_on_start_requested)
 	sinking.sunk.connect(_on_ship_sunk)
 	waves.level_prepared.connect(_on_level_prepared)
+	supplies.loadout.repair_requested.connect(integrity.repair)
 	hud.hide()
 	title_screen.show()
 	weapons.set_enabled(false)
@@ -104,6 +106,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 	if get_tree().paused:
+		return
+	if supplies.handle_input(event):
+		get_viewport().set_input_as_handled()
 		return
 	if weapons.handle_input(event):
 		get_viewport().set_input_as_handled()
@@ -191,6 +196,7 @@ func _finish(result: State, message: String) -> void:
 		return
 	state = result
 	waves.stop()
+	supplies.stop()
 	score.record_final()
 	weapons.set_enabled(false)
 	get_tree().paused = true
