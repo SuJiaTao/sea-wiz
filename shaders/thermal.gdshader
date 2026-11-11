@@ -66,7 +66,6 @@ uniform float shock_glow : hint_range(0.0, 20.0) = 4.0;
 const vec3 LUMA = vec3(0.30, 0.59, 0.11);
 const float MIN_STRETCH = 0.3;
 const float TOP_WEIGHT = 0.35;
-const float TAIL_WIDTH = 0.65;
 const int RING_TAPS = 8;
 const float COLUMN_SEED = 17.3;
 const float STUCK_SEED = 91.7;
@@ -147,19 +146,21 @@ void fragment() {
 			continue;
 		}
 		vec4 shape = droplet_shapes[i];
-		// One drop, drawn out behind itself as it runs: a rounded capsule that
-		// narrows toward the tail, squashed by the landing jiggle.
-		vec2 point = (UV - drop.xy) * aspect;
-		vec2 tail = shape.zw * aspect;
-		float share = clamp(dot(point, tail) / max(dot(tail, tail), 1e-8), 0.0, 1.0);
-		vec2 from_spine = point - tail * share;
-		float reach = drop.z * mix(1.0, TAIL_WIDTH, share);
-		vec2 offset = from_spine / reach / max(shape.xy, vec2(MIN_STRETCH));
+		// The whole drop lengthens evenly along its motion: an ellipse, not a
+		// round head with a tail.
+		vec2 from_centre = (UV - drop.xy) * aspect;
+		vec2 offset = from_centre / drop.z;
+		float lengthening = length(shape.zw);
+		if (lengthening > 0.0) {
+			vec2 axis = normalize(shape.zw * aspect);
+			offset -= axis * dot(offset, axis) * (lengthening / (1.0 + lengthening));
+		}
+		offset /= max(shape.xy, vec2(MIN_STRETCH));
 		float r2 = dot(offset, offset);
 		if (r2 < 1.0) {
 			float heavy = mix(TOP_WEIGHT, 1.0, smoothstep(-1.0, 1.0, offset.y));
 			float bulge = sqrt(1.0 - r2);
-			bend -= from_spine / aspect * droplet_refraction * bulge * heavy * drop.w;
+			bend -= from_centre / aspect * droplet_refraction * bulge * heavy * drop.w;
 			wet = max(wet, bulge * drop.w);
 			rim = max(rim, smoothstep(0.6, 0.95, r2) * (1.0 - r2) * 4.0 * drop.w);
 		}
