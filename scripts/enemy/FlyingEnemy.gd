@@ -23,6 +23,7 @@ const BREAK_DIVE_FLOOR: float = 80.0
 @export var max_g: float = 0.0
 
 var approach: FormationApproach
+var g_load: float = 0.0
 
 var _flight_age: float = 0.0
 var _bank: float = 0.0
@@ -73,6 +74,7 @@ func _on_think(delta: float) -> void:
 	_on_flight_step(delta)
 	if _destroy_requested:
 		return
+	var previous := velocity
 	var desired := _desired_velocity(delta)
 	if approach != null:
 		desired = approach.steer(self, desired, delta)
@@ -87,6 +89,7 @@ func _on_think(delta: float) -> void:
 		velocity = velocity.lerp(desired, clampf(turn, 0.0, 1.0))
 	if velocity.length_squared() > 0.000001:
 		velocity = velocity.normalized() * speed
+	g_load = (velocity - previous).length() / (GRAVITY * delta)
 	global_position += velocity * delta
 	var remaining := target_position - global_position
 	if Vector2(remaining.x, remaining.z).length() > 4200.0:
