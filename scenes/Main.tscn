@@ -132,6 +132,12 @@
 [ext_resource type="Resource" path="res://levels/Titan.tres" id="120_titan"]
 [ext_resource type="Script" path="res://scripts/weapons/EmergencyCoolant.gd" id="121_coolant"]
 [ext_resource type="Script" path="res://scripts/hud/CoolantHUD.gd" id="122_coolant_hud"]
+[ext_resource type="Script" path="res://scripts/enemy/EnemyDoctrine.gd" id="123_doctrine"]
+[ext_resource type="Script" path="res://scripts/hud/IntelHUD.gd" id="124_intel_hud"]
+[ext_resource type="Resource" path="res://resources/counters/flares.tres" id="125_flares"]
+[ext_resource type="Resource" path="res://resources/counters/evasive.tres" id="126_evasive"]
+[ext_resource type="Resource" path="res://resources/counters/stealth.tres" id="127_stealth"]
+[ext_resource type="Script" path="res://scripts/enemy/counters/EnemyCounter.gd" id="128_counter_type"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -916,3 +922,19 @@ loadout = ExtResource("115_loadout")
 script = ExtResource("114_fit_gate")
 loadout = ExtResource("115_loadout")
 mount = &"coolant"
+
+[node name="EnemyDoctrine" type="Node" parent="." node_paths=PackedStringArray("enemies")]
+script = ExtResource("123_doctrine")
+counters = Array[ExtResource("128_counter_type")]([ExtResource("125_flares"), ExtResource("126_evasive"), ExtResource("127_stealth")])
+loadout = ExtResource("115_loadout")
+enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
+
+[node name="IntelHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("doctrine")]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("124_intel_hud")
+doctrine = NodePath("../../../EnemyDoctrine")

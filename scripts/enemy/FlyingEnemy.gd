@@ -9,6 +9,7 @@ const BREAK_ACROSS: float = 0.85
 const BREAK_AWAY: float = 0.35
 const BREAK_DIVE: float = 0.2
 const BREAK_DIVE_FLOOR: float = 80.0
+const JINK_RATE: float = 1.7
 
 @export var speed: float = 85.0
 @export_range(0.0, 1.0) var agility: float = 0.45
@@ -24,6 +25,9 @@ const BREAK_DIVE_FLOOR: float = 80.0
 
 var approach: FormationApproach
 var g_load: float = 0.0
+var jink_strength: float = 0.0
+
+var _jink_phase: float = randf() * TAU
 
 var _flight_age: float = 0.0
 var _bank: float = 0.0
@@ -78,6 +82,8 @@ func _on_think(delta: float) -> void:
 	var desired := _desired_velocity(delta)
 	if approach != null:
 		desired = approach.steer(self, desired, delta)
+	if jink_strength > 0.0:
+		desired = _jink(desired)
 	var breaking := _break_remaining > 0.0
 	if breaking:
 		_break_remaining -= delta
@@ -95,6 +101,12 @@ func _on_think(delta: float) -> void:
 	if Vector2(remaining.x, remaining.z).length() > 4200.0:
 		velocity = remaining.normalized() * speed
 	_face_velocity(delta)
+
+
+func _jink(desired: Vector3) -> Vector3:
+	var side := desired.cross(Vector3.UP).normalized()
+	var weave := sin(_flight_age * JINK_RATE + _jink_phase) * jink_strength
+	return (desired.normalized() + side * weave).normalized() * speed
 
 
 func _face_velocity(delta: float = 0.0) -> void:

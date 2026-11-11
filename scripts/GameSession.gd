@@ -7,7 +7,6 @@ enum State { TITLE, STARTING, RUNNING, WON, LOST }
 
 const HIT_IMPULSE: float = 5.0
 const HIT_FLASH: float = 0.6
-const FLARES_FROM_LEVEL: int = 2
 const WRECK_DAMAGE_PER_SIZE: float = 12.0
 
 @onready var turret: Turret = $ViewportContainer/SubViewport/World/Vessel/Turret
@@ -25,6 +24,7 @@ const WRECK_DAMAGE_PER_SIZE: float = 12.0
 @onready var title_screen: TitleScreen = $HUD/TitleScreen
 @onready var score: ScoreKeeper = $Score
 @onready var supplies: SupplyDrops = $SupplyDrops
+@onready var doctrine: EnemyDoctrine = $EnemyDoctrine
 
 var state: State = State.TITLE
 var _title_time: float = 0.0
@@ -43,6 +43,7 @@ func _ready() -> void:
 	sinking.sunk.connect(_on_ship_sunk)
 	waves.level_prepared.connect(_on_level_prepared)
 	supplies.loadout.repair_requested.connect(integrity.repair)
+	waves.level_started.connect(doctrine.reassess.unbind(2))
 	hud.hide()
 	title_screen.show()
 	weapons.set_enabled(false)
@@ -127,7 +128,6 @@ func _on_enemy_created(enemy: AbstractEnemy) -> void:
 	enemy.damaged.connect(_on_enemy_damaged)
 	enemy.reached_target.connect(_on_target_reached.bind(enemy))
 	enemy.countermeasures_released.connect(effects.countermeasures)
-	enemy.countermeasures_enabled = waves.level_number >= FLARES_FROM_LEVEL
 
 
 func _on_level_prepared(number: int, _title: String) -> void:
