@@ -1,7 +1,5 @@
 extends AbstractDeckWeapon
 class_name DeckCannon
-## A slow bow gun slaved to the CIWS sight. It aims at the point the
-## sight is looking at, not along the sight, so the two lines cross.
 
 signal fired(origin: Vector3)
 signal detonated(position: Vector3, radius: float)
