@@ -36,6 +36,10 @@ func _trigger() -> void:
 	request_launch()
 
 
+func restock() -> void:
+	cooldown_left = 0.0
+
+
 func request_launch() -> bool:
 	if not _enabled or cooldown_left > 0.0:
 		return false

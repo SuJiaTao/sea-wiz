@@ -34,7 +34,7 @@ func _draw() -> void:
 	)
 	_text(
 		Vector2(28, 106),
-		"CONTACTS  %02d" % enemies.active_count(), 12, DIM
+		"CONTACTS  %02d" % enemies.hostile_count(), 12, DIM
 	)
 
 	if get_tree().paused:

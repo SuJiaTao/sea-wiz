@@ -51,10 +51,10 @@ func pending_targets() -> Array[AbstractEnemy]:
 
 
 func on_enemy_killed(
-	_enemy: AbstractEnemy,
+	enemy: AbstractEnemy,
 	weapon_source: DamageSource
 ) -> void:
-	if not _enabled or get_tree().paused:
+	if not _enabled or get_tree().paused or not enemy.hostile:
 		return
 	if weapon_source == null or not weapon_source.charges_salvo:
 		return

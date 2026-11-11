@@ -1,0 +1,69 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="Material_crate"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.55, 0.55, 0.55, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_canopy"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.32, 0.32, 0.32, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_strobe"]
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_crate"]
+material = SubResource("Material_crate")
+size = Vector3(1.8, 1.4, 1.8)
+
+[sub_resource type="SphereMesh" id="Mesh_canopy"]
+material = SubResource("Material_canopy")
+radius = 5.0
+height = 2.6
+radial_segments = 12
+rings = 4
+is_hemisphere = true
+
+[sub_resource type="BoxMesh" id="Mesh_line"]
+material = SubResource("Material_canopy")
+size = Vector3(0.05, 8.4, 0.05)
+
+[sub_resource type="SphereMesh" id="Mesh_strobe"]
+material = SubResource("Material_strobe")
+radius = 0.3
+height = 0.6
+radial_segments = 6
+rings = 3
+
+[node name="Visuals" type="Node3D"]
+
+[node name="Crate" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh_crate")
+
+[node name="Canopy" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.4, 0)
+mesh = SubResource("Mesh_canopy")
+
+[node name="LinePortBow" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, 0.342, 0, -0.342, 0.94, 0, 0, 0, 1, -2.1, 4.4, -2.1)
+mesh = SubResource("Mesh_line")
+
+[node name="LineStarboardBow" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, -0.342, 0, 0.342, 0.94, 0, 0, 0, 1, 2.1, 4.4, -2.1)
+mesh = SubResource("Mesh_line")
+
+[node name="LinePortStern" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, 0.342, 0, -0.342, 0.94, 0, 0, 0, 1, -2.1, 4.4, 2.1)
+mesh = SubResource("Mesh_line")
+
+[node name="LineStarboardStern" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, -0.342, 0, 0.342, 0.94, 0, 0, 0, 1, 2.1, 4.4, 2.1)
+mesh = SubResource("Mesh_line")
+
+[node name="Strobe" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+mesh = SubResource("Mesh_strobe")

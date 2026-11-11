@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="ShipLoadout" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrade_system/recievers/ShipLoadout.gd" id="1_loadout"]
+
+[resource]
+script = ExtResource("1_loadout")
