@@ -2,10 +2,10 @@ extends Node3D
 class_name Starfield
 
 @export var star_mesh: Mesh
-@export var count: int = 30
+@export var count: int = 150
 @export var radius: float = 5500.0
 @export var elevation_deg := Vector2(8.0, 82.0)
-@export var brightness := Vector2(0.35, 0.85)
+@export var brightness := Vector2(0.45, 1.0)
 @export var layout_seed: int = 7
 
 
