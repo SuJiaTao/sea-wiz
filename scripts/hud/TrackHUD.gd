@@ -15,6 +15,8 @@ const CLOUD_ALPHA: float = 0.16
 const MARKED_DOT: float = 2.5
 const MARKER_SIZE: float = 7.0
 const MARKER_LIFT: float = 14.0
+const FOCUS_CONE_DEG: float = 6.0
+const FOCUS_GROWTH: float = 1.3
 const EDGE_MARGIN: float = 28.0
 const EDGE_ARROW: float = 9.0
 const PING_TIME: float = 0.6
@@ -117,11 +119,23 @@ func _draw_marker(enemy: AbstractEnemy) -> void:
 
 func _draw_aircraft_marker(point: Vector2, enemy: AbstractEnemy) -> void:
 	var top := point - Vector2(0, _screen_radius(enemy) + MARKER_LIFT)
+	var focused := _is_focused(enemy)
+	var arrow := MARKER_SIZE * (FOCUS_GROWTH if focused else 1.0)
 	draw_colored_polygon(PackedVector2Array([
-		top + Vector2(-MARKER_SIZE, -MARKER_SIZE),
-		top + Vector2(MARKER_SIZE, -MARKER_SIZE),
+		top + Vector2(-arrow, -arrow),
+		top + Vector2(arrow, -arrow),
 		top
-	]), DIM)
+	]), MAIN if focused else FAINT)
+
+
+func _is_focused(enemy: AbstractEnemy) -> bool:
+	if fire_control.is_locked() and fire_control.locked == enemy:
+		return true
+	var eye := turret.camera.global_position
+	var sight := -turret.camera.global_basis.z
+	var at_target := rad_to_deg(sight.angle_to(enemy.global_position - eye))
+	var at_lead := rad_to_deg(sight.angle_to(gun_director.lead_point(enemy) - eye))
+	return minf(at_target, at_lead) <= FOCUS_CONE_DEG
 
 
 func _draw_missile_marker(point: Vector2, enemy: AbstractEnemy) -> void:
@@ -142,9 +156,11 @@ func _diamond(point: Vector2, reach: float) -> PackedVector2Array:
 
 
 func _marker_colour(enemy: AbstractEnemy) -> Color:
+	if _is_focused(enemy):
+		return MAIN
 	if enemy.contact_kind != AbstractEnemy.ContactKind.MISSILE:
-		return DIM
-	return MAIN if _blink_on() else DIM
+		return FAINT
+	return DIM if _blink_on() else FAINT
 
 
 func _blink_on() -> bool:
