@@ -1,8 +1,5 @@
 extends RefCounted
 class_name LensDroplet
-## One water drop on the lens: round, heavier at the bottom. It jiggles when
-## it lands, then the camera's motion drags its heavy body away from where it
-## landed, stretching a neck, until it lets go and runs off the glass.
 
 const JIGGLE_RATE: float = 38.0
 const JIGGLE_SETTLE: float = 7.0
