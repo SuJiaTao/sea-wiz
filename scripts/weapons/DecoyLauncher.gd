@@ -1,7 +1,5 @@
 extends AbstractDeckWeapon
 class_name DecoyLauncher
-## Fires a chaff rocket to each beam. The clouds bloom off the ship and
-## pull incoming missiles away from it.
 
 signal launched()
 signal bloomed(point: Vector3)
