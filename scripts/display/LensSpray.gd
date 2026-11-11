@@ -4,17 +4,16 @@ class_name LensSpray
 const MAX_DROPLETS: int = 12
 const UNIFORM := "droplets"
 const SHAPE_UNIFORM := "droplet_shapes"
-const GRAVITY: float = 0.6
-const INERTIA: float = 0.5
-const STICKING: float = 0.025
-const MOBILITY: float = 8.0
+const FALL_SPEED: float = 0.03
+const SLOWEST_FALL: float = 0.008
+const REFERENCE_RADIUS: float = 0.02
+const TURN_SLIP: float = 0.12
 const GRIP: float = 10.0
-const WOBBLE: float = 0.6
 const SCREEN := Rect2(-0.1, -0.1, 1.2, 1.2)
 
 @export var thermal: ThermalView
 @export var droplets_per_splash := Vector2(3.0, 10.0)
-@export var droplet_radius := Vector2(0.025, 0.08)
+@export var droplet_radius := Vector2(0.012, 0.03)
 @export var droplet_life := Vector2(2.5, 5.5)
 
 var _droplets: Array[LensDroplet] = []
@@ -42,32 +41,28 @@ func add_droplet() -> void:
 func _process(delta: float) -> void:
 	if delta <= 0.0:
 		return
-	var push := _lens_push(delta)
+	var turn := _camera_turn(delta)
 	for droplet in _droplets:
 		droplet.age += delta
-		_slide(droplet, push, delta)
+		_slide(droplet, turn, delta)
 	_droplets = _droplets.filter(_on_lens)
 	_upload()
 
 
-func _lens_push(delta: float) -> Vector2:
+func _camera_turn(delta: float) -> Vector2:
 	var forward := -thermal.turret.camera.global_basis.z
 	var look := Vector2(atan2(-forward.x, -forward.z), asin(clampf(forward.y, -1.0, 1.0)))
 	var turn := Vector2.ZERO
 	if _last_look != Vector2.INF:
 		turn = Vector2(wrapf(look.x - _last_look.x, -PI, PI), look.y - _last_look.y) / delta
 	_last_look = look
-	return Vector2(turn.x, turn.y) * INERTIA + Vector2.DOWN * GRAVITY * cos(look.y)
+	return turn
 
 
-func _slide(droplet: LensDroplet, push: Vector2, delta: float) -> void:
-	var drive := push * droplet.radius
-	var terminal := Vector2.ZERO
-	if drive.length() > STICKING:
-		var along := drive.normalized()
-		terminal = along * (drive.length() - STICKING) * MOBILITY
-		terminal += along.orthogonal() * randfn(0.0, WOBBLE) * terminal.length()
-	droplet.velocity = droplet.velocity.lerp(terminal, clampf(GRIP * delta, 0.0, 1.0))
+func _slide(droplet: LensDroplet, turn: Vector2, delta: float) -> void:
+	var fall := FALL_SPEED * droplet.radius / REFERENCE_RADIUS
+	var wanted := Vector2(turn.x * TURN_SLIP, maxf(fall + turn.y * TURN_SLIP, SLOWEST_FALL))
+	droplet.velocity = droplet.velocity.lerp(wanted, clampf(GRIP * delta, 0.0, 1.0))
 	droplet.move(delta)
 
 

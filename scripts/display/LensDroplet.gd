@@ -6,8 +6,8 @@ const JIGGLE_SETTLE: float = 6.0
 const JIGGLE_SIZE: float = 0.35
 const SAG_TIME: float = 0.18
 const SAG_DISTANCE: float = 0.6
-const STRETCH_PER_SPEED: float = 0.25
-const MAX_STRETCH: float = 1.1
+const STRETCH_PER_SPEED: float = 0.12
+const MAX_STRETCH: float = 0.3
 const DRY_START: float = 0.75
 
 var position: Vector2
@@ -36,8 +36,9 @@ func move(delta: float) -> void:
 	position += velocity * delta
 
 
-## xy: jiggle squash across and down; zw: how far the drop is drawn out behind it.
+## xy: jiggle squash across and down; zw: the direction the whole drop is
+## lengthened along, scaled by how much (0.3 is 30% longer).
 func shape() -> Vector4:
 	var jiggle := exp(-age * JIGGLE_SETTLE) * sin(age * JIGGLE_RATE) * JIGGLE_SIZE
-	var drawn_out := (-velocity * STRETCH_PER_SPEED).limit_length(MAX_STRETCH * radius)
-	return Vector4(1.0 + jiggle, 1.0 - jiggle, drawn_out.x, drawn_out.y)
+	var lengthening := (velocity / radius * STRETCH_PER_SPEED).limit_length(MAX_STRETCH)
+	return Vector4(1.0 + jiggle, 1.0 - jiggle, lengthening.x, lengthening.y)
