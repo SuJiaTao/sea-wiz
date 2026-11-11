@@ -1,7 +1,6 @@
 @abstract
 extends Node
 class_name AbstractDeckWeapon
-## A ship weapon that fires on its own key, outside the CIWS mount.
 
 var _enabled: bool = true
 
