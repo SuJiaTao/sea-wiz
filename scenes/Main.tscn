@@ -260,7 +260,6 @@ shader_parameter/streak_floor = 0.7
 shader_parameter/black_lift = 0.0
 shader_parameter/head_switch_lines = 2.0
 shader_parameter/head_switch_samples = 3.0
-shader_parameter/capture_border = 0.006
 shader_parameter/sharpening = 0.0
 shader_parameter/sharpening_coring = 0.02
 shader_parameter/grain_amount = 0.0

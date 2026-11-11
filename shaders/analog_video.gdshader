@@ -28,7 +28,6 @@ uniform float streak_floor : hint_range(0.0, 0.95) = 0.5;
 uniform float black_lift : hint_range(0.0, 0.3) = 0.0;
 uniform float head_switch_lines : hint_range(0.0, 20.0) = 5.0;
 uniform float head_switch_samples : hint_range(0.0, 30.0) = 6.0;
-uniform float capture_border : hint_range(0.0, 0.05) = 0.006;
 uniform float sharpening : hint_range(0.0, 1.5) = 0.45;
 uniform float sharpening_coring : hint_range(0.0, 0.1) = 0.02;
 uniform float grain_amount : hint_range(0.0, 0.4) = 0.06;
@@ -60,7 +59,6 @@ const int TAIL_TAPS = 4;
 const int STREAK_TAPS = 5;
 const float STREAK_FALLOFF = 2.0;
 const float HEAD_SWITCH_JITTER = 0.35;
-const float BORDER_JAGGIES = 0.0015;
 const int LEAD_TAPS = 3;
 const float LEAD_SIGMA = 0.6;
 const float WIDE_SIGMA = 2.0;
@@ -222,7 +220,6 @@ void fragment() {
 	l = mix(l, hash12(vec2(xs, line) + grain_offset), torn * dropout_snow);
 	l *= 1.0 - dropout * DROPOUT_DIM;
 	l = black_lift + (1.0 - black_lift) * clamp(l, 0.0, 1.0);
-	l *= step(capture_border + centred_noise(vec2(line, frame * 0.1)) * BORDER_JAGGIES, SCREEN_UV.x);
 
 	vec3 colour = l < tone_mid_point
 		? mix(tone_shadow, tone_mid, l / tone_mid_point)
