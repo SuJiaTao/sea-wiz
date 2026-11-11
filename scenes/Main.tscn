@@ -861,6 +861,7 @@ video = NodePath("../AnalogVideo")
 [node name="MeteorShower" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("environment")]
 script = ExtResource("130_meteors")
 environment = NodePath("../WorldEnvironment")
+
 [node name="SupplyHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("supplies", "turret")]
 anchors_preset = 0
 anchor_right = 1.0
