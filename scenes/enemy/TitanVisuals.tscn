@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="ArrayMesh" path="res://scenes/enemy/titan/airframe.obj" id="1_airframe"]
+[ext_resource type="ArrayMesh" path="res://scenes/enemy/titan/nozzles.obj" id="2_nozzles"]
+
+[sub_resource type="StandardMaterial3D" id="Material_airframe"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.55, 0.55, 0.55, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_nozzles"]
+cull_mode = 2
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(2.4, 2.4, 2.4, 1)
+
+[node name="TitanVisuals" type="Node3D"]
+
+[node name="Airframe" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_airframe")
+material_override = SubResource("Material_airframe")
+
+[node name="Nozzles" type="MeshInstance3D" parent="."]
+mesh = ExtResource("2_nozzles")
+material_override = SubResource("Material_nozzles")

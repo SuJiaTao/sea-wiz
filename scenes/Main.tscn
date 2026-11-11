@@ -129,6 +129,7 @@
 [ext_resource type="PackedScene" path="res://scenes/supply/SupplyCrate.tscn" id="117_crate"]
 [ext_resource type="Resource" path="res://levels/Patrol.tres" id="118_patrol"]
 [ext_resource type="Script" path="res://scripts/sensors/FireControl.gd" id="119_fire_control"]
+[ext_resource type="Resource" path="res://levels/Titan.tres" id="120_titan"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -268,7 +269,7 @@ script = ExtResource("1_session")
 [node name="WaveOrchestrator" type="Node" parent="." unique_id=1833867121]
 process_mode = 1
 script = ExtResource("6_waves")
-levels = Array[ExtResource("11_wave_type")]([ExtResource("118_patrol"), ExtResource("12_first"), ExtResource("97_formations"), ExtResource("13_second"), ExtResource("69_escort"), ExtResource("72_falling_stars")])
+levels = Array[ExtResource("11_wave_type")]([ExtResource("118_patrol"), ExtResource("12_first"), ExtResource("97_formations"), ExtResource("13_second"), ExtResource("69_escort"), ExtResource("72_falling_stars"), ExtResource("120_titan")])
 
 [node name="Score" type="Node" parent="." unique_id=668317612 node_paths=PackedStringArray("enemies")]
 process_mode = 1
