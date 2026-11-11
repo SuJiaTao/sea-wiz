@@ -4,7 +4,7 @@ shader_type sky;
 // through more air, and the moon. The moon's sunlit side is hot rock and shows
 // bright; its night side is colder than the sky behind it.
 
-uniform vec3 sky_top_color : source_color = vec3(0.1);
+uniform vec3 sky_top_color : source_color = vec3(0.14);
 uniform vec3 sky_horizon_color : source_color = vec3(0.24);
 uniform float sky_curve : hint_range(0.001, 1.0) = 0.06;
 uniform vec3 ground_horizon_color : source_color = vec3(0.02);
