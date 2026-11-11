@@ -6,7 +6,7 @@ render_mode unshaded, blend_add, cull_disabled, depth_draw_never, shadows_disabl
 
 instance uniform float brightness = 0.7;
 instance uniform float twinkle = 1.0;
-uniform float point_size_pixels : hint_range(0.5, 16.0) = 2.0;
+uniform float point_size_pixels : hint_range(0.5, 16.0) = 2.5;
 uniform float twinkle_rate = 5.0;
 uniform float twinkle_depth : hint_range(0.0, 1.0) = 0.5;
 uniform float softness = 3.0;
