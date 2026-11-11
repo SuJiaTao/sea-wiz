@@ -1,7 +1,5 @@
 extends RefCounted
 class_name ChaffScreen
-## The chaff clouds hanging off the ship, and which incoming missiles they
-## have already pulled away or failed to.
 
 const LURE_RANGE: float = 2600.0
 const LURE_CHANCE: float = 0.8
