@@ -22,7 +22,12 @@ const PING_RADIUS: float = 40.0
 const GATE_MIN: float = 10.0
 const GATE_MAX: float = 70.0
 const GATE_OPEN: float = 2.2
-const GATE_CORNER: float = 0.45
+const GATE_SCALE: float = 1.3
+const LOCK_GROW_TIME: float = 0.2
+const LOCK_WIDTH: float = 2.0
+const LEAD_PIP_RADIUS: float = 5.0
+const LEAD_PIP_SEGMENTS: int = 16
+const LEAD_FITTING := &"fire_control"
 const SPOT_RING: float = 16.0
 const SPOT_RING_SEGMENTS: int = 24
 const MISSILE_MARKER: float = 9.0
@@ -41,17 +46,22 @@ const RING_FRACTIONS: Array[float] = [0.25, 0.5, 0.75]
 @export var tracks: TrackManager
 @export var spotter: Spotter
 @export var gun_director: GunDirector
+@export var fire_control: FireControl
+@export var loadout: ShipLoadout
 
 var _pings: Dictionary = {}
 var _clock: float = 0.0
+var _lock_age: float = 0.0
 
 
 func _ready() -> void:
 	spotter.marked.connect(_on_marked)
+	fire_control.locked_on.connect(_on_locked_on)
 
 
 func _update_hud(delta: float) -> void:
 	_clock += delta
+	_lock_age += delta
 	for enemy: Variant in _pings.keys():
 		_pings[enemy] += delta
 		if _pings[enemy] > PING_TIME or not is_instance_valid(enemy):
@@ -62,12 +72,16 @@ func _draw() -> void:
 	for enemy in spotter.marked_enemies():
 		_draw_marker(enemy)
 	_draw_spotting()
-	_draw_gate()
+	_draw_lock()
 	_draw_scope()
 
 
 func _on_marked(enemy: AbstractEnemy) -> void:
 	_pings[enemy] = 0.0
+
+
+func _on_locked_on(_enemy: AbstractEnemy) -> void:
+	_lock_age = 0.0
 
 
 func _project(world_position: Vector3) -> Vector2:
@@ -159,22 +173,20 @@ func _draw_spotting() -> void:
 	draw_arc(point, radius, start, start + TAU * spotter.progress, SPOT_RING_SEGMENTS, MAIN, 1.5)
 
 
-func _draw_gate() -> void:
-	var enemy := gun_director.target
-	if not is_instance_valid(enemy) or not _on_screen(enemy.global_position):
+func _draw_lock() -> void:
+	if not fire_control.is_locked():
 		return
-	var convergence := gun_director.convergence
+	var enemy := fire_control.locked
+	if not _on_screen(enemy.global_position):
+		return
 	var point := _project(enemy.global_position)
-	var half := clampf(_screen_radius(enemy) * 1.3, GATE_MIN, GATE_MAX)
-	half *= lerpf(GATE_OPEN, 1.0, convergence)
-	var corner := half * GATE_CORNER
-	var colour := MAIN if convergence >= 1.0 else DIM
-	var width := 2.0 if convergence >= 1.0 else 1.0
-	for sx in [-1.0, 1.0]:
-		for sy in [-1.0, 1.0]:
-			var at := point + Vector2(sx, sy) * half
-			draw_line(at, at - Vector2(sx * corner, 0), colour, width)
-			draw_line(at, at - Vector2(0, sy * corner), colour, width)
+	var grow := clampf(_lock_age / LOCK_GROW_TIME, 0.0, 1.0)
+	var half := clampf(_screen_radius(enemy) * GATE_SCALE, GATE_MIN, GATE_MAX) * lerpf(GATE_OPEN, 1.0, grow)
+	draw_rect(Rect2(point - Vector2.ONE * half, Vector2.ONE * half * 2.0), MAIN, false, LOCK_WIDTH)
+	if loadout.is_fitted(LEAD_FITTING):
+		var lead := gun_director.lead_point(enemy)
+		if not turret.camera.is_position_behind(lead):
+			draw_arc(_project(lead), LEAD_PIP_RADIUS, 0, TAU, LEAD_PIP_SEGMENTS, MAIN, LOCK_WIDTH)
 
 
 func _draw_scope() -> void:
