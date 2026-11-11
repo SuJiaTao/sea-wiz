@@ -4,7 +4,7 @@ class_name IntelHUD
 const ADOPTED_PREFIX := "INTEL: ENEMY ADAPTED  /  "
 const DROPPED_PREFIX := "INTEL: ENEMY DROPPED  /  "
 const MESSAGE_TIME: float = 4.0
-const MESSAGE_HEIGHT: float = 0.24
+const MESSAGE_HEIGHT: float = 0.14
 const MESSAGE_FONT: int = 14
 const LIST_OFFSET := Vector2(-290, 210)
 const LIST_FONT: int = 11
