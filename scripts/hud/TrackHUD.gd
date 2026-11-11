@@ -31,6 +31,10 @@ const LEAD_PIP_RADIUS: float = 5.0
 const LEAD_PIP_SEGMENTS: int = 16
 const LEAD_FITTING := &"fire_control"
 const RADAR_FITTING := &"radar"
+const CLASSIFIER_FITTING := &"radar_classifier"
+const MISSILE_SIZE_BELOW: float = 3.5
+const FIGHTER_SIZE_BELOW: float = 14.0
+const CLASS_SYMBOL: float = 3.5
 const SPOT_RING: float = 16.0
 const SPOT_RING_SEGMENTS: int = 24
 const MISSILE_MARKER: float = 9.0
@@ -223,7 +227,10 @@ func _draw_scope() -> void:
 	var marked := spotter.marked_enemies()
 	for track in tracks.tracks():
 		if not _belongs_to_marked(track, marked):
-			_draw_cloud(centre, track)
+			if track.confirmed and loadout.is_fitted(CLASSIFIER_FITTING):
+				_draw_class_symbol(_scope_point(centre, track.position), track.size_hint)
+			else:
+				_draw_cloud(centre, track)
 			if track.confirmed:
 				_draw_leader(centre, track.position, track.velocity, Color(DIM, CLOUD_ALPHA * 3.0))
 	for enemy in marked:
@@ -238,6 +245,18 @@ func _draw_scope() -> void:
 		centre + Vector2(-SCOPE_RADIUS, SCOPE_RADIUS + 18),
 		"HEAT  %.1f km   MARKED %d" % [RADAR_RANGE / 1000.0, marked.size()], 11, FAINT
 	)
+
+
+func _draw_class_symbol(at: Vector2, size_hint: float) -> void:
+	if size_hint < MISSILE_SIZE_BELOW:
+		draw_polyline(_diamond(at, CLASS_SYMBOL), MAIN if _blink_on() else DIM, 1.5)
+	elif size_hint < FIGHTER_SIZE_BELOW:
+		draw_colored_polygon(PackedVector2Array([
+			at + Vector2(0, -CLASS_SYMBOL), at + Vector2(CLASS_SYMBOL, CLASS_SYMBOL),
+			at + Vector2(-CLASS_SYMBOL, CLASS_SYMBOL)
+		]), DIM)
+	else:
+		draw_rect(Rect2(at - Vector2.ONE * CLASS_SYMBOL, Vector2.ONE * CLASS_SYMBOL * 2.0), DIM)
 
 
 func _scope_point(centre: Vector2, world_position: Vector3) -> Vector2:
