@@ -6,7 +6,8 @@
 script = ExtResource("1_script")
 mount = &"vls"
 label = "MK 41 VLS / ESSM"
-description = "Q fires a missile at the locked jet. Kills charge the E salvo."
+description = "Fires a missile at the locked jet. The salvo upgrade builds on it."
 category = "weapon"
 weight = 1.0
 max_acummulation = 1
+slot = 1

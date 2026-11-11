@@ -11,7 +11,10 @@
 [ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/fire_control.tres" id="9_fire_control"]
 [ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/search_radar.tres" id="10_radar"]
 [ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/radar_classifier.tres" id="11_classifier"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/missile_salvo.tres" id="12_salvo"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/coolant_dump.tres" id="13_coolant"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/aim_assist.tres" id="14_assist"]
 
 [resource]
 script = ExtResource("2_provider")
-_upgrades = Array[ExtResource("1_upgrade")]([ExtResource("3_deck_gun"), ExtResource("4_vls"), ExtResource("5_chaff"), ExtResource("6_repair"), ExtResource("7_cooling"), ExtResource("8_reload"), ExtResource("9_fire_control"), ExtResource("10_radar"), ExtResource("11_classifier")])
+_upgrades = Array[ExtResource("1_upgrade")]([ExtResource("3_deck_gun"), ExtResource("4_vls"), ExtResource("5_chaff"), ExtResource("6_repair"), ExtResource("7_cooling"), ExtResource("8_reload"), ExtResource("9_fire_control"), ExtResource("10_radar"), ExtResource("11_classifier"), ExtResource("12_salvo"), ExtResource("13_coolant"), ExtResource("14_assist")])

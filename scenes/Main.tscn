@@ -130,6 +130,8 @@
 [ext_resource type="Resource" path="res://levels/Patrol.tres" id="118_patrol"]
 [ext_resource type="Script" path="res://scripts/sensors/FireControl.gd" id="119_fire_control"]
 [ext_resource type="Resource" path="res://levels/Titan.tres" id="120_titan"]
+[ext_resource type="Script" path="res://scripts/weapons/EmergencyCoolant.gd" id="121_coolant"]
+[ext_resource type="Script" path="res://scripts/hud/CoolantHUD.gd" id="122_coolant_hud"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -653,9 +655,12 @@ script = ExtResource("37_spotter")
 turret = NodePath("../../Vessel/Turret")
 enemies = NodePath("../../Enemies")
 
-[node name="GunDirector" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" unique_id=685954536 node_paths=PackedStringArray("turret")]
+[node name="GunDirector" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" unique_id=685954536 node_paths=PackedStringArray("turret", "enemies", "spotter")]
 script = ExtResource("38_gun_director")
 turret = NodePath("../../Vessel/Turret")
+enemies = NodePath("../../Enemies")
+spotter = NodePath("../Spotter")
+loadout = ExtResource("115_loadout")
 
 [node name="FireControl" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" node_paths=PackedStringArray("turret", "spotter", "gun_director")]
 script = ExtResource("119_fire_control")
@@ -758,6 +763,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("20_deck_cannon_hud")
+loadout = ExtResource("115_loadout")
 cannon = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/DeckCannon")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 
@@ -779,6 +785,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("21_decoy_hud")
+loadout = ExtResource("115_loadout")
 decoys = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/DecoyLauncher")
 
 [node name="WeaponFeedback" type="Control" parent="HUD/HUDRoot" unique_id=56369314 node_paths=PackedStringArray("launcher", "salvos", "turret", "smoke", "fx")]
@@ -789,6 +796,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("23_weapon_feedback")
+loadout = ExtResource("115_loadout")
 launcher = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/MissileLauncher")
 salvos = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/SalvoManager")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
@@ -884,4 +892,27 @@ loadout = ExtResource("115_loadout")
 
 [node name="Manifest" type="Node" parent="SupplyDrops"]
 script = ExtResource("111_supply_manifest")
+loadout = ExtResource("115_loadout")
 provider = ExtResource("116_manifest_stock")
+
+[node name="EmergencyCoolant" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("barrel_heat", "turret")]
+script = ExtResource("121_coolant")
+fitting = &"coolant"
+barrel_heat = NodePath("../../BarrelHeat")
+turret = NodePath("../../Vessel/Turret")
+
+[node name="CoolantHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("coolant")]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("122_coolant_hud")
+coolant = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/EmergencyCoolant")
+loadout = ExtResource("115_loadout")
+
+[node name="FitGate" type="Node" parent="HUD/HUDRoot/CoolantHUD"]
+script = ExtResource("114_fit_gate")
+loadout = ExtResource("115_loadout")
+mount = &"coolant"

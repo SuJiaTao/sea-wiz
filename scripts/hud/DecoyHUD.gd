@@ -7,12 +7,12 @@ const BAR_SIZE := Vector2(128, 12)
 const STATUS_OFFSET := Vector2(198, 0)
 const HINT_FONT: int = 11
 const LABEL_FONT: int = 12
-const ORIGIN_OFFSET := Vector2(28, -390)
 const MESSAGE_TIME: float = 1.6
 const MESSAGE_HEIGHT: float = 0.38
 const MESSAGE_FONT: int = 15
 
 @export var decoys: DecoyLauncher
+@export var loadout: ShipLoadout
 
 var _message_left: float = 0.0
 
@@ -28,11 +28,11 @@ func _update_hud(delta: float) -> void:
 func _draw() -> void:
 	if get_tree().paused:
 		return
-	var origin := Vector2(0, size.y) + ORIGIN_OFFSET
+	var origin := SlotLayout.origin(size, loadout.row_for(decoys.fitting))
 	var loaded := decoys.cooldown_left <= 0.0
 	var status := "READY" if loaded else "%d S" % ceili(decoys.cooldown_left)
 	var fill := 1.0 - decoys.cooldown_left / DecoyLauncher.COOLDOWN
-	_text(origin - LABEL_LIFT, "X  CHAFF", HINT_FONT, FAINT)
+	_text(origin - LABEL_LIFT, "%s  CHAFF" % loadout.key_for(decoys.fitting), HINT_FONT, FAINT)
 	_text(origin, "DECOY", LABEL_FONT, DIM)
 	_bar(origin + BAR_OFFSET, BAR_SIZE, fill, MAIN if loaded else DIM)
 	_text(origin + STATUS_OFFSET, status, LABEL_FONT, MAIN if loaded else DIM)

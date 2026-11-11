@@ -10,3 +10,4 @@ description = "Chaff to both beams pulls missiles off the ship. X to fire."
 category = "weapon"
 weight = 1.0
 max_acummulation = 1
+slot = 2

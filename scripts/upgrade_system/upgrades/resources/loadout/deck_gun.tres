@@ -10,3 +10,4 @@ description = "Heavy shell where the sight looks. SPACE to fire."
 category = "weapon"
 weight = 1.0
 max_acummulation = 1
+slot = 1

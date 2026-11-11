@@ -31,10 +31,6 @@ var reload_left: float = 0.0
 var aim_point: Vector3
 var on_target: bool = false
 
-func _action() -> StringName:
-	return &"ciws_cannon"
-
-
 func _trigger() -> void:
 	request_fire()
 
