@@ -23,6 +23,13 @@ uniform vec4 scud_layer = vec4(450.0, 350.0, 650.0, 0.14);
 uniform vec4 deck_layer = vec4(900.0, 1800.0, 1800.0, 0.0);
 uniform vec4 sheet_layer = vec4(3200.0, 450.0, 5200.0, 0.06);
 uniform float cloud_fade_m = 9000.0;
+// Low storm ceiling that rolls in ahead of rain: an unbroken grey deck with a
+// lumpy, pouched underside, dark lumps split by lighter creases.
+uniform float overcast : hint_range(0.0, 1.0) = 0.0;
+uniform float overcast_base_m = 1400.0;
+uniform float overcast_cell_m = 650.0;
+uniform float overcast_dark : hint_range(0.0, 0.3) = 0.015;
+uniform float overcast_light : hint_range(0.0, 0.5) = 0.075;
 uniform float camera_height_m = 18.0;
 uniform float cloud_ambient : hint_range(0.0, 0.5) = 0.05;
 uniform float cloud_moonlit : hint_range(0.0, 1.0) = 0.3;
@@ -84,6 +91,18 @@ const float EROSION_SCALE = 3.7;
 const float EROSION_SHARE = 0.16;
 const float POWDER = 2.0;
 const vec2 CLOUD_SLICE_SHIFT = vec2(7.3, 11.9);
+const float POUCH_SEED = 41.3;
+const float POUCH_CORE = 0.15;
+const float POUCH_EDGE = 0.85;
+const float WARP_SCALE = 0.45;
+const float WARP_REACH = 1.1;
+const float CREASE_SHARE = 0.55;
+const float SWELL_SCALE = 0.18;
+const float SWELL_SHARE = 0.45;
+const float TEXTURE_SCALE = 2.6;
+const float TEXTURE_SHARE = 0.25;
+const float THIN_SPOTS = 0.15;
+const float OVERCAST_MOON_BLOCK = 0.85;
 const float CLOUD_HORIZON_FADE = 0.14;
 const float CLOUD_RAIN_FROM = 0.3;
 const float CLOUD_RAIN_FULL = 0.85;
@@ -196,9 +215,49 @@ void march_layer(vec3 direction, vec4 layer, int steps, float strength, float co
 		float moonlit = exp(-shade * strength * CLOUD_EXTINCTION * layer.y * CLOUD_LIGHT_NEAR);
 		float powder = 1.0 - exp(-density * CLOUD_EXTINCTION * stride * POWDER);
 		float absorbed = (1.0 - exp(-density * CLOUD_EXTINCTION * stride)) * fade;
-		light += clear * absorbed * (cloud_ambient + cloud_moonlit * moonlit * powder);
+		light += clear * absorbed * (cloud_ambient + cloud_moonlit * moonlit * powder * (1.0 - overcast * OVERCAST_MOON_BLOCK));
 		clear *= 1.0 - absorbed;
 	}
+}
+
+// Distance to the nearest and second nearest pouch centre in a jittered grid.
+vec2 pouches(vec2 p) {
+	vec2 cell = floor(p);
+	float nearest = 8.0;
+	float second = 8.0;
+	for (int y = -1; y <= 1; y++) {
+		for (int x = -1; x <= 1; x++) {
+			vec2 c = cell + vec2(float(x), float(y));
+			vec2 centre = c + vec2(hash12(c), hash12(c + POUCH_SEED));
+			float d = length(p - centre);
+			if (d < nearest) {
+				second = nearest;
+				nearest = d;
+			} else if (d < second) {
+				second = d;
+			}
+		}
+	}
+	return vec2(nearest, second);
+}
+
+// The storm ceiling seen from below: returns brightness and coverage.
+vec2 overcast_ceiling(vec3 direction) {
+	if (overcast <= 0.0 || direction.y < CLOUD_MIN_RISE) {
+		return vec2(0.0);
+	}
+	float reach = (overcast_base_m - camera_height_m) / direction.y;
+	vec2 p = direction.xz * reach / overcast_cell_m + TIME * cloud_drift * (deck_layer.z / overcast_cell_m);
+	p += (vec2(cloud_noise(p * WARP_SCALE), cloud_noise(p * WARP_SCALE + POUCH_SEED)) - 0.5) * WARP_REACH;
+	float pouch = pouches(p).x;
+	float rim = smoothstep(POUCH_CORE, POUCH_EDGE, pouch);
+	float swell = value_noise(p * SWELL_SCALE);
+	float texture = cloud_noise(p * TEXTURE_SCALE);
+	float shade = rim * CREASE_SHARE + swell * SWELL_SHARE + (texture - 0.5) * TEXTURE_SHARE;
+	float level = mix(overcast_dark, overcast_light, clamp(shade, 0.0, 1.0));
+	float distance_fade = exp(-reach / cloud_fade_m) * smoothstep(CLOUD_MIN_RISE, CLOUD_HORIZON_FADE, direction.y);
+	float cover = overcast * (1.0 - THIN_SPOTS * (1.0 - swell)) * distance_fade;
+	return vec2(level, cover);
 }
 
 // Front-to-back through the layers, nearest first: returns light and coverage.
@@ -250,6 +309,8 @@ float meteor(vec3 direction) {
 
 void sky() {
 	vec3 colour = atmosphere(EYEDIR) * cloud_cover(EYEDIR) + vec3(cloud_body(EYEDIR) * cloud_brightness);
+	vec2 ceiling = overcast_ceiling(EYEDIR);
+	colour = colour * (1.0 - ceiling.y) + vec3(ceiling.x * ceiling.y);
 	vec2 deck = cloud_deck(EYEDIR, hash12(FRAGCOORD.xy + fract(TIME) * DITHER_SEED));
 	colour = colour * (1.0 - deck.y) + vec3(deck.x);
 

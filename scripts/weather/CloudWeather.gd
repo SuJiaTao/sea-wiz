@@ -3,8 +3,11 @@ class_name CloudWeather
 
 const CONTRAST := "cloud_contrast"
 const BUILD_RATE: float = 0.025
+const OVERCAST := "overcast"
+const STAR_SHADE := "cloud_shade"
 
 @export var environment: WorldEnvironment
+@export var star_material: ShaderMaterial
 
 var _clear_contrast: float = 0.0
 var _build: float = 0.0
@@ -23,6 +26,10 @@ func _apply(profile: WeatherProfile, strength: float, delta: float) -> void:
 		_gathering_cover = forecast.cloud_cover
 	var gathering := lerpf(_clear_contrast, _gathering_cover, _build)
 	_sky().set_shader_parameter(CONTRAST, maxf(current, gathering))
+	var raining := strength if profile.cloud_cover > 0.0 else 0.0
+	var overcast := maxf(raining, _build if _gathering_cover > 0.0 else 0.0)
+	_sky().set_shader_parameter(OVERCAST, overcast)
+	star_material.set_shader_parameter(STAR_SHADE, overcast)
 
 
 func _sky() -> ShaderMaterial:
