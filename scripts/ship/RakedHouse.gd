@@ -51,7 +51,6 @@ func _rebuild() -> void:
 	house.generate_normals()
 	house.set_material(material)
 	mesh = house.commit()
-	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
 func _roof_outline() -> PackedVector2Array:

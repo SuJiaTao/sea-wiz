@@ -16,7 +16,6 @@ func _ready() -> void:
 	_add_sides(hull)
 	_add_deck(hull)
 	mesh = hull
-	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
 func deck_level(z: float) -> float:
