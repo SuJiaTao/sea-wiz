@@ -93,12 +93,13 @@ const float EROSION_SHARE = 0.16;
 const float POWDER = 2.0;
 const vec2 CLOUD_SLICE_SHIFT = vec2(7.3, 11.9);
 const float POUCH_SEED = 41.3;
-const float BUBBLE_SHARE = 0.65;
-const float BUBBLE_JITTER = 0.6;
-const float BUBBLE_SMALLEST = 0.45;
-const float BUBBLE_LARGEST = 0.8;
-const float BUBBLE_DETAIL_SCALE = 2.4;
-const float BUBBLE_DETAIL_SHARE = 0.35;
+const int BILLOW_OCTAVES = 3;
+const float BILLOW_GAIN = 0.45;
+const float BILLOW_LACUNARITY = 2.3;
+const float BILLOW_SHARE = 0.8;
+const float WARP_SCALE = 0.35;
+const float WARP_REACH = 1.4;
+const float SAG_FLOOR = 0.45;
 const float SWELL_SCALE = 0.18;
 const float SWELL_SHARE = 0.15;
 const int RELIEF_STEPS = 14;
@@ -226,31 +227,43 @@ void march_layer(vec3 direction, vec4 layer, int steps, float strength, float co
 	}
 }
 
-// Round bubbles hanging from the deck: each grid cell holds one dome of its
-// own size, and neighbouring domes blend into each other softly.
-float bubbles(vec2 p) {
+// Billows hanging from the deck, after the Perlin-Worley clouds of Horizon
+// Zero Dawn: inverted cell noise gives rounded lumps, stacked in octaves so
+// each lump carries smaller ones, and a warp bends them out of round.
+float billow(vec2 p) {
 	vec2 cell = floor(p);
-	float heap = 0.0;
+	float nearest = 1.0;
 	for (int y = -1; y <= 1; y++) {
 		for (int x = -1; x <= 1; x++) {
 			vec2 c = cell + vec2(float(x), float(y));
-			vec2 centre = c + vec2(hash12(c), hash12(c + POUCH_SEED)) * BUBBLE_JITTER + (1.0 - BUBBLE_JITTER) * 0.5;
-			float size = mix(BUBBLE_SMALLEST, BUBBLE_LARGEST, hash12(c - POUCH_SEED));
-			float reach = length(p - centre) / size;
-			float dome = sqrt(max(1.0 - reach * reach, 0.0)) * size;
-			heap = max(heap, dome);
+			vec2 centre = c + vec2(hash12(c), hash12(c + POUCH_SEED));
+			nearest = min(nearest, length(p - centre));
 		}
 	}
-	return heap;
+	return 1.0 - nearest * nearest;
 }
 
-// How far a point on the storm ceiling hangs down, 0 to 1: big bubbles with
-// smaller ones clustered on them, over a gentle swell.
+float billow_stack(vec2 p) {
+	float heap = 0.0;
+	float weight = 1.0;
+	float total = 0.0;
+	for (int i = 0; i < BILLOW_OCTAVES; i++) {
+		heap += billow(p) * weight;
+		total += weight;
+		weight *= BILLOW_GAIN;
+		p = p * BILLOW_LACUNARITY + CLOUD_OCTAVE_SHIFT;
+	}
+	return heap / total;
+}
+
+// How far a point on the storm ceiling hangs down, 0 to 1: warped billows
+// riding a slow swell, so the lumps come in uneven rolls and clusters.
 float ceiling_sag(vec2 p) {
+	vec2 bend = vec2(value_noise(p * WARP_SCALE), value_noise(p * WARP_SCALE + CLOUD_SLICE_SHIFT)) - 0.5;
+	vec2 q = p + bend * WARP_REACH;
 	float swell = value_noise(p * SWELL_SCALE);
-	float big = bubbles(p);
-	float small = bubbles(p * BUBBLE_DETAIL_SCALE + CLOUD_OCTAVE_SHIFT) / BUBBLE_DETAIL_SCALE;
-	return clamp((big + small * BUBBLE_DETAIL_SHARE) * BUBBLE_SHARE / BUBBLE_LARGEST + swell * SWELL_SHARE, 0.0, 1.0);
+	float lumps = billow_stack(q);
+	return smoothstep(SAG_FLOOR, 1.0, lumps * BILLOW_SHARE + swell * SWELL_SHARE);
 }
 
 // The storm ceiling seen from below as a hanging relief: the ray climbs from
