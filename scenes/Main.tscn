@@ -146,6 +146,9 @@
 
 [ext_resource type="Script" path="res://scripts/world/MoonLight.gd" id="130_moon_light"]
 
+[ext_resource type="AudioStream" path="res://audio/missile_warning.wav" id="140_warning_beep"]
+[ext_resource type="Script" path="res://scripts/hud/MissileWarning.gd" id="141_missile_warning"]
+
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
 shader = ExtResource("15_sea_shader")
@@ -322,6 +325,14 @@ boom = NodePath("Boom")
 
 [node name="Boom" type="AudioStreamPlayer" parent="BlastFeel" unique_id=1030745418]
 stream = ExtResource("103_boom")
+
+[node name="MissileWarning" type="AudioStreamPlayer" parent="." node_paths=PackedStringArray("enemies", "ship")]
+process_mode = 1
+stream = ExtResource("140_warning_beep")
+volume_db = -8.0
+script = ExtResource("141_missile_warning")
+enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
+ship = NodePath("../ViewportContainer/SubViewport/World/Vessel")
 
 [node name="Weather" type="Node" parent="." unique_id=173054948 node_paths=PackedStringArray("waves")]
 process_mode = 1
