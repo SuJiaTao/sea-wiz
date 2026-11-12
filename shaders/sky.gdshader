@@ -27,10 +27,10 @@ uniform float cloud_fade_m = 9000.0;
 // lumpy, pouched underside, dark lumps split by lighter creases.
 uniform float overcast : hint_range(0.0, 1.0) = 0.0;
 uniform float overcast_base_m = 1400.0;
-uniform float overcast_cell_m = 850.0;
+uniform float overcast_cell_m = 560.0;
 uniform float overcast_depth_m = 320.0;
 uniform float overcast_dark : hint_range(0.0, 0.3) = 0.015;
-uniform float overcast_light : hint_range(0.0, 0.5) = 0.075;
+uniform float overcast_light : hint_range(0.0, 0.5) = 0.1;
 uniform float camera_height_m = 18.0;
 uniform float cloud_ambient : hint_range(0.0, 0.5) = 0.05;
 uniform float cloud_moonlit : hint_range(0.0, 1.0) = 0.3;
@@ -93,20 +93,19 @@ const float EROSION_SHARE = 0.16;
 const float POWDER = 2.0;
 const vec2 CLOUD_SLICE_SHIFT = vec2(7.3, 11.9);
 const float POUCH_SEED = 41.3;
-const float WARP_SCALE = 0.45;
-const float WARP_REACH = 0.8;
-const float BILLOW_SHARE = 0.7;
-const int BILLOW_OCTAVES = 3;
-const float BILLOW_LACUNARITY = 2.1;
-const float BILLOW_GAIN = 0.45;
-const float BILLOW_LOW = 0.35;
-const float BILLOW_HIGH = 0.9;
+const float BUBBLE_SHARE = 0.65;
+const float BUBBLE_JITTER = 0.6;
+const float BUBBLE_SMALLEST = 0.45;
+const float BUBBLE_LARGEST = 0.8;
+const float BUBBLE_DETAIL_SCALE = 2.4;
+const float BUBBLE_DETAIL_SHARE = 0.35;
 const float SWELL_SCALE = 0.18;
-const float SWELL_SHARE = 0.3;
+const float SWELL_SHARE = 0.15;
 const int RELIEF_STEPS = 14;
 const float RELIEF_PROBE = 0.08;
 const float RELIEF_LIGHT_DROP = 0.35;
-const float RELIEF_LIGHT_SHARE = 0.5;
+const float RELIEF_LIGHT_SHARE = 0.75;
+const float RELIEF_WRAP = 0.5;
 const float RELIEF_SAG_SHARE = 0.3;
 const float RELIEF_CREVICE_DARK = 0.55;
 const float OVERCAST_MOON_BLOCK = 0.85;
@@ -227,26 +226,31 @@ void march_layer(vec3 direction, vec4 layer, int steps, float strength, float co
 	}
 }
 
-// Billow noise: folded octaves give rounded, cauliflower lobes with soft
-// creases between them, the way the underside of a storm deck heaps up.
-float billows(vec2 p) {
-	float total = 0.0;
-	float weight = 0.5;
-	for (int octave = 0; octave < BILLOW_OCTAVES; octave++) {
-		total += (1.0 - abs(value_noise(p) * 2.0 - 1.0)) * weight;
-		p = p * BILLOW_LACUNARITY + CLOUD_OCTAVE_SHIFT;
-		weight *= BILLOW_GAIN;
+// Round bubbles hanging from the deck: each grid cell holds one dome of its
+// own size, and neighbouring domes blend into each other softly.
+float bubbles(vec2 p) {
+	vec2 cell = floor(p);
+	float heap = 0.0;
+	for (int y = -1; y <= 1; y++) {
+		for (int x = -1; x <= 1; x++) {
+			vec2 c = cell + vec2(float(x), float(y));
+			vec2 centre = c + vec2(hash12(c), hash12(c + POUCH_SEED)) * BUBBLE_JITTER + (1.0 - BUBBLE_JITTER) * 0.5;
+			float size = mix(BUBBLE_SMALLEST, BUBBLE_LARGEST, hash12(c - POUCH_SEED));
+			float reach = length(p - centre) / size;
+			float dome = sqrt(max(1.0 - reach * reach, 0.0)) * size;
+			heap = max(heap, dome);
+		}
 	}
-	return total;
+	return heap;
 }
 
-// How far a point on the storm ceiling hangs down, 0 to 1: broad swells sag
-// whole regions and billowed lobes heap up within them.
+// How far a point on the storm ceiling hangs down, 0 to 1: big bubbles with
+// smaller ones clustered on them, over a gentle swell.
 float ceiling_sag(vec2 p) {
-	p += (vec2(value_noise(p * WARP_SCALE), value_noise(p * WARP_SCALE + POUCH_SEED)) - 0.5) * WARP_REACH;
 	float swell = value_noise(p * SWELL_SCALE);
-	float heap = smoothstep(BILLOW_LOW, BILLOW_HIGH, billows(p));
-	return clamp(heap * BILLOW_SHARE + swell * SWELL_SHARE, 0.0, 1.0);
+	float big = bubbles(p);
+	float small = bubbles(p * BUBBLE_DETAIL_SCALE + CLOUD_OCTAVE_SHIFT) / BUBBLE_DETAIL_SCALE;
+	return clamp((big + small * BUBBLE_DETAIL_SHARE) * BUBBLE_SHARE / BUBBLE_LARGEST + swell * SWELL_SHARE, 0.0, 1.0);
 }
 
 // The storm ceiling seen from below as a hanging relief: the ray climbs from
@@ -286,7 +290,7 @@ vec2 overcast_ceiling(vec3 direction, float jitter) {
 	vec3 normal = normalize(vec3(rise_x * slope, -1.0, rise_z * slope));
 	vec3 moon = moon_direction();
 	vec3 glow_from = normalize(vec3(moon.x, -RELIEF_LIGHT_DROP, moon.z));
-	float lit = max(dot(normal, glow_from), 0.0);
+	float lit = clamp((dot(normal, glow_from) + RELIEF_WRAP) / (1.0 + RELIEF_WRAP), 0.0, 1.0);
 	float tucked = mix(RELIEF_CREVICE_DARK, 1.0, sag);
 	float level = mix(overcast_dark, overcast_light, clamp(lit * RELIEF_LIGHT_SHARE + sag * RELIEF_SAG_SHARE, 0.0, 1.0)) * tucked;
 	float distance_fade = exp(-reach / cloud_fade_m) * smoothstep(CLOUD_MIN_RISE, CLOUD_HORIZON_FADE, direction.y);
