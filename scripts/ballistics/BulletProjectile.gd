@@ -18,7 +18,7 @@ const IGNITION_TIME := 0.12
 const IGNITION_FLOOR := 0.25
 
 var damage: float = 40.0
-var tracer_length: float = 20.0
+var tracer_length: float = 30.0
 
 var _ricochets: int = 0
 
