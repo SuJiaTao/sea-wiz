@@ -28,6 +28,7 @@ uniform float cloud_fade_m = 9000.0;
 uniform float overcast : hint_range(0.0, 1.0) = 0.0;
 uniform float overcast_base_m = 1400.0;
 uniform float overcast_cell_m = 650.0;
+uniform float overcast_depth_m = 380.0;
 uniform float overcast_dark : hint_range(0.0, 0.3) = 0.015;
 uniform float overcast_light : hint_range(0.0, 0.5) = 0.075;
 uniform float camera_height_m = 18.0;
@@ -92,16 +93,21 @@ const float EROSION_SHARE = 0.16;
 const float POWDER = 2.0;
 const vec2 CLOUD_SLICE_SHIFT = vec2(7.3, 11.9);
 const float POUCH_SEED = 41.3;
-const float POUCH_CORE = 0.15;
-const float POUCH_EDGE = 0.85;
+const float POUCH_CORE = 0.0;
+const float POUCH_EDGE = 1.15;
 const float WARP_SCALE = 0.45;
-const float WARP_REACH = 1.1;
-const float CREASE_SHARE = 0.55;
+const float WARP_REACH = 1.6;
+const float POUCH_SHARE = 0.45;
 const float SWELL_SCALE = 0.18;
-const float SWELL_SHARE = 0.45;
+const float SWELL_SHARE = 0.4;
 const float TEXTURE_SCALE = 2.6;
-const float TEXTURE_SHARE = 0.25;
-const float THIN_SPOTS = 0.15;
+const float TEXTURE_SHARE = 0.15;
+const int RELIEF_STEPS = 14;
+const float RELIEF_PROBE = 0.04;
+const float RELIEF_LIGHT_DROP = 0.35;
+const float RELIEF_LIGHT_SHARE = 0.7;
+const float RELIEF_SAG_SHARE = 0.3;
+const float RELIEF_CREVICE_DARK = 0.55;
 const float OVERCAST_MOON_BLOCK = 0.85;
 const float CLOUD_HORIZON_FADE = 0.14;
 const float CLOUD_RAIN_FROM = 0.3;
@@ -241,23 +247,58 @@ vec2 pouches(vec2 p) {
 	return vec2(nearest, second);
 }
 
-// The storm ceiling seen from below: returns brightness and coverage.
-vec2 overcast_ceiling(vec3 direction) {
+// How far a point on the storm ceiling hangs down, 0 to 1: pouches bulge
+// in their middles, broad swells sag whole regions, fine noise roughens it.
+float ceiling_sag(vec2 p) {
+	p += (vec2(cloud_noise(p * WARP_SCALE), cloud_noise(p * WARP_SCALE + POUCH_SEED)) - 0.5) * WARP_REACH;
+	float pouch = 1.0 - smoothstep(POUCH_CORE, POUCH_EDGE, pouches(p).x);
+	float swell = value_noise(p * SWELL_SCALE);
+	float texture = value_noise(p * TEXTURE_SCALE);
+	return clamp(pouch * POUCH_SHARE + swell * SWELL_SHARE + texture * TEXTURE_SHARE, 0.0, 1.0);
+}
+
+// The storm ceiling seen from below as a hanging relief: the ray climbs from
+// the lowest pouch to the ceiling top and stops where it meets the cloud, so
+// near pouches hide the ones behind them, then the surface is lit from the
+// moon's side of the horizon. Returns brightness and coverage.
+vec2 overcast_ceiling(vec3 direction, float jitter) {
 	if (overcast <= 0.0 || direction.y < CLOUD_MIN_RISE) {
 		return vec2(0.0);
 	}
-	float reach = (overcast_base_m - camera_height_m) / direction.y;
-	vec2 p = direction.xz * reach / overcast_cell_m + TIME * cloud_drift * (deck_layer.z / overcast_cell_m);
-	p += (vec2(cloud_noise(p * WARP_SCALE), cloud_noise(p * WARP_SCALE + POUCH_SEED)) - 0.5) * WARP_REACH;
-	float pouch = pouches(p).x;
-	float rim = smoothstep(POUCH_CORE, POUCH_EDGE, pouch);
-	float swell = value_noise(p * SWELL_SCALE);
-	float texture = cloud_noise(p * TEXTURE_SCALE);
-	float shade = rim * CREASE_SHARE + swell * SWELL_SHARE + (texture - 0.5) * TEXTURE_SHARE;
-	float level = mix(overcast_dark, overcast_light, clamp(shade, 0.0, 1.0));
+	float top = overcast_base_m;
+	float bottom = overcast_base_m - overcast_depth_m;
+	float enter = (bottom - camera_height_m) / direction.y;
+	float leave = (top - camera_height_m) / direction.y;
+	vec2 drift = TIME * cloud_drift * (deck_layer.z / overcast_cell_m);
+	float stride = (leave - enter) / float(RELIEF_STEPS);
+	float reach = leave;
+	float sag = 0.0;
+	float previous_gap = -1.0;
+	for (int i = 0; i < RELIEF_STEPS; i++) {
+		float along = enter + stride * (float(i) + jitter);
+		vec3 point = direction * along + vec3(0.0, camera_height_m, 0.0);
+		float hanging = ceiling_sag(point.xz / overcast_cell_m + drift);
+		float gap = point.y - (top - overcast_depth_m * hanging);
+		if (gap >= 0.0) {
+			float back = previous_gap < 0.0 ? gap / max(gap - previous_gap, 1e-4) : 0.0;
+			reach = along - stride * back;
+			sag = hanging;
+			break;
+		}
+		previous_gap = gap;
+	}
+	vec2 p = direction.xz * reach / overcast_cell_m + drift;
+	float rise_x = ceiling_sag(p + vec2(RELIEF_PROBE, 0.0)) - ceiling_sag(p - vec2(RELIEF_PROBE, 0.0));
+	float rise_z = ceiling_sag(p + vec2(0.0, RELIEF_PROBE)) - ceiling_sag(p - vec2(0.0, RELIEF_PROBE));
+	float slope = overcast_depth_m / (overcast_cell_m * RELIEF_PROBE * 2.0);
+	vec3 normal = normalize(vec3(rise_x * slope, -1.0, rise_z * slope));
+	vec3 moon = moon_direction();
+	vec3 glow_from = normalize(vec3(moon.x, -RELIEF_LIGHT_DROP, moon.z));
+	float lit = max(dot(normal, glow_from), 0.0);
+	float tucked = mix(RELIEF_CREVICE_DARK, 1.0, sag);
+	float level = mix(overcast_dark, overcast_light, clamp(lit * RELIEF_LIGHT_SHARE + sag * RELIEF_SAG_SHARE, 0.0, 1.0)) * tucked;
 	float distance_fade = exp(-reach / cloud_fade_m) * smoothstep(CLOUD_MIN_RISE, CLOUD_HORIZON_FADE, direction.y);
-	float cover = overcast * (1.0 - THIN_SPOTS * (1.0 - swell)) * distance_fade;
-	return vec2(level, cover);
+	return vec2(level, overcast * distance_fade);
 }
 
 // Front-to-back through the layers, nearest first: returns light and coverage.
@@ -309,9 +350,10 @@ float meteor(vec3 direction) {
 
 void sky() {
 	vec3 colour = atmosphere(EYEDIR) * cloud_cover(EYEDIR) + vec3(cloud_body(EYEDIR) * cloud_brightness);
-	vec2 ceiling = overcast_ceiling(EYEDIR);
+	float jitter = hash12(FRAGCOORD.xy + fract(TIME) * DITHER_SEED);
+	vec2 ceiling = overcast_ceiling(EYEDIR, jitter);
 	colour = colour * (1.0 - ceiling.y) + vec3(ceiling.x * ceiling.y);
-	vec2 deck = cloud_deck(EYEDIR, hash12(FRAGCOORD.xy + fract(TIME) * DITHER_SEED));
+	vec2 deck = cloud_deck(EYEDIR, jitter);
 	colour = colour * (1.0 - deck.y) + vec3(deck.x);
 
 	vec3 toward = moon_direction();

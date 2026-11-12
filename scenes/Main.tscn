@@ -185,10 +185,10 @@ shader_parameter/shot_noise = 0.3
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
-shader_parameter/sky_top_color = Color(0.06, 0.06, 0.06, 1)
-shader_parameter/sky_horizon_color = Color(0.13, 0.13, 0.13, 1)
-shader_parameter/sky_curve = 0.4
-shader_parameter/cloud_contrast = 0.2
+shader_parameter/sky_top_color = Color(0.04, 0.04, 0.04, 1)
+shader_parameter/sky_horizon_color = Color(0.15, 0.15, 0.15, 1)
+shader_parameter/sky_curve = 0.3
+shader_parameter/cloud_contrast = 0.15
 shader_parameter/cloud_drift = Vector2(0, -0.006)
 shader_parameter/ground_horizon_color = Color(0.16, 0.16, 0.16, 1)
 shader_parameter/ground_bottom_color = Color(0, 0, 0, 1)
@@ -202,8 +202,8 @@ shader_parameter/moon_maria = 0.35
 shader_parameter/moon_maria_scale = 3.0
 shader_parameter/moon_glow = 0.085
 shader_parameter/moon_glow_width_deg = 1.4
-shader_parameter/moon_halo = 0.015
-shader_parameter/moon_halo_width_deg = 9.0
+shader_parameter/moon_halo = 0.05
+shader_parameter/moon_halo_width_deg = 28.0
 shader_parameter/lightning_flash = 0.0
 shader_parameter/lightning_direction = Vector3(0, 0.3, -1)
 shader_parameter/lightning_spread_deg = 25.0
