@@ -27,8 +27,8 @@ uniform float cloud_fade_m = 9000.0;
 // lumpy, pouched underside, dark lumps split by lighter creases.
 uniform float overcast : hint_range(0.0, 1.0) = 0.0;
 uniform float overcast_base_m = 1400.0;
-uniform float overcast_cell_m = 650.0;
-uniform float overcast_depth_m = 380.0;
+uniform float overcast_cell_m = 850.0;
+uniform float overcast_depth_m = 320.0;
 uniform float overcast_dark : hint_range(0.0, 0.3) = 0.015;
 uniform float overcast_light : hint_range(0.0, 0.5) = 0.075;
 uniform float camera_height_m = 18.0;
@@ -93,19 +93,20 @@ const float EROSION_SHARE = 0.16;
 const float POWDER = 2.0;
 const vec2 CLOUD_SLICE_SHIFT = vec2(7.3, 11.9);
 const float POUCH_SEED = 41.3;
-const float POUCH_CORE = 0.0;
-const float POUCH_EDGE = 1.15;
 const float WARP_SCALE = 0.45;
-const float WARP_REACH = 1.6;
-const float POUCH_SHARE = 0.45;
+const float WARP_REACH = 0.8;
+const float BILLOW_SHARE = 0.7;
+const int BILLOW_OCTAVES = 3;
+const float BILLOW_LACUNARITY = 2.1;
+const float BILLOW_GAIN = 0.45;
+const float BILLOW_LOW = 0.35;
+const float BILLOW_HIGH = 0.9;
 const float SWELL_SCALE = 0.18;
-const float SWELL_SHARE = 0.4;
-const float TEXTURE_SCALE = 2.6;
-const float TEXTURE_SHARE = 0.15;
+const float SWELL_SHARE = 0.3;
 const int RELIEF_STEPS = 14;
-const float RELIEF_PROBE = 0.04;
+const float RELIEF_PROBE = 0.08;
 const float RELIEF_LIGHT_DROP = 0.35;
-const float RELIEF_LIGHT_SHARE = 0.7;
+const float RELIEF_LIGHT_SHARE = 0.5;
 const float RELIEF_SAG_SHARE = 0.3;
 const float RELIEF_CREVICE_DARK = 0.55;
 const float OVERCAST_MOON_BLOCK = 0.85;
@@ -226,35 +227,26 @@ void march_layer(vec3 direction, vec4 layer, int steps, float strength, float co
 	}
 }
 
-// Distance to the nearest and second nearest pouch centre in a jittered grid.
-vec2 pouches(vec2 p) {
-	vec2 cell = floor(p);
-	float nearest = 8.0;
-	float second = 8.0;
-	for (int y = -1; y <= 1; y++) {
-		for (int x = -1; x <= 1; x++) {
-			vec2 c = cell + vec2(float(x), float(y));
-			vec2 centre = c + vec2(hash12(c), hash12(c + POUCH_SEED));
-			float d = length(p - centre);
-			if (d < nearest) {
-				second = nearest;
-				nearest = d;
-			} else if (d < second) {
-				second = d;
-			}
-		}
+// Billow noise: folded octaves give rounded, cauliflower lobes with soft
+// creases between them, the way the underside of a storm deck heaps up.
+float billows(vec2 p) {
+	float total = 0.0;
+	float weight = 0.5;
+	for (int octave = 0; octave < BILLOW_OCTAVES; octave++) {
+		total += (1.0 - abs(value_noise(p) * 2.0 - 1.0)) * weight;
+		p = p * BILLOW_LACUNARITY + CLOUD_OCTAVE_SHIFT;
+		weight *= BILLOW_GAIN;
 	}
-	return vec2(nearest, second);
+	return total;
 }
 
-// How far a point on the storm ceiling hangs down, 0 to 1: pouches bulge
-// in their middles, broad swells sag whole regions, fine noise roughens it.
+// How far a point on the storm ceiling hangs down, 0 to 1: broad swells sag
+// whole regions and billowed lobes heap up within them.
 float ceiling_sag(vec2 p) {
-	p += (vec2(cloud_noise(p * WARP_SCALE), cloud_noise(p * WARP_SCALE + POUCH_SEED)) - 0.5) * WARP_REACH;
-	float pouch = 1.0 - smoothstep(POUCH_CORE, POUCH_EDGE, pouches(p).x);
+	p += (vec2(value_noise(p * WARP_SCALE), value_noise(p * WARP_SCALE + POUCH_SEED)) - 0.5) * WARP_REACH;
 	float swell = value_noise(p * SWELL_SCALE);
-	float texture = value_noise(p * TEXTURE_SCALE);
-	return clamp(pouch * POUCH_SHARE + swell * SWELL_SHARE + texture * TEXTURE_SHARE, 0.0, 1.0);
+	float heap = smoothstep(BILLOW_LOW, BILLOW_HIGH, billows(p));
+	return clamp(heap * BILLOW_SHARE + swell * SWELL_SHARE, 0.0, 1.0);
 }
 
 // The storm ceiling seen from below as a hanging relief: the ray climbs from
