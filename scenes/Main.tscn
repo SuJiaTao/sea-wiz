@@ -348,6 +348,7 @@ barrel_heat = NodePath("../../ViewportContainer/SubViewport/World/BarrelHeat")
 
 [node name="Clouds" type="Node" parent="Weather" node_paths=PackedStringArray("environment")]
 script = ExtResource("85_clouds")
+star_material = ExtResource("82_star_material")
 environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
 
 [node name="Lightning" type="Node" parent="Weather" unique_id=1248630760 node_paths=PackedStringArray("bolt", "environment", "thermal", "thunder")]
