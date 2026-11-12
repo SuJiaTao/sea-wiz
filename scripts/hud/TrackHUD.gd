@@ -25,6 +25,7 @@ const GATE_OPEN: float = 2.2
 const GATE_SCALE: float = 1.3
 const LOCK_GROW_TIME: float = 0.2
 const LOCK_WIDTH: float = 2.0
+const LOCK_DIAMOND_REACH: float = 1.3
 const LEAD_PIP_RADIUS: float = 5.0
 const LEAD_PIP_SEGMENTS: int = 16
 const LEAD_FITTING := &"fire_control"
@@ -176,7 +177,7 @@ func _draw_lock() -> void:
 	var point := _project(enemy.global_position)
 	var grow := clampf(_lock_age / LOCK_GROW_TIME, 0.0, 1.0)
 	var half := clampf(_screen_radius(enemy) * GATE_SCALE, GATE_MIN, GATE_MAX) * lerpf(GATE_OPEN, 1.0, grow)
-	draw_rect(Rect2(point - Vector2.ONE * half, Vector2.ONE * half * 2.0), MAIN, false, LOCK_WIDTH)
+	draw_polyline(_diamond(point, half * LOCK_DIAMOND_REACH), MAIN, LOCK_WIDTH)
 	if loadout.is_fitted(LEAD_FITTING):
 		var lead := gun_director.lead_point(enemy)
 		if not turret.camera.is_position_behind(lead):

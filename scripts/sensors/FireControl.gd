@@ -22,13 +22,14 @@ func is_locked() -> bool:
 
 
 func _physics_process(_delta: float) -> void:
-	if is_locked() and _off_sight(locked) <= HOLD_CONE_DEG:
-		return
 	var best: AbstractEnemy
 	var best_angle := LOCK_CONE_DEG
+	if is_locked() and _off_sight(locked) <= HOLD_CONE_DEG:
+		best = locked
+		best_angle = minf(_off_sight(locked), LOCK_CONE_DEG)
 	for enemy in spotter.marked_enemies():
 		var angle := _off_sight(enemy)
-		if angle < best_angle:
+		if enemy != locked and angle < best_angle:
 			best = enemy
 			best_angle = angle
 	if best != locked:
@@ -40,6 +41,4 @@ func _physics_process(_delta: float) -> void:
 func _off_sight(enemy: AbstractEnemy) -> float:
 	var eye := turret.camera.global_position
 	var sight := -turret.camera.global_basis.z
-	var at_target := rad_to_deg(sight.angle_to(enemy.global_position - eye))
-	var at_lead := rad_to_deg(sight.angle_to(gun_director.lead_point(enemy) - eye))
-	return minf(at_target, at_lead)
+	return rad_to_deg(sight.angle_to(enemy.global_position - eye))
