@@ -5,43 +5,43 @@
 [ext_resource type="Script" path="res://scripts/weapons/VerticalLaunchSystem.gd" id="3_vls"]
 
 [sub_resource type="StandardMaterial3D" id="Material_hull"]
-shading_mode = 0
+shading_mode = 1
 cull_mode = 2
 specular_mode = 2
 albedo_color = Color(0.24, 0.24, 0.24, 1)
 
 [sub_resource type="StandardMaterial3D" id="Material_deck"]
-shading_mode = 0
+shading_mode = 1
 cull_mode = 2
 specular_mode = 2
 albedo_color = Color(0.2, 0.2, 0.2, 1)
 
 [sub_resource type="StandardMaterial3D" id="Material_superstructure"]
-shading_mode = 0
+shading_mode = 1
 cull_mode = 2
 specular_mode = 2
 albedo_color = Color(0.27, 0.27, 0.27, 1)
 
 [sub_resource type="StandardMaterial3D" id="Material_panel"]
-shading_mode = 0
+shading_mode = 1
 cull_mode = 2
 specular_mode = 2
 albedo_color = Color(0.15, 0.15, 0.15, 1)
 
 [sub_resource type="StandardMaterial3D" id="Material_mast"]
-shading_mode = 0
+shading_mode = 1
 cull_mode = 2
 specular_mode = 2
 albedo_color = Color(0.3, 0.3, 0.3, 1)
 
 [sub_resource type="StandardMaterial3D" id="Material_funnel"]
-shading_mode = 0
+shading_mode = 1
 cull_mode = 2
 specular_mode = 2
 albedo_color = Color(0.4, 0.4, 0.4, 1)
 
 [sub_resource type="StandardMaterial3D" id="Material_hatch"]
-shading_mode = 0
+shading_mode = 1
 cull_mode = 2
 specular_mode = 2
 albedo_color = Color(0.17, 0.17, 0.17, 1)

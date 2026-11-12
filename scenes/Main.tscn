@@ -141,6 +141,8 @@
 [ext_resource type="Resource" path="res://resources/counters/stealth.tres" id="127_stealth"]
 [ext_resource type="Script" path="res://scripts/enemy/counters/EnemyCounter.gd" id="128_counter_type"]
 
+[ext_resource type="Script" path="res://scripts/world/MoonLight.gd" id="130_moon_light"]
+
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
 shader = ExtResource("15_sea_shader")
@@ -215,7 +217,9 @@ sky_material = SubResource("SkyMaterial_thermal")
 [sub_resource type="Environment" id="Environment_world"]
 background_mode = 2
 sky = SubResource("Sky_thermal")
-ambient_light_source = 1
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.18
 reflected_light_source = 1
 glow_enabled = true
 glow_intensity = 0.45
@@ -401,6 +405,17 @@ process_mode = 1
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="ViewportContainer/SubViewport/World" unique_id=855135568]
 environment = SubResource("Environment_world")
+
+[node name="Moonlight" type="DirectionalLight3D" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("environment")]
+light_energy = 1.8
+shadow_enabled = true
+shadow_bias = 0.05
+shadow_blur = 1.5
+directional_shadow_mode = 1
+directional_shadow_max_distance = 250.0
+sky_mode = 1
+script = ExtResource("130_moon_light")
+environment = NodePath("../WorldEnvironment")
 
 [node name="Starfield" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1533288875]
 script = ExtResource("73_starfield")

@@ -2,7 +2,7 @@
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xfr8g"]
 cull_mode = 2
-shading_mode = 0
+shading_mode = 1
 specular_mode = 2
 albedo_color = Color(0.24, 0.24, 0.24, 1)
 
@@ -11,7 +11,7 @@ size = Vector3(2.2, 1.5, 1.6)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kjck7"]
 cull_mode = 2
-shading_mode = 0
+shading_mode = 1
 specular_mode = 2
 albedo_color = Color(0.38, 0.38, 0.38, 1)
 
@@ -24,7 +24,7 @@ rings = 1
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vqelt"]
 cull_mode = 2
-shading_mode = 0
+shading_mode = 1
 specular_mode = 2
 albedo_color = Color(0.16, 0.16, 0.16, 1)
 
@@ -135,7 +135,7 @@ rings = 1
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nrjnx"]
 cull_mode = 2
-shading_mode = 0
+shading_mode = 1
 specular_mode = 2
 albedo_color = Color(0.2, 0.2, 0.2, 1)
 
@@ -144,7 +144,7 @@ size = Vector3(2.4, 0.2, 1.8)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gwl5e"]
 cull_mode = 2
-shading_mode = 0
+shading_mode = 1
 specular_mode = 2
 albedo_color = Color(0.18, 0.18, 0.18, 1)
 
