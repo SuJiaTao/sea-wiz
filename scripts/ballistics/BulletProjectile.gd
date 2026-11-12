@@ -10,10 +10,12 @@ const RICOCHET_DAMAGE_KEPT := 0.25
 const RICOCHET_SCATTER := 0.2
 const SURFACE_CLEARANCE := 0.05
 const MIN_NORMAL_LENGTH_SQUARED := 0.5
-const FLIGHT_TIME := 4.0
-const TRACER_HEAT := Color(3.0, 3.0, 2.6, 1.0)
+const FLIGHT_TIME := 5.0
+const TRACER_HEAT := Color(4.2, 4.2, 3.7, 1.0)
 const BURNOUT_TIME := 0.5
-const BURNOUT_FLOOR := 0.4
+const BURNOUT_FLOOR := 0.6
+const IGNITION_TIME := 0.12
+const IGNITION_FLOOR := 0.25
 
 var damage: float = 40.0
 var tracer_length: float = 36.0
@@ -71,4 +73,5 @@ func visual_transform() -> Transform3D:
 
 func visual_color() -> Color:
 	var fade := clampf((max_lifetime - age) / BURNOUT_TIME, BURNOUT_FLOOR, 1.0)
+	fade *= lerpf(IGNITION_FLOOR, 1.0, clampf(age / IGNITION_TIME, 0.0, 1.0))
 	return Color(TRACER_HEAT.r * fade, TRACER_HEAT.g * fade, TRACER_HEAT.b * fade, 1.0)
