@@ -1,4 +1,5 @@
 shader_type sky;
+render_mode use_half_res_pass;
 
 // Thermal sky: cold overhead, warmer toward the horizon where the sensor looks
 // through more air, and the moon. The moon's sunlit side is hot rock and shows
@@ -21,12 +22,6 @@ uniform float cloud_scale = 0.6;
 uniform vec2 cloud_drift = vec2(0.004, 0.001);
 // Cloud lit from below by the night glow: overcast reads as brighter patches.
 uniform float cloud_brightness : hint_range(0.0, 0.5) = 0.045;
-// Rain clouds ray-marched at real heights in three layers: ragged scud low
-// down, the main heaped deck around a kilometre up, a thin sheet above.
-// Each layer: base metres, thickness metres, feature size metres, sparseness.
-uniform vec4 scud_layer = vec4(450.0, 350.0, 650.0, 0.14);
-uniform vec4 deck_layer = vec4(900.0, 1800.0, 1800.0, 0.0);
-uniform vec4 sheet_layer = vec4(3200.0, 450.0, 5200.0, 0.06);
 uniform float cloud_fade_m = 9000.0;
 // Low storm ceiling that rolls in ahead of rain: an unbroken grey deck with a
 // lumpy, pouched underside, dark lumps split by lighter creases.
@@ -37,8 +32,7 @@ uniform float overcast_depth_m = 320.0;
 uniform float overcast_dark : hint_range(0.0, 0.3) = 0.015;
 uniform float overcast_light : hint_range(0.0, 0.5) = 0.1;
 uniform float camera_height_m = 18.0;
-uniform float cloud_ambient : hint_range(0.0, 0.5) = 0.05;
-uniform float cloud_moonlit : hint_range(0.0, 1.0) = 0.3;
+uniform vec2 overcast_wind_mps = vec2(6.0, -22.0);
 
 uniform float moon_bearing_deg : hint_range(0.0, 360.0) = 140.0;
 uniform float moon_elevation_deg : hint_range(0.0, 90.0) = 22.0;
@@ -83,19 +77,6 @@ const float CLOUD_DETAIL = 2.3;
 const vec2 CLOUD_SEED = vec2(5.2, 1.3);
 const float CLOUD_DETAIL_SHARE = 0.35;
 const float CLOUD_FILL = 0.15;
-const int SCUD_STEPS = 5;
-const int DECK_STEPS = 14;
-const int SHEET_STEPS = 3;
-const float SHEET_DENSITY = 0.35;
-const float CLOUD_EXTINCTION = 0.009;
-const float CLOUD_BOTTOM_ROUND = 0.22;
-const float CLOUD_BOTTOM_REACH = 0.3;
-const float CLOUD_TOP_ROUND = 0.28;
-const float CLUSTER_SCALE = 4.0;
-const float CLUSTER_SHARE = 0.35;
-const float EROSION_SCALE = 3.7;
-const float EROSION_SHARE = 0.16;
-const float POWDER = 2.0;
 const vec2 CLOUD_SLICE_SHIFT = vec2(7.3, 11.9);
 const float POUCH_SEED = 41.3;
 const int BILLOW_OCTAVES = 3;
@@ -114,14 +95,7 @@ const float RELIEF_LIGHT_SHARE = 0.75;
 const float RELIEF_WRAP = 0.5;
 const float RELIEF_SAG_SHARE = 0.3;
 const float RELIEF_CREVICE_DARK = 0.55;
-const float OVERCAST_MOON_BLOCK = 0.85;
 const float CLOUD_HORIZON_FADE = 0.14;
-const float CLOUD_RAIN_FROM = 0.3;
-const float CLOUD_RAIN_FULL = 0.85;
-const float CLOUD_THRESHOLD_CLEAR = 0.78;
-const float CLOUD_THRESHOLD_STORM = 0.38;
-const float CLOUD_LIGHT_NEAR = 0.15;
-const float CLOUD_LIGHT_FAR = 0.4;
 const float CLOUD_MIN_RISE = 0.015;
 const vec2 CLOUD_OCTAVE_SHIFT = vec2(3.7, 1.9);
 const float METEOR_WIDTH = 0.0012;
@@ -206,63 +180,6 @@ float cloud_noise(vec2 p) {
 	return total / 0.9375;
 }
 
-float rain_cover() {
-	return smoothstep(CLOUD_RAIN_FROM, CLOUD_RAIN_FULL, cloud_contrast);
-}
-
-// Two noise slices blended by height, so the shape changes as it rises
-// and the clouds billow instead of being the same outline top to bottom.
-float cloud_noise3(vec3 p) {
-	float slice = floor(p.y);
-	float blend = smoothstep(0.0, 1.0, p.y - slice);
-	return mix(
-		cloud_noise(p.xz + slice * CLOUD_SLICE_SHIFT),
-		cloud_noise(p.xz + (slice + 1.0) * CLOUD_SLICE_SHIFT),
-		blend
-	);
-}
-
-float cloud_density(vec3 point, vec4 layer, float cover) {
-	float height = (point.y - layer.x) / layer.y;
-	if (height < 0.0 || height > 1.0) {
-		return 0.0;
-	}
-	vec3 p = vec3(point.x, point.y, point.z) / layer.z;
-	p.xz += TIME * cloud_drift;
-	float cluster = value_noise(p.xz / CLUSTER_SCALE);
-	float threshold = mix(CLOUD_THRESHOLD_CLEAR, CLOUD_THRESHOLD_STORM, cover) + layer.w;
-	threshold += CLOUD_BOTTOM_ROUND * (1.0 - smoothstep(0.0, CLOUD_BOTTOM_REACH, height));
-	threshold += CLOUD_TOP_ROUND * smoothstep(0.35, 1.0, height);
-	threshold += (0.5 - cluster) * CLUSTER_SHARE;
-	float body = cloud_noise3(p) - threshold;
-	body -= cloud_noise(p.xz * EROSION_SCALE + p.y) * EROSION_SHARE * (1.0 - smoothstep(0.0, 0.25, body));
-	return max(body, 0.0);
-}
-
-void march_layer(vec3 direction, vec4 layer, int steps, float strength, float cover, float jitter, inout float clear, inout float light) {
-	float enter = (layer.x - camera_height_m) / direction.y;
-	float leave = (layer.x + layer.y - camera_height_m) / direction.y;
-	float stride = (leave - enter) / float(steps);
-	float fade = exp(-enter / cloud_fade_m) * smoothstep(CLOUD_MIN_RISE, CLOUD_HORIZON_FADE, direction.y);
-	for (int i = 0; i < steps; i++) {
-		if (clear < 0.02) {
-			return;
-		}
-		vec3 point = vec3(0.0, camera_height_m, 0.0) + direction * (enter + stride * (float(i) + jitter));
-		float density = cloud_density(point, layer, cover) * strength;
-		if (density <= 0.0) {
-			continue;
-		}
-		float shade = cloud_density(point + vec3(0.0, layer.y * CLOUD_LIGHT_NEAR, 0.0), layer, cover)
-			+ cloud_density(point + vec3(0.0, layer.y * CLOUD_LIGHT_FAR, 0.0), layer, cover);
-		float moonlit = exp(-shade * strength * CLOUD_EXTINCTION * layer.y * CLOUD_LIGHT_NEAR);
-		float powder = 1.0 - exp(-density * CLOUD_EXTINCTION * stride * POWDER);
-		float absorbed = (1.0 - exp(-density * CLOUD_EXTINCTION * stride)) * fade;
-		light += clear * absorbed * (cloud_ambient + cloud_moonlit * moonlit * powder * (1.0 - overcast * OVERCAST_MOON_BLOCK));
-		clear *= 1.0 - absorbed;
-	}
-}
-
 // Billows hanging from the deck, after the Perlin-Worley clouds of Horizon
 // Zero Dawn: inverted cell noise gives rounded lumps, stacked in octaves so
 // each lump carries smaller ones, and a warp bends them out of round.
@@ -314,7 +231,7 @@ vec2 overcast_ceiling(vec3 direction, float jitter) {
 	float bottom = overcast_base_m - overcast_depth_m;
 	float enter = (bottom - camera_height_m) / direction.y;
 	float leave = (top - camera_height_m) / direction.y;
-	vec2 drift = TIME * cloud_drift * (deck_layer.z / overcast_cell_m);
+	vec2 drift = TIME * overcast_wind_mps / overcast_cell_m;
 	float stride = (leave - enter) / float(RELIEF_STEPS);
 	float reach = leave;
 	float sag = 0.0;
@@ -344,20 +261,6 @@ vec2 overcast_ceiling(vec3 direction, float jitter) {
 	float level = mix(overcast_dark, overcast_light, clamp(lit * RELIEF_LIGHT_SHARE + sag * RELIEF_SAG_SHARE, 0.0, 1.0)) * tucked;
 	float distance_fade = exp(-reach / cloud_fade_m) * smoothstep(CLOUD_MIN_RISE, CLOUD_HORIZON_FADE, direction.y);
 	return vec2(level, overcast * distance_fade);
-}
-
-// Front-to-back through the layers, nearest first: returns light and coverage.
-vec2 cloud_deck(vec3 direction, float jitter) {
-	float cover = rain_cover();
-	if (cover <= 0.0 || direction.y < CLOUD_MIN_RISE) {
-		return vec2(0.0);
-	}
-	float clear = 1.0;
-	float light = 0.0;
-	march_layer(direction, scud_layer, SCUD_STEPS, 1.0, cover, jitter, clear, light);
-	march_layer(direction, deck_layer, DECK_STEPS, 1.0, cover, jitter, clear, light);
-	march_layer(direction, sheet_layer, SHEET_STEPS, SHEET_DENSITY, cover, jitter, clear, light);
-	return vec2(light, 1.0 - clear);
 }
 
 float cloud_body(vec3 direction) {
@@ -393,20 +296,18 @@ float meteor(vec3 direction) {
 	return meteor_glow * share * share * exp(-gap * gap);
 }
 
-void sky() {
-	vec3 colour = atmosphere(EYEDIR) * cloud_cover(EYEDIR) + vec3(cloud_body(EYEDIR) * cloud_brightness);
-	if (EYEDIR.y > 0.0) {
-		colour *= sky_patches(EYEDIR);
-		colour += vec3(milky_way * milky_band(EYEDIR)) * (1.0 - cloud_body(EYEDIR));
+// The full-resolution sky, with the storm ceiling marched at half resolution
+// composited over it.
+void full_sky(vec3 direction, vec2 fragment, vec4 ceiling, out vec3 colour_out) {
+	vec3 colour = atmosphere(direction) * cloud_cover(direction) + vec3(cloud_body(direction) * cloud_brightness);
+	if (direction.y > 0.0) {
+		colour *= sky_patches(direction);
+		colour += vec3(milky_way * milky_band(direction)) * (1.0 - cloud_body(direction));
 	}
-	float jitter = hash12(FRAGCOORD.xy + fract(TIME) * DITHER_SEED);
-	vec2 ceiling = overcast_ceiling(EYEDIR, jitter);
-	colour = colour * (1.0 - ceiling.y) + vec3(ceiling.x * ceiling.y);
-	vec2 deck = cloud_deck(EYEDIR, jitter);
-	colour = colour * (1.0 - deck.y) + vec3(deck.x);
+	colour = colour * (1.0 - ceiling.a) + ceiling.rgb * ceiling.a;
 
 	vec3 toward = moon_direction();
-	float off_moon = degrees(acos(clamp(dot(EYEDIR, toward), -1.0, 1.0)));
+	float off_moon = degrees(acos(clamp(dot(direction, toward), -1.0, 1.0)));
 	colour += moon_color * (
 		moon_glow * exp(-off_moon / moon_glow_width_deg)
 		+ moon_halo * exp(-off_moon / moon_halo_width_deg)
@@ -414,9 +315,9 @@ void sky() {
 	vec3 right = normalize(cross(toward, vec3(0.0, 1.0, 0.0)));
 	vec3 up = cross(right, toward);
 	float radius = radians(moon_diameter_deg) * 0.5;
-	vec2 disc = vec2(dot(EYEDIR, right), dot(EYEDIR, up)) / radius;
+	vec2 disc = vec2(dot(direction, right), dot(direction, up)) / radius;
 	float from_centre = length(disc);
-	if (dot(EYEDIR, toward) > 0.0 && from_centre < 1.0 + EDGE_SOFTNESS) {
+	if (dot(direction, toward) > 0.0 && from_centre < 1.0 + EDGE_SOFTNESS) {
 		vec3 surface = vec3(disc, sqrt(max(1.0 - from_centre * from_centre, 0.0)));
 		float phase = radians(moon_phase_deg);
 		float tilt = radians(moon_tilt_deg);
@@ -427,10 +328,22 @@ void sky() {
 		float coverage = 1.0 - smoothstep(1.0 - EDGE_SOFTNESS, 1.0 + EDGE_SOFTNESS, from_centre);
 		colour += moon_color * lit * maria * coverage;
 	}
-	float off_bolt = degrees(acos(clamp(dot(EYEDIR, normalize(lightning_direction)), -1.0, 1.0)));
+	float off_bolt = degrees(acos(clamp(dot(direction, normalize(lightning_direction)), -1.0, 1.0)));
 	colour += lightning_flash * (lightning_ambient + exp(-off_bolt / lightning_spread_deg));
-	colour += vec3(meteor(EYEDIR));
-	vec2 cell = FRAGCOORD.xy + fract(TIME) * DITHER_SEED;
+	colour += vec3(meteor(direction));
+	vec2 cell = fragment + fract(TIME) * DITHER_SEED;
 	float dither = (hash12(cell) + hash12(cell + DITHER_OFFSET) - 1.0) * DITHER_STEP;
-	COLOR = pow(max(pow(colour, vec3(1.0 / DISPLAY_GAMMA)) + dither, vec3(0.0)), vec3(DISPLAY_GAMMA));
+	colour_out = pow(max(pow(colour, vec3(1.0 / DISPLAY_GAMMA)) + dither, vec3(0.0)), vec3(DISPLAY_GAMMA));
+}
+
+void sky() {
+	if (AT_CUBEMAP_PASS) {
+		COLOR = atmosphere(EYEDIR);
+	} else if (AT_HALF_RES_PASS) {
+		vec2 ceiling = overcast_ceiling(EYEDIR, hash12(FRAGCOORD.xy + fract(TIME) * DITHER_SEED));
+		COLOR = vec3(ceiling.x);
+		ALPHA = ceiling.y;
+	} else {
+		full_sky(EYEDIR, FRAGCOORD.xy, HALF_RES_COLOR, COLOR);
+	}
 }

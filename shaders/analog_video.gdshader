@@ -163,7 +163,8 @@ float line_signal(float xs, float line, vec2 grain_offset) {
 	float wide1 = 0.0;
 	float ww0 = 0.0;
 	float ww1 = 0.0;
-	for (int n = -TAIL_TAPS; n <= LEAD_TAPS + 1; n++) {
+	int first = tail_samples > 0.0 || sharpening > 0.0 ? -TAIL_TAPS : 0;
+	for (int n = first; n <= LEAD_TAPS + 1; n++) {
 		float value = tape_sample(i + float(n), line, grain_offset);
 		float k0 = float(n);
 		float k1 = float(n) - 1.0;
@@ -175,7 +176,7 @@ float line_signal(float xs, float line, vec2 grain_offset) {
 			wide0 += value * b;
 			ww0 += b;
 		}
-		if (n >= -TAIL_TAPS + 1) {
+		if (n >= first + 1) {
 			float a = trail_weight(k1);
 			t1 += value * a;
 			w1 += a;
@@ -188,7 +189,7 @@ float line_signal(float xs, float line, vec2 grain_offset) {
 	float s1 = cored_sharpen(t1 / w1, wide1 / ww1);
 	float blend = smoothstep(0.5 - sample_hold, 0.5 + sample_hold, fract(xs - 0.5));
 	float held = mix(s0, s1, blend);
-	float smear = streak(xs, line) * streak_amount;
+	float smear = streak_amount > 0.0 ? streak(xs, line) * streak_amount : 0.0;
 	return held + smear * (1.0 - clamp(held, 0.0, 1.0));
 }
 
