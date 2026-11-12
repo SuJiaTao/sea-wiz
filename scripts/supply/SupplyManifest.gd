@@ -8,9 +8,11 @@ const OFFER_COUNT: int = 3
 const SLOW_TIME_SCALE: float = 0.08
 const PICK_ACTIONS: Array[StringName] = [&"supply_pick_1", &"supply_pick_2", &"supply_pick_3"]
 const DISCARD_PICK: int = 2
+const WHOLE_POOL: int = 1000
 
 @export var provider: UpgradeProvider
 @export var loadout: ShipLoadout
+@export var priority_mount: StringName = &"radar"
 
 var offers: Array[Upgrade] = []
 var pending: MountUpgrade
@@ -35,11 +37,24 @@ func is_replacing() -> bool:
 
 func open() -> void:
 	pending = null
-	offers = provider.get_new_upgrades_weighted(OFFER_COUNT)
+	offers = _with_priority(provider.get_new_upgrades_weighted(WHOLE_POOL))
 	if offers.is_empty():
 		return
 	Engine.time_scale = SLOW_TIME_SCALE
 	opened.emit()
+
+
+func _with_priority(pool: Array[Upgrade]) -> Array[Upgrade]:
+	var picked := pool.slice(0, OFFER_COUNT)
+	if loadout.is_fitted(priority_mount):
+		return picked
+	for upgrade in pool:
+		var mount := upgrade as MountUpgrade
+		if mount != null and mount.mount == priority_mount:
+			if not picked.has(upgrade):
+				picked[picked.size() - 1] = upgrade
+			break
+	return picked
 
 
 func dismiss() -> void:
