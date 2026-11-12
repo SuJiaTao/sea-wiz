@@ -10,11 +10,11 @@ const REFERENCE_RADIUS: float = 0.02
 const TURN_SLIP: float = 0.12
 const GRIP: float = 10.0
 const SCREEN := Rect2(-0.1, -0.1, 1.2, 1.2)
+const FULL_STRENGTH: float = 1.0
 
 @export var thermal: ThermalView
 @export var droplets_per_splash := Vector2(3.0, 10.0)
 @export var droplet_radius := Vector2(0.012, 0.03)
-@export var droplet_life := Vector2(2.5, 5.5)
 
 var _droplets: Array[LensDroplet] = []
 var _last_look := Vector2.INF
@@ -29,13 +29,12 @@ func splash(strength: float) -> void:
 
 
 func add_droplet() -> void:
+	if _droplets.size() >= MAX_DROPLETS:
+		return
 	_droplets.push_back(LensDroplet.new(
 		Vector2(randf(), randf()),
-		randf_range(droplet_radius.x, droplet_radius.y),
-		randf_range(droplet_life.x, droplet_life.y)
+		randf_range(droplet_radius.x, droplet_radius.y)
 	))
-	while _droplets.size() > MAX_DROPLETS:
-		_droplets.pop_front()
 
 
 func _process(delta: float) -> void:
@@ -67,7 +66,7 @@ func _slide(droplet: LensDroplet, turn: Vector2, delta: float) -> void:
 
 
 func _on_lens(droplet: LensDroplet) -> bool:
-	return droplet.strength > 0.0 and SCREEN.has_point(droplet.position)
+	return SCREEN.has_point(droplet.position)
 
 
 func _upload() -> void:
@@ -77,7 +76,7 @@ func _upload() -> void:
 	shapes.resize(MAX_DROPLETS)
 	for index in _droplets.size():
 		var droplet := _droplets[index]
-		packed[index] = Vector4(droplet.position.x, droplet.position.y, droplet.radius, droplet.strength)
+		packed[index] = Vector4(droplet.position.x, droplet.position.y, droplet.radius, FULL_STRENGTH)
 		shapes[index] = droplet.shape()
 	_thermal.set_shader_parameter(UNIFORM, packed)
 	_thermal.set_shader_parameter(SHAPE_UNIFORM, shapes)
