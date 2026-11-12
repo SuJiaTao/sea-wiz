@@ -4,37 +4,37 @@
 [ext_resource type="PackedScene" path="res://scenes/world/Deck.tscn" id="2_platform"]
 
 [sub_resource type="StandardMaterial3D" id="Material_hull"]
-shading_mode = 0
+shading_mode = 1
 cull_mode = 2
 specular_mode = 2
 albedo_color = Color(0.24, 0.24, 0.24, 1)
 
 [sub_resource type="StandardMaterial3D" id="Material_deck"]
-shading_mode = 0
+shading_mode = 1
 cull_mode = 2
 specular_mode = 2
 albedo_color = Color(0.2, 0.2, 0.2, 1)
 
 [sub_resource type="StandardMaterial3D" id="Material_superstructure"]
-shading_mode = 0
+shading_mode = 1
 cull_mode = 2
 specular_mode = 2
 albedo_color = Color(0.28, 0.28, 0.28, 1)
 
 [sub_resource type="StandardMaterial3D" id="Material_window"]
-shading_mode = 0
+shading_mode = 1
 cull_mode = 2
 specular_mode = 2
 albedo_color = Color(0.08, 0.08, 0.08, 1)
 
 [sub_resource type="StandardMaterial3D" id="Material_mast"]
-shading_mode = 0
+shading_mode = 1
 cull_mode = 2
 specular_mode = 2
 albedo_color = Color(0.3, 0.3, 0.3, 1)
 
 [sub_resource type="StandardMaterial3D" id="Material_funnel"]
-shading_mode = 0
+shading_mode = 1
 cull_mode = 2
 specular_mode = 2
 albedo_color = Color(0.42, 0.42, 0.42, 1)

@@ -13,7 +13,7 @@
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7mu8f"]
 transparency = 1
 blend_mode = 1
-shading_mode = 0
+shading_mode = 1
 albedo_color = Color(3.2, 3.2, 2.8, 1)
 disable_receive_shadows = true
 billboard_mode = 1
