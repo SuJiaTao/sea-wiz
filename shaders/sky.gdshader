@@ -12,6 +12,11 @@ uniform vec3 ground_bottom_color : source_color = vec3(0.0);
 uniform float ground_curve : hint_range(0.001, 1.0) = 0.02;
 // Broken overcast lit by starlight: soft patches that drift across the glow.
 uniform float cloud_contrast : hint_range(0.0, 1.0) = 0.0;
+uniform float sky_mottle : hint_range(0.0, 0.5) = 0.0;
+uniform float sky_mottle_scale = 2.5;
+uniform float milky_way : hint_range(0.0, 0.2) = 0.0;
+uniform vec3 milky_way_pole = vec3(0.66, 0.34, 0.66);
+uniform float milky_way_width : hint_range(0.02, 0.5) = 0.16;
 uniform float cloud_scale = 0.6;
 uniform vec2 cloud_drift = vec2(0.004, 0.001);
 // Cloud lit from below by the night glow: overcast reads as brighter patches.
@@ -120,6 +125,17 @@ const float CLOUD_LIGHT_FAR = 0.4;
 const float CLOUD_MIN_RISE = 0.015;
 const vec2 CLOUD_OCTAVE_SHIFT = vec2(3.7, 1.9);
 const float METEOR_WIDTH = 0.0012;
+const vec2 MOTTLE_SEED = vec2(13.1, 7.7);
+const float MOTTLE_DETAIL = 3.1;
+const float MOTTLE_DETAIL_SHARE = 0.35;
+const float BAND_GRAIN = 9.0;
+const float BAND_CLUMP = 3.0;
+const float BAND_CLUMP_SHARE = 0.6;
+const float LANE_OFFSET = 0.025;
+const float LANE_WIDTH = 0.035;
+const float LANE_DEPTH = 0.75;
+const float LANE_BREAKUP = 6.0;
+const float BAND_HORIZON_FADE = 0.12;
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -145,6 +161,26 @@ vec3 atmosphere(vec3 direction) {
 	}
 	float g = -c;
 	return mix(ground_horizon_color, ground_bottom_color, clamp(1.0 - pow(1.0 - g, 1.0 / ground_curve), 0.0, 1.0));
+}
+
+// Uneven, brushed patches over the night sky, like Remington's nocturnes.
+float sky_patches(vec3 direction) {
+	vec2 p = direction.xz / max(direction.y + 0.3, 0.3) * sky_mottle_scale;
+	float n = mix(value_noise(p + MOTTLE_SEED), value_noise(p * MOTTLE_DETAIL), MOTTLE_DETAIL_SHARE);
+	return 1.0 + (n - 0.5) * 2.0 * sky_mottle;
+}
+
+// The Milky Way: a faint, clumpy band along a great circle, split by a
+// darker dust lane, fading into the haze near the horizon.
+float milky_band(vec3 direction) {
+	vec3 pole = normalize(milky_way_pole);
+	float off = dot(direction, pole);
+	float band = exp(-pow(off / milky_way_width, 2.0));
+	vec3 around = normalize(direction - pole * off + vec3(1e-4));
+	vec2 p = vec2(atan(around.x, around.z), off);
+	float clump = mix(1.0, value_noise(p * BAND_CLUMP) * value_noise(p * BAND_GRAIN + MOTTLE_SEED) * 2.0, BAND_CLUMP_SHARE);
+	float lane = exp(-pow((off - LANE_OFFSET) / LANE_WIDTH, 2.0)) * value_noise(p * LANE_BREAKUP);
+	return band * clump * (1.0 - lane * LANE_DEPTH) * smoothstep(0.0, BAND_HORIZON_FADE, direction.y);
 }
 
 vec3 moon_direction() {
@@ -359,6 +395,10 @@ float meteor(vec3 direction) {
 
 void sky() {
 	vec3 colour = atmosphere(EYEDIR) * cloud_cover(EYEDIR) + vec3(cloud_body(EYEDIR) * cloud_brightness);
+	if (EYEDIR.y > 0.0) {
+		colour *= sky_patches(EYEDIR);
+		colour += vec3(milky_way * milky_band(EYEDIR)) * (1.0 - cloud_body(EYEDIR));
+	}
 	float jitter = hash12(FRAGCOORD.xy + fract(TIME) * DITHER_SEED);
 	vec2 ceiling = overcast_ceiling(EYEDIR, jitter);
 	colour = colour * (1.0 - ceiling.y) + vec3(ceiling.x * ceiling.y);

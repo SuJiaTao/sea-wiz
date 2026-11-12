@@ -187,7 +187,10 @@ shader_parameter/shot_noise = 0.3
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
-shader_parameter/sky_top_color = Color(0.04, 0.04, 0.04, 1)
+shader_parameter/sky_top_color = Color(0.075, 0.075, 0.075, 1)
+shader_parameter/sky_mottle = 0.16
+shader_parameter/milky_way = 0.022
+shader_parameter/milky_way_width = 0.22
 shader_parameter/sky_horizon_color = Color(0.15, 0.15, 0.15, 1)
 shader_parameter/sky_curve = 0.3
 shader_parameter/cloud_contrast = 0.15
@@ -417,9 +420,10 @@ sky_mode = 1
 script = ExtResource("130_moon_light")
 environment = NodePath("../WorldEnvironment")
 
-[node name="Starfield" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1533288875]
+[node name="Starfield" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1533288875 node_paths=PackedStringArray("environment")]
 script = ExtResource("73_starfield")
 star_mesh = ExtResource("74_star_mesh")
+environment = NodePath("../WorldEnvironment")
 
 [node name="Rain" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World" unique_id=573042867 node_paths=PackedStringArray("turret")]
 script = ExtResource("83_precip_field")
