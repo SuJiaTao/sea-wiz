@@ -3,6 +3,7 @@ class_name WeaponsOrchestrator
 
 const MISSILE_MOUNT := &"vls"
 const SALVO_MOUNT := &"salvo"
+const TRACER_EVERY: int = 2
 
 @export var turret: Turret
 @export var ballistics: BallisticManager
@@ -15,6 +16,7 @@ const SALVO_MOUNT := &"salvo"
 @export var loadout: ShipLoadout
 
 var _enabled: bool = true
+var _rounds_fired: int = 0
 
 
 func _ready() -> void:
@@ -80,7 +82,9 @@ func _on_cannon_fired(origin: Vector3, velocity: Vector3) -> void:
 		return
 	if muzzle_motion != null:
 		velocity += muzzle_motion.carried_velocity()
-	var projectile := BulletProjectile.new(tracers, origin, velocity)
+	_rounds_fired += 1
+	var lit := tracers if _rounds_fired % TRACER_EVERY == 0 else null
+	var projectile := BulletProjectile.new(lit, origin, velocity)
 	projectile.weapon_source = turret.damage_source
 	ballistics.fire(projectile)
 
