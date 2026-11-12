@@ -252,7 +252,7 @@ shader_parameter/line_samples = 1920.0
 shader_parameter/sample_hold = 0.06
 shader_parameter/tail_samples = 0.25
 shader_parameter/streak_length = 60.0
-shader_parameter/streak_amount = 0.25
+shader_parameter/streak_amount = 0.0
 shader_parameter/streak_floor = 0.7
 shader_parameter/black_lift = 0.0
 shader_parameter/head_switch_lines = 2.0
@@ -372,6 +372,7 @@ script = ExtResource("7_resolution")
 size = Vector2i(1280, 720)
 script = ExtResource("7_afterglow")
 source = NodePath("../ViewportContainer/SubViewport")
+decay = 0.15
 
 [node name="ViewportContainer" type="SubViewportContainer" parent="." unique_id=721477771 node_paths=PackedStringArray("turret", "afterglow", "resolution")]
 process_mode = 1
