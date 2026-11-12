@@ -1,8 +1,9 @@
 shader_type spatial;
-render_mode unshaded, blend_add, cull_disabled, depth_draw_never, shadows_disabled;
+render_mode unshaded, blend_add, cull_disabled, depth_draw_never, shadows_disabled, fog_disabled;
 
 // Each tracer is drawn from the round backwards: full heat at the round,
-// fading to nothing at the tail, at least min_pixels wide at any zoom.
+// fading to nothing at the tail, at least min_pixels wide at any zoom. A
+// burning tracer is a light source, so haze never dims it.
 
 uniform float base_width = 0.11;
 uniform float min_pixels : hint_range(0.0, 6.0) = 1.5;
