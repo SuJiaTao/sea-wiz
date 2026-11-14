@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b2ap6okbtqnal" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
 [ext_resource type="Script" uid="uid://174tvftdpqhu" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/Drone.tscn" id="3_drone"]
+[ext_resource type="PackedScene" uid="uid://cwk6y444gpqep" path="res://scenes/enemy/Drone.tscn" id="3_drone"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/StarMissile.tscn" id="4_star"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="5_jet"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="6_skimmer"]
