@@ -44,7 +44,7 @@ const LEADER_SECONDS: float = 4.0
 const LEADER_MAX_SHARE: float = 0.6
 const LEADER_MIN_PIXELS: float = 2.0
 const STALE_SECONDS: float = 2.2
-const RING_FRACTIONS: Array[float] = [0.25, 0.5, 0.75]
+const GUN_RING_LABEL := "GUN"
 
 @export var turret: Turret
 @export var tracks: TrackManager
@@ -187,9 +187,9 @@ func _draw_lock() -> void:
 func _draw_scope() -> void:
 	var centre := Vector2(size.x - SCOPE_RADIUS - SCOPE_MARGIN, size.y - SCOPE_RADIUS - SCOPE_MARGIN)
 	draw_arc(centre, SCOPE_RADIUS, 0, TAU, 64, DIM)
-	for fraction in RING_FRACTIONS:
-		draw_arc(centre, SCOPE_RADIUS * fraction, 0, TAU, 48, FAINT)
-		_text(centre + Vector2(3, -SCOPE_RADIUS * fraction - 2), "%d" % roundi(RADAR_RANGE * fraction / METRES_PER_KM), 9, FAINT)
+	var gun_ring := SCOPE_RADIUS * Turret.EFFECTIVE_RANGE / RADAR_RANGE
+	draw_arc(centre, gun_ring, 0, TAU, 48, DIM)
+	_text(centre + Vector2(3, -gun_ring - 2), GUN_RING_LABEL, 9, DIM)
 	for i in SCOPE_TICKS:
 		var tick := TAU * float(i) / float(SCOPE_TICKS)
 		var direction := Vector2(sin(tick), -cos(tick))
@@ -216,7 +216,7 @@ func _draw_scope() -> void:
 
 	_text(
 		centre + Vector2(-SCOPE_RADIUS, SCOPE_RADIUS + 18),
-		"HEAT  %.1f km   MARKED %d" % [RADAR_RANGE / 1000.0, marked.size()], 11, FAINT
+		"HEAT  %.1f km   MARKED %d" % [RADAR_RANGE / METRES_PER_KM, marked.size()], 11, FAINT
 	)
 
 
