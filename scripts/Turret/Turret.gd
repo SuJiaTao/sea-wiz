@@ -47,6 +47,7 @@ const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
 @export var _spin_audio_volume_db_range: Vector2 = Vector2(-30.0, -13.0)
 @export var _reload_audio_pitch_range: Vector2 = Vector2(0.55, 1.2)
 
+
 var ammo: int = MAGAZINE
 var reloading: bool = false
 var firing: bool = false

@@ -30,3 +30,4 @@ shape = SubResource("Shape_body")
 stream = ExtResource("3_4ociu")
 unit_size = 100.0
 autoplay = true
+bus = &"enemies"

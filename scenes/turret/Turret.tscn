@@ -77,19 +77,23 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3, 3.15)
 [node name="GunAudio" type="AudioStreamPlayer" parent="." unique_id=1256695360]
 stream = ExtResource("7_t4bc6")
 volume_db = -4.0
+bus = &"ciws"
 
 [node name="GunWindDownAudio" type="AudioStreamPlayer" parent="." unique_id=337254233]
 stream = ExtResource("8_31x2x")
 volume_db = -15.0
+bus = &"ciws"
 
 [node name="SpinAudio" type="AudioStreamPlayer" parent="." unique_id=1343433886]
 stream = ExtResource("9_t4bc6")
 volume_db = -1.0
+bus = &"ciws"
 
 [node name="ReloadAudio" type="AudioStreamPlayer" parent="." unique_id=1577571279]
 stream = ExtResource("10_1qnl4")
 volume_db = -9.0
 pitch_scale = 1.2
+bus = &"ciws"
 
 [node name="ReloadTimer" type="Timer" parent="." unique_id=227285232]
 one_shot = true
