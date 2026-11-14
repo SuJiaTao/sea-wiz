@@ -369,13 +369,14 @@ script = ExtResource("85_clouds")
 star_material = ExtResource("82_star_material")
 environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
 
-[node name="Lightning" type="Node" parent="Weather" unique_id=1248630760 node_paths=PackedStringArray("bolt", "environment", "thermal", "thunder")]
+[node name="Lightning" type="Node" parent="Weather" unique_id=1248630760 node_paths=PackedStringArray("bolt", "environment", "thermal", "thunder", "light")]
 script = ExtResource("92_lightning")
 bolt = NodePath("../../ViewportContainer/SubViewport/World/Lightning")
 environment = NodePath("../../ViewportContainer/SubViewport/World/WorldEnvironment")
 sea_material = SubResource("Material_sea")
 thermal = NodePath("../../ViewportContainer")
 thunder = NodePath("Thunder")
+light = NodePath("../../ViewportContainer/SubViewport/World/LightningLight")
 
 [node name="Thunder" type="AudioStreamPlayer" parent="Weather/Lightning" unique_id=1144374424]
 stream = ExtResource("97_thunder")
@@ -454,6 +455,16 @@ visible = false
 material_override = ExtResource("96_bolt_material")
 cast_shadow = 0
 script = ExtResource("91_bolt")
+
+[node name="LightningLight" type="DirectionalLight3D" parent="ViewportContainer/SubViewport/World"]
+visible = false
+light_energy = 0.0
+shadow_enabled = true
+shadow_bias = 0.05
+shadow_blur = 1.5
+directional_shadow_mode = 1
+directional_shadow_max_distance = 250.0
+sky_mode = 1
 
 [node name="ShipSway" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1159628755]
 script = ExtResource("94_sway")
