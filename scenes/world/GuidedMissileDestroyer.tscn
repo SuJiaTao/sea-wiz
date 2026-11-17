@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/ship/HullMesh.gd" id="1_hull"]
 [ext_resource type="Shader" path="res://shaders/ship_paint.gdshader" id="2_paint"]
 [ext_resource type="Script" path="res://scripts/ship/ShipModel.gd" id="3_model_script"]
-[ext_resource type="PackedScene" path="res://scenes/world/ship/destroyer_v13.glb" id="4_model"]
+[ext_resource type="PackedScene" path="res://scenes/world/ship/destroyer_v14.glb" id="4_model"]
 [ext_resource type="Script" path="res://scripts/ship/DeckGunTurret.gd" id="5_turret"]
 [ext_resource type="Script" path="res://scripts/ship/VLSLauncher.gd" id="6_vls"]
 [ext_resource type="Script" path="res://scripts/ship/RadarSpinner.gd" id="7_radar"]
@@ -96,17 +96,17 @@ script = ExtResource("7_radar")
 ship = NodePath("..")
 
 [node name="DecoyLauncherPort" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 12.1, 17)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 10.8, 17)
 mesh = SubResource("Mesh_decoy")
 cast_shadow = 0
 
 [node name="DecoyLauncherStarboard" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 12.1, 17)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 10.8, 17)
 mesh = SubResource("Mesh_decoy")
 cast_shadow = 0
 
 [node name="DecoyTubes" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.9, 17)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.6, 17)
 
 [node name="Port" type="Marker3D" parent="DecoyTubes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 0, 0)
@@ -129,7 +129,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -22)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -7)
 
 [node name="BridgeRoof" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16.9, 19)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15.4, 19)
 
 [node name="BridgePort" type="Marker3D" parent="FireSpots"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.4, 7.3, 12.6)
