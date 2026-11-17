@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/enemy/Helo.tscn" id="1_helo"]
+[ext_resource type="Script" path="res://scripts/enemy/JammerEnemy.gd" id="2_jammer"]
+
+[node name="Jammer" instance=ExtResource("1_helo")]
+script = ExtResource("2_jammer")
+standoff_range = Vector2(450, 800)
+max_hp = 50.0
+display_name = "JAMMER"
+score_value = 300
