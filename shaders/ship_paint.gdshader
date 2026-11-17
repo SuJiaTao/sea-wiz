@@ -5,13 +5,18 @@ render_mode cull_disabled, ambient_light_disabled;
 // more on the ones turned up, and the moonlight falls on the faces turned to
 // it unless something stands between them and the moon and casts a shadow.
 // Faces angled off the centreline sit a little darker so chamfered corners
-// read as edges.
+// read as edges. Painted deck markings show through the paint, and
+// a glow lets a part (a laser lens) light up on its own.
 
 uniform float tone : hint_range(0.0, 1.0) = 0.35;
 uniform float sky_light : hint_range(0.0, 1.0) = 0.4;
 uniform float moon_light : hint_range(0.0, 1.0) = 0.6;
 uniform float underside : hint_range(0.0, 1.0) = 0.35;
 uniform float facet_shade : hint_range(0.0, 1.0) = 0.2;
+uniform sampler2D markings : source_color, hint_default_white;
+uniform float markings_base : hint_range(0.01, 1.0) = 1.0;
+uniform vec3 glow_color : source_color = vec3(1.0);
+instance uniform float glow = 0.0;
 
 const float DISPLAY_GAMMA = 2.2;
 
@@ -22,8 +27,10 @@ void fragment() {
 	}
 	float facet = 1.0 - facet_shade * abs(normal.x);
 	float sky = mix(underside, 1.0, normal.y * 0.5 + 0.5);
-	ALBEDO = vec3(pow(tone * facet, DISPLAY_GAMMA));
-	EMISSION = vec3(pow(tone * facet * sky_light * sky, DISPLAY_GAMMA));
+	float marked = dot(texture(markings, UV).rgb, vec3(1.0 / 3.0)) / markings_base;
+	float shade = tone * facet * marked;
+	ALBEDO = vec3(pow(shade, DISPLAY_GAMMA));
+	EMISSION = vec3(pow(shade * sky_light * sky, DISPLAY_GAMMA)) + glow_color * glow;
 	ROUGHNESS = 1.0;
 	SPECULAR = 0.0;
 }

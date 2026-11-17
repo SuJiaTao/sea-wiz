@@ -16,6 +16,10 @@ const MIN_RANGE: float = 130.0
 const MAX_RANGE: float = 2800.0
 const REFIRE_TIME: float = 0.55
 const VERTICAL_CLIMB: float = 0.75
+const CELL_EXIT: float = 1.2
+const IGNITION_PUFFS: int = 40
+const IGNITION_SPEED := Vector2(3.0, 11.0)
+const IGNITION_SPARKS: int = 12
 
 @export var turret: Turret
 @export var fire_control: FireControl
@@ -24,7 +28,8 @@ const VERTICAL_CLIMB: float = 0.75
 @export var renderer: ProjectileBatch
 @export var smoke: MissileSmokeRenderer
 @export var damage_source: DamageSource
-@export var cells: VerticalLaunchSystem
+@export var cells: VLSLauncher
+@export var fx: FXManager
 
 var missiles: int = CAPACITY
 var lock_target: AbstractEnemy
@@ -36,11 +41,14 @@ var _enabled: bool = true
 var _rearm_elapsed: float = 0.0
 var _fired_this_pull: bool = false
 var _refire_remaining: float = 0.0
+var _waiting: Dictionary[int, Array] = {}
 
 
 func _ready() -> void:
 	renderer.sensor = turret.camera
 	smoke.sensor = turret.camera
+	if cells != null:
+		cells.cell_ready.connect(_on_cell_ready)
 
 
 func set_enabled(value: bool) -> void:
@@ -155,15 +163,14 @@ func _try_launch(target: AbstractEnemy, mode: LaunchMode) -> bool:
 	).normalized()
 
 	if cells != null:
-		origin = cells.launch_point(smoke)
-		direction = Vector3.UP
-	var projectile := MissileProjectile.new(
-		renderer, smoke, ballistics, origin, direction, target
-	)
-	if cells != null:
-		projectile.vertical_climb = VERTICAL_CLIMB
-	projectile.weapon_source = damage_source
-	projectile.detonated.connect(_on_detonated)
+		var cell := cells.launch()
+		if cell < 0:
+			return false
+		_waiting[cell] = [target, mode]
+		if mode == LaunchMode.SINGLE:
+			missiles -= 1
+		return true
+	var projectile := _missile(origin, direction, target)
 	if not ballistics.fire(projectile):
 		return false
 
@@ -171,6 +178,36 @@ func _try_launch(target: AbstractEnemy, mode: LaunchMode) -> bool:
 		missiles -= 1
 	launched.emit(origin, target, mode)
 	return true
+
+
+func _missile(origin: Vector3, direction: Vector3, target: AbstractEnemy) -> MissileProjectile:
+	var projectile := MissileProjectile.new(
+		renderer, smoke, ballistics, origin, direction, target
+	)
+	projectile.weapon_source = damage_source
+	projectile.detonated.connect(_on_detonated)
+	return projectile
+
+
+func _on_cell_ready(cell: int, launch_position: Vector3, up: Vector3) -> void:
+	var waiting: Array = _waiting.get(cell, [])
+	_waiting.erase(cell)
+	smoke.burst(launch_position, IGNITION_PUFFS, IGNITION_SPEED)
+	fx.spark_burst(launch_position, IGNITION_SPARKS)
+	if waiting.is_empty():
+		return
+	var target: AbstractEnemy = null
+	if is_instance_valid(waiting[0]):
+		target = waiting[0]
+	if target == null or not target.alive:
+		target = fire_control.locked if fire_control.is_locked() else null
+	if target == null:
+		return
+	var origin := launch_position + up * CELL_EXIT
+	var projectile := _missile(origin, up, target)
+	projectile.vertical_climb = VERTICAL_CLIMB
+	if ballistics.fire(projectile):
+		launched.emit(origin, target, waiting[1])
 
 
 func _on_detonated(position: Vector3, radius: float) -> void:

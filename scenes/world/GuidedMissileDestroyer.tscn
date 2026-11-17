@@ -1,269 +1,112 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ship/HullMesh.gd" id="1_hull"]
-[ext_resource type="Script" path="res://scripts/weapons/VerticalLaunchSystem.gd" id="3_vls"]
-[ext_resource type="Shader" path="res://shaders/ship_paint.gdshader" id="4_paint"]
-[ext_resource type="Script" path="res://scripts/ship/DestroyerBridge.gd" id="6_bridge"]
-[ext_resource type="PackedScene" path="res://scenes/world/bridge/destroyer_bridge.glb" id="7_bridge_model"]
-[ext_resource type="Script" path="res://scripts/ship/DeckFittings.gd" id="8_fittings"]
+[ext_resource type="Shader" path="res://shaders/ship_paint.gdshader" id="2_paint"]
+[ext_resource type="Script" path="res://scripts/ship/ShipModel.gd" id="3_model_script"]
+[ext_resource type="PackedScene" path="res://scenes/world/ship/destroyer_v13.glb" id="4_model"]
+[ext_resource type="Script" path="res://scripts/ship/DeckGunTurret.gd" id="5_turret"]
+[ext_resource type="Script" path="res://scripts/ship/VLSLauncher.gd" id="6_vls"]
+[ext_resource type="Script" path="res://scripts/ship/RadarSpinner.gd" id="7_radar"]
 
 [sub_resource type="ShaderMaterial" id="Material_hull"]
 render_priority = 0
-shader = ExtResource("4_paint")
+shader = ExtResource("2_paint")
 shader_parameter/tone = 0.34
 
 [sub_resource type="ShaderMaterial" id="Material_deck"]
 render_priority = 0
-shader = ExtResource("4_paint")
-shader_parameter/tone = 0.27
-
-[sub_resource type="ShaderMaterial" id="Material_superstructure"]
-render_priority = 0
-shader = ExtResource("4_paint")
-shader_parameter/tone = 0.4
-
-[sub_resource type="ShaderMaterial" id="Material_panel"]
-render_priority = 0
-shader = ExtResource("4_paint")
+shader = ExtResource("2_paint")
 shader_parameter/tone = 0.3
-
-[sub_resource type="ShaderMaterial" id="Material_mast"]
-render_priority = 0
-shader = ExtResource("4_paint")
-shader_parameter/tone = 0.38
-
-[sub_resource type="ShaderMaterial" id="Material_hatch"]
-render_priority = 0
-shader = ExtResource("4_paint")
-shader_parameter/tone = 0.24
 
 [sub_resource type="ShaderMaterial" id="Material_equipment"]
 render_priority = 0
-shader = ExtResource("4_paint")
+shader = ExtResource("2_paint")
 shader_parameter/tone = 0.33
 
-[sub_resource type="PrismMesh" id="Mesh_0"]
-material = SubResource("Material_superstructure")
-size = Vector3(3.4, 1.8, 4.8)
-left_to_right = 0.5
-
-[sub_resource type="CylinderMesh" id="Mesh_1"]
-material = SubResource("Material_mast")
-top_radius = 0.14
-bottom_radius = 0.2
-height = 6.4
-radial_segments = 8
-rings = 1
-
-[sub_resource type="CylinderMesh" id="Mesh_2"]
-material = SubResource("Material_panel")
-top_radius = 2.3
-bottom_radius = 2.4
-height = 0.4
-radial_segments = 12
-rings = 1
-
-
-[sub_resource type="CylinderMesh" id="Mesh_4"]
-material = SubResource("Material_panel")
-top_radius = 1.2
-bottom_radius = 1.2
-height = 0.12
-radial_segments = 12
-rings = 1
-
-[sub_resource type="CylinderMesh" id="Mesh_5"]
-material = SubResource("Material_panel")
-top_radius = 1.2
-bottom_radius = 1.2
-height = 0.12
-radial_segments = 12
-rings = 1
-
-[sub_resource type="CylinderMesh" id="Mesh_6"]
-material = SubResource("Material_panel")
-top_radius = 1.2
-bottom_radius = 1.2
-height = 0.12
-radial_segments = 12
-rings = 1
-
-[sub_resource type="BoxMesh" id="Mesh_27"]
+[sub_resource type="BoxMesh" id="Mesh_decoy"]
 material = SubResource("Material_equipment")
 size = Vector3(1.2, 0.8, 1.6)
-
-[sub_resource type="BoxMesh" id="Mesh_35"]
-material = SubResource("Material_equipment")
-size = Vector3(1.2, 0.8, 1.6)
-
-[sub_resource type="BoxMesh" id="Mesh_Lid"]
-material = SubResource("Material_panel")
-size = Vector3(1.3, 0.12, 1.5)
 
 [node name="GuidedMissileDestroyer" type="Node3D"]
 
 [node name="Hull" type="MeshInstance3D" parent="."]
+visible = false
 script = ExtResource("1_hull")
-half_breadths = PackedVector2Array(86, 7.5, 60, 9.5, 20, 10, -15, 9.8, -40, 8, -60, 5.5, -72, 2.5, -78, 0)
-deck_height = 5.5
-bow_sheer = 2.5
-sheer_start = -30.0
+half_breadths = PackedVector2Array(86, 7.5, 60, 9.5, 27.9, 10.6, -8.1, 10.6, -18.1, 9.42, -28.1, 7.49, -38.1, 5.11, -48.1, 2.39, -56.1, 0)
+deck_height = 0.91
+bow_sheer = 2.47
+sheer_start = -10.0
 keel_depth = -4.0
 waterline_tuck = 0.8
 side_material = SubResource("Material_hull")
 deck_material = SubResource("Material_deck")
 
-[node name="Bridge" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.5, 1.9)
-script = ExtResource("6_bridge")
-model = ExtResource("7_bridge_model")
-paint = ExtResource("4_paint")
+[node name="AftHull" type="MeshInstance3D" parent="."]
+script = ExtResource("1_hull")
+half_breadths = PackedVector2Array(86, 7.5, 60, 9.5, 27.9, 10.6, 27.8, 10.6)
+deck_height = 0.91
+bow_sheer = 0.0
+sheer_start = -10.0
+keel_depth = -4.0
+waterline_tuck = 0.8
+side_material = SubResource("Material_hull")
+deck_material = SubResource("Material_deck")
 
-[node name="DeckGun" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.9, -58)
+[node name="Model" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 1.9)
+script = ExtResource("3_model_script")
+model = ExtResource("4_model")
+paint = ExtResource("2_paint")
 
-[node name="Housing" type="MeshInstance3D" parent="DeckGun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-mesh = SubResource("Mesh_0")
-cast_shadow = 0
+[node name="TwinGun" type="Node" parent="."]
+script = ExtResource("5_turret")
+node_prefix = "DeckGun"
 
-[node name="Barrel" type="Node3D" parent="DeckGun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, -1.6)
+[node name="FrontGun" type="Node" parent="."]
+script = ExtResource("5_turret")
+node_prefix = "FrontGun"
+traverse_limit_deg = 140.0
 
-[node name="Tube" type="MeshInstance3D" parent="DeckGun/Barrel"]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, -3.2)
-mesh = SubResource("Mesh_1")
-cast_shadow = 0
+[node name="LaserPort" type="Node" parent="."]
+script = ExtResource("5_turret")
+node_prefix = "LaserP"
+traverse_speed_deg = 90.0
+elevation_speed_deg = 70.0
+traverse_limit_deg = 95.0
+min_elevation_deg = -10.0
+max_elevation_deg = 80.0
+recoil_distance = 0.0
 
-[node name="Muzzle" type="Marker3D" parent="DeckGun/Barrel"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6.4)
+[node name="LaserStarboard" type="Node" parent="."]
+script = ExtResource("5_turret")
+node_prefix = "LaserS"
+traverse_speed_deg = 90.0
+elevation_speed_deg = 70.0
+traverse_limit_deg = 95.0
+min_elevation_deg = -10.0
+max_elevation_deg = 80.0
+recoil_distance = 0.0
 
-[node name="GunRing" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.55, -58)
-mesh = SubResource("Mesh_2")
-cast_shadow = 0
+[node name="Cells" type="Node" parent="."]
+script = ExtResource("6_vls")
+installed = true
 
-[node name="DeckFittings" type="Node3D" parent="." node_paths=PackedStringArray("hull")]
-script = ExtResource("8_fittings")
-hull = NodePath("../Hull")
-fitting_material = SubResource("Material_equipment")
-hatch_material = SubResource("Material_hatch")
-
-[node name="UpgradeMounts" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-
-[node name="ForwardPort" type="Marker3D" parent="UpgradeMounts"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 5.7, -30)
-
-[node name="ForwardPortPlate" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 5.6, -30)
-mesh = SubResource("Mesh_4")
-cast_shadow = 0
-
-[node name="ForwardStarboard" type="Marker3D" parent="UpgradeMounts"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2, 5.7, -30)
-
-[node name="ForwardStarboardPlate" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2, 5.6, -30)
-mesh = SubResource("Mesh_5")
-cast_shadow = 0
-
-[node name="Bow" type="Marker3D" parent="UpgradeMounts"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.4, -70)
-
-[node name="BowPlate" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.3, -70)
-mesh = SubResource("Mesh_6")
-cast_shadow = 0
+[node name="RadarSpinner" type="Node" parent="." node_paths=PackedStringArray("ship")]
+script = ExtResource("7_radar")
+ship = NodePath("..")
 
 [node name="DecoyLauncherPort" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 16.8, 17)
-mesh = SubResource("Mesh_27")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 12.1, 17)
+mesh = SubResource("Mesh_decoy")
 cast_shadow = 0
 
 [node name="DecoyLauncherStarboard" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 16.8, 17)
-mesh = SubResource("Mesh_35")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 12.1, 17)
+mesh = SubResource("Mesh_decoy")
 cast_shadow = 0
 
-[node name="LaunchCells" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.95, 64)
-script = ExtResource("3_vls")
-
-[node name="Cell1" type="Node3D" parent="LaunchCells"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -2.25)
-
-[node name="Lid" type="Node3D" parent="LaunchCells/Cell1"]
-
-[node name="Hatch" type="MeshInstance3D" parent="LaunchCells/Cell1/Lid"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
-mesh = SubResource("Mesh_Lid")
-
-[node name="Cell2" type="Node3D" parent="LaunchCells"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -0.25)
-
-[node name="Lid" type="Node3D" parent="LaunchCells/Cell2"]
-
-[node name="Hatch" type="MeshInstance3D" parent="LaunchCells/Cell2/Lid"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
-mesh = SubResource("Mesh_Lid")
-
-[node name="Cell3" type="Node3D" parent="LaunchCells"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 1.75)
-
-[node name="Lid" type="Node3D" parent="LaunchCells/Cell3"]
-
-[node name="Hatch" type="MeshInstance3D" parent="LaunchCells/Cell3/Lid"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
-mesh = SubResource("Mesh_Lid")
-
-[node name="Cell4" type="Node3D" parent="LaunchCells"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 3.75)
-
-[node name="Lid" type="Node3D" parent="LaunchCells/Cell4"]
-
-[node name="Hatch" type="MeshInstance3D" parent="LaunchCells/Cell4/Lid"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
-mesh = SubResource("Mesh_Lid")
-
-[node name="Cell5" type="Node3D" parent="LaunchCells"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -2.25)
-
-[node name="Lid" type="Node3D" parent="LaunchCells/Cell5"]
-
-[node name="Hatch" type="MeshInstance3D" parent="LaunchCells/Cell5/Lid"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
-mesh = SubResource("Mesh_Lid")
-
-[node name="Cell6" type="Node3D" parent="LaunchCells"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -0.25)
-
-[node name="Lid" type="Node3D" parent="LaunchCells/Cell6"]
-
-[node name="Hatch" type="MeshInstance3D" parent="LaunchCells/Cell6/Lid"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
-mesh = SubResource("Mesh_Lid")
-
-[node name="Cell7" type="Node3D" parent="LaunchCells"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 1.75)
-
-[node name="Lid" type="Node3D" parent="LaunchCells/Cell7"]
-
-[node name="Hatch" type="MeshInstance3D" parent="LaunchCells/Cell7/Lid"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
-mesh = SubResource("Mesh_Lid")
-
-[node name="Cell8" type="Node3D" parent="LaunchCells"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 3.75)
-
-[node name="Lid" type="Node3D" parent="LaunchCells/Cell8"]
-
-[node name="Hatch" type="MeshInstance3D" parent="LaunchCells/Cell8/Lid"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
-mesh = SubResource("Mesh_Lid")
-
 [node name="DecoyTubes" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17.6, 17)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.9, 17)
 
 [node name="Port" type="Marker3D" parent="DecoyTubes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 0, 0)
@@ -274,28 +117,28 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 0, 0)
 [node name="FireSpots" type="Node3D" parent="."]
 
 [node name="Bow" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.9, -72)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -52)
 
 [node name="Foredeck" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 7.2, -40)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.9, -32)
 
 [node name="GunMount" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.4, -58)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -22)
 
 [node name="Deckhouse" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.5, -7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -7)
 
 [node name="BridgeRoof" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21.6, 19)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16.9, 19)
 
 [node name="BridgePort" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.4, 12, 12.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.4, 7.3, 12.6)
 
 [node name="BridgeStarboard" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.4, 12, 12.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.4, 7.3, 12.6)
 
 [node name="ForwardPort" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 5.6, -25)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 1.4, -25)
 
 [node name="ForwardStarboard" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 5.6, -25)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 1.4, -25)
