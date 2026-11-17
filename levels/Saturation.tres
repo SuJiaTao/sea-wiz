@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/enemy/Helo.tscn" id="5_helo"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="6_missile"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/HeavyJet.tscn" id="7_heavy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Jammer.tscn" id="8_jammer"]
 
 [sub_resource type="Resource" id="Spawn01"]
 script = ExtResource("2_spawn")
@@ -71,6 +72,13 @@ enemy_scene = ExtResource("7_heavy")
 distance = Vector2(1800, 2400)
 altitude = Vector2(300, 700)
 
+[sub_resource type="Resource" id="Spawn13"]
+script = ExtResource("2_spawn")
+time = 4.0
+enemy_scene = ExtResource("8_jammer")
+distance = Vector2(800, 1300)
+altitude = Vector2(45, 180)
+
 [sub_resource type="Resource" id="Spawn11"]
 script = ExtResource("2_spawn")
 time = 17.0
@@ -88,4 +96,4 @@ altitude = Vector2(12, 30)
 [resource]
 script = ExtResource("1_wave")
 title = "SATURATION"
-spawns = Array[ExtResource("2_spawn")]([SubResource("Spawn01"), SubResource("Spawn02"), SubResource("Spawn03"), SubResource("Spawn04"), SubResource("Spawn05"), SubResource("Spawn06"), SubResource("Spawn07"), SubResource("Spawn08"), SubResource("Spawn09"), SubResource("Spawn10"), SubResource("Spawn11"), SubResource("Spawn12")])
+spawns = Array[ExtResource("2_spawn")]([SubResource("Spawn01"), SubResource("Spawn02"), SubResource("Spawn03"), SubResource("Spawn04"), SubResource("Spawn05"), SubResource("Spawn06"), SubResource("Spawn07"), SubResource("Spawn08"), SubResource("Spawn09"), SubResource("Spawn10"), SubResource("Spawn11"), SubResource("Spawn12"), SubResource("Spawn13")])
