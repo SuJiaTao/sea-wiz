@@ -433,8 +433,11 @@ light_energy = 1.8
 shadow_enabled = true
 shadow_bias = 0.05
 shadow_blur = 1.5
-directional_shadow_mode = 1
-directional_shadow_max_distance = 250.0
+directional_shadow_mode = 2
+directional_shadow_split_1 = 0.08
+directional_shadow_split_2 = 0.22
+directional_shadow_split_3 = 0.5
+directional_shadow_max_distance = 160.0
 sky_mode = 1
 script = ExtResource("130_moon_light")
 environment = NodePath("../WorldEnvironment")
@@ -467,8 +470,11 @@ light_energy = 0.0
 shadow_enabled = true
 shadow_bias = 0.05
 shadow_blur = 1.5
-directional_shadow_mode = 1
-directional_shadow_max_distance = 250.0
+directional_shadow_mode = 2
+directional_shadow_split_1 = 0.08
+directional_shadow_split_2 = 0.22
+directional_shadow_split_3 = 0.5
+directional_shadow_max_distance = 160.0
 sky_mode = 1
 
 [node name="ShipSway" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1159628755]
