@@ -9,10 +9,14 @@ var palette: PhosphorPalette:
 
 var _palette_index: int = 0
 
-@onready var _signal: ShaderMaterial = material as ShaderMaterial
+var _signal: ShaderMaterial
 
 
 func _ready() -> void:
+	# The scene keeps one copy of this material between games, so a restart
+	# would inherit the last game's lost signal. Each game gets its own.
+	material = material.duplicate()
+	_signal = material as ShaderMaterial
 	_apply_palette()
 
 
