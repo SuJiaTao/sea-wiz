@@ -68,6 +68,10 @@ near = 0.1
 far = 6000.0
 script = ExtResource("4_p64hc")
 
+[node name="AudioListener3D" type="AudioListener3D" parent="Mount/Sensor" unique_id=544101291]
+doppler_tracking = 2
+current = true
+
 [node name="Radome" parent="." unique_id=935896679 instance=ExtResource("4_bjbsn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 3.4)
 
