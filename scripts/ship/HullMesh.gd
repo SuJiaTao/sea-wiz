@@ -73,6 +73,10 @@ func deck_height_at(world_position: Vector3) -> float:
 	return to_global(Vector3(local.x, deck_level(local.z), local.z)).y
 
 
+func half_breadth_at(z: float) -> float:
+	return _half_breadth_at(z)
+
+
 func _half_breadth_at(z: float) -> float:
 	for index in half_breadths.size() - 1:
 		var aft := half_breadths[index]

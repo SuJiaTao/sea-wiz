@@ -154,7 +154,7 @@ render_priority = 0
 shader = ExtResource("15_sea_shader")
 shader_parameter/wave_normals = ExtResource("15_wave_normals")
 shader_parameter/base_level = 0.07
-shader_parameter/moon_bearing_deg = 140.0
+shader_parameter/moon_bearing_deg = 75.0
 shader_parameter/moon_elevation_deg = 22.0
 shader_parameter/roughness = 0.0
 shader_parameter/lightning_flash = 0.0
@@ -204,7 +204,7 @@ shader_parameter/cloud_drift = Vector2(0, -0.006)
 shader_parameter/ground_horizon_color = Color(0.16, 0.16, 0.16, 1)
 shader_parameter/ground_bottom_color = Color(0, 0, 0, 1)
 shader_parameter/ground_curve = 0.02
-shader_parameter/moon_bearing_deg = 140.0
+shader_parameter/moon_bearing_deg = 75.0
 shader_parameter/moon_elevation_deg = 22.0
 shader_parameter/moon_diameter_deg = 1.6
 shader_parameter/moon_color = Color(0.75, 0.75, 0.75, 1)
@@ -247,13 +247,13 @@ subdivide_depth = 24
 [sub_resource type="ShaderMaterial" id="Material_tracer"]
 render_priority = 0
 shader = ExtResource("62_tracer_shader")
-shader_parameter/base_width = 0.11
-shader_parameter/min_pixels = 2.6
+shader_parameter/base_width = 0.05
+shader_parameter/min_pixels = 2.4
 shader_parameter/tail_falloff = 1.4
 
 [sub_resource type="BoxMesh" id="Mesh_tracer"]
 material = SubResource("Material_tracer")
-size = Vector3(0.11, 0.11, 1)
+size = Vector3(0.05, 0.05, 1)
 
 [sub_resource type="ShaderMaterial" id="Material_video"]
 shader = ExtResource("30_video_shader")
@@ -289,10 +289,11 @@ shader_parameter/chroma_lines = 3.0
 process_mode = 3
 script = ExtResource("1_session")
 
-[node name="WaveOrchestrator" type="Node" parent="." unique_id=1833867121]
+[node name="WaveOrchestrator" type="Node" parent="." unique_id=1833867121 node_paths=PackedStringArray("ship")]
 process_mode = 1
 script = ExtResource("6_waves")
 levels = Array[ExtResource("11_wave_type")]([ExtResource("118_patrol"), ExtResource("12_first"), ExtResource("97_formations"), ExtResource("13_second"), ExtResource("69_escort"), ExtResource("72_falling_stars"), ExtResource("120_titan")])
+ship = NodePath("../ViewportContainer/SubViewport/World/Vessel/Warship")
 
 [node name="Score" type="Node" parent="." unique_id=668317612 node_paths=PackedStringArray("enemies")]
 process_mode = 1

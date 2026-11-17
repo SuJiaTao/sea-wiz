@@ -5,6 +5,7 @@
 [ext_resource type="Shader" path="res://shaders/ship_paint.gdshader" id="4_paint"]
 [ext_resource type="Script" path="res://scripts/ship/DestroyerBridge.gd" id="6_bridge"]
 [ext_resource type="PackedScene" path="res://scenes/world/bridge/destroyer_bridge.glb" id="7_bridge_model"]
+[ext_resource type="Script" path="res://scripts/ship/DeckFittings.gd" id="8_fittings"]
 
 [sub_resource type="ShaderMaterial" id="Material_hull"]
 render_priority = 0
@@ -62,9 +63,6 @@ height = 0.4
 radial_segments = 12
 rings = 1
 
-[sub_resource type="BoxMesh" id="Mesh_3"]
-material = SubResource("Material_hatch")
-size = Vector3(6, 0.25, 9)
 
 [sub_resource type="CylinderMesh" id="Mesh_4"]
 material = SubResource("Material_panel")
@@ -145,10 +143,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.55, -58)
 mesh = SubResource("Mesh_2")
 cast_shadow = 0
 
-[node name="ForwardCells" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.8, -42)
-mesh = SubResource("Mesh_3")
-cast_shadow = 0
+[node name="DeckFittings" type="Node3D" parent="." node_paths=PackedStringArray("hull")]
+script = ExtResource("8_fittings")
+hull = NodePath("../Hull")
+fitting_material = SubResource("Material_equipment")
+hatch_material = SubResource("Material_hatch")
 
 [node name="UpgradeMounts" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
@@ -178,12 +177,12 @@ mesh = SubResource("Mesh_6")
 cast_shadow = 0
 
 [node name="DecoyLauncherPort" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 16.8, 17)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.6, 5.9, 10)
 mesh = SubResource("Mesh_27")
 cast_shadow = 0
 
 [node name="DecoyLauncherStarboard" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 16.8, 17)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.6, 5.9, 10)
 mesh = SubResource("Mesh_35")
 cast_shadow = 0
 
@@ -264,13 +263,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
 mesh = SubResource("Mesh_Lid")
 
 [node name="DecoyTubes" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14.575, 10.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.3, 10)
 
 [node name="Port" type="Marker3D" parent="DecoyTubes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.52, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.6, 0, 0)
 
 [node name="Starboard" type="Marker3D" parent="DecoyTubes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.52, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.6, 0, 0)
 
 [node name="FireSpots" type="Node3D" parent="."]
 

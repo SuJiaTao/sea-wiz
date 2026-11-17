@@ -6,7 +6,7 @@ signal lost
 enum Stage { AFLOAT, BURNING, EXPLODED, LOST }
 
 const BURN_TIME: float = 2.6
-const BLAST_TO_DARK: float = 2.2
+const BLAST_TO_DARK: float = 0.3
 const BLAST_SIZE: float = 6.0
 const BLAST_SHAKE: float = 9.0
 const BLAST_GLARE: float = 0.35

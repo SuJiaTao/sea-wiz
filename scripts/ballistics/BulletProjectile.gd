@@ -11,14 +11,14 @@ const RICOCHET_SCATTER := 0.2
 const SURFACE_CLEARANCE := 0.05
 const MIN_NORMAL_LENGTH_SQUARED := 0.5
 const FLIGHT_TIME := 5.0
-const TRACER_HEAT := Color(4.2, 4.2, 3.7, 1.0)
+const TRACER_HEAT := Color(9.0, 9.0, 8.0, 1.0)
 const BURNOUT_TIME := 0.5
 const BURNOUT_FLOOR := 0.6
-const IGNITION_TIME := 0.12
-const IGNITION_FLOOR := 0.25
+const IGNITION_TIME := 0.03
+const IGNITION_FLOOR := 0.5
 
 var damage: float = 40.0
-var tracer_length: float = 30.0
+var tracer_length: float = 12.0
 
 var _ricochets: int = 0
 

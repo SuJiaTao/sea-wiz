@@ -230,7 +230,7 @@ func _emit_round() -> void:
 
 func _update_audio() -> void:
 	if _gun_audio.stream != null:
-		if firing and spin > 0.25:
+		if firing and spin > 0.25 and not cut_out:
 			if not _gun_audio.playing:
 				_gun_audio.play()
 			_gun_audio.pitch_scale = _lerp_rangef(_gun_audio_pitch_range, spin)

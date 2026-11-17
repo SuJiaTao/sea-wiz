@@ -142,8 +142,6 @@ for f in (A_stbd, A_port):
     for u in (0.18, 0.5, 0.8):
         add("Deckhouse", "Seam_Grey", f.panel(u, u + 0.045, 0.005, 0.15, t=0.05))     # doors
         add("Deckhouse", "Seam_Grey", f.panel(u - 0.01, u + 0.055, 0.43, 0.445, t=0.25))  # catwalk lip
-    add("Deckhouse", "Seam_Grey", f.panel(0.30, 0.42, 0.72, 0.9, t=0.9))   # EW box
-    add("Deckhouse", "Mast_Dark", f.panel(0.31, 0.41, 0.75, 0.87, t=0.05, lift=0.9))
 
 # SPY-style octagonal array faces on the two forward chamfers
 for f in (A_stbd_ch, A_port_ch):

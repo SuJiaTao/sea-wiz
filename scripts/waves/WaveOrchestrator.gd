@@ -11,6 +11,7 @@ enum State { STOPPED, INTERMISSION, SPAWNING, FINISHED }
 @export var levels: Array[WaveDefinition] = []
 @export var initial_delay: float = 3.0
 @export var intermission: float = 7.0
+@export var ship: Node3D
 
 var level_number: int = 0
 var level_title: String = ""
@@ -145,10 +146,12 @@ func _spawn_one(entry: WaveSpawn, position: Vector3, approach: FormationApproach
 
 
 func _bearing_for(group: StringName) -> float:
+	if ship != null:
+		BlindArc.track(ship)
 	if group.is_empty():
-		return randf() * TAU
+		return BlindArc.open_bearing(randf())
 	if not _group_bearings.has(group):
-		_group_bearings[group] = randf() * TAU
+		_group_bearings[group] = BlindArc.open_bearing(randf())
 	return _group_bearings[group]
 
 

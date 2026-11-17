@@ -13,6 +13,7 @@ const SPAWN_ALTITUDE: float = 260.0
 const SPAWN_SPREAD_DEG: float = 30.0
 const DESCENT_TIME: float = 40.0
 const NO_DROP: float = -1.0
+const FIRST_DROP_LEVEL: int = 2
 
 @export var crate_scene: PackedScene
 @export var enemies: EnemyManager
@@ -56,9 +57,11 @@ func _physics_process(delta: float) -> void:
 		_drop()
 
 
-func _on_level_started(_number: int, _title: String) -> void:
+func _on_level_started(number: int, _title: String) -> void:
+	if number < FIRST_DROP_LEVEL:
+		return
 	_waves_without_drop += 1
-	if _waves_without_drop >= MAX_WAVES_WITHOUT_DROP or randf() < DROP_CHANCE:
+	if number == FIRST_DROP_LEVEL or _waves_without_drop >= MAX_WAVES_WITHOUT_DROP or randf() < DROP_CHANCE:
 		_waves_without_drop = 0
 		_drop_in = randf_range(DROP_DELAY.x, DROP_DELAY.y)
 

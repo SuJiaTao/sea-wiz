@@ -38,6 +38,9 @@ func _desired_velocity(_delta: float) -> Vector3:
 		if Vector2(away.x, away.z).length() < egress_distance:
 			return _hold_altitude(_egress_heading + Vector3.UP * egress_climb) * speed
 		_leg = Leg.RUN_IN
+	if BlindArc.contains(global_position):
+		var way_out := BlindArc.way_out(global_position) + Vector3.UP * attack_altitude
+		return _hold_altitude(way_out - global_position) * speed
 	var range_left := global_position - target_position
 	var flat_range := Vector2(range_left.x, range_left.z).length()
 	if contact_damage > 0.0 and flat_range < gun_range and _pointed_at_target():
