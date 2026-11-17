@@ -103,6 +103,7 @@
 [ext_resource type="Script" uid="uid://bvsg4xcbl4fq0" path="res://scripts/display/BlastFeel.gd" id="101_blast_feel"]
 [ext_resource type="SphereMesh" uid="uid://cw666x1bbx6fi" path="res://resources/fx/ShockDomeMesh.tres" id="102_dome"]
 [ext_resource type="AudioStream" uid="uid://b7xkm47bl56ms" path="res://audio/explosion.wav" id="103_boom"]
+[ext_resource type="Script" uid="uid://cflupv0pc17m" path="res://scripts/sensors/RadarJamming.gd" id="104_jamming"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -574,6 +575,11 @@ script = ExtResource("35_search")
 enemies = NodePath("../../Enemies")
 antenna = NodePath("../../Vessel/Turret")
 
+[node name="RadarJamming" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" node_paths=PackedStringArray("radar", "enemies")]
+script = ExtResource("104_jamming")
+radar = NodePath("../SearchRadar")
+enemies = NodePath("../../Enemies")
+
 [node name="Tracks" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" unique_id=1090020214 node_paths=PackedStringArray("search_radar")]
 script = ExtResource("36_tracks")
 search_radar = NodePath("../SearchRadar")
@@ -605,7 +611,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("4_hud")
 
-[node name="TrackHUD" type="Control" parent="HUD/HUDRoot" unique_id=571153524 node_paths=PackedStringArray("turret", "tracks", "spotter", "gun_director")]
+[node name="TrackHUD" type="Control" parent="HUD/HUDRoot" unique_id=571153524 node_paths=PackedStringArray("turret", "tracks", "spotter", "gun_director", "jamming")]
 anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -617,6 +623,7 @@ turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 tracks = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/Tracks")
 spotter = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/Spotter")
 gun_director = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/GunDirector")
+jamming = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/RadarJamming")
 
 [node name="PlayerHUD" type="Control" parent="HUD/HUDRoot" unique_id=354245544 node_paths=PackedStringArray("turret", "thermal", "video")]
 anchors_preset = 0

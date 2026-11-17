@@ -33,11 +33,20 @@ const MISSILE_SCOPE_MARK: float = 4.0
 const LEADER_SECONDS: float = 4.0
 const LEADER_MAX_SHARE: float = 0.6
 const LEADER_MIN_PIXELS: float = 2.0
+const JAM_THRESHOLD: float = 0.05
+const JAM_STROBE_LINES: int = 14
+const JAM_STROBE_SPREAD: float = 0.3
+const JAM_STROBE_MIN_SHARE: float = 0.3
+const JAM_STROBE_RATE: float = 12.0
+const JAM_STROBE_WIDTH: float = 1.0
+const JAM_LABEL_SIZE: int = 11
+const JAM_LABEL_DROP: float = 32.0
 
 @export var turret: Turret
 @export var tracks: TrackManager
 @export var spotter: Spotter
 @export var gun_director: GunDirector
+@export var jamming: RadarJamming
 
 var _pings: Dictionary = {}
 var _clock: float = 0.0
@@ -200,18 +209,47 @@ func _draw_scope() -> void:
 		else:
 			draw_circle(at, MARKED_DOT, MAIN)
 
+	_draw_jam(centre)
 	_text(
 		centre + Vector2(-SCOPE_RADIUS, SCOPE_RADIUS + 18),
 		"HEAT  %.1f km   MARKED %d" % [RADAR_RANGE / 1000.0, marked.size()], 11, FAINT
 	)
 
 
+func _scope_angle(world_position: Vector3) -> float:
+	var offset := world_position - turret.global_position
+	return wrapf(atan2(offset.x, -offset.z) - deg_to_rad(turret.bearing_deg()), -PI, PI)
+
+
 func _scope_point(centre: Vector2, world_position: Vector3) -> Vector2:
 	var offset := world_position - turret.global_position
 	var distance := Vector2(offset.x, offset.z).length()
-	var angle := wrapf(atan2(offset.x, -offset.z) - deg_to_rad(turret.bearing_deg()), -PI, PI)
+	var angle := _scope_angle(world_position)
 	var reach := clampf(distance / RADAR_RANGE, 0.0, 1.0) * SCOPE_RADIUS
 	return centre + Vector2(sin(angle), -cos(angle)) * reach
+
+
+func _draw_jam(centre: Vector2) -> void:
+	var source := jamming.strongest_source
+	if jamming.level < JAM_THRESHOLD or not is_instance_valid(source):
+		return
+	_draw_jam_strobe(centre, _scope_angle(source.global_position))
+	var label := "JAM  %d%%" % roundi(jamming.level * 100.0)
+	_text(centre + Vector2(-SCOPE_RADIUS, SCOPE_RADIUS + JAM_LABEL_DROP), label, JAM_LABEL_SIZE, MAIN)
+
+
+func _draw_jam_strobe(centre: Vector2, bearing: float) -> void:
+	var noise := RandomNumberGenerator.new()
+	noise.seed = int(_clock * JAM_STROBE_RATE)
+	for i in JAM_STROBE_LINES:
+		var angle := bearing + noise.randf_range(-JAM_STROBE_SPREAD, JAM_STROBE_SPREAD)
+		var inner := noise.randf_range(1.0 - jamming.level * (1.0 - JAM_STROBE_MIN_SHARE), 1.0)
+		var direction := Vector2(sin(angle), -cos(angle))
+		draw_line(
+			centre + direction * SCOPE_RADIUS * inner,
+			centre + direction * SCOPE_RADIUS,
+			Color(MAIN, jamming.level), JAM_STROBE_WIDTH
+		)
 
 
 func _draw_leader(centre: Vector2, world_position: Vector3, velocity: Vector3, colour: Color) -> void:
