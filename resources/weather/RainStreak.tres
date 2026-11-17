@@ -9,8 +9,8 @@ shader_parameter/centre = Vector3(0, 0, 0)
 shader_parameter/box_size = Vector3(80, 50, 80)
 shader_parameter/fall_velocity = Vector3(2.5, -20, 1)
 shader_parameter/streak_seconds = 0.1
-shader_parameter/width_pixels = 1.0
-shader_parameter/brightness = 0.24
+shader_parameter/width_pixels = 1.5
+shader_parameter/brightness = 0.3
 
 [resource]
 material = SubResource("Material_rain_streak")

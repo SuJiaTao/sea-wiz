@@ -43,6 +43,8 @@ var overheated: bool = false
 var cut_out: bool = false
 var spinup_scale: float = 1.0
 var firing: bool = false
+
+var _was_shooting: bool = false
 var spin: float = 0.0
 var hide_gun: bool = false
 
@@ -147,6 +149,9 @@ func _physics_process(delta: float) -> void:
 	_spin_gun(delta)
 	_fire(delta)
 	_update_audio()
+	if _was_shooting and not shooting():
+		_wind_down_audio.play()
+	_was_shooting = shooting()
 
 
 func _input(event: InputEvent) -> void:
@@ -166,8 +171,10 @@ func _start_firing() -> void:
 func _stop_firing() -> void:
 	if not firing:
 		return
-	_wind_down_audio.play()
+	if shooting():
+		_wind_down_audio.play()
 	firing = false
+	_was_shooting = false
 
 func set_overheated(value: bool) -> void:
 	overheated = value
@@ -187,8 +194,14 @@ func _set_wander(delta: float) -> void:
 	_wander = _wander.lerp(_wander_target, clampf(delta * 6.0, 0.0, 1.0))
 
 
+## True while rounds are actually leaving the barrels: trigger held and the
+## bore clear of the ship.
+func shooting() -> bool:
+	return firing and not cut_out
+
+
 func _spin_gun(delta: float) -> void:
-	if firing:
+	if shooting():
 		spin = move_toward(spin, 1.0, delta / (SPINUP_TIME * spinup_scale))
 	else:
 		spin = move_toward(spin, 0.0, delta / SPINDOWN_TIME)

@@ -451,6 +451,7 @@ environment = NodePath("../WorldEnvironment")
 script = ExtResource("83_precip_field")
 turret = NodePath("../Vessel/Turret")
 particle_mesh = ExtResource("86_rain_mesh")
+sea_material = SubResource("Material_sea")
 
 [node name="Snow" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World" unique_id=1057090871 node_paths=PackedStringArray("turret")]
 script = ExtResource("83_precip_field")

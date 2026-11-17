@@ -13,4 +13,5 @@ lightning_interval = Vector2(4, 11)
 sea_roughness = 0.3
 ship_roll_deg = 1.8
 barrel_heat_scale = 0.5
+barrel_wet = 1.2
 cloud_cover = 0.85
