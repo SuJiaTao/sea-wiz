@@ -73,6 +73,10 @@ func evade_missile(_missile_position: Vector3) -> DecoyFlare:
 	return null
 
 
+func jam_at(_point: Vector3) -> float:
+	return 0.0
+
+
 func request_destroy() -> void:
 	if _state == State.DESTROYED:
 		return
