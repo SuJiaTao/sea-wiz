@@ -487,7 +487,7 @@ mesh = SubResource("Mesh_sea")
 [node name="Warship" parent="ViewportContainer/SubViewport/World/Vessel" unique_id=1540032579 instance=ExtResource("10_warship")]
 
 [node name="Turret" parent="ViewportContainer/SubViewport/World/Vessel" unique_id=1125800149 instance=ExtResource("2_turret")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.8125, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15.25, 0)
 
 [node name="Casings" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Vessel" unique_id=1766620478]
 visible = false

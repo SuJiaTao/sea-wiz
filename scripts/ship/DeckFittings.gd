@@ -12,6 +12,7 @@ const RAIL_POST_SPACING: float = 2.0
 const RAIL_THICKNESS: float = 0.05
 const RAIL_AFT_LIMIT: float = 84.0
 const RAIL_FORE_LIMIT: float = -75.0
+const RAIL_GAP := Vector2(1.0, 28.5)
 
 const CELL_CENTER := Vector3(0.0, 0.0, -42.0)
 const CELL_ROWS: int = 8
@@ -33,7 +34,7 @@ const STEP_BACK_Z: float = 1.0
 const STEP_HALF_WIDTH: float = 6.4
 const STEP_HEIGHT: float = 1.4
 
-const BOLLARD_STATIONS: Array[float] = [-56.0, -24.0, 22.0, 52.0, 76.0]
+const BOLLARD_STATIONS: Array[float] = [-56.0, -24.0, 34.0, 52.0, 76.0]
 const BOLLARD_OUTBOARD_GAP: float = 1.1
 const BOLLARD_RADIUS: float = 0.18
 const BOLLARD_HEIGHT: float = 0.5
@@ -87,7 +88,10 @@ func _add_railing(side: float) -> void:
 	var z := RAIL_AFT_LIMIT
 	while z >= RAIL_FORE_LIMIT:
 		var half := hull.half_breadth_at(z)
-		if not is_nan(half) and half > RAIL_INSET * 2.0:
+		var beside_deckhouse := z > RAIL_GAP.x and z < RAIL_GAP.y
+		if beside_deckhouse:
+			previous = Vector3.INF
+		elif not is_nan(half) and half > RAIL_INSET * 2.0:
 			var foot := _deck(side * (half - RAIL_INSET), z)
 			_beam(foot, foot + Vector3.UP * RAIL_HEIGHT, RAIL_THICKNESS)
 			if previous != Vector3.INF:

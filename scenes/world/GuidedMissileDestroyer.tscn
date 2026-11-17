@@ -114,7 +114,7 @@ side_material = SubResource("Material_hull")
 deck_material = SubResource("Material_deck")
 
 [node name="Bridge" type="Node3D" parent="."]
-transform = Transform3D(0.6, 0, 0, 0, 0.75, 0, 0, 0, 0.6, 0, 5.5, 1.14)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.5, 1.9)
 script = ExtResource("6_bridge")
 model = ExtResource("7_bridge_model")
 paint = ExtResource("4_paint")
@@ -177,12 +177,12 @@ mesh = SubResource("Mesh_6")
 cast_shadow = 0
 
 [node name="DecoyLauncherPort" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.6, 5.9, 10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 16.8, 17)
 mesh = SubResource("Mesh_27")
 cast_shadow = 0
 
 [node name="DecoyLauncherStarboard" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.6, 5.9, 10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 16.8, 17)
 mesh = SubResource("Mesh_35")
 cast_shadow = 0
 
@@ -263,13 +263,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
 mesh = SubResource("Mesh_Lid")
 
 [node name="DecoyTubes" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.3, 10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17.6, 17)
 
 [node name="Port" type="Marker3D" parent="DecoyTubes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.6, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 0, 0)
 
 [node name="Starboard" type="Marker3D" parent="DecoyTubes"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.6, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 0, 0)
 
 [node name="FireSpots" type="Node3D" parent="."]
 
@@ -283,16 +283,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 7.2, -40)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.4, -58)
 
 [node name="Deckhouse" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.25, -4.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.5, -7)
 
 [node name="BridgeRoof" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17.575, 11.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21.6, 19)
 
 [node name="BridgePort" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.64, 10.375, 7.56)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.4, 12, 12.6)
 
 [node name="BridgeStarboard" type="Marker3D" parent="FireSpots"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.64, 10.375, 7.56)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.4, 12, 12.6)
 
 [node name="ForwardPort" type="Marker3D" parent="FireSpots"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 5.6, -25)
