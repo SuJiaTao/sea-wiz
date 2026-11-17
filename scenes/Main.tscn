@@ -9,7 +9,7 @@
 [ext_resource type="Script" uid="uid://p4lc42i4uqjs" path="res://scripts/ThermalView.gd" id="7_thermal"]
 [ext_resource type="Script" uid="uid://dhvo8e35dfs0g" path="res://scripts/ballistics/ProjectileBatch.gd" id="8_batch"]
 [ext_resource type="Script" uid="uid://dkmwr4afokdk7" path="res://scripts/FXManager.gd" id="9_fx"]
-[ext_resource type="PackedScene" path="res://scenes/world/Warship.tscn" id="10_warship"]
+[ext_resource type="PackedScene" path="res://scenes/world/StealthDestroyer.tscn" id="10_warship"]
 [ext_resource type="Script" uid="uid://b2ap6okbtqnal" path="res://scripts/waves/WaveDefinition.gd" id="11_wave_type"]
 [ext_resource type="Resource" uid="uid://blmh1ka3ro1ff" path="res://levels/FirstContact.tres" id="12_first"]
 [ext_resource type="Resource" uid="uid://bo5sd0cld6x1a" path="res://levels/Saturation.tres" id="13_second"]
@@ -401,11 +401,14 @@ mesh = SubResource("Mesh_sea")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17, 0)
 
 [node name="Casings" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Vessel" unique_id=1766620478]
+visible = false
 script = ExtResource("58_casings")
 casing_mesh = ExtResource("60_casing_mesh")
 casing_material = ExtResource("61_casing_material")
 platform_centre = Vector3(0, 16.94, 0)
-deck_half_beam = 13.5
+platform_radius = 2.8
+deck_height = 10.0
+deck_half_beam = 6.5
 
 [node name="ShipDamage" type="Node" parent="ViewportContainer/SubViewport/World" unique_id=1929357541]
 
