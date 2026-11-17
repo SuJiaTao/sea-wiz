@@ -698,13 +698,15 @@ script = ExtResource("59_ejector")
 turret = NodePath("../../Vessel/Turret")
 pile = NodePath("../../Vessel/Casings")
 
-[node name="DecoyLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("enemies", "smoke", "fx", "tubes")]
+[node name="DecoyLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("enemies", "smoke", "fx", "tubes", "effects")]
 script = ExtResource("21_decoys")
 fitting = &"decoys"
 enemies = NodePath("../../Enemies")
 smoke = NodePath("../../MissileSmoke")
 fx = NodePath("../../FX")
 tubes = NodePath("../../Vessel/Warship/DecoyTubes")
+effects = NodePath("../../Effects")
+loadout = ExtResource("115_loadout")
 
 [node name="FireCutout" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "ship")]
 script = ExtResource("21_cutout")

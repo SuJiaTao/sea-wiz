@@ -16,11 +16,21 @@ const CLOUD_SIZE: float = 2.5
 const BLOOM_SPARKS: int = 30
 const BLOOM_FLASH: float = 6.0
 const BEAM_SIDES: Array[float] = [-1.0, 1.0]
+const CHAFF_LURE_CHANCE: float = 0.8
+const IR_MOUNT := &"ir_decoys"
+const IR_LURE_CHANCE: float = 0.95
+const IR_CLOUD_TIME: float = 10.0
+const IR_FLARES_PER_CLOUD: int = 3
+const IR_SPREAD_SPEED := Vector2(6.0, 14.0)
+const IR_PARACHUTE_DRAG: float = 3.3
+const IR_BURN_TIME := Vector2(8.0, 11.0)
 
 @export var enemies: EnemyManager
 @export var smoke: ParticleBatch
 @export var fx: FXManager
 @export var tubes: Node3D
+@export var effects: EffectManager
+@export var loadout: ShipLoadout
 
 var cooldown_left: float = 0.0
 
@@ -69,5 +79,19 @@ func _bloom() -> void:
 		fx.spark_burst(point, BLOOM_SPARKS)
 		fx.explosion(point, BLOOM_FLASH)
 		bloomed.emit(point)
-	_screen = ChaffScreen.new(clouds, CLOUD_TIME)
+	if loadout != null and loadout.is_fitted(IR_MOUNT):
+		_release_flares(clouds)
+		_screen = ChaffScreen.new(clouds, IR_CLOUD_TIME, IR_LURE_CHANCE)
+	else:
+		_screen = ChaffScreen.new(clouds, CLOUD_TIME, CHAFF_LURE_CHANCE)
+
+
+func _release_flares(clouds: Array[Vector3]) -> void:
+	var flares: Array[DecoyFlare] = []
+	for point in clouds:
+		for index in IR_FLARES_PER_CLOUD:
+			var spread := ParticleBatch.random_direction() * randf_range(IR_SPREAD_SPEED.x, IR_SPREAD_SPEED.y)
+			var burn := randf_range(IR_BURN_TIME.x, IR_BURN_TIME.y)
+			flares.append(DecoyFlare.new(point, spread, IR_PARACHUTE_DRAG, burn))
+	effects.countermeasures(flares)
 

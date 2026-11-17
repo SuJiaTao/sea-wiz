@@ -2,16 +2,17 @@ extends RefCounted
 class_name ChaffScreen
 
 const LURE_RANGE: float = 2600.0
-const LURE_CHANCE: float = 0.8
 
 var _clouds: Array[Vector3] = []
 var _time_left: float
+var _lure_chance: float
 var _judged: Dictionary[AbstractEnemy, bool] = {}
 
 
-func _init(clouds: Array[Vector3], lifetime: float) -> void:
+func _init(clouds: Array[Vector3], lifetime: float, lure_chance: float) -> void:
 	_clouds = clouds
 	_time_left = lifetime
+	_lure_chance = lure_chance
 
 
 func is_active() -> bool:
@@ -28,7 +29,7 @@ func seduce(enemies: Array[AbstractEnemy], ship: Vector3) -> void:
 			continue
 		if enemy.global_position.distance_to(ship) > LURE_RANGE:
 			continue
-		_judged[enemy] = randf() < LURE_CHANCE and enemy.lure(_nearest(enemy.global_position))
+		_judged[enemy] = randf() < _lure_chance and enemy.lure(_nearest(enemy.global_position))
 
 
 func _nearest(from: Vector3) -> Vector3:

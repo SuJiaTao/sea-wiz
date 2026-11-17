@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MountUpgrade" format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrade_system/upgrades/loadout/MountUpgrade.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="2_upgrade"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/chaff_launchers.tres" id="3_chaff"]
+
+[resource]
+script = ExtResource("1_script")
+mount = &"ir_decoys"
+predecessors = Array[ExtResource("2_upgrade")]([ExtResource("3_chaff")])
+label = "MK 245 IR DECOY ROUNDS"
+description = "Chaff bursts also hang flares on parachutes. Heat seekers chase them more often."
+category = "system"
+weight = 0.8
+max_acummulation = 1
