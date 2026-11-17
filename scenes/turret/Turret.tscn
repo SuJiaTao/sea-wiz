@@ -9,14 +9,11 @@
 [ext_resource type="AudioStream" uid="uid://bbtynxa86fqrq" path="res://audio/ciws/ciws_fire_b.wav" id="7_t4bc6"]
 [ext_resource type="AudioStream" uid="uid://b2w246juiqfe8" path="res://audio/ciws/ciws_fire_wind_down.wav" id="8_31x2x"]
 [ext_resource type="AudioStream" uid="uid://bivf47ey65sp5" path="res://audio/ciws/ciws_spin_b.wav" id="9_t4bc6"]
+[ext_resource type="Shader" path="res://shaders/muzzle_flash.gdshader" id="10_flash"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7mu8f"]
-transparency = 1
-blend_mode = 1
-shading_mode = 1
-albedo_color = Color(3.2, 3.2, 2.8, 1)
-disable_receive_shadows = true
-billboard_mode = 1
+[sub_resource type="ShaderMaterial" id="StandardMaterial3D_7mu8f"]
+render_priority = 0
+shader = ExtResource("10_flash")
 
 [sub_resource type="QuadMesh" id="QuadMesh_jyabn"]
 size = Vector2(0.3, 0.3)
