@@ -35,8 +35,9 @@ def hull(pts):
     return trimesh.convex.convex_hull(np.asarray(pts, float))
 
 
-def chamfer_rect(hw, zf, zb, c):
-    return [(-hw + c, zf), (hw - c, zf), (hw, zf + c), (hw, zb), (-hw, zb), (-hw, zf + c)]
+def chamfer_rect(hw, zf, zb, c, cz=None):
+    cz = c if cz is None else cz
+    return [(-hw + c, zf), (hw - c, zf), (hw, zf + cz), (hw, zb), (-hw, zb), (-hw, zf + cz)]
 
 
 def prism(base, top, y0, y1):
@@ -126,9 +127,10 @@ def railing(node, pts, h=1.05, closed=False, post_every=1.6):
 
 
 # ---------------------------------------------------------------- deckhouse
+SWEEP = 1.5   # forward chamfers run this much further aft than they run sideways
 A_Y0, A_Y1 = 0.0, 14.5
-A_base = chamfer_rect(9.8, 0.0, 26.0, 6.5)
-A_top = chamfer_rect(8.6, 1.6, 26.0, 6.0)
+A_base = chamfer_rect(9.8, 0.0, 26.0, 6.5, 6.5 * SWEEP)
+A_top = chamfer_rect(8.6, 1.6, 26.0, 6.0, 6.0 * SWEEP)
 add("Deckhouse", "Hull_Grey", prism(A_base, A_top, A_Y0, A_Y1))
 A_front, A_stbd_ch, A_stbd, A_back, A_port, A_port_ch = faces_of(A_base, A_top, A_Y0, A_Y1)
 
@@ -183,8 +185,8 @@ CIWS_MOUNT = (0, PLAT_Y + 0.75, PLAT_Z)
 
 # ---------------------------------------------------------------- bridge
 BR_Y0, BR_Y1 = A_Y1, 16.5
-br_base = chamfer_rect(7.2, 0.6, 15.0, 3.6)
-br_top = chamfer_rect(7.6, 0.1, 15.0, 3.8)
+br_base = chamfer_rect(7.2, 0.6, 15.0, 3.6, 3.6 * SWEEP)
+br_top = chamfer_rect(7.6, 0.1, 15.0, 3.8, 3.8 * SWEEP)
 add("Bridge", "Hull_Grey", prism(br_base, br_top, BR_Y0, BR_Y1))
 br_faces = faces_of(br_base, br_top, BR_Y0, BR_Y1)
 for i, f in enumerate(br_faces):
@@ -199,24 +201,12 @@ for i, f in enumerate(br_faces):
         add("Windows", "Window_Dark", f.panel(u0, u1, 0.34, 0.86, t=0.03))
     add("Bridge", "Seam_Grey", f.panel(0, 1, 0.26, 0.30, t=0.07))     # sill
 # visor / roof
-roof = chamfer_rect(8.1, -0.5, 15.3, 4.0)
+roof = chamfer_rect(8.1, -0.5, 15.3, 4.0, 4.0 * SWEEP)
 add("Bridge", "Hull_Grey", prism(roof, roof, BR_Y1, BR_Y1 + 0.3))
 ROOF_Y = BR_Y1 + 0.3
-railing("Railings", [(-8.0, ROOF_Y, 14), (-8.0, ROOF_Y, 3.5), (-4.1, ROOF_Y, -0.4), (4.1, ROOF_Y, -0.4),
-                     (8.0, ROOF_Y, 3.5), (8.0, ROOF_Y, 14)])
-# bridge wings with solid bulwarks
+railing("Railings", [(-8.0, ROOF_Y, 14), (-8.0, ROOF_Y, 5.4), (-4.1, ROOF_Y, -0.4), (4.1, ROOF_Y, -0.4),
+                     (8.0, ROOF_Y, 5.4), (8.0, ROOF_Y, 14)])
 for s in (-1, 1):
-    add("Bridge", "Deck_Grey", hull([(s * 7.0, BR_Y0 - 0.25, 4.2), (s * 10.8, BR_Y0 - 0.25, 5.0), (s * 10.8, BR_Y0 - 0.25, 9.5),
-                                     (s * 7.0, BR_Y0 - 0.25, 9.5), (s * 7.0, BR_Y0, 4.2), (s * 10.8, BR_Y0, 5.0),
-                                     (s * 10.8, BR_Y0, 9.5), (s * 7.0, BR_Y0, 9.5)]))
-    add("Bridge", "Hull_Grey", hull([(s * 7.0, BR_Y0 - 2.2, 6.0), (s * 7.0, BR_Y0 - 0.25, 4.6), (s * 10.6, BR_Y0 - 0.25, 5.4),
-                                     (s * 7.0, BR_Y0 - 2.2, 9.0), (s * 7.0, BR_Y0 - 0.25, 9.3), (s * 10.6, BR_Y0 - 0.25, 9.3)]))
-    for a, b in (((s * 7.0, 4.2), (s * 10.8, 5.0)), ((s * 10.8, 5.0), (s * 10.8, 9.5))):
-        add("Bridge", "Hull_Grey", hull([(a[0], BR_Y0, a[1]), (b[0], BR_Y0, b[1]), (a[0], BR_Y0 + 1.15, a[1]), (b[0], BR_Y0 + 1.15, b[1]),
-                                         (a[0] - s * 0.08, BR_Y0, a[1] + 0.08), (b[0] - s * 0.08, BR_Y0, b[1] + 0.08),
-                                         (a[0] - s * 0.08, BR_Y0 + 1.15, a[1] + 0.08), (b[0] - s * 0.08, BR_Y0 + 1.15, b[1] + 0.08)]))
-    add("Bridge", "Mast_Dark", vcyl(s * 10.4, BR_Y0 + 1.15, BR_Y0 + 1.75, 5.6, 0.22, 8))     # signal lamp
-    add("Bridge", "Radome_White", vcyl(s * 10.4, BR_Y0 + 1.15, BR_Y0 + 1.45, 8.8, 0.28, 8))  # pelorus
     # floodlights under the visor
     add("Bridge", "Mast_Dark", bx(s * 2.6, BR_Y1 + 0.55, -0.15, 0.5, 0.4, 0.4))
 

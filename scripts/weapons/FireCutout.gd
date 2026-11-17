@@ -2,8 +2,8 @@ extends Node
 class_name FireCutout
 
 # Stops the gun when its bore points into the ship's own structure. Every
-# mesh on the ship gets an exact collision copy on a layer nothing else uses,
-# and a ray along the bore tests against those shapes.
+# mesh on the ship gets an exact collision copy, already placed and scaled, on
+# a layer nothing else uses, and a ray along the bore tests against them.
 
 const REACH: float = 300.0
 const STRUCTURE_LAYER: int = 1 << 9
@@ -27,17 +27,25 @@ func _physics_process(_delta: float) -> void:
 
 func _survey() -> void:
 	_surveyed = true
+	var body := StaticBody3D.new()
+	body.collision_layer = STRUCTURE_LAYER
+	body.collision_mask = 0
+	ship.add_child(body)
+	var to_ship := ship.global_transform.affine_inverse()
 	for part in ship.find_children("*", "MeshInstance3D", true, false):
 		var mesh := part as MeshInstance3D
 		if mesh.mesh == null or _is_exempt(mesh):
 			continue
-		var body := StaticBody3D.new()
-		body.collision_layer = STRUCTURE_LAYER
-		body.collision_mask = 0
-		var shape := CollisionShape3D.new()
-		shape.shape = mesh.mesh.create_trimesh_shape()
-		body.add_child(shape)
-		mesh.add_child(body)
+		var faces := mesh.mesh.get_faces()
+		var placed := to_ship * mesh.global_transform
+		for i in faces.size():
+			faces[i] = placed * faces[i]
+		var shape := ConcavePolygonShape3D.new()
+		shape.set_faces(faces)
+		shape.backface_collision = true
+		var holder := CollisionShape3D.new()
+		holder.shape = shape
+		body.add_child(holder)
 
 
 func _is_exempt(part: Node3D) -> bool:
