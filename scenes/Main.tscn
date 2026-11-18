@@ -331,13 +331,14 @@ boom = NodePath("Boom")
 [node name="Boom" type="AudioStreamPlayer" parent="BlastFeel" unique_id=1030745418]
 stream = ExtResource("103_boom")
 
-[node name="MissileWarning" type="AudioStreamPlayer" parent="." node_paths=PackedStringArray("enemies", "ship")]
+[node name="MissileWarning" type="AudioStreamPlayer" parent="." node_paths=PackedStringArray("enemies", "ship", "turret")]
 process_mode = 1
 stream = ExtResource("140_warning_beep")
 volume_db = -8.0
 script = ExtResource("141_missile_warning")
 enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
 ship = NodePath("../ViewportContainer/SubViewport/World/Vessel")
+turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
 
 [node name="Weather" type="Node" parent="." unique_id=173054948 node_paths=PackedStringArray("waves")]
 process_mode = 1

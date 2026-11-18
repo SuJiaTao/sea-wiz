@@ -1,20 +1,20 @@
 extends AbstractEffect
 class_name NearMissEffect
 
-const COLUMN_TIME: float = 0.45
+const COLUMN_TIME: float = 0.8
 const COLUMN_PUFFS_PER_SECOND: float = 140.0
 const COLUMN_SPEED := Vector2(45.0, 85.0)
-const COLUMN_SPREAD: float = 0.07
-const COLUMN_PUFF_SCALE: float = 3.6
-const COLUMN_LIFE_SCALE: float = 2.2
-const SKIRT_PUFFS: int = 36
+const COLUMN_SPREAD: float = 0.12
+const COLUMN_PUFF_SCALE: float = 5.5
+const COLUMN_LIFE_SCALE: float = 3.2
+const SKIRT_PUFFS: int = 70
 const SKIRT_SPEED := Vector2(7.0, 15.0)
 const SKIRT_LIFT: float = 0.35
-const SKIRT_PUFF_SCALE: float = 2.6
-const DROPLETS: int = 110
+const SKIRT_PUFF_SCALE: float = 4.0
+const DROPLETS: int = 180
 const DROPLET_SPEED := Vector2(18.0, 48.0)
 const DROPLET_SPREAD: float = 0.45
-const DROPLET_SCALE: float = 2.0
+const DROPLET_SCALE: float = 2.8
 const RIPPLE_SCALE: float = 7.0
 const RIPPLE_LIFT: float = 0.08
 const BLAST_SCALE: float = 1.1
