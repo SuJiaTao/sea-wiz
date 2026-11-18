@@ -13,7 +13,9 @@ const SPAWN_ALTITUDE: float = 260.0
 const SPAWN_SPREAD_DEG: float = 30.0
 const DESCENT_TIME: float = 40.0
 const NO_DROP: float = -1.0
-const FIRST_DROP_LEVEL: int = 2
+const FIRST_DROP_LEVEL: int = 1
+const FIRST_DROP_DELAY: float = 2.0
+const FIRST_DESCENT_TIME: float = 16.0
 
 @export var crate_scene: PackedScene
 @export var enemies: EnemyManager
@@ -27,6 +29,7 @@ var crate: SupplyCrate
 
 var _waves_without_drop: int = 0
 var _drop_in: float = NO_DROP
+var _descent_time: float = DESCENT_TIME
 
 
 func _ready() -> void:
@@ -61,9 +64,14 @@ func _on_level_started(number: int, _title: String) -> void:
 	if number < FIRST_DROP_LEVEL:
 		return
 	_waves_without_drop += 1
-	if number == FIRST_DROP_LEVEL or _waves_without_drop >= MAX_WAVES_WITHOUT_DROP or randf() < DROP_CHANCE:
+	if number == FIRST_DROP_LEVEL:
+		_waves_without_drop = 0
+		_drop_in = FIRST_DROP_DELAY
+		_descent_time = FIRST_DESCENT_TIME
+	elif _waves_without_drop >= MAX_WAVES_WITHOUT_DROP or randf() < DROP_CHANCE:
 		_waves_without_drop = 0
 		_drop_in = randf_range(DROP_DELAY.x, DROP_DELAY.y)
+		_descent_time = DESCENT_TIME
 
 
 func _drop() -> void:
@@ -75,7 +83,7 @@ func _drop() -> void:
 	var start := landing + approach + Vector3.UP * SPAWN_ALTITUDE
 	crate = crate_scene.instantiate() as SupplyCrate
 	crate.landing = landing
-	crate.descent_time = DESCENT_TIME
+	crate.descent_time = _descent_time
 	crate.recovered.connect(_on_recovered.bind(crate))
 	if enemies.create(crate, Transform3D(Basis.IDENTITY, start)):
 		inbound.emit()

@@ -9,6 +9,7 @@ const SLOW_TIME_SCALE: float = 0.08
 const PICK_ACTIONS: Array[StringName] = [&"supply_pick_1", &"supply_pick_2", &"supply_pick_3"]
 const DISCARD_PICK: int = 2
 const WHOLE_POOL: int = 1000
+const WEAPON_CATEGORY := "weapon"
 
 @export var provider: UpgradeProvider
 @export var loadout: ShipLoadout
@@ -44,16 +45,22 @@ func open() -> void:
 	opened.emit()
 
 
+## Until the radar is fitted, a crate always offers the radar plus weapons.
 func _with_priority(pool: Array[Upgrade]) -> Array[Upgrade]:
-	var picked := pool.slice(0, OFFER_COUNT)
 	if loadout.is_fitted(priority_mount):
-		return picked
+		return pool.slice(0, OFFER_COUNT)
+	var picked: Array[Upgrade] = []
 	for upgrade in pool:
 		var mount := upgrade as MountUpgrade
 		if mount != null and mount.mount == priority_mount:
-			if not picked.has(upgrade):
-				picked[picked.size() - 1] = upgrade
+			picked.append(upgrade)
 			break
+	for upgrade in pool:
+		if picked.size() < OFFER_COUNT and upgrade.category == WEAPON_CATEGORY and not picked.has(upgrade):
+			picked.append(upgrade)
+	for upgrade in pool:
+		if picked.size() < OFFER_COUNT and not picked.has(upgrade):
+			picked.append(upgrade)
 	return picked
 
 
