@@ -13,15 +13,16 @@ func _init(at: Vector3, size: float) -> void:
 func _on_spawn(effects: EffectManager) -> void:
 	var style := effects.splash_style
 	var reach := sqrt(_size)
+	var current := effects.sea_current()
 	for index in style.droplet_count(_size):
 		effects.droplets.emit(
-			_position, _upward(style.droplet_spread) * _between(style.droplet_speed) * reach, _size
+			_position, _upward(style.droplet_spread) * _between(style.droplet_speed) * reach + current, _size
 		)
 	for index in style.column_count(_size):
 		effects.spray.emit(
-			_position, _upward(style.column_spread) * _between(style.column_speed) * reach, _size
+			_position, _upward(style.column_spread) * _between(style.column_speed) * reach + current, _size
 		)
-	effects.ripples.emit(_position + Vector3.UP * style.ripple_lift, Vector3.ZERO, _size)
+	effects.ripples.emit(_position + Vector3.UP * style.ripple_lift, current, _size)
 	finish()
 
 

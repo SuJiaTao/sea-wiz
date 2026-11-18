@@ -37,8 +37,11 @@ func _on_spawn(effects: EffectManager) -> void:
 
 func _on_step(effects: EffectManager, delta: float) -> void:
 	var strength := _strength()
+	var drift := effects.sea_current() * delta
+	_position += drift
 	for flame in _flames:
 		flame.set_strength(strength)
+		flame.global_position += drift
 	var flame_top := _position + Vector3.UP * FLAME_HEIGHT * _size * strength
 	for index in _smoke.due(SMOKE_PER_SECOND * _size * strength, delta):
 		effects.smoke.emit(flame_top, _rising(SMOKE_RISE, SMOKE_SPREAD), _size)

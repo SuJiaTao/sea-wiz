@@ -52,6 +52,11 @@ func sea_level() -> float:
 	return sea.global_position.y
 
 
+## How fast the water's surface carries things floating on it.
+func sea_current() -> Vector3:
+	return SeaCurrent.velocity((sea as GeometryInstance3D).material_override as ShaderMaterial)
+
+
 func clear_all() -> void:
 	var snapshot: Array[AbstractEffect] = _effects.duplicate()
 	for effect in snapshot:

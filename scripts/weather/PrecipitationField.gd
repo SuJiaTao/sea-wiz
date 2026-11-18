@@ -4,8 +4,6 @@ class_name PrecipitationField
 const CENTRE := "centre"
 const BOX_SIZE := "box_size"
 const FALL_VELOCITY := "fall_velocity"
-const SEA_WIND := "wind_bearing_deg"
-const DEFAULT_WIND_DEG: float = 180.0
 const UNCULLED := AABB(Vector3(-1.0e5, -1.0e5, -1.0e5), Vector3(2.0e5, 2.0e5, 2.0e5))
 
 @export var turret: Turret
@@ -38,12 +36,8 @@ func _ready() -> void:
 func _drift_with_sea() -> void:
 	if sea_material == null:
 		return
-	var wind: Variant = sea_material.get_shader_parameter(SEA_WIND)
-	var bearing := deg_to_rad(wind if wind != null else DEFAULT_WIND_DEG)
 	var fall: Vector3 = _material.get_shader_parameter(FALL_VELOCITY)
-	_material.set_shader_parameter(
-		FALL_VELOCITY, Vector3(sin(bearing) * drift_speed, fall.y, -cos(bearing) * drift_speed)
-	)
+	_material.set_shader_parameter(FALL_VELOCITY, SeaCurrent.velocity(sea_material, drift_speed) + Vector3.UP * fall.y)
 
 
 func set_amount(count: float) -> void:

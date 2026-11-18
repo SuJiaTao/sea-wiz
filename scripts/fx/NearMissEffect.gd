@@ -33,7 +33,7 @@ func _on_spawn(effects: EffectManager) -> void:
 	effects.spawn(ExplosionEffect.new(_position, Vector3.ZERO, _size * BLAST_SCALE))
 	_throw_skirt(effects)
 	_throw_droplets(effects)
-	effects.ripples.emit(_position + Vector3.UP * RIPPLE_LIFT, Vector3.ZERO, _size * RIPPLE_SCALE)
+	effects.ripples.emit(_position + Vector3.UP * RIPPLE_LIFT, effects.sea_current(), _size * RIPPLE_SCALE)
 	effects.spawn(ShockDomeEffect.new(_position, _size))
 	effects.shockwave.emit(_position, _size)
 
