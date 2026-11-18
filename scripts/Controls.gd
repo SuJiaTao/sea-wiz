@@ -27,14 +27,20 @@ const ACTIONS := {
 		{"type": "mouse", "button": MOUSE_BUTTON_XBUTTON1},
 	],
 	"weapon_2": [
-		{"type": "key", "key": KEY_E},
+		{"type": "key", "key": KEY_W},
 		{"type": "mouse", "button": MOUSE_BUTTON_XBUTTON2},
 	],
-	"system_1": [
+	"weapon_3": [
+		{"type": "key", "key": KEY_E},
+	],
+	"weapon_4": [
 		{"type": "key", "key": KEY_R},
 	],
-	"system_2": [
+	"system_1": [
 		{"type": "key", "key": KEY_F},
+	],
+	"system_2": [
+		{"type": "key", "key": KEY_G},
 	],
 	"ciws_palette": [
 		{"type": "key", "key": KEY_C},
@@ -57,19 +63,15 @@ const ACTIONS := {
 		{"type": "key", "key": KEY_KP_ENTER},
 	],
 	"ciws_slew_left": [
-		{"type": "key", "key": KEY_A},
 		{"type": "key", "key": KEY_LEFT},
 	],
 	"ciws_slew_right": [
-		{"type": "key", "key": KEY_D},
 		{"type": "key", "key": KEY_RIGHT},
 	],
 	"ciws_slew_up": [
-		{"type": "key", "key": KEY_W},
 		{"type": "key", "key": KEY_UP},
 	],
 	"ciws_slew_down": [
-		{"type": "key", "key": KEY_S},
 		{"type": "key", "key": KEY_DOWN},
 	],
 }

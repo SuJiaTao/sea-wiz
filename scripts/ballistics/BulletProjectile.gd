@@ -16,11 +16,13 @@ const BURNOUT_TIME := 0.5
 const BURNOUT_FLOOR := 0.6
 const IGNITION_TIME := 0.03
 const IGNITION_FLOOR := 0.5
+const MIN_TRACER := 0.5
 
 var damage: float = 40.0
 var tracer_length: float = 12.0
 
 var _ricochets: int = 0
+var _muzzle: Vector3
 
 
 func _init(
@@ -30,6 +32,7 @@ func _init(
 ) -> void:
 	super(origin, initial_velocity, 0.0, batch)
 	max_lifetime = FLIGHT_TIME
+	_muzzle = origin
 
 
 func _on_propel(delta: float) -> void:
@@ -65,9 +68,17 @@ func _on_deflect(impact: ProjectileImpact) -> void:
 	position = impact.point + impact.normal * SURFACE_CLEARANCE
 
 
+## The tracer trails back over the ground it covered since the last physics
+## step (the batch draws it a little ahead to smooth motion), so a fast round
+## still draws a line from the muzzle out, and never behind the muzzle.
 func visual_transform() -> Transform3D:
 	var result := super()
-	result.basis *= Basis.from_scale(Vector3(1.0, 1.0, tracer_length))
+	var speed := velocity.length()
+	var step := 1.0 / Engine.physics_ticks_per_second
+	var lead := speed * Engine.get_physics_interpolation_fraction() * step
+	var streak := maxf(tracer_length, speed * step + lead)
+	var drawn := minf(streak, position.distance_to(_muzzle) + lead)
+	result.basis *= Basis.from_scale(Vector3(1.0, 1.0, maxf(drawn, MIN_TRACER)))
 	return result
 
 

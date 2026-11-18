@@ -7,15 +7,15 @@ signal restock_requested(mount: StringName)
 enum Slot { PASSIVE, WEAPON, SYSTEM }
 
 const EMPTY := &""
-const WEAPON_ACTIONS: Array[StringName] = [&"weapon_1", &"weapon_2"]
+const WEAPON_ACTIONS: Array[StringName] = [&"weapon_1", &"weapon_2", &"weapon_3", &"weapon_4"]
 const SYSTEM_ACTIONS: Array[StringName] = [&"system_1", &"system_2"]
-const WEAPON_KEYS: Array[String] = ["Q", "E"]
-const SYSTEM_KEYS: Array[String] = ["R", "F"]
+const WEAPON_KEYS: Array[String] = ["Q", "W", "E", "R"]
+const SYSTEM_KEYS: Array[String] = ["F", "G"]
 
 var heat_scale: float = 1.0
 
 var _passives: Array[StringName] = []
-var _weapons: Array[StringName] = [EMPTY, EMPTY]
+var _weapons: Array[StringName] = [EMPTY, EMPTY, EMPTY, EMPTY]
 var _systems: Array[StringName] = [EMPTY, EMPTY]
 
 
@@ -112,7 +112,7 @@ func clear() -> void:
 			upgrade.strip_upgrade()
 	active_upgrades.clear()
 	_passives.clear()
-	_weapons = [EMPTY, EMPTY]
+	_weapons = [EMPTY, EMPTY, EMPTY, EMPTY]
 	_systems = [EMPTY, EMPTY]
 	heat_scale = 1.0
 	upgrades_changed.emit()

@@ -30,7 +30,7 @@
 [ext_resource type="Script" uid="uid://dmxo1e4m8x4uj" path="res://scripts/weapons/WeaponsOrchestrator.gd" id="20_weapons"]
 [ext_resource type="Script" path="res://scripts/weapons/DeckCannon.gd" id="20_deck_cannon"]
 [ext_resource type="Resource" path="res://resources/damage_sources/DeckGun.tres" id="20_deck_gun_source"]
-[ext_resource type="Script" path="res://scripts/hud/DeckCannonHUD.gd" id="20_deck_cannon_hud"]
+[ext_resource type="Script" path="res://scripts/hud/DeckWeaponHUD.gd" id="20_deck_cannon_hud"]
 [ext_resource type="Script" uid="uid://3isdddaon66x" path="res://scripts/weapons/MissileLauncher.gd" id="21_launcher"]
 [ext_resource type="Script" path="res://scripts/weapons/FireCutout.gd" id="21_cutout"]
 [ext_resource type="Script" path="res://scripts/hud/CutoutHUD.gd" id="21_cutout_hud"]
@@ -148,6 +148,10 @@
 
 [ext_resource type="AudioStream" path="res://audio/missile_warning.wav" id="140_warning_beep"]
 [ext_resource type="Script" path="res://scripts/hud/MissileWarning.gd" id="141_missile_warning"]
+[ext_resource type="Script" path="res://scripts/weapons/HeavyGun.gd" id="142_heavy_gun"]
+[ext_resource type="Script" path="res://scripts/weapons/LaserBattery.gd" id="143_lasers"]
+[ext_resource type="Resource" path="res://resources/damage_sources/FrontGun.tres" id="144_front_gun_source"]
+[ext_resource type="Resource" path="res://resources/damage_sources/Laser.tres" id="145_laser_source"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -327,13 +331,14 @@ boom = NodePath("Boom")
 [node name="Boom" type="AudioStreamPlayer" parent="BlastFeel" unique_id=1030745418]
 stream = ExtResource("103_boom")
 
-[node name="MissileWarning" type="AudioStreamPlayer" parent="." node_paths=PackedStringArray("enemies", "ship")]
+[node name="MissileWarning" type="AudioStreamPlayer" parent="." node_paths=PackedStringArray("enemies", "ship", "turret")]
 process_mode = 1
 stream = ExtResource("140_warning_beep")
 volume_db = -8.0
 script = ExtResource("141_missile_warning")
 enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
 ship = NodePath("../ViewportContainer/SubViewport/World/Vessel")
+turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
 
 [node name="Weather" type="Node" parent="." unique_id=173054948 node_paths=PackedStringArray("waves")]
 process_mode = 1
@@ -447,6 +452,7 @@ environment = NodePath("../WorldEnvironment")
 script = ExtResource("83_precip_field")
 turret = NodePath("../Vessel/Turret")
 particle_mesh = ExtResource("86_rain_mesh")
+sea_material = SubResource("Material_sea")
 
 [node name="Snow" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World" unique_id=1057090871 node_paths=PackedStringArray("turret")]
 script = ExtResource("83_precip_field")
@@ -493,7 +499,7 @@ mesh = SubResource("Mesh_sea")
 [node name="Warship" parent="ViewportContainer/SubViewport/World/Vessel" unique_id=1540032579 instance=ExtResource("10_warship")]
 
 [node name="Turret" parent="ViewportContainer/SubViewport/World/Vessel" unique_id=1125800149 instance=ExtResource("2_turret")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15.25, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.55, 0)
 
 [node name="Casings" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Vessel" unique_id=1766620478]
 visible = false
@@ -665,7 +671,7 @@ muzzle_motion = NodePath("MuzzleMotion")
 script = ExtResource("95_muzzle_motion")
 turret = NodePath("../../Vessel/Turret")
 
-[node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=803649068 node_paths=PackedStringArray("turret", "fire_control", "enemies", "ballistics", "renderer", "smoke", "cells")]
+[node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=803649068 node_paths=PackedStringArray("turret", "fire_control", "enemies", "ballistics", "renderer", "smoke", "cells", "fx", "effects")]
 script = ExtResource("21_launcher")
 turret = NodePath("../../Vessel/Turret")
 fire_control = NodePath("../../Sensors/FireControl")
@@ -674,9 +680,11 @@ ballistics = NodePath("../../Ballistics")
 renderer = NodePath("../../Missiles")
 smoke = NodePath("../../MissileSmoke")
 damage_source = ExtResource("27_missile_source")
-cells = NodePath("../../Vessel/Warship/LaunchCells")
+cells = NodePath("../../Vessel/Warship/Cells")
+fx = NodePath("../../FX")
+effects = NodePath("../../Effects")
 
-[node name="DeckCannon" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "fire_control", "ballistics", "tracers", "fx", "mount", "barrel", "muzzle")]
+[node name="DeckCannon" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "fire_control", "ballistics", "tracers", "fx", "gun")]
 script = ExtResource("20_deck_cannon")
 fitting = &"deck_gun"
 turret = NodePath("../../Vessel/Turret")
@@ -685,9 +693,25 @@ ballistics = NodePath("../../Ballistics")
 tracers = NodePath("../../Tracers")
 fx = NodePath("../../FX")
 damage_source = ExtResource("20_deck_gun_source")
-mount = NodePath("../../Vessel/Warship/DeckGun")
-barrel = NodePath("../../Vessel/Warship/DeckGun/Barrel")
-muzzle = NodePath("../../Vessel/Warship/DeckGun/Barrel/Muzzle")
+gun = NodePath("../../Vessel/Warship/TwinGun")
+
+[node name="HeavyGun" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "fire_control", "ballistics", "tracers", "fx", "gun")]
+script = ExtResource("142_heavy_gun")
+fitting = &"front_gun"
+turret = NodePath("../../Vessel/Turret")
+fire_control = NodePath("../../Sensors/FireControl")
+ballistics = NodePath("../../Ballistics")
+tracers = NodePath("../../Tracers")
+fx = NodePath("../../FX")
+damage_source = ExtResource("144_front_gun_source")
+gun = NodePath("../../Vessel/Warship/FrontGun")
+
+[node name="LaserBattery" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("fire_control", "emitters")]
+script = ExtResource("143_lasers")
+fitting = &"lasers"
+fire_control = NodePath("../../Sensors/FireControl")
+damage_source = ExtResource("145_laser_source")
+emitters = [NodePath("../../Vessel/Warship/LaserPort"), NodePath("../../Vessel/Warship/LaserStarboard")]
 
 [node name="SalvoManager" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=981589763 node_paths=PackedStringArray("launcher", "enemies")]
 script = ExtResource("22_salvos")
@@ -835,7 +859,7 @@ mouse_filter = 2
 script = ExtResource("78_weather_hud")
 weather = NodePath("../../../Weather")
 
-[node name="DeckCannonHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("cannon", "turret")]
+[node name="DeckCannonHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("weapon", "turret")]
 anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -844,8 +868,41 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("20_deck_cannon_hud")
 loadout = ExtResource("115_loadout")
-cannon = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/DeckCannon")
+weapon = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/DeckCannon")
 turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
+title = "TWIN GUN"
+short_name = "GUN"
+busy_status = "LOADING"
+
+[node name="HeavyGunHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("weapon", "turret")]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("20_deck_cannon_hud")
+loadout = ExtResource("115_loadout")
+weapon = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/HeavyGun")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
+title = "BOW GUN"
+short_name = "GUN"
+busy_status = "LOADING"
+
+[node name="LaserHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("weapon", "turret")]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("20_deck_cannon_hud")
+loadout = ExtResource("115_loadout")
+weapon = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/LaserBattery")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
+title = "LASERS"
+short_name = "LSR"
+busy_status = "CHARGING"
 
 [node name="CombatFeedbackHUD" type="Control" parent="HUD/HUDRoot" unique_id=1805534994 node_paths=PackedStringArray("enemies")]
 anchors_preset = 0
@@ -965,6 +1022,16 @@ script = ExtResource("114_fit_gate")
 loadout = ExtResource("115_loadout")
 mount = &"deck_gun"
 
+[node name="FitGate" type="Node" parent="HUD/HUDRoot/HeavyGunHUD"]
+script = ExtResource("114_fit_gate")
+loadout = ExtResource("115_loadout")
+mount = &"front_gun"
+
+[node name="FitGate" type="Node" parent="HUD/HUDRoot/LaserHUD"]
+script = ExtResource("114_fit_gate")
+loadout = ExtResource("115_loadout")
+mount = &"lasers"
+
 [node name="FitGate" type="Node" parent="HUD/HUDRoot/DecoyHUD"]
 script = ExtResource("114_fit_gate")
 loadout = ExtResource("115_loadout")
@@ -982,6 +1049,7 @@ enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
 waves = NodePath("../WaveOrchestrator")
 ship = NodePath("../ViewportContainer/SubViewport/World/Vessel")
 manifest = NodePath("Manifest")
+landing_point = Vector3(-5.5, 5.8, -31)
 loadout = ExtResource("115_loadout")
 
 [node name="Manifest" type="Node" parent="SupplyDrops"]

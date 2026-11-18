@@ -21,6 +21,13 @@ func is_locked() -> bool:
 	return is_instance_valid(locked) and locked.alive
 
 
+## Where the CIWS sight is looking: at the locked jet's range, or a default one.
+func sight_point(default_range: float) -> Vector3:
+	var camera := turret.camera
+	var reach := lock_range() if is_locked() else default_range
+	return camera.global_position - camera.global_basis.z * reach
+
+
 func _physics_process(_delta: float) -> void:
 	var best: AbstractEnemy
 	var best_angle := LOCK_CONE_DEG

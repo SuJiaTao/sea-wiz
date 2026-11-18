@@ -30,7 +30,8 @@ uniform float glitter_sharpness : hint_range(1.0, 4000.0) = 300.0;
 uniform float ripple_speed : hint_range(0.0, 4.0) = 1.0;
 uniform float rain : hint_range(0.0, 1.0) = 0.0;
 uniform float rain_ripple_strength : hint_range(0.0, 2.0) = 0.6;
-uniform float rain_splash_level : hint_range(0.0, 2.0) = 1.0;
+uniform float rain_splash_level : hint_range(0.0, 2.0) = 0.45;
+uniform float rain_ring_level : hint_range(0.0, 2.0) = 0.18;
 uniform float rain_far_patter : hint_range(0.0, 0.5) = 0.18;
 uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
 uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
@@ -53,7 +54,8 @@ const float RAIN_WAVES = 60.0;
 const float RAIN_SHARPNESS = 400.0;
 const float RAIN_SEED = 13.7;
 const float SPLASH_TIME = 0.2;
-const float SPLASH_SHARPNESS = 260.0;
+const float SPLASH_SHARPNESS = 900.0;
+const float RING_GLOW_SHARPNESS = 900.0;
 const float FAR_PATTER_RATE = 14.0;
 const float FAR_PATTER_SHARE = 0.992;
 const float FOAM_LEVEL = 0.32;
@@ -103,10 +105,10 @@ vec2 wave_layer(vec2 xz, float angle, float tile, float speed, float stretch, fl
 	return (across * local.x + heading * local.y) * strength;
 }
 
-// Raindrop rings: every cell gets a drop at its own moment, and the ring
-// spreads out and fades before the next one lands there.
-// xy: the spreading ring's slope; z: the bright splash where the drop lands.
-vec3 rain_drop(vec2 xz, float cell_size, float footprint) {
+// Raindrop rings: every cell gets a drop at its own moment, a small splash
+// where it lands, then a ring that spreads out and fades before the next one.
+// xy: the spreading ring's slope; z: the splash; w: the ring's faint light.
+vec4 rain_drop(vec2 xz, float cell_size, float footprint) {
 	vec2 cell = floor(xz / cell_size);
 	vec2 within = fract(xz / cell_size);
 	float seed = hash21(cell);
@@ -118,7 +120,8 @@ vec3 rain_drop(vec2 xz, float cell_size, float footprint) {
 	float ring = sin(front * RAIN_WAVES) * exp(-front * front * RAIN_SHARPNESS) * (1.0 - age);
 	float visible = smoothstep(footprint * 3.0, footprint * 6.0, cell_size);
 	float splash = (1.0 - smoothstep(0.0, SPLASH_TIME, age)) * exp(-distance * distance * SPLASH_SHARPNESS);
-	return vec3(offset / max(distance, 1e-3) * ring, splash) * visible;
+	float ring_light = exp(-front * front * RING_GLOW_SHARPNESS) * (1.0 - age) * smoothstep(0.0, SPLASH_TIME, age);
+	return vec4(offset / max(distance, 1e-3) * ring, splash, ring_light) * visible;
 }
 
 // Gusts roughen the water in drifting patches: rough patches catch more of
@@ -144,9 +147,10 @@ void fragment() {
 	float splashes = 0.0;
 	if (rain > 0.0) {
 		float footprint = length(fwidth(world_pos.xz));
-		vec3 drops = rain_drop(world_pos.xz, RAIN_CELL, footprint) + rain_drop(world_pos.xz + RAIN_SEED, RAIN_CELL * 0.6, footprint);
+		vec2 carried = world_pos.xz - vec2(sin(wind), -cos(wind)) * SWELL_SPEED * TIME;
+		vec4 drops = rain_drop(carried, RAIN_CELL, footprint) + rain_drop(carried + RAIN_SEED, RAIN_CELL * 0.6, footprint);
 		slope += drops.xy * rain * rain_ripple_strength;
-		splashes = drops.z * rain_splash_level;
+		splashes = drops.z * rain_splash_level + drops.w * rain_ring_level;
 		float too_far = 1.0 - smoothstep(footprint * 3.0, footprint * 6.0, RAIN_CELL);
 		float patter = step(FAR_PATTER_SHARE, hash21(FRAGCOORD.xy + floor(TIME * FAR_PATTER_RATE) * RAIN_SEED));
 		splashes += too_far * patter * rain_far_patter;

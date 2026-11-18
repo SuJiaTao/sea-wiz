@@ -3,12 +3,16 @@ class_name PrecipitationField
 
 const CENTRE := "centre"
 const BOX_SIZE := "box_size"
+const FALL_VELOCITY := "fall_velocity"
 const UNCULLED := AABB(Vector3(-1.0e5, -1.0e5, -1.0e5), Vector3(2.0e5, 2.0e5, 2.0e5))
 
 @export var turret: Turret
 @export var particle_mesh: Mesh
 @export var capacity: int = 6000
 @export var box := Vector3(80.0, 50.0, 80.0)
+## Blows the drops the same way the sea's waves run, at this speed (m/s).
+@export var sea_material: ShaderMaterial
+@export var drift_speed: float = 4.0
 
 var _material: ShaderMaterial
 
@@ -16,6 +20,7 @@ var _material: ShaderMaterial
 func _ready() -> void:
 	_material = particle_mesh.surface_get_material(0) as ShaderMaterial
 	_material.set_shader_parameter(BOX_SIZE, box)
+	_drift_with_sea()
 	multimesh = MultiMesh.new()
 	multimesh.transform_format = MultiMesh.TRANSFORM_3D
 	multimesh.mesh = particle_mesh
@@ -26,6 +31,13 @@ func _ready() -> void:
 	multimesh.visible_instance_count = 0
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	custom_aabb = UNCULLED
+
+
+func _drift_with_sea() -> void:
+	if sea_material == null:
+		return
+	var fall: Vector3 = _material.get_shader_parameter(FALL_VELOCITY)
+	_material.set_shader_parameter(FALL_VELOCITY, SeaCurrent.velocity(sea_material, drift_speed) + Vector3.UP * fall.y)
 
 
 func set_amount(count: float) -> void:

@@ -10,4 +10,5 @@ rain_rate = 4500.0
 lens_drops_per_second = 1.2
 radar_clutter = 0.25
 barrel_heat_scale = 0.55
+barrel_wet = 0.8
 cloud_cover = 0.55
