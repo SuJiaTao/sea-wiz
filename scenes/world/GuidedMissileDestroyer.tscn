@@ -90,6 +90,7 @@ recoil_distance = 0.0
 [node name="Cells" type="Node" parent="."]
 script = ExtResource("6_vls")
 installed = true
+open_time = 0.12
 
 [node name="RadarSpinner" type="Node" parent="." node_paths=PackedStringArray("ship")]
 script = ExtResource("7_radar")

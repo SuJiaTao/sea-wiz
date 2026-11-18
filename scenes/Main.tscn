@@ -670,7 +670,7 @@ muzzle_motion = NodePath("MuzzleMotion")
 script = ExtResource("95_muzzle_motion")
 turret = NodePath("../../Vessel/Turret")
 
-[node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=803649068 node_paths=PackedStringArray("turret", "fire_control", "enemies", "ballistics", "renderer", "smoke", "cells", "fx")]
+[node name="MissileLauncher" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=803649068 node_paths=PackedStringArray("turret", "fire_control", "enemies", "ballistics", "renderer", "smoke", "cells", "fx", "effects")]
 script = ExtResource("21_launcher")
 turret = NodePath("../../Vessel/Turret")
 fire_control = NodePath("../../Sensors/FireControl")
@@ -681,6 +681,7 @@ smoke = NodePath("../../MissileSmoke")
 damage_source = ExtResource("27_missile_source")
 cells = NodePath("../../Vessel/Warship/Cells")
 fx = NodePath("../../FX")
+effects = NodePath("../../Effects")
 
 [node name="DeckCannon" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "fire_control", "ballistics", "tracers", "fx", "gun")]
 script = ExtResource("20_deck_cannon")

@@ -85,6 +85,11 @@ func is_cell_open(cell: int) -> bool:
 	return _state[cell] == HOLD
 
 
+## The exhaust hatch of the module this cell belongs to, in world space.
+func uptake_world_position(cell: int) -> Vector3:
+	return _uptakes[cell / CELLS_PER_MODULE].global_position
+
+
 ## Centre of the cell opening, a little above the deck, in world space.
 func cell_world_position(cell: int) -> Vector3:
 	var hinge := _cells[cell]
