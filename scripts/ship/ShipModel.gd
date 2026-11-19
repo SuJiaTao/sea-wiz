@@ -29,7 +29,7 @@ const GLOW_PARAMETER := &"glow"
 @export var window_color := Color(0.7, 0.9, 1.0)
 ## How strongly the bridge windows glow. Tune this if they read too bright or
 ## too dim through the night vision.
-@export var window_glow: float = 0.1
+@export var window_glow: float = 0.055
 
 var _paints: Dictionary = {}
 

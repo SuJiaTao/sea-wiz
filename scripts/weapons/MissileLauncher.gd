@@ -5,6 +5,8 @@ enum LaunchMode { SINGLE, SALVO }
 
 signal launched(origin: Vector3, target: AbstractEnemy, mode: LaunchMode)
 signal detonated(position: Vector3, radius: float)
+## A missile is committed to a target the moment the trigger is pulled on a lock.
+signal committed(target: AbstractEnemy)
 
 const CAPACITY: int = 8
 const REARM_TIME: float = 9.0
@@ -14,10 +16,10 @@ const RANGE_REASON := "OUT OF RANGE"
 const LOCK_CONE_DEG: float = 3.2
 const MIN_RANGE: float = 130.0
 const MAX_RANGE: float = 2800.0
-const REFIRE_TIME: float = 0.55
+const REFIRE_TIME: float = 0.25
 const VERTICAL_CLIMB: float = 0.75
 const CELL_EXIT: float = 1.2
-const EXHAUST_LEAD: float = 0.3
+const EXHAUST_LEAD: float = 0.05
 const UPTAKE_FLAMES: int = 8
 const UPTAKE_FLAME_SPEED := Vector2(1.0, 4.0)
 const UPTAKE_FLAME_RISE: float = 16.0
@@ -61,6 +63,7 @@ var _waiting: Dictionary[int, Array] = {}
 var _firing_order: Array[int] = []
 var _order_index: int = 0
 var _emerging: Array[Array] = []
+var _in_flight: Array[MissileProjectile] = []
 
 
 func _ready() -> void:
@@ -88,7 +91,31 @@ func refill() -> void:
 	_rearm_elapsed = 0.0
 
 
+## Everything one of our missiles is on its way to, including missiles still
+## waiting in an opening cell. A target drops off once its missile hits,
+## misses or is pulled away by a flare.
+func homing_targets() -> Array[AbstractEnemy]:
+	var targets: Array[AbstractEnemy] = []
+	for missile in _in_flight:
+		_add_target(targets, missile.homing_target())
+	for waiting: Array in _waiting.values():
+		_add_target(targets, waiting[0])
+	for launch: Array in _emerging:
+		_add_target(targets, launch[3])
+	return targets
+
+
+func _add_target(targets: Array[AbstractEnemy], wanted: Variant) -> void:
+	if is_instance_valid(wanted) and (wanted as AbstractEnemy).alive and not targets.has(wanted):
+		targets.append(wanted as AbstractEnemy)
+
+
 func _physics_process(delta: float) -> void:
+	var guiding: Array[MissileProjectile] = []
+	for missile in _in_flight:
+		if missile.homing_target() != null:
+			guiding.append(missile)
+	_in_flight = guiding
 	_process_emerging(delta)
 	if not _enabled:
 		return
@@ -127,6 +154,7 @@ func _run_lock(_delta: float) -> void:
 	elif try_launch(lock_target):
 		_refire_remaining = REFIRE_TIME
 		_fired_this_pull = true
+		committed.emit(lock_target)
 	else:
 		lock_denied_reason = "LAUNCH UNAVAILABLE"
 
@@ -207,6 +235,7 @@ func _missile(origin: Vector3, direction: Vector3, target: AbstractEnemy) -> Mis
 	)
 	projectile.weapon_source = damage_source
 	projectile.detonated.connect(_on_detonated)
+	_in_flight.append(projectile)
 	return projectile
 
 

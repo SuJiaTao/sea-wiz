@@ -49,19 +49,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.4, 0)
 mesh = SubResource("Mesh_canopy")
 
 [node name="LinePortBow" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.94, 0.342, 0, -0.342, 0.94, 0, 0, 0, 1, -2.1, 4.4, -2.1)
+transform = Transform3D(0.9481, -0.3095, -0.0964, 0.3181, 0.9226, 0.2874, -0.0000, -0.3095, 0.9530, -2.200, 4.575, -2.200)
 mesh = SubResource("Mesh_line")
 
 [node name="LineStarboardBow" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.94, -0.342, 0, 0.342, 0.94, 0, 0, 0, 1, 2.1, 4.4, -2.1)
+transform = Transform3D(0.9481, 0.3095, 0.0964, -0.3181, 0.9226, 0.2874, 0.0000, -0.3095, 0.9530, 2.200, 4.575, -2.200)
 mesh = SubResource("Mesh_line")
 
 [node name="LinePortStern" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.94, 0.342, 0, -0.342, 0.94, 0, 0, 0, 1, -2.1, 4.4, 2.1)
+transform = Transform3D(0.9481, -0.3095, 0.0964, 0.3181, 0.9226, -0.2874, -0.0000, 0.3095, 0.9530, -2.200, 4.575, 2.200)
 mesh = SubResource("Mesh_line")
 
 [node name="LineStarboardStern" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.94, -0.342, 0, 0.342, 0.94, 0, 0, 0, 1, 2.1, 4.4, 2.1)
+transform = Transform3D(0.9481, 0.3095, -0.0964, -0.3181, 0.9226, -0.2874, 0.0000, 0.3095, 0.9530, 2.200, 4.575, 2.200)
 mesh = SubResource("Mesh_line")
 
 [node name="Strobe" type="MeshInstance3D" parent="."]

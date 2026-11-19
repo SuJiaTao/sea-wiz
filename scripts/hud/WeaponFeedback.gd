@@ -1,7 +1,6 @@
 extends HUDPanel
 class_name WeaponFeedback
 
-const LOCK_TONE: AudioStream = preload("res://audio/lock_tone.wav")
 const LOCK_ACQUIRED: AudioStream = preload("res://audio/lock_acquired.wav")
 
 const MISSILE_MOUNT := &"vls"
@@ -17,7 +16,6 @@ const SALVO_SHIFT := Vector2(0, 48)
 
 @onready var _seeker_audio: AudioStreamPlayer = $SeekerAudio
 
-var _beep_remaining: float = 0.0
 var _message_remaining: float = 0.0
 var _message: String = ""
 var _phase: float = 0.0
@@ -25,6 +23,7 @@ var _phase: float = 0.0
 
 func _ready() -> void:
 	launcher.launched.connect(_on_launched)
+	launcher.committed.connect(_on_committed)
 	launcher.detonated.connect(_on_detonated)
 	salvos.started.connect(_on_salvo_started)
 	salvos.rejected.connect(_on_salvo_rejected)
@@ -37,11 +36,15 @@ func _on_launched(
 ) -> void:
 	if mode == MissileLauncher.LaunchMode.SINGLE and not salvos.is_active():
 		_show_message("MISSILE AWAY", 1.1)
+	smoke.play_launch(origin)
+	turret.apply_camera_shake_impulse(4.5)
+
+
+## One lock-on tone as the missile is committed; the target's diamond turns red.
+func _on_committed(_target: AbstractEnemy) -> void:
 	_seeker_audio.stream = LOCK_ACQUIRED
 	_seeker_audio.pitch_scale = 1.0
 	_seeker_audio.play()
-	smoke.play_launch(origin)
-	turret.apply_camera_shake_impulse(4.5)
 
 
 func _on_detonated(position: Vector3, radius: float) -> void:
@@ -52,27 +55,6 @@ func _on_detonated(position: Vector3, radius: float) -> void:
 func _update_hud(delta: float) -> void:
 	_phase += delta
 	_message_remaining = maxf(_message_remaining - delta, 0.0)
-	if get_tree().paused:
-		_seeker_audio.stop()
-		return
-
-	if (
-		not launcher.trigger_held
-		or not is_instance_valid(launcher.lock_target)
-		or launcher.lock_progress <= 0.0
-		or not launcher.lock_denied_reason.is_empty()
-	):
-		_beep_remaining = 0.0
-		if _seeker_audio.stream == LOCK_TONE:
-			_seeker_audio.stop()
-		return
-
-	_beep_remaining -= delta
-	if _beep_remaining <= 0.0:
-		_beep_remaining = lerpf(0.46, 0.125, launcher.lock_progress)
-		_seeker_audio.stream = LOCK_TONE
-		_seeker_audio.pitch_scale = lerpf(0.85, 1.35, launcher.lock_progress)
-		_seeker_audio.play()
 
 
 func _draw() -> void:
@@ -103,46 +85,8 @@ func _draw() -> void:
 			Color(1, 1, 1, clampf(_message_remaining / 0.4, 0, 1))
 		)
 
-	if not launcher.trigger_held:
-		return
-
-	var camera := turret.camera
-	var center := size * 0.5
-	var distance := camera.near + 1.0
-	var bore := camera.global_position - camera.global_basis.z * distance
-	var edge := bore + camera.global_basis.x * (
-		tan(deg_to_rad(MissileLauncher.LOCK_CONE_DEG)) * distance
-	)
-	var radius := _project_world(camera, bore).distance_to(
-		_project_world(camera, edge)
-	)
-	draw_arc(center, maxf(radius, 10.0), 0, TAU, 40, FAINT)
-
-	if not launcher.lock_denied_reason.is_empty():
-		_center(center.y + 58, launcher.lock_denied_reason, 14)
-		return
-
-	var target := launcher.lock_target
-	if not is_instance_valid(target):
-		return
-	if camera.is_position_behind(target.global_position):
-		return
-
-	var point := _project_world(camera, target.global_position)
-	var progress := launcher.lock_progress
-	var half := lerpf(64.0, 20.0, progress)
-	var color := Color(1, 1, 1, 0.55 + 0.45 * progress)
-	_draw_brackets(point, half, color, 2.0)
-	if progress > 0.0:
-		draw_arc(
-			point, half + 10,
-			-PI * 0.5, -PI * 0.5 + TAU * progress,
-			40, color, 2.0
-		)
-	_text(
-		point + Vector2(-40, half + 30),
-		"SEEKER %d%%" % int(progress * 100.0), 12, color
-	)
+	if launcher.trigger_held and not launcher.lock_denied_reason.is_empty():
+		_center(size.y * 0.5 + 58, launcher.lock_denied_reason, 14)
 
 
 func _show_message(message: String, duration: float) -> void:

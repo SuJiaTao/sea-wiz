@@ -46,6 +46,7 @@ const MISSILE_COLOUR := Color(1.0, 0.58, 0.18, 0.95)
 const MISSILE_FAINT := Color(1.0, 0.58, 0.18, 0.55)
 const SCOPE_MISSILE_RADIUS: float = 3.5
 const SCOPE_AIRCRAFT_SIZE: float = 4.0
+const HOMING_COLOUR := Color(1.0, 0.2, 0.15, 0.95)
 
 @export var turret: Turret
 @export var tracks: TrackManager
@@ -53,6 +54,9 @@ const SCOPE_AIRCRAFT_SIZE: float = 4.0
 @export var gun_director: GunDirector
 @export var fire_control: FireControl
 @export var loadout: ShipLoadout
+## Targets our missiles are flying at keep a red diamond until the missile
+## hits, misses or is decoyed.
+@export var launcher: MissileLauncher
 
 var _clock: float = 0.0
 var _lock_age: float = 0.0
@@ -168,19 +172,26 @@ func _draw_edge_arrow(world_position: Vector3, colour: Color) -> void:
 
 
 func _draw_lock() -> void:
+	var homing := launcher.homing_targets()
+	for target in homing:
+		if _on_screen(target.global_position):
+			_draw_gate(target, 1.0, HOMING_COLOUR)
 	if not fire_control.is_locked():
 		return
 	var enemy := fire_control.locked
 	if not _on_screen(enemy.global_position):
 		return
-	var point := _project(enemy.global_position)
-	var grow := clampf(_lock_age / LOCK_GROW_TIME, 0.0, 1.0)
-	var half := clampf(_screen_radius(enemy) * GATE_SCALE, GATE_MIN, GATE_MAX) * lerpf(GATE_OPEN, 1.0, grow)
-	draw_polyline(_diamond(point, half * LOCK_DIAMOND_REACH), MAIN, LOCK_WIDTH)
+	if not homing.has(enemy):
+		_draw_gate(enemy, clampf(_lock_age / LOCK_GROW_TIME, 0.0, 1.0), MAIN)
 	if loadout.is_fitted(LEAD_FITTING):
 		var lead := gun_director.lead_point(enemy)
 		if not turret.camera.is_position_behind(lead):
 			draw_arc(_project(lead), LEAD_PIP_RADIUS, 0, TAU, LEAD_PIP_SEGMENTS, MAIN, LOCK_WIDTH)
+
+
+func _draw_gate(enemy: AbstractEnemy, grow: float, colour: Color) -> void:
+	var half := clampf(_screen_radius(enemy) * GATE_SCALE, GATE_MIN, GATE_MAX) * lerpf(GATE_OPEN, 1.0, grow)
+	draw_polyline(_diamond(_project(enemy.global_position), half * LOCK_DIAMOND_REACH), colour, LOCK_WIDTH)
 
 
 func _draw_scope() -> void:

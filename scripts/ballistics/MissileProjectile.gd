@@ -44,6 +44,14 @@ func _init(
 	max_lifetime = 14.0
 
 
+## What this missile is still guiding onto; null once it has hit, missed or
+## been decoyed.
+func homing_target() -> AbstractEnemy:
+	if _ballistics == null or not is_instance_valid(_target):
+		return null
+	return _target
+
+
 func _on_propel(delta: float) -> void:
 	if is_instance_valid(_target):
 		if (
