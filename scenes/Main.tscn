@@ -326,11 +326,13 @@ enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
 process_mode = 1
 script = ExtResource("70_lens")
 thermal = NodePath("../ViewportContainer")
+environment = NodePath("../ViewportContainer/SubViewport/World/WorldEnvironment")
 
 [node name="ShockwaveLens" type="Node" parent="." unique_id=64039751 node_paths=PackedStringArray("thermal", "turret", "effects")]
 process_mode = 1
 script = ExtResource("100_shock_lens")
 thermal = NodePath("../ViewportContainer")
+environment = NodePath("../ViewportContainer/SubViewport/World/WorldEnvironment")
 turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
 effects = NodePath("../ViewportContainer/SubViewport/World/Effects")
 
@@ -338,6 +340,7 @@ effects = NodePath("../ViewportContainer/SubViewport/World/Effects")
 script = ExtResource("92_focus_hunt")
 turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
 thermal = NodePath("../ViewportContainer")
+environment = NodePath("../ViewportContainer/SubViewport/World/WorldEnvironment")
 
 [node name="BlastFeel" type="Node" parent="." unique_id=71931798 node_paths=PackedStringArray("effects", "turret", "boom")]
 process_mode = 1
@@ -1206,12 +1209,13 @@ script = ExtResource("167_stage_events")
 waves = NodePath("../WaveOrchestrator")
 fires = NodePath("../ViewportContainer/SubViewport/World/ShipDamage/DeckFires")
 
-[node name="BattleEffects" type="Node" parent="." node_paths=PackedStringArray("enemies", "effects", "thermal")]
+[node name="BattleEffects" type="Node" parent="." node_paths=PackedStringArray("enemies", "effects", "thermal", "environment")]
 process_mode = 1
 script = ExtResource("168_battle_effects")
 enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
 effects = NodePath("../ViewportContainer/SubViewport/World/Effects")
 thermal = NodePath("../ViewportContainer")
+environment = NodePath("../ViewportContainer/SubViewport/World/WorldEnvironment")
 
 [node name="WakeFade" type="CanvasLayer" parent="."]
 layer = 9
