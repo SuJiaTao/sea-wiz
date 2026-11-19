@@ -16,7 +16,7 @@ signal cell_ready(cell: int, launch_position: Vector3, up: Vector3)
 			_vls.visible = v
 @export var lid_open_deg := 100.0
 @export var uptake_open_deg := 95.0
-@export var open_time := 0.35              ## seconds for a lid to swing fully open
+@export var open_time := 0.35              ## seconds for a lid to swing fully open; 0 snaps open
 @export var hold_time := 1.2               ## seconds it stays open after cell_ready
 @export var close_time := 0.6
 
@@ -104,7 +104,7 @@ func _process(delta: float) -> void:
 	for c in _cells.size():
 		match _state[c]:
 			OPENING:
-				_t[c] = minf(1.0, _t[c] + delta / open_time)
+				_t[c] = 1.0 if open_time <= 0.0 else minf(1.0, _t[c] + delta / open_time)
 				if _t[c] >= 1.0:
 					_state[c] = HOLD
 					_hold[c] = hold_time
@@ -124,6 +124,9 @@ func _process(delta: float) -> void:
 		_cells[c].basis = _cell_rest[c] * Basis(Vector3.RIGHT, deg_to_rad(lid_open_deg) * ease_t)
 	for m in _uptakes.size():
 		var target := 1.0 if module_busy[m] else 0.0
-		var speed := 1.0 / (open_time if target > _uptake_t[m] else close_time)
-		_uptake_t[m] = move_toward(_uptake_t[m], target, speed * delta)
+		if target > _uptake_t[m] and open_time <= 0.0:
+			_uptake_t[m] = target
+		else:
+			var speed := 1.0 / (open_time if target > _uptake_t[m] else close_time)
+			_uptake_t[m] = move_toward(_uptake_t[m], target, speed * delta)
 		_uptakes[m].basis = _uptake_rest[m] * Basis(Vector3.RIGHT, deg_to_rad(uptake_open_deg) * ease(_uptake_t[m], -2.0))

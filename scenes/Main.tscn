@@ -807,7 +807,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("4_hud")
 
-[node name="TrackHUD" type="Control" parent="HUD/HUDRoot" unique_id=571153524 node_paths=PackedStringArray("turret", "tracks", "spotter", "gun_director", "fire_control")]
+[node name="TrackHUD" type="Control" parent="HUD/HUDRoot" unique_id=571153524 node_paths=PackedStringArray("turret", "tracks", "spotter", "gun_director", "fire_control", "launcher")]
 anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -821,6 +821,7 @@ spotter = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/Spotter
 gun_director = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/GunDirector")
 fire_control = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/FireControl")
 loadout = ExtResource("115_loadout")
+launcher = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/MissileLauncher")
 
 [node name="PlayerHUD" type="Control" parent="HUD/HUDRoot" unique_id=354245544 node_paths=PackedStringArray("turret", "barrel_heat", "thermal", "video")]
 anchors_preset = 0

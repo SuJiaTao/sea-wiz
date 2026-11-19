@@ -14,6 +14,9 @@ const PITCH_MAX := deg_to_rad(88.0)
 const CAMERA_SHAKE_PER_ROUND := 0.22
 
 const LAUNCHER_OFFSET := Vector3(0.0, 3.30, 3.15)
+## Half the length of one barrel: from its middle out to its muzzle.
+const BARREL_HALF_LENGTH := 1.025
+const BARREL_PREFIX := "Cylinder"
 
 @export_category("Camera Movement Properties")
 @export var mouse_sensitivity: float = 0.0022
@@ -221,8 +224,8 @@ func _fire(delta: float) -> void:
 		_fire_accum = 0.0
 
 func _emit_round() -> void:
-	var origin := muzzle.global_position
 	var forward := -muzzle.global_transform.basis.z
+	var origin := _firing_barrel_tip(forward)
 	var sigma := deg_to_rad(dispersion_deg)
 	var yaw_offset := randfn(0.0, sigma) + _wander.x
 	var pitch_offset := randfn(0.0, sigma) + _wander.y
@@ -238,6 +241,23 @@ func _emit_round() -> void:
 	_flash_timer = 0.035
 	_recoil = minf(_recoil + 0.05, 0.35)
 	camera.apply_shake(CAMERA_SHAKE_PER_ROUND)
+
+
+## Rounds leave whichever barrel has spun round to the top of the cluster,
+## from the end of that barrel as it sits right now.
+func _firing_barrel_tip(forward: Vector3) -> Vector3:
+	if barrels == null:
+		return muzzle.global_position
+	var top: Node3D
+	for child in barrels.get_children():
+		var barrel := child as Node3D
+		if barrel == null or not barrel.name.begins_with(BARREL_PREFIX):
+			continue
+		if top == null or barrel.global_position.y > top.global_position.y:
+			top = barrel
+	if top == null:
+		return muzzle.global_position
+	return top.global_position + forward * BARREL_HALF_LENGTH
 
 
 func _update_audio() -> void:
