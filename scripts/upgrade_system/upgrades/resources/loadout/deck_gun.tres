@@ -6,8 +6,8 @@
 script = ExtResource("1_script")
 mount = &"deck_gun"
 label = "TWIN 57 MM DECK GUN"
-description = "Both barrels fire shells that burst near the target. Good against groups."
+description = "Fires on its own at the enemy ship in the sight. Shells burst near the target."
 category = "weapon"
 weight = 1.0
 max_acummulation = 1
-slot = 1
+slot = 0

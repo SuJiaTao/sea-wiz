@@ -1,18 +1,94 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/TitleScreen.gd" id="1_title"]
+[ext_resource type="Shader" path="res://shaders/sunset_sky.gdshader" id="2_sky"]
+[ext_resource type="Shader" path="res://shaders/sunset_sea.gdshader" id="3_sea"]
+[ext_resource type="PackedScene" path="res://scenes/world/ship/destroyer_v14.glb" id="4_ship"]
+[ext_resource type="PackedScene" path="res://scenes/turret/body/Gun.tscn" id="5_gun"]
+[ext_resource type="PackedScene" path="res://scenes/turret/body/Radome.tscn" id="6_radome"]
+[ext_resource type="PackedScene" path="res://scenes/turret/body/Launcher.tscn" id="7_launcher"]
 
-[node name="TitleScreen" type="Control"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
+[sub_resource type="ShaderMaterial" id="Material_sky"]
+shader = ExtResource("2_sky")
+
+[sub_resource type="Sky" id="Sky_sunset"]
+sky_material = SubResource("Material_sky")
+
+[sub_resource type="Environment" id="Environment_sunset"]
+background_mode = 2
+sky = SubResource("Sky_sunset")
+ambient_light_source = 1
+tonemap_mode = 3
+tonemap_exposure = 0.9
+glow_enabled = true
+glow_intensity = 0.4
+glow_bloom = 0.05
+
+[sub_resource type="ShaderMaterial" id="Material_sea"]
+shader = ExtResource("3_sea")
+
+[sub_resource type="PlaneMesh" id="Mesh_sea"]
+material = SubResource("Material_sea")
+size = Vector2(30000, 30000)
+
+[sub_resource type="StandardMaterial3D" id="Material_silhouette"]
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+
+[node name="TitleScreen" type="CanvasLayer"]
+layer = 20
 script = ExtResource("1_title")
+sky = SubResource("Material_sky")
+sea = SubResource("Material_sea")
+silhouette = SubResource("Material_silhouette")
 
-[node name="Center" type="CenterContainer" parent="."]
-layout_mode = 1
+[node name="Sunset" type="SubViewportContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+stretch = true
+
+[node name="View" type="SubViewport" parent="Sunset"]
+own_world_3d = true
+handle_input_locally = false
+msaa_3d = 2
+size = Vector2i(1280, 720)
+render_target_update_mode = 4
+
+[node name="Environment" type="WorldEnvironment" parent="Sunset/View"]
+environment = SubResource("Environment_sunset")
+
+[node name="Sea" type="MeshInstance3D" parent="Sunset/View"]
+mesh = SubResource("Mesh_sea")
+cast_shadow = 0
+
+[node name="Vessel" type="Node3D" parent="Sunset/View"]
+
+[node name="Ship" parent="Sunset/View/Vessel" instance=ExtResource("4_ship")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 1.9)
+
+[node name="Ciws" type="Node3D" parent="Sunset/View/Vessel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.55, -4.5)
+
+[node name="Mount" type="Node3D" parent="Sunset/View/Vessel/Ciws"]
+transform = Transform3D(1, 0, 0, 0, 0.9848, 0.1736, 0, -0.1736, 0.9848, 0, 2, 0)
+
+[node name="Gun" parent="Sunset/View/Vessel/Ciws/Mount" instance=ExtResource("5_gun")]
+
+[node name="Radome" parent="Sunset/View/Vessel/Ciws" instance=ExtResource("6_radome")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 3.4)
+
+[node name="Launcher" parent="Sunset/View/Vessel/Ciws" instance=ExtResource("7_launcher")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3, 3.15)
+
+[node name="Camera" type="Camera3D" parent="Sunset/View"]
+fov = 50.0
+far = 20000.0
+
+[node name="Text" type="Control" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -20,58 +96,48 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Content" type="VBoxContainer" parent="Center"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 12
-
-[node name="Title" type="Label" parent="Center/Content"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.93, 0.98, 0.93, 0.95)
+[node name="Title" type="Label" parent="Text"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 80.0
+offset_bottom = 160.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.93, 0.82, 0.95)
 theme_override_font_sizes/font_size = 64
 text = "PHALANX CIWS"
 horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="Center/Content"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.62, 0.70, 0.62, 0.85)
+[node name="Subtitle" type="Label" parent="Text"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 156.0
+offset_bottom = 180.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.7, 0.75)
 theme_override_font_sizes/font_size = 15
 text = "CLOSE IN WEAPON SYSTEM"
 horizontal_alignment = 1
 
-[node name="Tagline" type="Label" parent="Center/Content"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 16
-text = "You are the gun. Hold the line."
-horizontal_alignment = 1
-
-[node name="PromptSpace" type="Control" parent="Center/Content"]
-custom_minimum_size = Vector2(0, 24)
-layout_mode = 2
-mouse_filter = 2
-
-[node name="Prompt" type="Label" parent="Center/Content"]
-layout_mode = 2
-mouse_filter = 2
+[node name="Prompt" type="Label" parent="Text"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -110.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0.9, 0.78, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
 theme_override_font_sizes/font_size = 20
-text = "CLICK OR ENTER TO ENGAGE"
+text = "PRESS ANY BUTTON"
 horizontal_alignment = 1
 
-[node name="ControlsSpace" type="Control" parent="Center/Content"]
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
+[node name="Fade" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
-
-[node name="Controls" type="Label" parent="Center/Content"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.62, 0.70, 0.62, 0.85)
-theme_override_font_sizes/font_size = 12
-text = "MOUSE / WASD  AIM     LEFT  GUN
-RIGHT / SHIFT / WHEEL  ZOOM     LET THE BARRELS COOL
-Q / SIDE 1  MISSILE     E / SIDE 2  SALVO
-F  POLARITY     C  COLOUR     ESC  PAUSE"
-horizontal_alignment = 1
+color = Color(0, 0, 0, 0)

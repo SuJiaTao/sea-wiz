@@ -1,0 +1,87 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/SurfaceShipEnemy.gd" id="1_enemy"]
+[ext_resource type="Script" path="res://scripts/ship/ShipModel.gd" id="2_model_script"]
+[ext_resource type="PackedScene" path="res://scenes/world/ship/destroyer_v14.glb" id="3_model"]
+[ext_resource type="Shader" path="res://shaders/ship_paint.gdshader" id="4_paint"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/ArtilleryShell.tscn" id="5_shell"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="6_missile"]
+
+[sub_resource type="BoxShape3D" id="Shape_hull"]
+size = Vector3(22, 18, 150)
+
+[sub_resource type="StandardMaterial3D" id="Material_flash"]
+shading_mode = 0
+albedo_color = Color(4, 4, 4, 1)
+
+[sub_resource type="SphereMesh" id="Mesh_flash"]
+material = SubResource("Material_flash")
+radius = 1.0
+height = 2.0
+radial_segments = 8
+rings = 4
+
+[node name="EnemyDestroyer" type="Node3D" node_paths=PackedStringArray("visuals", "gun", "launcher", "flash_light", "flash_glow", "fire_spots")]
+script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
+gun = NodePath("Visuals/Gun")
+launcher = NodePath("Visuals/Launcher")
+flash_light = NodePath("Visuals/Flash")
+flash_glow = NodePath("Visuals/Gun/FlashGlow")
+fire_spots = NodePath("Visuals/FireSpots")
+max_hp = 9000
+display_name = "DESTROYER"
+score_value = 3000
+hud_radius = 40
+leaves_wreck = false
+blast_size = 4
+hold_fire_time = 14.0
+gun_interval = 6.0
+shells_per_volley = 2
+shell_scene = ExtResource("5_shell")
+missile_interval = 20.0
+missile_scene = ExtResource("6_missile")
+
+[node name="Visuals" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Model" type="Node3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 1.9)
+script = ExtResource("2_model_script")
+model = ExtResource("3_model")
+paint = ExtResource("4_paint")
+
+[node name="Gun" type="Marker3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -38)
+
+[node name="FlashGlow" type="MeshInstance3D" parent="Visuals/Gun"]
+visible = false
+mesh = SubResource("Mesh_flash")
+cast_shadow = 0
+
+[node name="Launcher" type="Marker3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -18)
+
+[node name="Flash" type="OmniLight3D" parent="Visuals"]
+light_energy = 0.0
+omni_range = 90.0
+
+[node name="FireSpots" type="Node3D" parent="Visuals"]
+
+[node name="Bridge" type="Marker3D" parent="Visuals/FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 8)
+
+[node name="Bow" type="Marker3D" parent="Visuals/FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -34)
+
+[node name="Stern" type="Marker3D" parent="Visuals/FireSpots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 40)
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="HullShape" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)
+shape = SubResource("Shape_hull")

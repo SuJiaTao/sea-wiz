@@ -34,17 +34,21 @@ func _on_damaged(amount: float, from_position: Vector3) -> void:
 
 
 func engulf() -> void:
+	ignite_all(1.0)
+
+
+## Sets every spot on the ship burning at least this hard.
+func ignite_all(strength: float) -> void:
 	for child in spots.get_children():
 		var spot := child as Node3D
 		if spot == null:
 			continue
 		if _burning.has(spot):
-			_burning[spot].grow(1.0)
+			_burning[spot].grow(strength)
 			continue
-		var fire := DeckFireEffect.new(spot, 1.0)
+		var fire := DeckFireEffect.new(spot, strength)
 		if effects.spawn(fire):
 			_burning[spot] = fire
-
 
 
 func _process(delta: float) -> void:

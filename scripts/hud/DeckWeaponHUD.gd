@@ -2,7 +2,8 @@ extends HUDPanel
 class_name DeckWeaponHUD
 
 # One deck weapon's slot line: its key, a ready bar, and a marker where its
-# next shot would land when it has one.
+# next shot would land when it has one. A weapon that fires on its own has no
+# key, and lists on the right as AUTO.
 
 const LABEL_LIFT := Vector2(0, 20)
 const BAR_OFFSET := Vector2(62, -10)
@@ -12,6 +13,10 @@ const HINT_FONT: int = 11
 const LABEL_FONT: int = 12
 const MARKER_SIZE: float = 7.0
 const MARKER_WIDTH: float = 1.5
+const AUTO_KEY := "AUTO"
+const AUTO_RIGHT_MARGIN: float = 300.0
+const AUTO_TOP: float = 240.0
+const AUTO_ROW_STEP: float = 44.0
 
 @export var weapon: AbstractDeckWeapon
 @export var turret: Turret
@@ -19,16 +24,23 @@ const MARKER_WIDTH: float = 1.5
 @export var title := "DECK GUN"
 @export var short_name := "GUN"
 @export var busy_status := "LOADING"
+## Where this weapon lists when it fires on its own.
+@export var auto_row: int = 0
 
 
 func _draw() -> void:
 	if get_tree().paused:
 		return
-	var origin := SlotLayout.origin(size, loadout.row_for(weapon.fitting))
+	var row := loadout.row_for(weapon.fitting)
+	var key := loadout.key_for(weapon.fitting)
+	var origin := SlotLayout.origin(size, row)
+	if row < 0:
+		key = AUTO_KEY
+		origin = Vector2(size.x - AUTO_RIGHT_MARGIN, AUTO_TOP + AUTO_ROW_STEP * auto_row)
 	var fill := weapon.readiness()
 	var loaded := fill >= 1.0
 	var status := "READY" if loaded else busy_status
-	_text(origin - LABEL_LIFT, "%s  %s" % [loadout.key_for(weapon.fitting), title], HINT_FONT, FAINT)
+	_text(origin - LABEL_LIFT, "%s  %s" % [key, title], HINT_FONT, FAINT)
 	_text(origin, short_name, LABEL_FONT, DIM)
 	_bar(origin + BAR_OFFSET, BAR_SIZE, fill, MAIN if loaded else DIM)
 	_text(origin + STATUS_OFFSET, status, LABEL_FONT, MAIN if loaded else DIM)

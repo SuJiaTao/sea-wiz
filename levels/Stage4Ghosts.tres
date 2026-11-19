@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="WaveDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/StealthJet.tscn" id="s0_stealth"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/deck_gun.tres" id="u0_deck_gun"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/front_gun.tres" id="u1_front_gun"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/lasers.tres" id="u2_lasers"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/counter_missiles.tres" id="u3_counter_missiles"]
+[ext_resource type="Script" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="3_upgrade"]
+[ext_resource type="Resource" path="res://resources/formations/SplitPair.tres" id="f0_split"]
+
+[sub_resource type="Resource" id="S1"]
+script = ExtResource("2_spawn")
+time = 0.0
+enemy_scene = ExtResource("s0_stealth")
+distance = Vector2(1800, 2200)
+altitude = Vector2(150, 300)
+formation = ExtResource("f0_split")
+group = &"east"
+
+[sub_resource type="Resource" id="S2"]
+script = ExtResource("2_spawn")
+time = 8.0
+enemy_scene = ExtResource("s0_stealth")
+distance = Vector2(1800, 2200)
+altitude = Vector2(150, 300)
+formation = ExtResource("f0_split")
+group = &"west"
+
+[resource]
+script = ExtResource("1_wave")
+title = "STAGE 4  /  GHOSTS"
+spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2")])
+unlocks = Array[ExtResource("3_upgrade")]([ExtResource("u0_deck_gun"), ExtResource("u1_front_gun"), ExtResource("u2_lasers"), ExtResource("u3_counter_missiles")])

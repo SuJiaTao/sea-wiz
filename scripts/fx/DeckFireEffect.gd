@@ -57,7 +57,7 @@ func _on_spawn(effects: EffectManager) -> void:
 
 
 func _on_step(effects: EffectManager, delta: float) -> void:
-	if not is_instance_valid(_anchor):
+	if not is_instance_valid(_anchor) or not _anchor.is_inside_tree():
 		finish()
 		return
 	var base := _anchor.global_position

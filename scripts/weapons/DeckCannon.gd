@@ -11,6 +11,7 @@ const SHELL_SPEED: float = 560.0
 const RELOAD_TIME: float = 2.6
 const SECOND_BARREL_DELAY: float = 0.18
 const DEFAULT_RANGE: float = 1500.0
+const SHIP_AIM_HEIGHT: float = 6.0
 const MUZZLES: Array[Vector3] = [Vector3(-0.86, 0.0, -8.45), Vector3(0.86, 0.0, -8.45)]
 const MUZZLE_SHAKE: float = 2.2
 const BLAST_SHAKE: float = 1.2
@@ -23,6 +24,8 @@ const BLAST_VISUAL_SCALE: float = 0.7
 @export var fx: FXManager
 @export var damage_source: DamageSource
 @export var gun: DeckGunTurret
+## When set, the gun fires on its own at the enemy ship in the sight.
+@export var gunnery: SurfaceGunnery
 
 var reload_left: float = 0.0
 var aim_point: Vector3
@@ -76,9 +79,22 @@ func _physics_process(delta: float) -> void:
 		gun.park()
 		on_target = false
 		return
+	if gunnery != null and gunnery.has_target():
+		_engage(gunnery.target)
+		return
 	aim_point = fire_control.sight_point(DEFAULT_RANGE)
 	gun.aim_at(with_drop(gun.barrel_point(Vector3.ZERO), aim_point, SHELL_SPEED))
 	on_target = gun.is_on_target()
+
+
+func _engage(ship: SurfaceShipEnemy) -> void:
+	var origin := gun.barrel_point(Vector3.ZERO)
+	var flight := origin.distance_to(ship.global_position) / SHELL_SPEED
+	aim_point = ship.global_position + Vector3.UP * SHIP_AIM_HEIGHT + ship.velocity * flight
+	gun.aim_at(with_drop(origin, aim_point, SHELL_SPEED))
+	on_target = gun.is_on_target()
+	if on_target:
+		request_fire()
 
 
 func _on_detonated(position: Vector3, radius: float) -> void:

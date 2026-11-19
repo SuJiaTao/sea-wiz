@@ -66,6 +66,7 @@ func _update_sensor_size() -> void:
 	size = render_size
 	scale = Vector2.ONE / pixels
 	_thermal.set_shader_parameter("sensor_size", sensor_size.max(Vector2(64, 36)))
+	_thermal.set_shader_parameter("grain_cells", render_size)
 	if afterglow != null:
 		afterglow.size = Vector2i(sensor_size)
 

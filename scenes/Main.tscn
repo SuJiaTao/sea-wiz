@@ -54,10 +54,8 @@
 [ext_resource type="Script" uid="uid://c70rt3gtja780" path="res://scripts/BarrelHeat.gd" id="40_barrel_heat"]
 [ext_resource type="Script" uid="uid://iqg7we2i8fh8" path="res://scripts/fx/EffectManager.gd" id="41_effects"]
 [ext_resource type="Script" uid="uid://dq3426txoh84f" path="res://scripts/fx/ParticleBatch.gd" id="42_particles"]
-[ext_resource type="Script" uid="uid://cbsj6v3povdxb" path="res://scripts/fx/FireTexture.gd" id="43_fire_texture"]
 [ext_resource type="Resource" path="res://resources/fx/Wind.tres" id="44_wind"]
 [ext_resource type="Resource" path="res://resources/fx/WaterSplash.tres" id="45_splash"]
-[ext_resource type="Material" path="res://resources/fx/FireMaterial.tres" id="46_fire_material"]
 [ext_resource type="QuadMesh" path="res://resources/fx/FireMesh.tres" id="47_fire_mesh"]
 [ext_resource type="Resource" uid="uid://c3n5ba1flbwb0" path="res://resources/fx/MissileTrail.tres" id="48_missile_trail"]
 [ext_resource type="Resource" uid="uid://b6yw8csd76l2y" path="res://resources/fx/WreckSmoke.tres" id="49_wreck_smoke"]
@@ -141,6 +139,21 @@
 [ext_resource type="Resource" path="res://scripts/upgrade_system/providers/resources/supply_manifest.tres" id="116_manifest_stock"]
 [ext_resource type="PackedScene" path="res://scenes/supply/SupplyCrate.tscn" id="117_crate"]
 [ext_resource type="Resource" path="res://levels/Patrol.tres" id="118_patrol"]
+[ext_resource type="Script" path="res://scripts/weapons/CounterBattery.gd" id="160_counter_battery"]
+[ext_resource type="Script" path="res://scripts/sensors/SurfaceGunnery.gd" id="161_gunnery"]
+[ext_resource type="Script" path="res://scripts/hud/CounterBatteryHUD.gd" id="162_counter_hud"]
+[ext_resource type="Script" path="res://scripts/hud/GunneryHUD.gd" id="163_gunnery_hud"]
+[ext_resource type="Script" path="res://scripts/hud/BackupReticle.gd" id="164_reticle"]
+[ext_resource type="Script" path="res://scripts/ship/PowerGrid.gd" id="165_power"]
+[ext_resource type="Script" path="res://scripts/audio/EngineDrone.gd" id="166_engines"]
+[ext_resource type="Script" path="res://scripts/stages/StageEvents.gd" id="167_stage_events"]
+[ext_resource type="Script" path="res://scripts/fx/BattleEffects.gd" id="168_battle_effects"]
+[ext_resource type="Resource" path="res://levels/Stage4Ghosts.tres" id="169_s4_ghosts"]
+[ext_resource type="Resource" path="res://levels/Stage4BlackWings.tres" id="170_s4_wings"]
+[ext_resource type="Resource" path="res://levels/Stage4SurfaceAction.tres" id="171_s4_surface"]
+[ext_resource type="Resource" path="res://levels/Stage5Titan.tres" id="172_s5_titan"]
+[ext_resource type="Resource" path="res://levels/Stage5Mothership.tres" id="173_s5_mothership"]
+[ext_resource type="Resource" path="res://levels/Stage5LastLight.tres" id="174_s5_last"]
 [ext_resource type="Script" path="res://scripts/sensors/FireControl.gd" id="119_fire_control"]
 [ext_resource type="Script" path="res://scripts/weapons/EmergencyCoolant.gd" id="121_coolant"]
 [ext_resource type="Script" path="res://scripts/hud/CoolantHUD.gd" id="122_coolant_hud"]
@@ -301,7 +314,7 @@ script = ExtResource("1_session")
 [node name="WaveOrchestrator" type="Node" parent="." unique_id=1833867121 node_paths=PackedStringArray("ship")]
 process_mode = 1
 script = ExtResource("6_waves")
-levels = Array[ExtResource("11_wave_type")]([ExtResource("118_patrol"), ExtResource("147_s1_pair"), ExtResource("148_s2_vee"), ExtResource("149_s2_trail"), ExtResource("150_s2_pincer"), ExtResource("151_s3_skim"), ExtResource("152_s3_escort"), ExtResource("153_s3_strike")])
+levels = Array[ExtResource("11_wave_type")]([ExtResource("118_patrol"), ExtResource("147_s1_pair"), ExtResource("148_s2_vee"), ExtResource("149_s2_trail"), ExtResource("150_s2_pincer"), ExtResource("151_s3_skim"), ExtResource("152_s3_escort"), ExtResource("153_s3_strike"), ExtResource("169_s4_ghosts"), ExtResource("170_s4_wings"), ExtResource("171_s4_surface"), ExtResource("172_s5_titan"), ExtResource("173_s5_mothership"), ExtResource("174_s5_last")])
 ship = NodePath("../ViewportContainer/SubViewport/World/Vessel/Warship")
 
 [node name="Score" type="Node" parent="." unique_id=668317612 node_paths=PackedStringArray("enemies")]
@@ -350,7 +363,7 @@ process_mode = 1
 script = ExtResource("75_weather")
 waves = NodePath("../WaveOrchestrator")
 clear = ExtResource("79_clear")
-schedule = Array[ExtResource("81_profile_type")]([ExtResource("79_clear"), ExtResource("79_clear"), ExtResource("79_clear"), ExtResource("88_rain"), ExtResource("88_rain"), ExtResource("95_storm"), ExtResource("146_fog"), ExtResource("89_snow"), ExtResource("89_snow")])
+schedule = Array[ExtResource("81_profile_type")]([ExtResource("79_clear"), ExtResource("79_clear"), ExtResource("79_clear"), ExtResource("88_rain"), ExtResource("88_rain"), ExtResource("95_storm"), ExtResource("146_fog"), ExtResource("89_snow"), ExtResource("89_snow"), ExtResource("79_clear"), ExtResource("79_clear"), ExtResource("79_clear"), ExtResource("79_clear"), ExtResource("79_clear"), ExtResource("79_clear")])
 
 [node name="Fog" type="Node" parent="Weather" unique_id=1716444370 node_paths=PackedStringArray("environment", "camera")]
 script = ExtResource("76_fog")
@@ -597,6 +610,7 @@ flare_smoke = NodePath("FlareSmoke")
 fire_mesh = ExtResource("47_fire_mesh")
 shock_dome_mesh = ExtResource("102_dome")
 splash_style = ExtResource("45_splash")
+max_effects = 160
 
 [node name="Smoke" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects" unique_id=322010178]
 script = ExtResource("42_particles")
@@ -649,11 +663,6 @@ style = ExtResource("64_flare_smoke")
 wind = ExtResource("44_wind")
 capacity = 1500
 
-[node name="FireTexture" type="Node" parent="ViewportContainer/SubViewport/World/Effects" unique_id=397720854]
-script = ExtResource("43_fire_texture")
-material = ExtResource("46_fire_material")
-wind = ExtResource("44_wind")
-
 [node name="Missiles" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World" unique_id=2102574372]
 script = ExtResource("8_batch")
 batch_mesh = ExtResource("25_interceptor")
@@ -696,7 +705,7 @@ cells = NodePath("../../Vessel/Warship/Cells")
 fx = NodePath("../../FX")
 effects = NodePath("../../Effects")
 
-[node name="DeckCannon" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "fire_control", "ballistics", "tracers", "fx", "gun")]
+[node name="DeckCannon" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "fire_control", "ballistics", "tracers", "fx", "gun", "gunnery")]
 script = ExtResource("20_deck_cannon")
 fitting = &"deck_gun"
 turret = NodePath("../../Vessel/Turret")
@@ -706,8 +715,9 @@ tracers = NodePath("../../Tracers")
 fx = NodePath("../../FX")
 damage_source = ExtResource("20_deck_gun_source")
 gun = NodePath("../../Vessel/Warship/TwinGun")
+gunnery = NodePath("../../Sensors/SurfaceGunnery")
 
-[node name="HeavyGun" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "fire_control", "ballistics", "tracers", "fx", "gun")]
+[node name="HeavyGun" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "fire_control", "ballistics", "tracers", "fx", "gun", "gunnery")]
 script = ExtResource("142_heavy_gun")
 fitting = &"front_gun"
 turret = NodePath("../../Vessel/Turret")
@@ -717,6 +727,7 @@ tracers = NodePath("../../Tracers")
 fx = NodePath("../../FX")
 damage_source = ExtResource("144_front_gun_source")
 gun = NodePath("../../Vessel/Warship/FrontGun")
+gunnery = NodePath("../../Sensors/SurfaceGunnery")
 
 [node name="LaserBattery" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("fire_control", "emitters")]
 script = ExtResource("143_lasers")
@@ -885,6 +896,7 @@ turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 title = "TWIN GUN"
 short_name = "GUN"
 busy_status = "LOADING"
+auto_row = 0
 
 [node name="HeavyGunHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("weapon", "turret")]
 anchors_preset = 0
@@ -900,6 +912,7 @@ turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 title = "BOW GUN"
 short_name = "GUN"
 busy_status = "LOADING"
+auto_row = 1
 
 [node name="LaserHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("weapon", "turret")]
 anchors_preset = 0
@@ -915,6 +928,7 @@ turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
 title = "LASERS"
 short_name = "LSR"
 busy_status = "CHARGING"
+auto_row = 2
 
 [node name="CombatFeedbackHUD" type="Control" parent="HUD/HUDRoot" unique_id=1805534994 node_paths=PackedStringArray("enemies")]
 anchors_preset = 0
@@ -975,8 +989,7 @@ script = ExtResource("16_hud_corruption")
 integrity = NodePath("../../ViewportContainer/SubViewport/World/ShipDamage/Integrity")
 laser = NodePath("../LaserHUD")
 
-[node name="TitleScreen" parent="HUD" unique_id=109323306 instance=ExtResource("28_title")]
-layout_mode = 3
+[node name="TitleScreen" parent="." unique_id=109323306 instance=ExtResource("28_title")]
 
 [node name="ConsoleUi" parent="HUD" unique_id=1086120165 instance=ExtResource("97_jhuvt")]
 
@@ -1107,3 +1120,107 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("124_intel_hud")
 doctrine = NodePath("../../../EnemyDoctrine")
+
+[node name="CounterBattery" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("turret", "enemies", "ballistics", "renderer", "smoke", "effects", "fx", "cells")]
+script = ExtResource("160_counter_battery")
+fitting = &"counter_missiles"
+turret = NodePath("../../Vessel/Turret")
+enemies = NodePath("../../Enemies")
+ballistics = NodePath("../../Ballistics")
+renderer = NodePath("../../Missiles")
+smoke = NodePath("../../MissileSmoke")
+damage_source = ExtResource("27_missile_source")
+effects = NodePath("../../Effects")
+fx = NodePath("../../FX")
+cells = NodePath("../../Vessel/Warship/AftCells")
+
+[node name="SurfaceGunnery" type="Node" parent="ViewportContainer/SubViewport/World/Sensors" node_paths=PackedStringArray("turret", "enemies")]
+script = ExtResource("161_gunnery")
+turret = NodePath("../../Vessel/Turret")
+enemies = NodePath("../../Enemies")
+
+[node name="CounterBatteryHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("weapon", "turret")]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("162_counter_hud")
+loadout = ExtResource("115_loadout")
+weapon = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/CounterBattery")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
+title = "COUNTER BATTERY"
+short_name = "AFT"
+busy_status = "RELOADING"
+
+[node name="FitGate" type="Node" parent="HUD/HUDRoot/CounterBatteryHUD"]
+script = ExtResource("114_fit_gate")
+loadout = ExtResource("115_loadout")
+mount = &"counter_missiles"
+
+[node name="GunneryHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("gunnery", "turret")]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("163_gunnery_hud")
+gunnery = NodePath("../../../ViewportContainer/SubViewport/World/Sensors/SurfaceGunnery")
+turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
+
+[node name="BackupReticle" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("164_reticle")
+
+[node name="PowerGrid" type="Node" parent="." node_paths=PackedStringArray("waves", "hud", "video", "radar", "reticle", "hum")]
+process_mode = 1
+script = ExtResource("165_power")
+waves = NodePath("../WaveOrchestrator")
+hud = NodePath("../HUD/HUDRoot")
+video = NodePath("../VideoSignal/AnalogVideo")
+radar = NodePath("../ViewportContainer/SubViewport/World/Sensors/SearchRadar")
+reticle = NodePath("../HUD/BackupReticle")
+hum = NodePath("Hum")
+
+[node name="Hum" type="AudioStreamPlayer" parent="PowerGrid"]
+volume_db = -4.0
+
+[node name="EngineDrone" type="AudioStreamPlayer" parent="." node_paths=PackedStringArray("enemies", "turret")]
+process_mode = 1
+volume_db = -10.0
+script = ExtResource("166_engines")
+enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
+turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
+
+[node name="StageEvents" type="Node" parent="." node_paths=PackedStringArray("waves", "fires")]
+process_mode = 1
+script = ExtResource("167_stage_events")
+waves = NodePath("../WaveOrchestrator")
+fires = NodePath("../ViewportContainer/SubViewport/World/ShipDamage/DeckFires")
+
+[node name="BattleEffects" type="Node" parent="." node_paths=PackedStringArray("enemies", "effects", "thermal")]
+process_mode = 1
+script = ExtResource("168_battle_effects")
+enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
+effects = NodePath("../ViewportContainer/SubViewport/World/Effects")
+thermal = NodePath("../ViewportContainer")
+
+[node name="WakeFade" type="CanvasLayer" parent="."]
+layer = 9
+
+[node name="Black" type="ColorRect" parent="WakeFade"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)

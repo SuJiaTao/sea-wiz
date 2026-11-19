@@ -44,6 +44,6 @@ func reassess() -> void:
 func _on_enemy_created(enemy: AbstractEnemy) -> void:
 	if not enemy.hostile:
 		return
-	enemy.countermeasures_enabled = false
+	enemy.countermeasures_enabled = enemy.innate_countermeasures
 	for counter in active:
 		counter.apply_to(enemy)

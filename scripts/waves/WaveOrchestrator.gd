@@ -20,6 +20,10 @@ var level_number: int = 0
 var level_title: String = ""
 var intermission_remaining: float = 0.0
 
+var current_level: WaveDefinition:
+	get:
+		return _current
+
 var _state: State = State.STOPPED
 var _enemies: EnemyManager
 var _pending: Array[WaveSpawn] = []
