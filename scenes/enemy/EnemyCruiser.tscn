@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/enemy/SurfaceShipEnemy.gd" id="1_enemy"]
 [ext_resource type="Script" path="res://scripts/ship/ShipModel.gd" id="2_model_script"]
-[ext_resource type="PackedScene" path="res://scenes/world/ship/destroyer_v14.glb" id="3_model"]
+[ext_resource type="PackedScene" path="res://scenes/world/ship/destroyer_v15.glb" id="3_model"]
 [ext_resource type="Shader" path="res://shaders/ship_paint.gdshader" id="4_paint"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/ArtilleryShell.tscn" id="5_shell"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="6_missile"]

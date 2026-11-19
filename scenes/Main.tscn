@@ -169,9 +169,7 @@
 [ext_resource type="AudioStream" path="res://audio/missile_warning.wav" id="140_warning_beep"]
 [ext_resource type="Script" path="res://scripts/hud/MissileWarning.gd" id="141_missile_warning"]
 [ext_resource type="Script" path="res://scripts/weapons/HeavyGun.gd" id="142_heavy_gun"]
-[ext_resource type="Script" path="res://scripts/weapons/LaserBattery.gd" id="143_lasers"]
 [ext_resource type="Resource" path="res://resources/damage_sources/FrontGun.tres" id="144_front_gun_source"]
-[ext_resource type="Resource" path="res://resources/damage_sources/Laser.tres" id="145_laser_source"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -732,13 +730,6 @@ damage_source = ExtResource("144_front_gun_source")
 gun = NodePath("../../Vessel/Warship/FrontGun")
 gunnery = NodePath("../../Sensors/SurfaceGunnery")
 
-[node name="LaserBattery" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" node_paths=PackedStringArray("fire_control", "emitters")]
-script = ExtResource("143_lasers")
-fitting = &"lasers"
-fire_control = NodePath("../../Sensors/FireControl")
-damage_source = ExtResource("145_laser_source")
-emitters = [NodePath("../../Vessel/Warship/LaserPort"), NodePath("../../Vessel/Warship/LaserStarboard")]
-
 [node name="SalvoManager" type="Node" parent="ViewportContainer/SubViewport/World/Weapons" unique_id=981589763 node_paths=PackedStringArray("launcher", "enemies")]
 script = ExtResource("22_salvos")
 launcher = NodePath("../MissileLauncher")
@@ -917,22 +908,6 @@ short_name = "GUN"
 busy_status = "LOADING"
 auto_row = 1
 
-[node name="LaserHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("weapon", "turret")]
-anchors_preset = 0
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-script = ExtResource("20_deck_cannon_hud")
-loadout = ExtResource("115_loadout")
-weapon = NodePath("../../../ViewportContainer/SubViewport/World/Weapons/LaserBattery")
-turret = NodePath("../../../ViewportContainer/SubViewport/World/Vessel/Turret")
-title = "LASERS"
-short_name = "LSR"
-busy_status = "CHARGING"
-auto_row = 2
-
 [node name="CombatFeedbackHUD" type="Control" parent="HUD/HUDRoot" unique_id=1805534994 node_paths=PackedStringArray("enemies")]
 anchors_preset = 0
 anchor_right = 1.0
@@ -1054,11 +1029,6 @@ mount = &"deck_gun"
 script = ExtResource("114_fit_gate")
 loadout = ExtResource("115_loadout")
 mount = &"front_gun"
-
-[node name="FitGate" type="Node" parent="HUD/HUDRoot/LaserHUD"]
-script = ExtResource("114_fit_gate")
-loadout = ExtResource("115_loadout")
-mount = &"lasers"
 
 [node name="FitGate" type="Node" parent="HUD/HUDRoot/DecoyHUD"]
 script = ExtResource("114_fit_gate")
