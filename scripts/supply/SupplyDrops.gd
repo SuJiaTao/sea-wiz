@@ -24,6 +24,8 @@ const FIRST_DESCENT_TIME: float = 16.0
 @export var landing_point := Vector3(0.0, 10.0, -40.0)
 @export var manifest: SupplyManifest
 @export var loadout: ShipLoadout
+## Fitted at the start of every run: missiles, flares and the radar.
+@export var starting_kit: Array[Upgrade] = []
 
 var crate: SupplyCrate
 
@@ -34,6 +36,8 @@ var _descent_time: float = DESCENT_TIME
 
 func _ready() -> void:
 	loadout.clear()
+	for upgrade in starting_kit:
+		upgrade.apply_upgrade()
 	waves.level_started.connect(_on_level_started)
 	enemies.enemy_killed.connect(_on_enemy_killed)
 

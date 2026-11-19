@@ -20,6 +20,9 @@ signal shockwave(position: Vector3, size: float)
 @export var splash_style: SplashStyle
 @export var max_effects: int = 96
 
+## How hard it is raining, 0 dry to 1 downpour; rain puts fires out.
+var wetness: float = 0.0
+
 var _effects: Array[AbstractEffect] = []
 
 

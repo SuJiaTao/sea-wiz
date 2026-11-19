@@ -12,7 +12,6 @@ const CLOUD_MIN_PIXELS: float = 7.0
 const CLOUD_PUFFS: int = 5
 const CLOUD_SPREAD: float = 0.55
 const CLOUD_ALPHA: float = 0.16
-const MARKED_DOT: float = 2.5
 const MARKER_SIZE: float = 7.0
 const MARKER_LIFT: float = 14.0
 const FOCUS_CONE_DEG: float = 6.0
@@ -39,12 +38,14 @@ const MISSILE_LABEL := "VAMPIRE"
 const MISSILE_LABEL_SIZE: int = 11
 const MISSILE_BLINK_RATE: float = 4.0
 const MISSILE_BLINK_DUTY: float = 0.5
-const MISSILE_SCOPE_MARK: float = 4.0
 const LEADER_SECONDS: float = 4.0
 const LEADER_MAX_SHARE: float = 0.6
 const LEADER_MIN_PIXELS: float = 2.0
 const STALE_SECONDS: float = 2.2
-const GUN_RING_LABEL := "GUN"
+const MISSILE_COLOUR := Color(1.0, 0.58, 0.18, 0.95)
+const MISSILE_FAINT := Color(1.0, 0.58, 0.18, 0.55)
+const SCOPE_MISSILE_RADIUS: float = 3.5
+const SCOPE_AIRCRAFT_SIZE: float = 4.0
 
 @export var turret: Turret
 @export var tracks: TrackManager
@@ -128,7 +129,7 @@ func _is_focused(enemy: AbstractEnemy) -> bool:
 func _draw_missile_marker(point: Vector2, enemy: AbstractEnemy) -> void:
 	var reach := _screen_radius(enemy) + MISSILE_MARKER
 	var colour := _marker_colour(enemy)
-	draw_polyline(_diamond(point, reach), colour, 2.0)
+	draw_arc(point, reach, 0, TAU, 24, colour, 2.0)
 	_text(point + Vector2(reach + 6.0, -reach), MISSILE_LABEL, MISSILE_LABEL_SIZE, colour)
 
 
@@ -143,11 +144,9 @@ func _diamond(point: Vector2, reach: float) -> PackedVector2Array:
 
 
 func _marker_colour(enemy: AbstractEnemy) -> Color:
-	if _is_focused(enemy):
-		return MAIN
-	if enemy.contact_kind != AbstractEnemy.ContactKind.MISSILE:
-		return FAINT
-	return DIM if _blink_on() else FAINT
+	if enemy.contact_kind == AbstractEnemy.ContactKind.MISSILE:
+		return MISSILE_COLOUR if _is_focused(enemy) or _blink_on() else MISSILE_FAINT
+	return MAIN if _is_focused(enemy) else FAINT
 
 
 func _blink_on() -> bool:
@@ -187,9 +186,6 @@ func _draw_lock() -> void:
 func _draw_scope() -> void:
 	var centre := Vector2(size.x - SCOPE_RADIUS - SCOPE_MARGIN, size.y - SCOPE_RADIUS - SCOPE_MARGIN)
 	draw_arc(centre, SCOPE_RADIUS, 0, TAU, 64, DIM)
-	var gun_ring := SCOPE_RADIUS * Turret.EFFECTIVE_RANGE / RADAR_RANGE
-	draw_arc(centre, gun_ring, 0, TAU, 48, DIM)
-	_text(centre + Vector2(3, -gun_ring - 2), GUN_RING_LABEL, 9, DIM)
 	for i in SCOPE_TICKS:
 		var tick := TAU * float(i) / float(SCOPE_TICKS)
 		var direction := Vector2(sin(tick), -cos(tick))
@@ -210,14 +206,20 @@ func _draw_scope() -> void:
 		var at := _scope_point(centre, enemy.global_position)
 		_draw_leader(centre, enemy.global_position, enemy.velocity, DIM)
 		if enemy.contact_kind == AbstractEnemy.ContactKind.MISSILE:
-			draw_polyline(_diamond(at, MISSILE_SCOPE_MARK), MAIN if _blink_on() else DIM, 1.5)
+			draw_arc(at, SCOPE_MISSILE_RADIUS, 0, TAU, 16, MISSILE_COLOUR if _blink_on() else MISSILE_FAINT, 1.5)
 		else:
-			draw_circle(at, MARKED_DOT, MAIN)
+			_draw_triangle(at, SCOPE_AIRCRAFT_SIZE, MAIN)
 
 	_text(
 		centre + Vector2(-SCOPE_RADIUS, SCOPE_RADIUS + 18),
 		"HEAT  %.1f km   MARKED %d" % [RADAR_RANGE / METRES_PER_KM, marked.size()], 11, FAINT
 	)
+
+
+func _draw_triangle(at: Vector2, half: float, colour: Color) -> void:
+	draw_colored_polygon(PackedVector2Array([
+		at + Vector2(0, -half), at + Vector2(half, half), at + Vector2(-half, half)
+	]), colour)
 
 
 func _draw_class_symbol(at: Vector2, size_hint: float) -> void:

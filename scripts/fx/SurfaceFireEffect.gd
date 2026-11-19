@@ -14,6 +14,7 @@ const SMOKE_SPREAD: float = 1.5
 const EMBERS_PER_SECOND: float = 4.0
 const EMBER_RISE := Vector2(4.0, 11.0)
 const EMBER_SPREAD: float = 3.0
+const RAIN_BURN_SPEEDUP: float = 3.0
 
 var _position: Vector3
 var _size: float
@@ -36,6 +37,7 @@ func _on_spawn(effects: EffectManager) -> void:
 
 
 func _on_step(effects: EffectManager, delta: float) -> void:
+	age += effects.wetness * RAIN_BURN_SPEEDUP * delta
 	var strength := _strength()
 	var drift := effects.sea_current() * delta
 	_position += drift

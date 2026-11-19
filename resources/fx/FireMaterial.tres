@@ -10,4 +10,4 @@ shader = ExtResource("1_shader")
 shader_parameter/palette = ExtResource("2_palette")
 shader_parameter/intensity = 1.0
 shader_parameter/side_fade = 0.25
-shader_parameter/blur_texels = 2.5
+shader_parameter/blur_texels = 0.0

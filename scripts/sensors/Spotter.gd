@@ -7,6 +7,8 @@ signal marked(enemy: AbstractEnemy)
 @export var enemies: EnemyManager
 @export var spot_cone_deg: float = 2.5
 @export var spot_time: float = 0.5
+## Missiles inside this range mark themselves at once, like a real CIWS radar.
+@export var missile_auto_mark_range: float = 4000.0
 
 var candidate: AbstractEnemy
 var progress: float = 0.0
@@ -28,6 +30,7 @@ func marked_enemies() -> Array[AbstractEnemy]:
 
 
 func _physics_process(delta: float) -> void:
+	_mark_inbound_missiles()
 	if not is_instance_valid(candidate):
 		candidate = null
 	var nearest := _unmarked_near_bore()
@@ -42,6 +45,16 @@ func _physics_process(delta: float) -> void:
 		_marked.append(candidate)
 		marked.emit(candidate)
 		_reset()
+
+
+func _mark_inbound_missiles() -> void:
+	var eye := turret.camera.global_position
+	for enemy in enemies.live_enemies():
+		if enemy.contact_kind != AbstractEnemy.ContactKind.MISSILE or _marked.has(enemy):
+			continue
+		if enemy.global_position.distance_to(eye) <= missile_auto_mark_range:
+			_marked.append(enemy)
+			marked.emit(enemy)
 
 
 func _reset() -> void:

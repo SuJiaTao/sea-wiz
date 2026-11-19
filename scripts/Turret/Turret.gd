@@ -4,7 +4,6 @@ class_name Turret
 signal fired(origin: Vector3, direction: Vector3)
 
 const MUZZLE_VELOCITY := 1800.0
-const EFFECTIVE_RANGE := 1460.0
 const ROUNDS_PER_MIN := 4500.0
 const SPINUP_TIME := 0.32
 const SPINDOWN_TIME := 0.8

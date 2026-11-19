@@ -1,6 +1,9 @@
 extends Node
 class_name DeckFires
 
+## In a downpour a full fire dies out in a few seconds.
+const RAIN_DOUSE_PER_SECOND: float = 0.3
+
 @export var integrity: ShipIntegrity
 @export var effects: EffectManager
 @export var spots: Node3D
@@ -42,6 +45,15 @@ func engulf() -> void:
 		if effects.spawn(fire):
 			_burning[spot] = fire
 
+
+
+func _process(delta: float) -> void:
+	if effects.wetness <= 0.0:
+		return
+	var soaking := maxf(1.0 - RAIN_DOUSE_PER_SECOND * effects.wetness * delta, 0.0)
+	for spot in _burning.keys():
+		if not _burning[spot].dampen(soaking):
+			_burning.erase(spot)
 
 
 func _on_repaired(damage_left_fraction: float) -> void:

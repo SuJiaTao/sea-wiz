@@ -32,6 +32,7 @@ uniform float rain : hint_range(0.0, 1.0) = 0.0;
 uniform float rain_ripple_strength : hint_range(0.0, 2.0) = 0.6;
 uniform float rain_splash_level : hint_range(0.0, 2.0) = 0.45;
 uniform float rain_ring_level : hint_range(0.0, 2.0) = 0.18;
+uniform float rain_shadow_level : hint_range(0.0, 1.0) = 0.3;
 uniform float rain_far_patter : hint_range(0.0, 0.5) = 0.18;
 uniform float lightning_flash : hint_range(0.0, 2.0) = 0.0;
 uniform float lightning_reflection : hint_range(0.0, 1.0) = 0.3;
@@ -150,10 +151,12 @@ void fragment() {
 		vec2 carried = world_pos.xz - vec2(sin(wind), -cos(wind)) * SWELL_SPEED * TIME;
 		vec4 drops = rain_drop(carried, RAIN_CELL, footprint) + rain_drop(carried + RAIN_SEED, RAIN_CELL * 0.6, footprint);
 		slope += drops.xy * rain * rain_ripple_strength;
-		splashes = drops.z * rain_splash_level + drops.w * rain_ring_level;
+		vec2 moonward = vec2(sin(radians(moon_bearing_deg)), -cos(radians(moon_bearing_deg)));
+		float moonlit = mix(rain_shadow_level, 1.0, smoothstep(-0.2, 0.5, dot(normalize(world_pos.xz + vec2(1e-3)), moonward)));
+		splashes = (drops.z * rain_splash_level + drops.w * rain_ring_level) * moonlit;
 		float too_far = 1.0 - smoothstep(footprint * 3.0, footprint * 6.0, RAIN_CELL);
 		float patter = step(FAR_PATTER_SHARE, hash21(FRAGCOORD.xy + floor(TIME * FAR_PATTER_RATE) * RAIN_SEED));
-		splashes += too_far * patter * rain_far_patter;
+		splashes += too_far * patter * rain_far_patter * moonlit;
 		splashes *= rain;
 	}
 	vec3 normal = normalize(vec3(-slope.x, 1.0, -slope.y));

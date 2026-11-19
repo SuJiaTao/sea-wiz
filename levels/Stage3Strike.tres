@@ -1,0 +1,55 @@
+[gd_resource type="Resource" script_class="WaveDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/HeavyJet.tscn" id="s0_heavy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="s1_jet"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="s2_skimmer"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Supersonic.tscn" id="s3_supersonic"]
+[ext_resource type="Resource" path="res://resources/formations/SplitPair.tres" id="f0_split"]
+
+[sub_resource type="Resource" id="S1"]
+script = ExtResource("2_spawn")
+time = 0.0
+enemy_scene = ExtResource("s1_jet")
+distance = Vector2(1800, 2200)
+altitude = Vector2(150, 300)
+formation = ExtResource("f0_split")
+group = &"north"
+
+[sub_resource type="Resource" id="S2"]
+script = ExtResource("2_spawn")
+time = 0.0
+enemy_scene = ExtResource("s1_jet")
+distance = Vector2(1800, 2200)
+altitude = Vector2(150, 300)
+formation = ExtResource("f0_split")
+group = &"south"
+
+[sub_resource type="Resource" id="S3"]
+script = ExtResource("2_spawn")
+time = 10.0
+enemy_scene = ExtResource("s2_skimmer")
+distance = Vector2(2200, 2600)
+altitude = Vector2(8, 15)
+group = &"north"
+
+[sub_resource type="Resource" id="S4"]
+script = ExtResource("2_spawn")
+time = 16.0
+enemy_scene = ExtResource("s0_heavy")
+distance = Vector2(2000, 2400)
+altitude = Vector2(300, 450)
+
+[sub_resource type="Resource" id="S5"]
+script = ExtResource("2_spawn")
+time = 22.0
+enemy_scene = ExtResource("s3_supersonic")
+distance = Vector2(2200, 2600)
+altitude = Vector2(8, 15)
+group = &"south"
+
+[resource]
+script = ExtResource("1_wave")
+title = "STAGE 3  /  COORDINATED STRIKE"
+spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2"), SubResource("S3"), SubResource("S4"), SubResource("S5")])

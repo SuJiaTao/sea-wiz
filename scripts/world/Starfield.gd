@@ -2,22 +2,20 @@ extends Node3D
 class_name Starfield
 
 # The night sky's stars as one multimesh: a scatter over the whole sky plus a
-# denser drift of faint ones along the Milky Way, whose glow the sky paints.
-# Most stars are faint, as in the real sky; zooming in brings more of them out.
+# denser drift of faint ones along where the Milky Way runs. Most stars are
+# faint, as in the real sky; zooming in brings more of them out.
 
-const POLE := "milky_way_pole"
 const MARKED := 1.0
 
 @export var star_mesh: Mesh
-@export var environment: WorldEnvironment
 @export var count: int = 900
-@export var band_count: int = 1500
+@export var band_count: int = 3000
 @export var radius: float = 5500.0
 @export var min_elevation_deg: float = 2.0
 @export var brightness := Vector2(0.03, 0.6)
 @export var band_brightness := Vector2(0.02, 0.32)
 @export var faintness: float = 4.0
-@export var size_pixels := Vector2(0.9, 1.3)
+@export var size_pixels := Vector2(0.7, 1.0)
 @export var band_bearing_deg: float = 45.0
 @export var band_tilt_deg: float = 70.0
 @export var band_spread: float = 0.12
@@ -31,8 +29,6 @@ var _random := RandomNumberGenerator.new()
 func _ready() -> void:
 	_random.seed = layout_seed
 	var pole := _pole()
-	if environment != null:
-		(environment.environment.sky.sky_material as ShaderMaterial).set_shader_parameter(POLE, pole)
 	var points: Array[Vector3] = []
 	while points.size() < count:
 		_keep(points, _random_direction())

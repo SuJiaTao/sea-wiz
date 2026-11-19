@@ -2,7 +2,7 @@ extends AbstractEffect
 class_name DeckFireEffect
 
 const FLAME_WIDTH: float = 6.0
-const FLAME_HEIGHT: float = 7.0
+const FLAME_HEIGHT: float = 9.5
 const MIN_SIZE: float = 0.55
 const LAYERS: Array[Vector4] = [
 	Vector4(0.0, 0.0, 0.0, 1.0),
@@ -11,13 +11,14 @@ const LAYERS: Array[Vector4] = [
 	Vector4(0.6, 0.0, -1.5, 0.65),
 	Vector4(-0.8, 0.0, -1.1, 0.55),
 ]
-const BILLOWS_PER_SECOND: float = 3.0
+const BILLOWS_PER_SECOND: float = 1.5
 const BILLOW_RISE := Vector2(1.5, 4.0)
 const BILLOW_SPREAD: float = 0.9
-const BILLOW_SCALE: float = 0.55
+const BILLOW_SCALE: float = 0.35
 const BILLOW_LIFT: float = 0.35
 const SMOKE_PER_SECOND: float = 4.0
 const SMOKE_SCALE: float = 0.5
+const SMOKE_LIFE: float = 0.45
 const SMOKE_RISE := Vector2(2.0, 4.5)
 const SMOKE_SPREAD: float = 1.2
 const EMBERS_PER_SECOND: float = 5.0
@@ -68,7 +69,7 @@ func _on_step(effects: EffectManager, delta: float) -> void:
 		_flames[index].set_strength(burning)
 	var flame_top := base + Vector3.UP * FLAME_HEIGHT * size * burning
 	for index in _smoke.due(SMOKE_PER_SECOND * burning, delta):
-		effects.smoke.emit(flame_top, _rising(SMOKE_RISE, SMOKE_SPREAD), SMOKE_SCALE * size)
+		effects.smoke.emit(flame_top, _rising(SMOKE_RISE, SMOKE_SPREAD), SMOKE_SCALE * size, SMOKE_LIFE)
 	var billow_base := base + Vector3.UP * FLAME_HEIGHT * size * burning * BILLOW_LIFT
 	for index in _billows.due(BILLOWS_PER_SECOND * burning, delta):
 		effects.fireballs.emit(billow_base, _rising(BILLOW_RISE, BILLOW_SPREAD), BILLOW_SCALE * size)

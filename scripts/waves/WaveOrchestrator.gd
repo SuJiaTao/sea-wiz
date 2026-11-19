@@ -8,6 +8,9 @@ signal level_started(number: int, title: String)
 
 enum State { STOPPED, INTERMISSION, SPAWNING, FINISHED }
 
+const GROUP_SEPARATION: float = deg_to_rad(100.0)
+const GROUP_TRIES: int = 12
+
 @export var levels: Array[WaveDefinition] = []
 @export var initial_delay: float = 3.0
 @export var intermission: float = 7.0
@@ -151,8 +154,25 @@ func _bearing_for(group: StringName) -> float:
 	if group.is_empty():
 		return BlindArc.open_bearing(randf())
 	if not _group_bearings.has(group):
-		_group_bearings[group] = BlindArc.open_bearing(randf())
+		_group_bearings[group] = _apart_from_other_groups()
 	return _group_bearings[group]
+
+
+## Separate groups in one wave come in from well-separated directions.
+func _apart_from_other_groups() -> float:
+	var best := BlindArc.open_bearing(randf())
+	var best_gap := -1.0
+	for attempt in GROUP_TRIES:
+		var candidate := BlindArc.open_bearing(randf())
+		var gap := PI
+		for taken: float in _group_bearings.values():
+			gap = minf(gap, absf(angle_difference(candidate, taken)))
+		if gap >= GROUP_SEPARATION:
+			return candidate
+		if gap > best_gap:
+			best_gap = gap
+			best = candidate
+	return best
 
 
 func _validate() -> String:

@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="WaveDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/HeavyJet.tscn" id="s0_heavy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Interceptor.tscn" id="s1_interceptor"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="s2_jet"]
+[ext_resource type="Resource" path="res://resources/formations/LineAbreast.tres" id="f0_line"]
+
+[sub_resource type="Resource" id="S1"]
+script = ExtResource("2_spawn")
+time = 0.0
+enemy_scene = ExtResource("s0_heavy")
+distance = Vector2(2000, 2400)
+altitude = Vector2(300, 450)
+group = &"package"
+
+[sub_resource type="Resource" id="S2"]
+script = ExtResource("2_spawn")
+time = 0.0
+enemy_scene = ExtResource("s2_jet")
+distance = Vector2(1800, 2200)
+altitude = Vector2(150, 300)
+formation = ExtResource("f0_line")
+group = &"package"
+
+[sub_resource type="Resource" id="S3"]
+script = ExtResource("2_spawn")
+time = 12.0
+enemy_scene = ExtResource("s1_interceptor")
+distance = Vector2(1800, 2200)
+altitude = Vector2(150, 300)
+
+[resource]
+script = ExtResource("1_wave")
+title = "STAGE 3  /  BOMBER ESCORT"
+spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2"), SubResource("S3")])

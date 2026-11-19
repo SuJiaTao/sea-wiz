@@ -13,5 +13,5 @@ altitude = Vector2(150, 250)
 
 [resource]
 script = ExtResource("1_wave")
-title = "LONE ATTACKER"
+title = "STAGE 1  /  LONE ATTACKER"
 spawns = Array[ExtResource("2_spawn")]([SubResource("S1")])

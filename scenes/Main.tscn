@@ -15,9 +15,6 @@
 [ext_resource type="Script" uid="uid://dkmwr4afokdk7" path="res://scripts/FXManager.gd" id="9_fx"]
 [ext_resource type="PackedScene" path="res://scenes/world/GuidedMissileDestroyer.tscn" id="10_warship"]
 [ext_resource type="Script" uid="uid://b2ap6okbtqnal" path="res://scripts/waves/WaveDefinition.gd" id="11_wave_type"]
-[ext_resource type="Resource" uid="uid://blmh1ka3ro1ff" path="res://levels/FirstContact.tres" id="12_first"]
-[ext_resource type="Resource" uid="uid://bo5sd0cld6x1a" path="res://levels/Saturation.tres" id="13_second"]
-[ext_resource type="Resource" path="res://levels/Formations.tres" id="97_formations"]
 [ext_resource type="Shader" uid="uid://b4v53wi6xsomg" path="res://shaders/thermal.gdshader" id="14_thermal_shader"]
 [ext_resource type="Shader" uid="uid://c62jnvd10xwhp" path="res://shaders/sea.gdshader" id="15_sea_shader"]
 [ext_resource type="Texture2D" path="res://resources/world/WaveNormals.tres" id="15_wave_normals"]
@@ -84,10 +81,8 @@
 [ext_resource type="Script" uid="uid://dpmtneh5xw6bj" path="res://scripts/hud/ScoreHUD.gd" id="66_score_hud"]
 [ext_resource type="Script" uid="uid://dx83hhfgf7en7" path="res://scripts/enemy/WreckHazards.gd" id="67_wreck_hazards"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Wreck.tscn" id="68_wreck"]
-[ext_resource type="Resource" uid="uid://hycbbhc1h8kc" path="res://levels/Escort.tres" id="69_escort"]
 [ext_resource type="Script" uid="uid://dxecqktkhiq04" path="res://scripts/display/LensSpray.gd" id="70_lens"]
 [ext_resource type="Script" uid="uid://d1eiyouy38af8" path="res://scripts/ship/NearMissReactions.gd" id="71_near_miss"]
-[ext_resource type="Resource" uid="uid://craphhve3bg4h" path="res://levels/FallingStars.tres" id="72_falling_stars"]
 [ext_resource type="Script" uid="uid://bedv8jb775n4s" path="res://scripts/world/Starfield.gd" id="73_starfield"]
 [ext_resource type="QuadMesh" path="res://resources/world/StarMesh.tres" id="74_star_mesh"]
 [ext_resource type="Script" uid="uid://8ekyivo2ib3l" path="res://scripts/weather/WeatherDirector.gd" id="75_weather"]
@@ -112,6 +107,19 @@
 [ext_resource type="Script" uid="uid://bofiqnylnyqxx" path="res://scripts/ship/ShipSway.gd" id="94_sway"]
 [ext_resource type="Script" path="res://scripts/ship/SplashRocking.gd" id="98_splash_rocking"]
 [ext_resource type="Resource" path="res://resources/weather/Thunderstorm.tres" id="95_storm"]
+[ext_resource type="Resource" path="res://resources/weather/Fog.tres" id="146_fog"]
+[ext_resource type="Resource" path="res://levels/Stage1Pair.tres" id="147_s1_pair"]
+[ext_resource type="Resource" path="res://levels/Stage2Vee.tres" id="148_s2_vee"]
+[ext_resource type="Resource" path="res://levels/Stage2Trail.tres" id="149_s2_trail"]
+[ext_resource type="Resource" path="res://levels/Stage2Pincer.tres" id="150_s2_pincer"]
+[ext_resource type="Resource" path="res://levels/Stage3SeaSkim.tres" id="151_s3_skim"]
+[ext_resource type="Resource" path="res://levels/Stage3Escort.tres" id="152_s3_escort"]
+[ext_resource type="Resource" path="res://levels/Stage3Strike.tres" id="153_s3_strike"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/vertical_launch.tres" id="154_kit_vls"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/chaff_launchers.tres" id="155_kit_decoys"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/ir_decoys.tres" id="156_kit_flares"]
+[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/search_radar.tres" id="157_kit_radar"]
+[ext_resource type="Script" path="res://scripts/weather/FireDousingWeather.gd" id="158_fire_dousing"]
 [ext_resource type="Material" path="res://resources/weather/LightningMaterial.tres" id="96_bolt_material"]
 [ext_resource type="PackedScene" uid="uid://dr2blsow1udrq" path="res://scenes/ui/ConsoleUI.tscn" id="97_jhuvt"]
 [ext_resource type="AudioStream" uid="uid://bpprgi1upse2" path="res://audio/thunder.wav" id="97_thunder"]
@@ -134,7 +142,6 @@
 [ext_resource type="PackedScene" path="res://scenes/supply/SupplyCrate.tscn" id="117_crate"]
 [ext_resource type="Resource" path="res://levels/Patrol.tres" id="118_patrol"]
 [ext_resource type="Script" path="res://scripts/sensors/FireControl.gd" id="119_fire_control"]
-[ext_resource type="Resource" path="res://levels/Titan.tres" id="120_titan"]
 [ext_resource type="Script" path="res://scripts/weapons/EmergencyCoolant.gd" id="121_coolant"]
 [ext_resource type="Script" path="res://scripts/hud/CoolantHUD.gd" id="122_coolant_hud"]
 [ext_resource type="Script" path="res://scripts/enemy/EnemyDoctrine.gd" id="123_doctrine"]
@@ -199,8 +206,6 @@ shader_parameter/shot_noise = 0.3
 shader = ExtResource("39_sky_shader")
 shader_parameter/sky_top_color = Color(0.075, 0.075, 0.075, 1)
 shader_parameter/sky_mottle = 0.16
-shader_parameter/milky_way = 0.012
-shader_parameter/milky_way_width = 0.22
 shader_parameter/sky_horizon_color = Color(0.15, 0.15, 0.15, 1)
 shader_parameter/sky_curve = 0.3
 shader_parameter/cloud_contrast = 0.15
@@ -296,7 +301,7 @@ script = ExtResource("1_session")
 [node name="WaveOrchestrator" type="Node" parent="." unique_id=1833867121 node_paths=PackedStringArray("ship")]
 process_mode = 1
 script = ExtResource("6_waves")
-levels = Array[ExtResource("11_wave_type")]([ExtResource("118_patrol"), ExtResource("12_first"), ExtResource("97_formations"), ExtResource("13_second"), ExtResource("69_escort"), ExtResource("72_falling_stars"), ExtResource("120_titan")])
+levels = Array[ExtResource("11_wave_type")]([ExtResource("118_patrol"), ExtResource("147_s1_pair"), ExtResource("148_s2_vee"), ExtResource("149_s2_trail"), ExtResource("150_s2_pincer"), ExtResource("151_s3_skim"), ExtResource("152_s3_escort"), ExtResource("153_s3_strike")])
 ship = NodePath("../ViewportContainer/SubViewport/World/Vessel/Warship")
 
 [node name="Score" type="Node" parent="." unique_id=668317612 node_paths=PackedStringArray("enemies")]
@@ -345,7 +350,7 @@ process_mode = 1
 script = ExtResource("75_weather")
 waves = NodePath("../WaveOrchestrator")
 clear = ExtResource("79_clear")
-fronts = Array[ExtResource("81_profile_type")]([ExtResource("88_rain"), ExtResource("89_snow"), ExtResource("95_storm")])
+schedule = Array[ExtResource("81_profile_type")]([ExtResource("79_clear"), ExtResource("79_clear"), ExtResource("79_clear"), ExtResource("88_rain"), ExtResource("88_rain"), ExtResource("95_storm"), ExtResource("146_fog"), ExtResource("89_snow"), ExtResource("89_snow")])
 
 [node name="Fog" type="Node" parent="Weather" unique_id=1716444370 node_paths=PackedStringArray("environment", "camera")]
 script = ExtResource("76_fog")
@@ -386,6 +391,10 @@ light = NodePath("../../ViewportContainer/SubViewport/World/LightningLight")
 
 [node name="Thunder" type="AudioStreamPlayer" parent="Weather/Lightning" unique_id=1144374424]
 stream = ExtResource("97_thunder")
+
+[node name="FireDousing" type="Node" parent="Weather" node_paths=PackedStringArray("effects")]
+script = ExtResource("158_fire_dousing")
+effects = NodePath("../../ViewportContainer/SubViewport/World/Effects")
 
 [node name="SeaState" type="Node" parent="Weather" unique_id=775302456 node_paths=PackedStringArray("sway")]
 script = ExtResource("93_sea_state")
@@ -443,10 +452,9 @@ sky_mode = 1
 script = ExtResource("130_moon_light")
 environment = NodePath("../WorldEnvironment")
 
-[node name="Starfield" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1533288875 node_paths=PackedStringArray("environment")]
+[node name="Starfield" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1533288875]
 script = ExtResource("73_starfield")
 star_mesh = ExtResource("74_star_mesh")
-environment = NodePath("../WorldEnvironment")
 
 [node name="Rain" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World" unique_id=573042867 node_paths=PackedStringArray("turret")]
 script = ExtResource("83_precip_field")
@@ -595,12 +603,16 @@ script = ExtResource("42_particles")
 style = ExtResource("49_wreck_smoke")
 wind = ExtResource("44_wind")
 capacity = 1500
+near_cull = 3.0
+near_fade = 20.0
 
 [node name="Fireballs" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects" unique_id=1469185097]
 script = ExtResource("42_particles")
 style = ExtResource("50_fireballs")
 wind = ExtResource("44_wind")
 capacity = 1500
+near_cull = 3.0
+near_fade = 20.0
 
 [node name="Embers" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects" unique_id=944172358]
 script = ExtResource("42_particles")
@@ -1051,6 +1063,7 @@ ship = NodePath("../ViewportContainer/SubViewport/World/Vessel")
 manifest = NodePath("Manifest")
 landing_point = Vector3(-5.5, 5.8, -31)
 loadout = ExtResource("115_loadout")
+starting_kit = Array[Resource]([ExtResource("154_kit_vls"), ExtResource("155_kit_decoys"), ExtResource("156_kit_flares"), ExtResource("157_kit_radar")])
 
 [node name="Manifest" type="Node" parent="SupplyDrops"]
 script = ExtResource("111_supply_manifest")

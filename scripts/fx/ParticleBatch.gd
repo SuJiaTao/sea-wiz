@@ -18,6 +18,8 @@ const WORLD_BOUNDS := AABB(Vector3(-5000, -5000, -5000), Vector3(10000, 10000, 1
 @export var capacity: int = 1000
 @export var near_cull: float = 0.0
 @export var zoom_near_cull: float = 0.0
+## Particles shrink away over this many metres before the near cut-off.
+@export var near_fade: float = 0.0
 
 var sensor: Camera3D
 
@@ -89,10 +91,15 @@ func _wind_velocity() -> Vector3:
 	return wind.velocity if wind != null else Vector3.ZERO
 
 
+func _eye() -> Camera3D:
+	return sensor if is_instance_valid(sensor) else get_viewport().get_camera_3d()
+
+
 func _cull_distance() -> float:
-	if not is_instance_valid(sensor):
+	var eye := _eye()
+	if eye == null:
 		return 0.0
-	return zoom_near_cull if sensor.fov < ZOOMED_FOV else near_cull
+	return zoom_near_cull if eye.fov < ZOOMED_FOV else near_cull
 
 
 func _write_instances() -> void:
@@ -102,12 +109,13 @@ func _write_instances() -> void:
 	var lifetimes := _particles.lifetimes
 	var seeds := _particles.seeds
 	var cull := _cull_distance()
-	var eye := sensor.global_position if cull > 0.0 else Vector3.ZERO
+	var eye := _eye().global_position if cull > 0.0 else Vector3.ZERO
 	for index in _particles.count:
 		var position := positions[index]
 		var size := sizes[index]
-		if cull > 0.0 and position.distance_squared_to(eye) < cull * cull:
-			size = 0.0
+		if cull > 0.0:
+			var away := position.distance_to(eye) - cull
+			size *= clampf(away / near_fade, 0.0, 1.0) if near_fade > 0.0 else (1.0 if away > 0.0 else 0.0)
 		var offset := index * FLOATS_PER_INSTANCE
 		_instances[offset + SCALE_X] = size
 		_instances[offset + SCALE_Y] = size

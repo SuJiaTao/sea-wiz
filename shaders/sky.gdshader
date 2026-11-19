@@ -15,9 +15,6 @@ uniform float ground_curve : hint_range(0.001, 1.0) = 0.02;
 uniform float cloud_contrast : hint_range(0.0, 1.0) = 0.0;
 uniform float sky_mottle : hint_range(0.0, 0.5) = 0.0;
 uniform float sky_mottle_scale = 2.5;
-uniform float milky_way : hint_range(0.0, 0.2) = 0.0;
-uniform vec3 milky_way_pole = vec3(0.66, 0.34, 0.66);
-uniform float milky_way_width : hint_range(0.02, 0.5) = 0.16;
 uniform float cloud_scale = 0.6;
 uniform vec2 cloud_drift = vec2(0.004, 0.001);
 // Cloud lit from below by the night glow: overcast reads as brighter patches.
@@ -102,14 +99,6 @@ const float METEOR_WIDTH = 0.0012;
 const vec2 MOTTLE_SEED = vec2(13.1, 7.7);
 const float MOTTLE_DETAIL = 3.1;
 const float MOTTLE_DETAIL_SHARE = 0.35;
-const float BAND_GRAIN = 9.0;
-const float BAND_CLUMP = 3.0;
-const float BAND_CLUMP_SHARE = 0.6;
-const float LANE_OFFSET = 0.025;
-const float LANE_WIDTH = 0.035;
-const float LANE_DEPTH = 0.75;
-const float LANE_BREAKUP = 6.0;
-const float BAND_HORIZON_FADE = 0.12;
 
 float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -142,19 +131,6 @@ float sky_patches(vec3 direction) {
 	vec2 p = direction.xz / max(direction.y + 0.3, 0.3) * sky_mottle_scale;
 	float n = mix(value_noise(p + MOTTLE_SEED), value_noise(p * MOTTLE_DETAIL), MOTTLE_DETAIL_SHARE);
 	return 1.0 + (n - 0.5) * 2.0 * sky_mottle;
-}
-
-// The Milky Way: a faint, clumpy band along a great circle, split by a
-// darker dust lane, fading into the haze near the horizon.
-float milky_band(vec3 direction) {
-	vec3 pole = normalize(milky_way_pole);
-	float off = dot(direction, pole);
-	float band = exp(-pow(off / milky_way_width, 2.0));
-	vec3 around = normalize(direction - pole * off + vec3(1e-4));
-	vec2 p = vec2(atan(around.x, around.z), off);
-	float clump = mix(1.0, value_noise(p * BAND_CLUMP) * value_noise(p * BAND_GRAIN + MOTTLE_SEED) * 2.0, BAND_CLUMP_SHARE);
-	float lane = exp(-pow((off - LANE_OFFSET) / LANE_WIDTH, 2.0)) * value_noise(p * LANE_BREAKUP);
-	return band * clump * (1.0 - lane * LANE_DEPTH) * smoothstep(0.0, BAND_HORIZON_FADE, direction.y);
 }
 
 vec3 moon_direction() {
@@ -302,7 +278,6 @@ void full_sky(vec3 direction, vec2 fragment, vec4 ceiling, out vec3 colour_out) 
 	vec3 colour = atmosphere(direction) * cloud_cover(direction) + vec3(cloud_body(direction) * cloud_brightness);
 	if (direction.y > 0.0) {
 		colour *= sky_patches(direction);
-		colour += vec3(milky_way * milky_band(direction)) * (1.0 - cloud_body(direction));
 	}
 	colour = colour * (1.0 - ceiling.a) + ceiling.rgb * ceiling.a;
 
