@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/ship/HullMesh.gd" id="1_hull"]
 [ext_resource type="Shader" path="res://shaders/ship_paint.gdshader" id="2_paint"]
 [ext_resource type="Script" path="res://scripts/ship/ShipModel.gd" id="3_model_script"]
-[ext_resource type="PackedScene" path="res://scenes/world/ship/destroyer_v14.glb" id="4_model"]
+[ext_resource type="PackedScene" path="res://scenes/world/ship/destroyer_v15.glb" id="4_model"]
 [ext_resource type="Script" path="res://scripts/ship/DeckGunTurret.gd" id="5_turret"]
 [ext_resource type="Script" path="res://scripts/ship/VLSLauncher.gd" id="6_vls"]
 [ext_resource type="Script" path="res://scripts/ship/RadarSpinner.gd" id="7_radar"]
@@ -66,26 +66,6 @@ node_prefix = "DeckGun"
 script = ExtResource("5_turret")
 node_prefix = "FrontGun"
 traverse_limit_deg = 140.0
-
-[node name="LaserPort" type="Node" parent="."]
-script = ExtResource("5_turret")
-node_prefix = "LaserP"
-traverse_speed_deg = 90.0
-elevation_speed_deg = 70.0
-traverse_limit_deg = 95.0
-min_elevation_deg = -10.0
-max_elevation_deg = 80.0
-recoil_distance = 0.0
-
-[node name="LaserStarboard" type="Node" parent="."]
-script = ExtResource("5_turret")
-node_prefix = "LaserS"
-traverse_speed_deg = 90.0
-elevation_speed_deg = 70.0
-traverse_limit_deg = 95.0
-min_elevation_deg = -10.0
-max_elevation_deg = 80.0
-recoil_distance = 0.0
 
 [node name="Cells" type="Node" parent="."]
 script = ExtResource("6_vls")

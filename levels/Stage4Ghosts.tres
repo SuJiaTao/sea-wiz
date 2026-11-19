@@ -5,7 +5,6 @@
 [ext_resource type="PackedScene" path="res://scenes/enemy/StealthJet.tscn" id="s0_stealth"]
 [ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/deck_gun.tres" id="u0_deck_gun"]
 [ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/front_gun.tres" id="u1_front_gun"]
-[ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/lasers.tres" id="u2_lasers"]
 [ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/counter_missiles.tres" id="u3_counter_missiles"]
 [ext_resource type="Script" path="res://scripts/upgrade_system/upgrades/Upgrade.gd" id="3_upgrade"]
 [ext_resource type="Resource" path="res://resources/formations/SplitPair.tres" id="f0_split"]
@@ -32,4 +31,4 @@ group = &"west"
 script = ExtResource("1_wave")
 title = "STAGE 4  /  GHOSTS"
 spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2")])
-unlocks = Array[ExtResource("3_upgrade")]([ExtResource("u0_deck_gun"), ExtResource("u1_front_gun"), ExtResource("u2_lasers"), ExtResource("u3_counter_missiles")])
+unlocks = Array[ExtResource("3_upgrade")]([ExtResource("u0_deck_gun"), ExtResource("u1_front_gun"), ExtResource("u3_counter_missiles")])
