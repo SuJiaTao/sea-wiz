@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/enemy/MothershipVisuals.tscn" id="2_visuals"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/AirMissile.tscn" id="3_missile"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/StealthJet.tscn" id="4_fighter"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/QuickStar.tscn" id="5_star"]
 
 [sub_resource type="BoxShape3D" id="Shape_hull"]
 size = Vector3(175.5, 175.5, 905)
@@ -39,6 +40,7 @@ fighter_interval = 26.0
 fighters_per_launch = 2
 hull_dim = 0.6
 core_radius = 75
+star_scene = ExtResource("5_star")
 hull_half_span = 137.5
 
 [node name="Visuals" parent="." instance=ExtResource("2_visuals")]

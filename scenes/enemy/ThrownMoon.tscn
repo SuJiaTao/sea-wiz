@@ -1,0 +1,42 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/MoonEnemy.gd" id="1_enemy"]
+[ext_resource type="Shader" path="res://shaders/moon_body.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="Material_moon"]
+shader = ExtResource("2_shader")
+
+[sub_resource type="SphereMesh" id="Mesh_moon"]
+material = SubResource("Material_moon")
+radius = 90.0
+height = 180.0
+radial_segments = 48
+rings = 24
+
+[sub_resource type="SphereShape3D" id="Shape_moon"]
+radius = 90.0
+
+[node name="ThrownMoon" type="Node3D" node_paths=PackedStringArray("visuals", "surface")]
+script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
+surface = NodePath("Visuals/Body")
+max_hp = 45000.0
+display_name = "MOON"
+score_value = 100000
+hud_radius = 90.0
+contact_kind = 1
+blast_size = 20.0
+
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Visuals"]
+mesh = SubResource("Mesh_moon")
+cast_shadow = 0
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox"]
+shape = SubResource("Shape_moon")

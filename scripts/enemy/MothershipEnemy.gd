@@ -3,7 +3,9 @@ class_name MothershipEnemy
 
 # A vast ship that warps into the sky: it tears in stretched thin along its
 # line of arrival, settles into a slow circle around us, fires missile salvos
-# and sends out fighters. Its glowing core takes extra damage.
+# and sends out fighters. It also lights false stars all over the sky that
+# break loose and dive at us, and when badly hurt it can hurl the moon.
+# Its glowing core takes extra damage.
 
 signal warped_in(at: Vector3, size: float)
 
@@ -30,11 +32,21 @@ const HOT_ALBEDO: float = 1.0
 @export var hull_half_span: float = 120.0
 ## The hull is dimmed so it reads as a dark mass; only its lights stay hot.
 @export_range(0.0, 1.0) var hull_dim: float = 0.6
+@export var star_scene: PackedScene
+@export var star_interval: float = 9.0
+@export var stars_per_seeding: int = 6
+@export var star_range: float = 4600.0
+@export var star_elevation_deg := Vector2(20.0, 70.0)
+## Thrown once, when the hull falls below this share of its strength.
+@export var moon_scene: PackedScene
+@export_range(0.0, 1.0) var moon_at_health: float = 0.35
 
 var _warp: float = 0.0
 var _salvo_clock: float = 0.0
 var _fighter_clock: float = 0.0
 var _full_scale := Vector3.ONE
+var _star_clock: float = 0.0
+var _moon_thrown: bool = false
 
 @onready var _hurtbox: Area3D = $Hurtbox
 
@@ -48,6 +60,7 @@ func _create() -> void:
 	visuals.scale = Vector3(_full_scale.x * WARP_SQUEEZE, _full_scale.y * WARP_SQUEEZE, _full_scale.z * WARP_STRETCH)
 	_salvo_clock = salvo_interval
 	_fighter_clock = fighter_interval * 0.5
+	_star_clock = star_interval * 0.5
 	warped_in.emit(global_position, warp_size)
 
 
@@ -93,6 +106,40 @@ func _on_think(delta: float) -> void:
 	_circle(delta)
 	_run_salvos(delta)
 	_run_fighters(delta)
+	_run_stars(delta)
+	_throw_moon_when_beaten()
+
+
+func _run_stars(delta: float) -> void:
+	_star_clock -= delta
+	if _star_clock > 0.0 or star_scene == null:
+		return
+	_star_clock = star_interval
+	for index in stars_per_seeding:
+		var star := star_scene.instantiate() as FlyingEnemy
+		star.target_position = target_position
+		var bearing := randf() * TAU
+		var elevation := deg_to_rad(randf_range(star_elevation_deg.x, star_elevation_deg.y))
+		var direction := Vector3(sin(bearing) * cos(elevation), sin(elevation), -cos(bearing) * cos(elevation))
+		weapon_launched.emit(star, Transform3D(Basis.IDENTITY, target_position + direction * star_range))
+
+
+func _throw_moon_when_beaten() -> void:
+	if hp <= max_hp * moon_at_health:
+		_throw_moon()
+
+
+## A ship killed outright in one blast still gets its last throw away.
+func _on_killed() -> void:
+	_throw_moon()
+
+
+func _throw_moon() -> void:
+	if _moon_thrown or moon_scene == null:
+		return
+	_moon_thrown = true
+	var moon := moon_scene.instantiate() as AbstractEnemy
+	weapon_launched.emit(moon, Transform3D(Basis.IDENTITY, global_position))
 
 
 func _circle(delta: float) -> void:
