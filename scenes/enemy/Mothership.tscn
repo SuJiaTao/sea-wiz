@@ -1,0 +1,60 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/MothershipEnemy.gd" id="1_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/MothershipVisuals.tscn" id="2_visuals"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/AirMissile.tscn" id="3_missile"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/StealthJet.tscn" id="4_fighter"]
+
+[sub_resource type="BoxShape3D" id="Shape_hull"]
+size = Vector3(175.5, 175.5, 905)
+
+[sub_resource type="StandardMaterial3D" id="Material_core"]
+shading_mode = 0
+albedo_color = Color(3, 3, 3, 1)
+
+[sub_resource type="SphereMesh" id="Mesh_core"]
+material = SubResource("Material_core")
+radius = 35
+height = 70
+radial_segments = 16
+rings = 8
+
+[node name="Mothership" type="Node3D" node_paths=PackedStringArray("visuals", "core")]
+script = ExtResource("1_enemy")
+visuals = NodePath("Visuals")
+core = NodePath("Core")
+max_hp = 9000
+display_name = "MOTHERSHIP"
+score_value = 20000
+hud_radius = 87.75
+blast_size = 12.0
+hover_altitude = 600
+orbit_radius = 2000
+warp_size = 10
+salvo_interval = 7.0
+salvo_size = 3
+missile_scene = ExtResource("3_missile")
+fighter_scene = ExtResource("4_fighter")
+fighter_interval = 26.0
+fighters_per_launch = 2
+hull_dim = 0.6
+core_radius = 75
+hull_half_span = 137.5
+
+[node name="Visuals" parent="." instance=ExtResource("2_visuals")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 0, 0, 0)
+
+[node name="Core" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -85, 0)
+
+[node name="Glow" type="MeshInstance3D" parent="Core"]
+mesh = SubResource("Mesh_core")
+cast_shadow = 0
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="HullShape" type="CollisionShape3D" parent="Hurtbox"]
+shape = SubResource("Shape_hull")

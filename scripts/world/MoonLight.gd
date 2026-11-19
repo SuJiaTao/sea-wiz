@@ -7,7 +7,7 @@ class_name MoonLight
 const BEARING := "moon_bearing_deg"
 const ELEVATION := "moon_elevation_deg"
 const OVERCAST := "overcast"
-const OVERCAST_BLOCK: float = 0.9
+const OVERCAST_BLOCK: float = 0.45
 
 @export var environment: WorldEnvironment
 

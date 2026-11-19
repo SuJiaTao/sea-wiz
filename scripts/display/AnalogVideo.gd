@@ -1,6 +1,9 @@
 extends ColorRect
 class_name AnalogVideo
 
+const BASE_LINES: float = 1080.0
+const BASE_SAMPLES: float = 1920.0
+
 @export var palettes: Array[PhosphorPalette] = []
 
 var palette: PhosphorPalette:
@@ -18,6 +21,8 @@ func _ready() -> void:
 	material = material.duplicate()
 	_signal = material as ShaderMaterial
 	_apply_palette()
+	get_viewport().size_changed.connect(_match_screen)
+	_match_screen()
 
 
 func set_dropout(amount: float) -> void:
@@ -26,6 +31,10 @@ func set_dropout(amount: float) -> void:
 
 func set_signal_lost(lost: bool) -> void:
 	_signal.set_shader_parameter("signal_lost", 1.0 if lost else 0.0)
+
+
+func set_blackout(amount: float) -> void:
+	_signal.set_shader_parameter("blackout", clampf(amount, 0.0, 1.0))
 
 
 func set_camera_damage(amount: float) -> void:
@@ -47,3 +56,10 @@ func _apply_palette() -> void:
 	_signal.set_shader_parameter("tone_shadow", palette.shadow)
 	_signal.set_shader_parameter("tone_mid", palette.midtone)
 	_signal.set_shader_parameter("tone_mid_point", palette.mid_point)
+
+
+## On a big screen the video samples every real pixel, so its grain stays fine.
+func _match_screen() -> void:
+	var pixels := Vector2(get_window().size)
+	_signal.set_shader_parameter("video_lines", maxf(pixels.y, BASE_LINES))
+	_signal.set_shader_parameter("line_samples", maxf(pixels.x, BASE_SAMPLES))

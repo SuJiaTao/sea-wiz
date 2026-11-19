@@ -2,8 +2,8 @@ extends AbstractDeckWeapon
 class_name LaserBattery
 
 # The two laser balls beside the missile launcher. Both follow the CIWS lock;
-# a shot burns for a moment from the glass window of each ball that can bear
-# on the jet, burning it down while the window glows.
+# whenever a ball can bear on the jet it burns for a moment from its glass
+# window, burning the jet down while the window glows.
 
 signal fired()
 
@@ -99,6 +99,8 @@ func _physics_process(delta: float) -> void:
 		else:
 			_glow[index] = maxf(_glow[index] - GLOW_FADE_PER_SECOND * delta, 0.0)
 		_show(index, burning, target)
+	if on_target and _enabled and _burn_left <= 0.0:
+		_trigger()
 
 
 func _bears(emitter: DeckGunTurret, target: AbstractEnemy) -> bool:

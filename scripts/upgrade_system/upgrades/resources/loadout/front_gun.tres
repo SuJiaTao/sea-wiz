@@ -6,8 +6,8 @@
 script = ExtResource("1_script")
 mount = &"front_gun"
 label = "MK 45 5-INCH BOW GUN"
-description = "Heavy rounds where the sight looks. Slow to fire, but every hit counts."
+description = "Fires on its own at the enemy ship in the sight. Slow, but every hit counts."
 category = "weapon"
 weight = 1.0
 max_acummulation = 1
-slot = 1
+slot = 0

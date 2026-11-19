@@ -6,8 +6,8 @@
 script = ExtResource("1_script")
 mount = &"lasers"
 label = "LASER WEAPON SYSTEM"
-description = "Two lasers burn the locked jet for a moment. Long recharge."
+description = "Burns the locked jet on its own whenever a laser can bear. Long recharge."
 category = "weapon"
 weight = 1.0
 max_acummulation = 1
-slot = 1
+slot = 0

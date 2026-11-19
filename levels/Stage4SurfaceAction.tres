@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="WaveDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/EnemyCruiser.tscn" id="s0_cruiser"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/EnemyDestroyer.tscn" id="s1_destroyer"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/StealthJet.tscn" id="s2_stealth"]
+[ext_resource type="Resource" path="res://resources/formations/SplitPair.tres" id="f0_split"]
+
+[sub_resource type="Resource" id="S1"]
+script = ExtResource("2_spawn")
+time = 0.0
+enemy_scene = ExtResource("s1_destroyer")
+distance = Vector2(1900, 2400)
+altitude = Vector2(0, 0)
+group = &"east"
+
+[sub_resource type="Resource" id="S2"]
+script = ExtResource("2_spawn")
+time = 0.0
+enemy_scene = ExtResource("s1_destroyer")
+distance = Vector2(1900, 2400)
+altitude = Vector2(0, 0)
+group = &"west"
+
+[sub_resource type="Resource" id="S3"]
+script = ExtResource("2_spawn")
+time = 14.0
+enemy_scene = ExtResource("s0_cruiser")
+distance = Vector2(2200, 2600)
+altitude = Vector2(0, 0)
+
+[sub_resource type="Resource" id="S4"]
+script = ExtResource("2_spawn")
+time = 24.0
+enemy_scene = ExtResource("s2_stealth")
+distance = Vector2(1800, 2200)
+altitude = Vector2(150, 300)
+formation = ExtResource("f0_split")
+group = &"east"
+
+[resource]
+script = ExtResource("1_wave")
+title = "STAGE 4  /  SURFACE ACTION"
+spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2"), SubResource("S3"), SubResource("S4")])

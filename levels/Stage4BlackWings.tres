@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="WaveDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/EnemyDestroyer.tscn" id="s0_destroyer"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/HeavyJet.tscn" id="s1_heavy"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/StealthJet.tscn" id="s2_stealth"]
+[ext_resource type="Resource" path="res://resources/formations/LineAbreast.tres" id="f0_line"]
+[ext_resource type="Resource" path="res://resources/formations/SplitPair.tres" id="f1_split"]
+[ext_resource type="Resource" path="res://resources/formations/VFormation.tres" id="f2_v"]
+
+[sub_resource type="Resource" id="S1"]
+script = ExtResource("2_spawn")
+time = 0.0
+enemy_scene = ExtResource("s2_stealth")
+distance = Vector2(1800, 2200)
+altitude = Vector2(150, 300)
+formation = ExtResource("f2_v")
+group = &"wing"
+
+[sub_resource type="Resource" id="S2"]
+script = ExtResource("2_spawn")
+time = 8.0
+enemy_scene = ExtResource("s1_heavy")
+distance = Vector2(2000, 2400)
+altitude = Vector2(300, 450)
+formation = ExtResource("f0_line")
+group = &"bombers"
+
+[sub_resource type="Resource" id="S3"]
+script = ExtResource("2_spawn")
+time = 8.0
+enemy_scene = ExtResource("s2_stealth")
+distance = Vector2(1800, 2200)
+altitude = Vector2(150, 300)
+formation = ExtResource("f1_split")
+group = &"bombers"
+
+[sub_resource type="Resource" id="S4"]
+script = ExtResource("2_spawn")
+time = 18.0
+enemy_scene = ExtResource("s0_destroyer")
+distance = Vector2(1900, 2400)
+altitude = Vector2(0, 0)
+group = &"ship"
+
+[resource]
+script = ExtResource("1_wave")
+title = "STAGE 4  /  BLACK WINGS"
+spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2"), SubResource("S3"), SubResource("S4")])

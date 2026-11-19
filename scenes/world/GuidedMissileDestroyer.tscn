@@ -115,6 +115,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 0, 0)
 [node name="Starboard" type="Marker3D" parent="DecoyTubes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 0, 0)
 
+[node name="AftCells" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 58)
+
 [node name="FireSpots" type="Node3D" parent="."]
 
 [node name="Bow" type="Marker3D" parent="FireSpots"]

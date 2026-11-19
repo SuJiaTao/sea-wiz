@@ -47,6 +47,8 @@ uniform float dropout_tear_samples : hint_range(0.0, 200.0) = 60.0;
 uniform float dropout_band_lines : hint_range(1.0, 64.0) = 12.0;
 uniform float dropout_snow : hint_range(0.0, 1.0) = 0.3;
 uniform float signal_lost : hint_range(0.0, 1.0) = 0.0;
+// Power cut: only the brightest things (fire, flashes, hot engines) still show.
+uniform float blackout : hint_range(0.0, 1.0) = 0.0;
 uniform float lost_snow_level : hint_range(0.0, 1.0) = 0.22;
 uniform float camera_damage : hint_range(0.0, 1.0) = 0.0;
 uniform float damage_fringe_pixels : hint_range(0.0, 12.0) = 4.0;
@@ -68,6 +70,9 @@ const float SQRT_TAU = 2.50662827;
 const float GRAIN_TILE = 512.0;
 const float DROPOUT_SEED = 41.0;
 const float DROPOUT_DIM = 0.25;
+const float BLACKOUT_POWER = 4.0;
+const float BLACKOUT_GAIN = 0.85;
+const float BLACKOUT_SNOW = 0.035;
 const float WARP_BAND_LINES = 60.0;
 const float WARP_RIPPLE_LINES = 9.0;
 const float JITTER_LINE_SHARE = 0.08;
@@ -220,6 +225,8 @@ void fragment() {
 	float torn = dropout_band(line, frame);
 	l = mix(l, hash12(vec2(xs, line) + grain_offset), torn * dropout_snow);
 	l *= 1.0 - dropout * DROPOUT_DIM;
+	float starved = pow(clamp(l, 0.0, 1.0), BLACKOUT_POWER) * BLACKOUT_GAIN;
+	l = mix(l, starved + hash12(FRAGCOORD.xy + grain_offset) * BLACKOUT_SNOW, blackout);
 	l = black_lift + (1.0 - black_lift) * clamp(l, 0.0, 1.0);
 
 	vec3 colour = l < tone_mid_point

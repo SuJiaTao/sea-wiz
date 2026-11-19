@@ -8,6 +8,8 @@ enum State { TITLE, STARTING, RUNNING, WON, LOST }
 const HIT_IMPULSE: float = 5.0
 const HIT_FLASH: float = 0.6
 const WRECK_DAMAGE_PER_SIZE: float = 12.0
+const HUD_FIRST_TIME: float = 0.9
+const NIGHT_VISION_FADE: float = 3.0
 
 @onready var turret: Turret = $ViewportContainer/SubViewport/World/Vessel/Turret
 @onready var integrity: ShipIntegrity = $ViewportContainer/SubViewport/World/ShipDamage/Integrity
@@ -21,10 +23,11 @@ const WRECK_DAMAGE_PER_SIZE: float = 12.0
 @onready var thermal: ThermalView = $ViewportContainer
 @onready var video: AnalogVideo = $VideoSignal/AnalogVideo
 @onready var hud: GameplayHUD = $HUD/HUDRoot
-@onready var title_screen: TitleScreen = $HUD/TitleScreen
+@onready var title_screen: TitleScreen = $TitleScreen
 @onready var score: ScoreKeeper = $Score
 @onready var supplies: SupplyDrops = $SupplyDrops
 @onready var doctrine: EnemyDoctrine = $EnemyDoctrine
+@onready var wake_fade: ColorRect = $WakeFade/Black
 
 var state: State = State.TITLE
 var _title_time: float = 0.0
@@ -40,6 +43,7 @@ func _ready() -> void:
 	waves.completed.connect(_on_completed)
 	waves.failed.connect(_on_wave_failed)
 	title_screen.start_requested.connect(_on_start_requested)
+	title_screen.dusk_finished.connect(_wake_up)
 	loss.lost.connect(_on_ship_lost)
 	waves.level_prepared.connect(_on_level_prepared)
 	supplies.loadout.repair_requested.connect(integrity.repair)
@@ -54,32 +58,39 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if state != State.TITLE and state != State.STARTING:
+	if state != State.TITLE:
 		return
-
 	_title_time += delta
 	turret.rotation.y -= delta * 0.12
 	turret.mount.rotation.x = deg_to_rad(
 		6.0 + sin(_title_time * 0.4) * 3.0
 	)
 
-	if state == State.STARTING:
-		if (
-			Input.is_action_pressed("ciws_restart")
-			or Input.is_action_pressed("ciws_fire")
-		):
-			return
-		_begin()
-
 
 func _on_start_requested() -> void:
 	if state == State.TITLE:
 		state = State.STARTING
+		title_screen.play_dusk()
+
+
+## After the sunset: the screen is black, the green HUD lights first, then the
+## night vision picture slowly comes up and the fight begins.
+func _wake_up() -> void:
+	title_screen.hide()
+	turret.rotation.y = 0.0
+	turret.mount.rotation.x = 0.0
+	wake_fade.color = Color.BLACK
+	hud.show()
+	var tween := create_tween()
+	tween.tween_interval(HUD_FIRST_TIME)
+	tween.tween_property(wake_fade, "color:a", 0.0, NIGHT_VISION_FADE)
+	tween.tween_callback(_begin)
 
 
 func _begin() -> void:
 	state = State.RUNNING
 	title_screen.hide()
+	wake_fade.color.a = 0.0
 	hud.show()
 	turret.hide_gun = false
 	weapons.set_enabled(true)
@@ -201,6 +212,8 @@ func _finish(result: State, message: String) -> void:
 	weapons.set_enabled(false)
 	get_tree().paused = true
 	CursorManager.free_mouse()
+	video.set_blackout(0.0)
+	hud.show()
 	hud.message = message + " - CLICK OR ENTER TO RESTART"
 
 

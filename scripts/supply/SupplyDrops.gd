@@ -65,7 +65,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _on_level_started(number: int, _title: String) -> void:
-	if number < FIRST_DROP_LEVEL:
+	if number < FIRST_DROP_LEVEL or waves.current_level.blackout:
 		return
 	_waves_without_drop += 1
 	if number == FIRST_DROP_LEVEL:

@@ -1,0 +1,44 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/BombEnemy.gd" id="1_bomb"]
+
+[sub_resource type="StandardMaterial3D" id="Material_shell"]
+shading_mode = 0
+albedo_color = Color(1.8, 1.8, 1.8, 1)
+
+[sub_resource type="CylinderMesh" id="Mesh_body"]
+material = SubResource("Material_shell")
+top_radius = 0.12
+bottom_radius = 0.2
+height = 1.6
+radial_segments = 6
+rings = 1
+
+[sub_resource type="SphereShape3D" id="Shape_body"]
+radius = 2.5
+
+[node name="ArtilleryShell" type="Node3D" node_paths=PackedStringArray("visuals")]
+script = ExtResource("1_bomb")
+visuals = NodePath("Visuals")
+damage = 12.0
+max_hp = 4.0
+display_name = "SHELL"
+score_value = 50
+hud_radius = 1.2
+contact_kind = 1
+leaves_wreck = false
+blast_size = 1.2
+
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+mesh = SubResource("Mesh_body")
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+
+[node name="BodyShape" type="CollisionShape3D" parent="Hurtbox"]
+shape = SubResource("Shape_body")

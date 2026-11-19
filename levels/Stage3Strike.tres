@@ -53,3 +53,4 @@ group = &"south"
 script = ExtResource("1_wave")
 title = "STAGE 3  /  COORDINATED STRIKE"
 spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2"), SubResource("S3"), SubResource("S4"), SubResource("S5")])
+blackout = true

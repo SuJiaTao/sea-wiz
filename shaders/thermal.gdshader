@@ -22,6 +22,8 @@ uniform float halo_radius_texels : hint_range(1.0, 8.0) = 2.8;
 uniform float shake_x = 0.0;
 uniform float shake_y = 0.0;
 uniform vec2 sensor_size = vec2(320.0, 180.0);
+// Grain is drawn per rendered pixel, so it stays fine on big screens.
+uniform vec2 grain_cells = vec2(1280.0, 720.0);
 uniform float flash : hint_range(0.0, 1.0) = 0.0;
 
 // Water on the lens: xy centre in UV, z radius (fraction of height), w strength.
@@ -106,7 +108,7 @@ float sense(vec3 colour) {
 }
 
 float shot(vec2 uv, float l) {
-	float jitter = hash12(floor(uv * sensor_size) + fract(TIME) * SHOT_SEED) - 0.5;
+	float jitter = hash12(floor(uv * grain_cells) + fract(TIME) * SHOT_SEED) - 0.5;
 	return jitter * shot_noise * sqrt(l);
 }
 
