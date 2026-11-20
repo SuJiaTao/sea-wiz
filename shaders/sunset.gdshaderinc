@@ -1,16 +1,16 @@
-// A hot summer sun sinking into the sea: a blazing yellow glow around it,
+// A low, swollen orange sun just before it touches the sea: a blazing yellow glow around it,
 // burning out through orange into deep red and dark maroon overhead, with
 // thin cloud streaks lit from below. As the sun goes the warmth drains and
 // night comes in.
 
-const vec3 HORIZON_HOT = vec3(1.0, 0.62, 0.1);
+const vec3 HORIZON_HOT = vec3(1.0, 0.42, 0.07);
 const vec3 HORIZON_FAR = vec3(0.9, 0.22, 0.04);
 const vec3 SKY_MID = vec3(0.55, 0.06, 0.03);
 const vec3 SKY_HIGH = vec3(0.1, 0.015, 0.03);
 const vec3 AFTERGLOW = vec3(0.55, 0.08, 0.02);
 const vec3 NIGHT = vec3(0.008, 0.004, 0.01);
-const vec3 SUN_CORE = vec3(4.0, 3.4, 1.6);
-const vec3 SUN_GLOW = vec3(1.0, 0.7, 0.12);
+const vec3 SUN_CORE = vec3(2.8, 1.15, 0.3);
+const vec3 SUN_GLOW = vec3(0.9, 0.42, 0.08);
 const vec3 SUN_HALO = vec3(1.0, 0.32, 0.04);
 const vec3 CLOUD_DARK = vec3(0.16, 0.03, 0.03);
 const vec3 CLOUD_RIM = vec3(1.0, 0.45, 0.08);
@@ -51,7 +51,7 @@ vec3 sunset_sky(vec3 dir, vec3 sun, float daylight, float time, bool with_disc) 
 	sky = mix(sky, SKY_HIGH, smoothstep(0.1, 0.55, up));
 	float facing = max(dot(dir, sun), 0.0);
 	sky += SUN_HALO * pow(facing, 5.0) * 0.55;
-	sky += SUN_GLOW * (pow(facing, 30.0) * 0.8 + pow(facing, 300.0) * 1.4);
+	sky += SUN_GLOW * (pow(facing, 30.0) * 0.35 + pow(facing, 300.0) * 0.5);
 	vec2 drift = dir.xz / max(dir.y + 0.08, 0.02);
 	float streak = sunset_fbm(drift * vec2(0.35, 1.6) + vec2(time * 0.004, 0.0));
 	float band = smoothstep(0.01, 0.06, up) * smoothstep(0.35, 0.12, up);

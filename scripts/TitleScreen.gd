@@ -9,7 +9,7 @@ class_name TitleScreen
 signal start_requested()
 signal dusk_finished()
 
-const SUN_HIGH: float = 2.6
+const SUN_HIGH: float = 1.6
 const SUN_GONE: float = -1.6
 ## Share of the dusk spent with the sun sinking into the sea before the light drains.
 const SINK_SHARE: float = 0.6
