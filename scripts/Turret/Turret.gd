@@ -21,7 +21,7 @@ const WANDER_CHANCE := 0.12
 @export var mouse_sensitivity: float = 0.0022
 @export var damage_source: DamageSource
 @export var slew_speed: float = 1.5
-@export var dispersion_deg: float = 0.012
+@export var dispersion_deg: float = 0.03
 @export var wander_deg: float = 0.03
 @export_category("Componenets")
 @export var mount: Node3D

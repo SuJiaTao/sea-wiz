@@ -7,7 +7,7 @@ const ARC_DEG := Vector2(8.0, 20.0)
 const ELEVATION_DEG := Vector2(20.0, 70.0)
 const TAIL_SHARE: float = 0.35
 const FALL_SHARE: float = 0.7
-const PEAK_GLOW: float = 2.5
+const PEAK_GLOW: float = 0.7
 
 @export var environment: WorldEnvironment
 
