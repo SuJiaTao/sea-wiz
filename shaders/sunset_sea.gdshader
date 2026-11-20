@@ -14,7 +14,7 @@ uniform vec3 deep_water : source_color = vec3(0.006, 0.006, 0.012);
 uniform float wave_scale = 0.16;
 uniform float wave_tilt = 0.12;
 uniform float glitter_sharpness = 900.0;
-uniform float glitter_strength = 14.0;
+uniform float glitter_strength = 7.0;
 
 const float GLINT_SOFTENING = 12.0;
 // Even at a grazing angle the sea stays a little darker than the sky, so the
@@ -63,5 +63,5 @@ void fragment() {
 	vec3 sky = sunset_sky(mirrored, sun, daylight, TIME, false);
 	float sharpness = glitter_sharpness / (1.0 + footprint * GLINT_SOFTENING);
 	float glint = pow(max(dot(mirrored, sun), 0.0), sharpness) * glitter_strength * daylight * sharpness / glitter_sharpness;
-	ALBEDO = mix(deep_water, sky, fresnel) + vec3(1.0, 0.62, 0.3) * glint;
+	ALBEDO = mix(deep_water, sky, fresnel) + vec3(1.0, 0.45, 0.14) * glint;
 }
