@@ -58,6 +58,15 @@ func _on_deflect(_impact: ProjectileImpact) -> void:
 	pass
 
 
+## True when this round should skip off the sea here instead of going in.
+func _skips_water() -> bool:
+	return false
+
+
+func _on_skip() -> void:
+	pass
+
+
 func _on_pushed(push: Vector3) -> void:
 	velocity += push
 
