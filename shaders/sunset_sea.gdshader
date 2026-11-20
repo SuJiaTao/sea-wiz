@@ -17,6 +17,9 @@ uniform float glitter_sharpness = 900.0;
 uniform float glitter_strength = 14.0;
 
 const float GLINT_SOFTENING = 12.0;
+// Even at a grazing angle the sea stays a little darker than the sky, so the
+// horizon line holds and the sun visibly sinks into it.
+const float HORIZON_REFLECTION = 0.62;
 
 varying vec3 world_position;
 
@@ -56,7 +59,7 @@ void fragment() {
 	vec3 normal = normalize(vec3(-tilt.x, 1.0, -tilt.y));
 	vec3 mirrored = reflect(view, normal);
 	mirrored.y = abs(mirrored.y);
-	float fresnel = 0.04 + 0.96 * pow(1.0 - max(dot(-view, normal), 0.0), 5.0);
+	float fresnel = 0.04 + HORIZON_REFLECTION * pow(1.0 - max(dot(-view, normal), 0.0), 5.0);
 	vec3 sky = sunset_sky(mirrored, sun, daylight, TIME, false);
 	float sharpness = glitter_sharpness / (1.0 + footprint * GLINT_SOFTENING);
 	float glint = pow(max(dot(mirrored, sun), 0.0), sharpness) * glitter_strength * daylight * sharpness / glitter_sharpness;

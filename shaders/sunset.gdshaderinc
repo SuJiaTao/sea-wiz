@@ -1,18 +1,20 @@
-// A low sun over the sea: a red-orange band along the horizon cooling to
-// crimson and deep blue overhead, a glow around the sun and thin cloud streaks lit
-// from below. As the sun drops the warmth drains and night comes in.
+// A hot summer sun sinking into the sea: a blazing yellow glow around it,
+// burning out through orange into deep red and dark maroon overhead, with
+// thin cloud streaks lit from below. As the sun goes the warmth drains and
+// night comes in.
 
-const vec3 HORIZON_HOT = vec3(1.0, 0.3, 0.05);
-const vec3 HORIZON_FAR = vec3(0.75, 0.12, 0.06);
-const vec3 SKY_MID = vec3(0.42, 0.05, 0.04);
-const vec3 SKY_HIGH = vec3(0.025, 0.03, 0.09);
-const vec3 AFTERGLOW = vec3(0.5, 0.08, 0.04);
-const vec3 NIGHT = vec3(0.006, 0.008, 0.02);
-const vec3 SUN_CORE = vec3(4.0, 2.6, 1.3);
-const vec3 SUN_GLOW = vec3(1.0, 0.38, 0.12);
-const vec3 CLOUD_DARK = vec3(0.14, 0.04, 0.07);
-const vec3 CLOUD_RIM = vec3(1.0, 0.32, 0.1);
-const float SUN_RADIUS = 0.016;
+const vec3 HORIZON_HOT = vec3(1.0, 0.62, 0.1);
+const vec3 HORIZON_FAR = vec3(0.9, 0.22, 0.04);
+const vec3 SKY_MID = vec3(0.55, 0.06, 0.03);
+const vec3 SKY_HIGH = vec3(0.1, 0.015, 0.03);
+const vec3 AFTERGLOW = vec3(0.55, 0.08, 0.02);
+const vec3 NIGHT = vec3(0.008, 0.004, 0.01);
+const vec3 SUN_CORE = vec3(4.0, 3.4, 1.6);
+const vec3 SUN_GLOW = vec3(1.0, 0.7, 0.12);
+const vec3 SUN_HALO = vec3(1.0, 0.32, 0.04);
+const vec3 CLOUD_DARK = vec3(0.16, 0.03, 0.03);
+const vec3 CLOUD_RIM = vec3(1.0, 0.45, 0.08);
+const float SUN_RADIUS = 0.02;
 const float SUN_EDGE = 0.003;
 
 float sunset_hash(vec2 p) {
@@ -48,7 +50,8 @@ vec3 sunset_sky(vec3 dir, vec3 sun, float daylight, float time, bool with_disc) 
 	vec3 sky = mix(horizon, SKY_MID, smoothstep(0.0, 0.16, up));
 	sky = mix(sky, SKY_HIGH, smoothstep(0.1, 0.55, up));
 	float facing = max(dot(dir, sun), 0.0);
-	sky += SUN_GLOW * (pow(facing, 12.0) * 0.6 + pow(facing, 120.0) * 1.2);
+	sky += SUN_HALO * pow(facing, 5.0) * 0.55;
+	sky += SUN_GLOW * (pow(facing, 30.0) * 0.8 + pow(facing, 300.0) * 1.4);
 	vec2 drift = dir.xz / max(dir.y + 0.08, 0.02);
 	float streak = sunset_fbm(drift * vec2(0.35, 1.6) + vec2(time * 0.004, 0.0));
 	float band = smoothstep(0.01, 0.06, up) * smoothstep(0.35, 0.12, up);
