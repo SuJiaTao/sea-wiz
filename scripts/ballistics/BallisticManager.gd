@@ -3,6 +3,9 @@ class_name BallisticManager
 
 signal entered_water(point: Vector3, splash_size: float)
 
+## A round skipping off the sea throws only a small spurt of spray.
+const SKIP_SPLASH_SHARE: float = 0.35
+
 const MAX_PROJECTILES: int = 4096
 const MIN_CAST_RADIUS: float = 0.001
 
@@ -132,6 +135,10 @@ func _splash_down(projectile: AbstractProjectile, start: Vector3, end: Vector3) 
 	var level := sea.global_position.y
 	var fraction := clampf((start.y - level) / (start.y - end.y), 0.0, 1.0)
 	projectile.position = start.lerp(end, fraction)
+	if projectile._skips_water():
+		projectile._on_skip()
+		entered_water.emit(projectile.position, projectile._splash_size() * SKIP_SPLASH_SHARE)
+		return
 	entered_water.emit(projectile.position, projectile._splash_size())
 	_delete_projectile(projectile)
 
