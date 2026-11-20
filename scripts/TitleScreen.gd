@@ -1,16 +1,17 @@
 extends CanvasLayer
 class_name TitleScreen
 
-# The title card: the ship and its gun black against a sunset, riding the
-# swell. Any button sets the sun: it sinks, the sky drains to night, and the
-# screen goes dark before the game wakes up in night vision.
+# The title card: the CIWS side on, gun pointing left, black against the
+# afterglow of a sunset with the ship's outline below, riding the swell. Any
+# button lets the last light drain to night, and the screen goes dark before
+# the game wakes up in night vision.
 
 signal start_requested()
 signal dusk_finished()
 
 const SUN_HIGH: float = 2.6
 const SUN_GONE: float = -5.0
-const SUN_BEARING: float = 262.0
+const SUN_BEARING: float = 95.0
 const DUSK_TIME: float = 4.2
 const TEXT_FADE_TIME: float = 0.8
 const BLACKOUT_TIME: float = 1.3
@@ -21,8 +22,8 @@ const PITCH_RATE: float = 0.41
 const ROLL: float = 0.03
 const ROLL_RATE: float = 0.33
 const PROMPT_PULSE: float = 3.0
-const CAMERA_POSITION := Vector3(15.0, 12.2, -13.0)
-const CAMERA_TARGET := Vector3(-1.0, 13.4, -5.0)
+const CAMERA_POSITION := Vector3(-17.0, 12.0, -9.0)
+const CAMERA_TARGET := Vector3(0.0, 12.9, -9.5)
 
 @export var sky: ShaderMaterial
 @export var sea: ShaderMaterial
