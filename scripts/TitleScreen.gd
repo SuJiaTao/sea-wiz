@@ -10,9 +10,11 @@ signal start_requested()
 signal dusk_finished()
 
 const SUN_HIGH: float = 2.6
-const SUN_GONE: float = -5.0
+const SUN_GONE: float = -1.6
+## Share of the dusk spent with the sun sinking into the sea before the light drains.
+const SINK_SHARE: float = 0.6
 const SUN_BEARING: float = 100.0
-const DUSK_TIME: float = 4.2
+const DUSK_TIME: float = 5.5
 const TEXT_FADE_TIME: float = 0.8
 const BLACKOUT_TIME: float = 1.3
 const HEAVE: float = 0.7
@@ -70,8 +72,9 @@ func _process(delta: float) -> void:
 	_prompt.modulate.a = 0.5 + 0.45 * sin(_clock * PROMPT_PULSE)
 	if _dusk >= 0.0 and _dusk < 1.0:
 		_dusk = minf(_dusk + delta / DUSK_TIME, 1.0)
-		var setting := smoothstep(0.0, 1.0, _dusk)
-		_set_sun(lerpf(SUN_HIGH, SUN_GONE, setting), 1.0 - setting)
+		var sinking := smoothstep(0.0, SINK_SHARE, _dusk)
+		var draining := smoothstep(SINK_SHARE * 0.8, 1.0, _dusk)
+		_set_sun(lerpf(SUN_HIGH, SUN_GONE, sinking), 1.0 - draining)
 		_text.modulate.a = clampf(1.0 - _dusk * DUSK_TIME / TEXT_FADE_TIME, 0.0, 1.0)
 		if _dusk >= 1.0:
 			_blackout = 0.0
