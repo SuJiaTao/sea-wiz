@@ -139,6 +139,8 @@
 [ext_resource type="Resource" path="res://scripts/upgrade_system/providers/resources/supply_manifest.tres" id="116_manifest_stock"]
 [ext_resource type="PackedScene" path="res://scenes/supply/SupplyCrate.tscn" id="117_crate"]
 [ext_resource type="Resource" path="res://levels/Patrol.tres" id="118_patrol"]
+[ext_resource type="Script" path="res://scripts/world/MoonShadowMap.gd" id="175_moon_shadow"]
+[ext_resource type="Script" path="res://scripts/hud/PauseMenu.gd" id="176_pause_menu"]
 [ext_resource type="Script" path="res://scripts/weapons/CounterBattery.gd" id="160_counter_battery"]
 [ext_resource type="Script" path="res://scripts/sensors/SurfaceGunnery.gd" id="161_gunnery"]
 [ext_resource type="Script" path="res://scripts/hud/CounterBatteryHUD.gd" id="162_counter_hud"]
@@ -211,7 +213,7 @@ shader_parameter/shock_width = 0.025
 shader_parameter/shock_glow = 4.0
 shader_parameter/nvg_sky_level = 0.45
 shader_parameter/nvg_body_level = 0.75
-shader_parameter/shot_noise = 0.3
+shader_parameter/shot_noise = 0.16
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_thermal"]
 shader = ExtResource("39_sky_shader")
@@ -1199,3 +1201,19 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
+
+[node name="MoonShadowMap" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("ship", "moonlight", "receivers")]
+script = ExtResource("175_moon_shadow")
+ship = NodePath("../Vessel/Warship")
+moonlight = NodePath("../Moonlight")
+receivers = [NodePath("../Sea"), NodePath("../Rain"), NodePath("../Effects/Droplets"), NodePath("../Effects/Spray"), NodePath("../Effects/Ripples")]
+
+[node name="PauseMenu" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("176_pause_menu")

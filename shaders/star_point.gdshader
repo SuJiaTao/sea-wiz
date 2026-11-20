@@ -11,11 +11,13 @@ instance uniform float twinkle = 1.0;
 uniform float point_size_pixels : hint_range(0.5, 16.0) = 2.5;
 uniform float twinkle_rate = 5.0;
 uniform float twinkle_depth : hint_range(0.0, 1.0) = 0.5;
-uniform float softness = 3.0;
+uniform float softness = 5.0;
+// Sky stars stay under the bloom so they read as pinpoints, not soft blobs.
+uniform float max_shine : hint_range(0.0, 1.0) = 0.55;
 uniform float visibility : hint_range(0.0, 1.0) = 1.0;
 uniform float cloud_shade : hint_range(0.0, 1.0) = 0.0;
 uniform float wide_focal = 1.5697;
-uniform float zoom_gather : hint_range(0.0, 1.5) = 1.0;
+uniform float zoom_gather : hint_range(0.0, 1.5) = 0.4;
 
 const float CUSTOM_FLAG = 0.5;
 
@@ -40,7 +42,7 @@ void vertex() {
 	float flicker = twinkle;
 	if (catalogued) {
 		float zoom = PROJECTION_MATRIX[1][1] / wide_focal;
-		shine = min(INSTANCE_CUSTOM.r * pow(zoom, zoom_gather), 1.0);
+		shine = min(INSTANCE_CUSTOM.r * pow(zoom, zoom_gather), max_shine);
 		flicker = INSTANCE_CUSTOM.b;
 	}
 	glow = visibility * (1.0 - cloud_shade) * shine * (1.0 - flicker * twinkle_depth * (0.5 + 0.5 * shimmer));

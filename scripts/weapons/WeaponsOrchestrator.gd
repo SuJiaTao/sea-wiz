@@ -22,7 +22,6 @@ var _rounds_fired: int = 0
 func _ready() -> void:
 	tracers.sensor = turret.camera
 	turret.fired.connect(_on_cannon_fired)
-	waves.level_prepared.connect(_on_level_prepared)
 	enemies.enemy_killed.connect(_on_enemy_killed)
 	loadout.upgrades_changed.connect(_refit)
 	loadout.restock_requested.connect(_on_restock_requested)
@@ -89,7 +88,8 @@ func _on_cannon_fired(origin: Vector3, velocity: Vector3) -> void:
 	ballistics.fire(projectile)
 
 
-func _on_level_prepared(_number: int, _title: String) -> void:
+## The supply crate brings a full load of missiles.
+func restock_missiles() -> void:
 	missile_launcher.refill()
 
 

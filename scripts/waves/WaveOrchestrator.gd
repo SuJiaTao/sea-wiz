@@ -34,6 +34,11 @@ var _current: WaveDefinition
 var _engaged: bool = false
 
 
+## Every enemy in the current wave has been sent in.
+func all_spawned() -> bool:
+	return _state == State.SPAWNING and _pending.is_empty()
+
+
 func start(enemies: EnemyManager) -> void:
 	if _state != State.STOPPED:
 		return

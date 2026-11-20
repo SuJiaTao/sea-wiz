@@ -8,15 +8,15 @@ signal detonated(position: Vector3, radius: float)
 ## A missile is committed to a target the moment the trigger is pulled on a lock.
 signal committed(target: AbstractEnemy)
 
-const CAPACITY: int = 8
-const REARM_TIME: float = 9.0
+## One missile per cell we use; they only come back with a supply crate.
+const CAPACITY: int = 16
 const NO_TARGET_REASON := "NO TARGET"
 const GUN_TARGET_REASON := "GUNS ONLY"
 const RANGE_REASON := "OUT OF RANGE"
 const LOCK_CONE_DEG: float = 3.2
 const MIN_RANGE: float = 130.0
 const MAX_RANGE: float = 2800.0
-const REFIRE_TIME: float = 0.25
+const REFIRE_TIME: float = 1.0
 const VERTICAL_CLIMB: float = 0.75
 const CELL_EXIT: float = 1.2
 const EXHAUST_LEAD: float = 0.05
@@ -56,7 +56,6 @@ var lock_denied_reason: String = ""
 var trigger_held: bool = false
 
 var _enabled: bool = true
-var _rearm_elapsed: float = 0.0
 var _fired_this_pull: bool = false
 var _refire_remaining: float = 0.0
 var _waiting: Dictionary[int, Array] = {}
@@ -88,7 +87,6 @@ func set_trigger(held: bool) -> void:
 
 func refill() -> void:
 	missiles = CAPACITY
-	_rearm_elapsed = 0.0
 
 
 ## Everything one of our missiles is on its way to, including missiles still
@@ -120,13 +118,6 @@ func _physics_process(delta: float) -> void:
 	if not _enabled:
 		return
 
-	if missiles < CAPACITY:
-		_rearm_elapsed += delta
-		if _rearm_elapsed >= REARM_TIME:
-			_rearm_elapsed -= REARM_TIME
-			missiles += 1
-	else:
-		_rearm_elapsed = 0.0
 
 	_refire_remaining = maxf(_refire_remaining - delta, 0.0)
 	_run_lock(delta)

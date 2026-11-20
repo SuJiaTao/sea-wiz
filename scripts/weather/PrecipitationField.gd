@@ -4,7 +4,6 @@ class_name PrecipitationField
 const CENTRE := "centre"
 const BOX_SIZE := "box_size"
 const FALL_VELOCITY := "fall_velocity"
-const MOON_BEARING := "moon_bearing_deg"
 const UNCULLED := AABB(Vector3(-1.0e5, -1.0e5, -1.0e5), Vector3(2.0e5, 2.0e5, 2.0e5))
 
 @export var turret: Turret
@@ -37,9 +36,6 @@ func _ready() -> void:
 func _drift_with_sea() -> void:
 	if sea_material == null:
 		return
-	var moon: Variant = sea_material.get_shader_parameter(MOON_BEARING)
-	if moon != null:
-		_material.set_shader_parameter(MOON_BEARING, moon)
 	var fall: Vector3 = _material.get_shader_parameter(FALL_VELOCITY)
 	_material.set_shader_parameter(FALL_VELOCITY, SeaCurrent.velocity(sea_material, drift_speed) + Vector3.UP * fall.y)
 

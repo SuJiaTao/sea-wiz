@@ -28,6 +28,7 @@ const NIGHT_VISION_FADE: float = 3.0
 @onready var supplies: SupplyDrops = $SupplyDrops
 @onready var doctrine: EnemyDoctrine = $EnemyDoctrine
 @onready var wake_fade: ColorRect = $WakeFade/Black
+@onready var pause_menu: PauseMenu = $HUD/PauseMenu
 
 var state: State = State.TITLE
 var _title_time: float = 0.0
@@ -44,9 +45,13 @@ func _ready() -> void:
 	waves.failed.connect(_on_wave_failed)
 	title_screen.start_requested.connect(_on_start_requested)
 	title_screen.dusk_finished.connect(_wake_up)
+	pause_menu.resume_requested.connect(_set_paused.bind(false))
+	pause_menu.restart_requested.connect(_restart)
+	pause_menu.quit_requested.connect(quit_game)
 	loss.lost.connect(_on_ship_lost)
 	waves.level_prepared.connect(_on_level_prepared)
 	supplies.loadout.repair_requested.connect(integrity.repair)
+	supplies.recovered.connect(weapons.restock_missiles)
 	waves.level_started.connect(doctrine.reassess.unbind(2))
 	hud.hide()
 	title_screen.show()
@@ -118,6 +123,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 	if get_tree().paused:
+		if pause_menu.handle_input(event):
+			get_viewport().set_input_as_handled()
 		return
 	if supplies.handle_input(event):
 		get_viewport().set_input_as_handled()
@@ -199,7 +206,10 @@ func _set_paused(paused: bool) -> void:
 	weapons.set_enabled(not paused)
 	get_tree().paused = paused
 	CursorManager.free_mouse(paused)
-	hud.message = "PAUSED - ESC TO RESUME" if paused else ""
+	if paused:
+		pause_menu.open()
+	else:
+		pause_menu.close()
 
 
 func _finish(result: State, message: String) -> void:
