@@ -5,17 +5,13 @@ signal inbound
 signal recovered
 signal lost
 
-const DROP_CHANCE: float = 0.5
-const MAX_WAVES_WITHOUT_DROP: int = 2
-const DROP_DELAY := Vector2(4.0, 12.0)
+## A crate comes every wave, once the last attackers are in and only this
+## many are left, so its parachute tells you the wave is nearly over.
+const NEAR_END_HOSTILES: int = 2
 const SPAWN_DISTANCE: float = 700.0
 const SPAWN_ALTITUDE: float = 260.0
 const SPAWN_SPREAD_DEG: float = 30.0
-const DESCENT_TIME: float = 40.0
-const NO_DROP: float = -1.0
-const FIRST_DROP_LEVEL: int = 1
-const FIRST_DROP_DELAY: float = 2.0
-const FIRST_DESCENT_TIME: float = 16.0
+const DESCENT_TIME: float = 18.0
 
 @export var crate_scene: PackedScene
 @export var enemies: EnemyManager
@@ -29,9 +25,7 @@ const FIRST_DESCENT_TIME: float = 16.0
 
 var crate: SupplyCrate
 
-var _waves_without_drop: int = 0
-var _drop_in: float = NO_DROP
-var _descent_time: float = DESCENT_TIME
+var _due: bool = false
 
 
 func _ready() -> void:
@@ -39,6 +33,7 @@ func _ready() -> void:
 	for upgrade in starting_kit:
 		upgrade.apply_upgrade()
 	waves.level_started.connect(_on_level_started)
+	waves.level_prepared.connect(_on_level_prepared)
 	enemies.enemy_killed.connect(_on_enemy_killed)
 
 
@@ -51,31 +46,26 @@ func is_choosing() -> bool:
 
 
 func stop() -> void:
-	_drop_in = NO_DROP
+	_due = false
 	manifest.dismiss()
 
 
-func _physics_process(delta: float) -> void:
-	if _drop_in == NO_DROP:
+func _physics_process(_delta: float) -> void:
+	if not _due or not waves.all_spawned() or enemies.hostile_count() > NEAR_END_HOSTILES:
 		return
-	_drop_in = maxf(_drop_in - delta, 0.0)
-	if _drop_in == 0.0:
-		_drop_in = NO_DROP
+	_due = false
+	_drop()
+
+
+## A wave cleared too fast to catch its crate still gets one as it ends.
+func _on_level_prepared(_number: int, _title: String) -> void:
+	if _due:
+		_due = false
 		_drop()
 
 
-func _on_level_started(number: int, _title: String) -> void:
-	if number < FIRST_DROP_LEVEL or waves.current_level.blackout:
-		return
-	_waves_without_drop += 1
-	if number == FIRST_DROP_LEVEL:
-		_waves_without_drop = 0
-		_drop_in = FIRST_DROP_DELAY
-		_descent_time = FIRST_DESCENT_TIME
-	elif _waves_without_drop >= MAX_WAVES_WITHOUT_DROP or randf() < DROP_CHANCE:
-		_waves_without_drop = 0
-		_drop_in = randf_range(DROP_DELAY.x, DROP_DELAY.y)
-		_descent_time = DESCENT_TIME
+func _on_level_started(_number: int, _title: String) -> void:
+	_due = not waves.current_level.blackout
 
 
 func _drop() -> void:
@@ -87,7 +77,7 @@ func _drop() -> void:
 	var start := landing + approach + Vector3.UP * SPAWN_ALTITUDE
 	crate = crate_scene.instantiate() as SupplyCrate
 	crate.landing = landing
-	crate.descent_time = _descent_time
+	crate.descent_time = DESCENT_TIME
 	crate.recovered.connect(_on_recovered.bind(crate))
 	if enemies.create(crate, Transform3D(Basis.IDENTITY, start)):
 		inbound.emit()

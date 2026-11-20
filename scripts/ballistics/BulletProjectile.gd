@@ -10,13 +10,8 @@ const RICOCHET_DAMAGE_KEPT := 0.25
 const RICOCHET_SCATTER := 0.2
 const SURFACE_CLEARANCE := 0.05
 const MIN_NORMAL_LENGTH_SQUARED := 0.5
-## Rounds meeting the sea flatter than this (sine of the angle) can skip off it.
-const SKIP_SLOPE := 0.2
-const SKIP_CHANCE := 0.7
-const MAX_SKIPS := 2
-const SKIP_SPEED_KEPT := 0.6
-const SKIP_LIFT_KEPT := 0.5
-const SKIP_SCATTER := 0.08
+## A single round only kicks up a small spurt of spray.
+const SPLASH_SHARE := 0.35
 const FLIGHT_TIME := 5.0
 const TRACER_HEAT := Color(9.0, 9.0, 8.0, 1.0)
 const BURNOUT_TIME := 0.5
@@ -29,7 +24,6 @@ var damage: float = 40.0
 var tracer_length: float = 12.0
 
 var _ricochets: int = 0
-var _skips: int = 0
 var _muzzle: Vector3
 
 
@@ -76,18 +70,8 @@ func _on_deflect(impact: ProjectileImpact) -> void:
 	position = impact.point + impact.normal * SURFACE_CLEARANCE
 
 
-func _skips_water() -> bool:
-	if _skips >= MAX_SKIPS or velocity.length_squared() <= 0.0:
-		return false
-	return -velocity.normalized().y < SKIP_SLOPE and randf() < SKIP_CHANCE
-
-
-func _on_skip() -> void:
-	_skips += 1
-	var flat := Vector3(velocity.x, 0.0, velocity.z)
-	var sideways := flat.cross(Vector3.UP).normalized() * randfn(0.0, SKIP_SCATTER) * flat.length()
-	velocity = (flat + sideways) * SKIP_SPEED_KEPT + Vector3.UP * absf(velocity.y) * SKIP_LIFT_KEPT
-	position.y += SURFACE_CLEARANCE
+func _splash_size() -> float:
+	return SPLASH_SIZE * SPLASH_SHARE
 
 
 ## The tracer trails back over the ground it covered since the last physics

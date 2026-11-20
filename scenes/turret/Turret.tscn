@@ -10,13 +10,23 @@
 [ext_resource type="AudioStream" uid="uid://b2w246juiqfe8" path="res://audio/ciws/ciws_fire_wind_down.wav" id="8_31x2x"]
 [ext_resource type="AudioStream" uid="uid://bivf47ey65sp5" path="res://audio/ciws/ciws_spin_b.wav" id="9_t4bc6"]
 [ext_resource type="Shader" path="res://shaders/muzzle_flash.gdshader" id="10_flash"]
+[ext_resource type="Shader" path="res://shaders/muzzle_flame.gdshader" id="11_flame"]
 
 [sub_resource type="ShaderMaterial" id="StandardMaterial3D_7mu8f"]
 render_priority = 0
 shader = ExtResource("10_flash")
 
 [sub_resource type="QuadMesh" id="QuadMesh_jyabn"]
-size = Vector2(0.3, 0.3)
+size = Vector2(0.55, 0.55)
+
+[sub_resource type="ShaderMaterial" id="Material_flame"]
+render_priority = 0
+shader = ExtResource("11_flame")
+
+[sub_resource type="QuadMesh" id="Mesh_flame"]
+material = SubResource("Material_flame")
+size = Vector2(0.5, 1.4)
+center_offset = Vector3(0, 0.7, 0)
 
 [node name="Turret" type="Node3D" unique_id=716990662 node_paths=PackedStringArray("mount", "gun", "muzzle", "camera", "flash", "launcher", "_gun_audio", "_spin_audio", "_wind_down_audio")]
 script = ExtResource("1_rmqmx")
@@ -40,15 +50,26 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 [node name="Gun" parent="Mount" unique_id=735801425 instance=ExtResource("3_ynqyc")]
 
 [node name="Muzzle" type="Marker3D" parent="Mount" unique_id=1636647380]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.115, -2.2)
 
-[node name="Flash" type="MeshInstance3D" parent="Mount" unique_id=1854651140]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.35)
+[node name="Flash" type="Node3D" parent="Mount" unique_id=1854651140]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.115, -2.22)
 visible = false
+
+[node name="Star" type="MeshInstance3D" parent="Mount/Flash"]
 material_override = SubResource("StandardMaterial3D_7mu8f")
 cast_shadow = 0
 mesh = SubResource("QuadMesh_jyabn")
-skeleton = NodePath("../..")
+
+[node name="FlameA" type="MeshInstance3D" parent="Mount/Flash"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_flame")
+
+[node name="FlameB" type="MeshInstance3D" parent="Mount/Flash"]
+transform = Transform3D(0, 0, -1, 1, 0, 0, 0, -1, 0, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_flame")
 
 [node name="Sensor" type="Camera3D" parent="Mount" unique_id=857557713]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0.95)

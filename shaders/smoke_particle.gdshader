@@ -3,6 +3,11 @@ render_mode unshaded, cull_disabled, depth_draw_never, shadows_disabled, skip_ve
 
 #include "res://shaders/particle_curves.gdshaderinc"
 #include "res://shaders/billboard_particle.gdshaderinc"
+#include "res://shaders/moon_shadow.gdshaderinc"
+
+uniform float shadow_level : hint_range(0.0, 1.0) = 0.3;
+
+varying float moonlight;
 
 uniform float billow : hint_range(0.0, 1.0) = 0.5;
 uniform float erosion : hint_range(0.0, 1.0) = 0.5;
@@ -37,6 +42,7 @@ void vertex() {
 	particle_seed = INSTANCE_CUSTOM.y;
 	particle_level = particle_heat(particle_progress);
 	particle_opacity = particle_alpha(particle_progress);
+	moonlight = moon_light_at(MODEL_MATRIX[3].xyz, shadow_level);
 	VERTEX = billboard_vertex(VERTEX, MODEL_MATRIX, VIEW_MATRIX, particle_progress, particle_seed);
 	NORMAL = vec3(0.0, 0.0, 1.0);
 }
@@ -49,6 +55,6 @@ void fragment() {
 	float body = 1.0 - smoothstep(1.0 - softness, 1.0, edge);
 	float worn = particle_progress * erosion;
 	float remaining = smoothstep(worn, worn + EROSION_EDGE, n);
-	ALBEDO = display_to_linear(max(particle_level, skylight));
+	ALBEDO = display_to_linear(max(particle_level, skylight) * moonlight);
 	ALPHA = particle_opacity * body * remaining * soft_contact(SCREEN_UV, VERTEX, INV_PROJECTION_MATRIX);
 }
