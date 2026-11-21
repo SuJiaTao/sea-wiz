@@ -7,14 +7,14 @@ render_mode unshaded, shadows_disabled;
 // little sharper than their troughs. On top, the same wave normal map the
 // game's ocean uses crosses in several sheets for the fine surface. Where
 // that detail is too fine for a pixel, its mipmaps average out, and how much
-// they flattened is kept as roughness: far water reflects a broader, darker
-// patch of sky instead of turning to a mirror, and the sun's glints there
-// widen into a column. Up close the glints are hard pin points.
+// they flattened is kept as roughness, so far water stays matte. Away from
+// the sun the water mirrors cool slate sky; toward it, the glints make a thin
+// broken column at the horizon that fans out into twinkling pin points near us.
 
 uniform float sun_elevation_deg = 3.0;
 uniform float sun_bearing_deg = 270.0;
 uniform float daylight : hint_range(0.0, 1.0) = 1.0;
-uniform vec3 deep_water : source_color = vec3(0.006, 0.006, 0.012);
+uniform vec3 deep_water : source_color = vec3(0.012, 0.024, 0.045);
 uniform sampler2D wave_normals : hint_normal, filter_linear_mipmap, repeat_enable;
 uniform float swell_height = 0.18;
 uniform float detail_strength = 0.5;
@@ -47,14 +47,15 @@ const vec3 GLINT_COLOUR = vec3(1.0, 0.62, 0.3);
 const float SUN_RADIUS_DEG = 0.6;
 // Even at a grazing angle the sea stays a little darker than the sky, so the
 // horizon line holds and the sun visibly sinks into it.
-const float HORIZON_REFLECTION = 0.62;
+const float HORIZON_REFLECTION = 0.5;
 const float ROUGH_SHADOWING = 0.35;
 const float MASKING = 0.5;
 const float REFLECTION_SPREAD = 0.02;
 const int SKY_TAPS = 4;
 // The far glitter path is much taller than it is wide.
-const float COLUMN_NARROWING = 0.06;
+const float COLUMN_NARROWING = 0.002;
 const float COLUMN_FALLOFF = 0.3;
+const float MAX_VARIANCE = 0.03;
 // Pin-point glints: each small patch of water carries one tiny facet tipped
 // at random, and lights up only when that facet lines up with the sun.
 const float FACET_CELL = 0.3;
@@ -66,6 +67,14 @@ const float FACET_MIN_PIXELS = 3.0;
 const float SPARKLE_STRENGTH = 45.0;
 // Near water keeps only a faint glow under its pin points.
 const float NEAR_GLOW = 0.12;
+// Away from the sun the water mostly mirrors cooler, dimmer sky from higher
+// up, so it reads slate blue; only a narrow band toward the sun stays warm.
+const vec3 COOL_REFLECTION = vec3(0.45, 0.62, 0.9);
+const float WARM_FOCUS = 400.0;
+// Out toward the horizon the glitter column breaks into bright blobs.
+const float BLOB_WIDTH = 40.0;
+const float BLOB_ROWS = 3000.0;
+const float BLOB_DRIFT = 0.8;
 
 varying vec2 rest_xz;
 varying vec3 world_position;
@@ -159,7 +168,7 @@ vec2 sparkles(vec2 xz, vec2 slope, vec3 view, vec3 sun) {
 	float aimed = exp(-dot(miss, miss) / (2.0 * FACET_AIM * FACET_AIM));
 	vec2 centre = vec2(hash(cell + 3.1), hash(cell + 9.7)) * 0.6 + 0.2;
 	float from_centre = length((within - centre) * cell_size / max(pixel2, vec2(1e-4)));
-	float spot = exp(-from_centre * from_centre * 0.6);
+	float spot = exp(-from_centre * from_centre * 0.25);
 	return vec2(aimed * spot * resolvable, resolvable);
 }
 
@@ -174,6 +183,8 @@ void fragment() {
 		slope += layer.xy;
 		variance += layer.z;
 	}
+	// Open sea never gets rougher than a fresh breeze makes it.
+	variance = min(variance, MAX_VARIANCE);
 	float spread = sqrt(variance);
 	vec3 normal = normalize(vec3(-slope.x, 1.0, -slope.y));
 	vec3 mirrored = reflect(view, normal);
@@ -188,6 +199,11 @@ void fragment() {
 		sky += sunset_sky(tap, sun, daylight, TIME, false);
 	}
 	sky /= float(SKY_TAPS);
+	vec2 flat_mirror = normalize(mirrored.xz);
+	vec2 flat_sun = normalize(sun.xz);
+	float warm = pow(max(dot(flat_mirror, flat_sun), 0.0), WARM_FOCUS);
+	float light = dot(sky, vec3(0.299, 0.587, 0.114));
+	sky = mix(light * COOL_REFLECTION, sky, warm);
 
 	// Rough water seen almost edge-on hides its own far faces and turns its
 	// near faces toward us, which reflect less, so it reads darker than the sky.
@@ -202,12 +218,18 @@ void fragment() {
 	float above = smoothstep(-SUN_RADIUS_DEG, SUN_RADIUS_DEG, sunset_elevation(sun));
 	float base = 1.0 / glitter_sharpness;
 	float tall = base + 4.0 * variance;
-	float wide = base + 4.0 * variance * COLUMN_NARROWING;
+	// Tipping a facet sideways barely swings its reflection when seen edge-on,
+	// so the column is a thin line at the horizon and fans out toward us.
+	float wide = base + 4.0 * variance * (COLUMN_NARROWING + grazing * grazing);
 	float rise = mirrored.y - sun.y;
-	vec2 flat_mirror = normalize(mirrored.xz);
-	vec2 flat_sun = normalize(sun.xz);
 	float aside = flat_mirror.x * flat_sun.y - flat_mirror.y * flat_sun.x;
 	float lobe = exp(-0.5 * (rise * rise / tall + aside * aside / wide)) * pow(base * base / (tall * wide), COLUMN_FALLOFF);
+	vec2 out_to = rest_xz - eye.xz;
+	vec2 heading = normalize(view.xz);
+	float along = max(dot(out_to, heading), 1.0);
+	float across = dot(out_to, vec2(-heading.y, heading.x));
+	float blobs = smoothstep(0.45, 0.62, sunset_fbm(vec2(across / along * BLOB_WIDTH, BLOB_ROWS / along + TIME * BLOB_DRIFT)));
+	lobe *= mix(1.0, blobs * 2.5, smoothstep(0.0, 0.02, spread));
 	vec2 sparkle = sparkles(rest_xz, slope, view, sun);
 	float glint = (lobe * glitter_strength * mix(1.0, NEAR_GLOW, sparkle.y) + sparkle.x * SPARKLE_STRENGTH) * above * daylight;
 	ALBEDO = mix(deep_water, sky, fresnel) + GLINT_COLOUR * glint;
