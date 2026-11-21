@@ -124,7 +124,7 @@
 [ext_resource type="Script" uid="uid://bx4fvtq2e0hww" path="res://scripts/display/ShockwaveLens.gd" id="100_shock_lens"]
 [ext_resource type="Script" uid="uid://bvsg4xcbl4fq0" path="res://scripts/display/BlastFeel.gd" id="101_blast_feel"]
 [ext_resource type="SphereMesh" uid="uid://cw666x1bbx6fi" path="res://resources/fx/ShockDomeMesh.tres" id="102_dome"]
-[ext_resource type="AudioStream" uid="uid://b7xkm47bl56ms" path="res://audio/explosion.wav" id="103_boom"]
+[ext_resource type="AudioStream" path="res://audio/explosions/explosion_loud.ogg" id="103_boom"]
 [ext_resource type="Script" path="res://scripts/hud/CameraStamp.gd" id="90_camera_stamp"]
 [ext_resource type="Script" path="res://scripts/display/SignalDropout.gd" id="91_signal_dropout"]
 [ext_resource type="Script" path="res://scripts/display/FocusHunt.gd" id="92_focus_hunt"]

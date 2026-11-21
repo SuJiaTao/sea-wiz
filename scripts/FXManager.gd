@@ -6,6 +6,12 @@ class_name FXManager
 const MAX_SPARKS := 400
 const MAX_BLASTS := 48
 const SPARK_GRAVITY := 22.0
+const BOOM_LOUD_PATH := "res://audio/explosions/explosion_loud.ogg"
+const BOOM_MEDIUM_PATH := "res://audio/explosions/explosion_medium.ogg"
+## Blasts at least this big use the loud recording.
+const LOUD_BOOM_SIZE := 10.0
+## Each boom is pitched a touch differently so repeats do not stand out.
+const BOOM_PITCH_SPREAD := 0.07
 
 var _sp_pos := PackedVector3Array()
 var _sp_vel := PackedVector3Array()
@@ -22,7 +28,8 @@ var _bl_count: int = 0
 var _spark_mm: MultiMesh
 var _blast_mm: MultiMesh
 
-var _boom: AudioStream
+var _boom_loud: AudioStream
+var _boom_medium: AudioStream
 var _ping: AudioStream
 var _audio_pool: Array[AudioStreamPlayer3D] = []
 var _audio_idx: int = 0
@@ -38,8 +45,8 @@ func _ready() -> void:
 	_spark_mm = _make_mm(_spark_mesh(), MAX_SPARKS)
 	_blast_mm = _make_mm(_blast_mesh(), MAX_BLASTS)
 
-	if ResourceLoader.exists("res://audio/explosion.wav"):
-		_boom = load("res://audio/explosion.wav")
+	_boom_loud = load(BOOM_LOUD_PATH)
+	_boom_medium = load(BOOM_MEDIUM_PATH)
 	if ResourceLoader.exists("res://audio/impact.wav"):
 		_ping = load("res://audio/impact.wav")
 	for i in 10:
@@ -124,8 +131,10 @@ func explosion(pos: Vector3, size: float) -> void:
 		_bl_size[_bl_count] = size
 		_bl_count += 1
 	spark_burst(pos, int(clampf(size * 1.6, 8.0, 60.0)), clampf(size * 0.18, 1.0, 5.0))
-	_play(_boom, pos, clampf(-12.0 + size * 0.35, -12.0, 4.0),
-			clampf(1.5 - size * 0.035, 0.45, 1.5))
+	# Further blasts are quieter through the player's distance falloff.
+	var boom := _boom_loud if size >= LOUD_BOOM_SIZE else _boom_medium
+	_play(boom, pos, clampf(-12.0 + size * 0.35, -12.0, 4.0),
+			1.0 + randf_range(-BOOM_PITCH_SPREAD, BOOM_PITCH_SPREAD))
 
 
 func _play(stream: AudioStream, pos: Vector3, vol: float, pitch: float) -> void:

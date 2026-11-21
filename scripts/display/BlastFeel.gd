@@ -2,6 +2,7 @@ extends Node
 class_name BlastFeel
 
 const SOUND_SPEED: float = 343.0
+const PITCH_SPREAD: float = 0.07
 
 @export var effects: EffectManager
 @export var turret: Turret
@@ -26,4 +27,5 @@ func _on_shockwave(at: Vector3, size: float) -> void:
 func _arrive(size: float, nearness: float) -> void:
 	turret.apply_camera_shake_impulse(impulse_per_size * size * nearness)
 	boom.volume_db = lerpf(quietest_db, 0.0, nearness)
+	boom.pitch_scale = 1.0 + randf_range(-PITCH_SPREAD, PITCH_SPREAD)
 	boom.play()
