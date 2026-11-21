@@ -43,6 +43,7 @@ var _blackout: float = -1.0
 
 @onready var _vessel: Node3D = $Sunset/View/Vessel
 @onready var _camera: Camera3D = $Sunset/View/Camera
+@onready var _view: SubViewport = $Sunset/View
 @onready var _radome_seal: Node3D = $Sunset/View/Vessel/Ciws/Model/RadomeSeal
 @onready var _text: Control = $Text
 @onready var _prompt: Label = $Text/Prompt
@@ -50,12 +51,20 @@ var _blackout: float = -1.0
 
 
 func _ready() -> void:
+	visibility_changed.connect(_render_only_when_shown)
 	for part in _vessel.find_children("*", "GeometryInstance3D", true, false):
 		(part as GeometryInstance3D).material_override = silhouette
 	_camera.look_at_from_position(CAMERA_POSITION, CAMERA_TARGET, Vector3.UP)
 	_raise_gun()
 	_frame_sea()
 	_set_dusk(DUSK_START)
+
+
+## The sunset scene is a whole second 3D world with its own dense sea. Left
+## running behind the game it would cost as much as the game itself, so it
+## only renders while the title is on screen.
+func _render_only_when_shown() -> void:
+	_view.render_target_update_mode = SubViewport.UPDATE_ALWAYS if visible else SubViewport.UPDATE_DISABLED
 
 
 func handle_input(event: InputEvent) -> bool:
