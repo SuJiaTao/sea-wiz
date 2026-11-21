@@ -30,6 +30,7 @@ material = SubResource("Material_sea")
 size = Vector2(30000, 30000)
 
 [sub_resource type="StandardMaterial3D" id="Material_silhouette"]
+cull_mode = 2
 shading_mode = 0
 albedo_color = Color(0, 0, 0, 1)
 
