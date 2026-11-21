@@ -9,7 +9,7 @@ signal detonated(position: Vector3, radius: float)
 signal committed(target: AbstractEnemy)
 
 ## One missile per cell we use; they only come back with a supply crate.
-const CAPACITY: int = 16
+const CAPACITY: int = 8
 const NO_TARGET_REASON := "NO TARGET"
 const GUN_TARGET_REASON := "GUNS ONLY"
 const RANGE_REASON := "OUT OF RANGE"

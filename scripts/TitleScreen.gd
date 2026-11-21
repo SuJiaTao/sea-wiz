@@ -3,18 +3,21 @@ class_name TitleScreen
 
 # The title card: the CIWS with its gun pointing left and the deck below, all
 # black against a red sunset, riding the swell. Any button sets the sun: it
-# sinks, the sky drains to night, and the screen goes dark before the game
+# sinks, the afterglow lingers and fades to night, and the screen goes dark before the game
 # wakes up in night vision.
 
 signal start_requested()
 signal dusk_finished()
 
 const SUN_HIGH: float = 1.6
-const SUN_GONE: float = -1.6
-## Share of the dusk spent with the sun sinking into the sea before the light drains.
-const SINK_SHARE: float = 0.6
+## Deep enough under the horizon that twilight has run out.
+const SUN_GONE: float = -9.0
+## Eases the sun in, so it lingers low and sets about a third of the way through.
+const SINK_CURVE: float = 1.6
+## The last share of the dusk, when what twilight is left fades to night.
+const NIGHT_SHARE: float = 0.25
 const SUN_BEARING: float = 93.0
-const DUSK_TIME: float = 5.5
+const DUSK_TIME: float = 7.0
 const TEXT_FADE_TIME: float = 0.8
 const BLACKOUT_TIME: float = 1.3
 const HEAVE: float = 0.7
@@ -25,7 +28,7 @@ const ROLL: float = 0.03
 const ROLL_RATE: float = 0.33
 const PROMPT_PULSE: float = 3.0
 const CAMERA_POSITION := Vector3(-15.0, 13.2, -6.0)
-const CAMERA_TARGET := Vector3(-2.1, 12.3, 3.4)
+const CAMERA_TARGET := Vector3(-0.9, 12.3, 1.5)
 
 @export var sky: ShaderMaterial
 @export var sea: ShaderMaterial
@@ -72,9 +75,8 @@ func _process(delta: float) -> void:
 	_prompt.modulate.a = 0.5 + 0.45 * sin(_clock * PROMPT_PULSE)
 	if _dusk >= 0.0 and _dusk < 1.0:
 		_dusk = minf(_dusk + delta / DUSK_TIME, 1.0)
-		var sinking := smoothstep(0.0, SINK_SHARE, _dusk)
-		var draining := smoothstep(SINK_SHARE * 0.8, 1.0, _dusk)
-		_set_sun(lerpf(SUN_HIGH, SUN_GONE, sinking), 1.0 - draining)
+		var elevation := lerpf(SUN_HIGH, SUN_GONE, pow(_dusk, SINK_CURVE))
+		_set_sun(elevation, 1.0 - smoothstep(1.0 - NIGHT_SHARE, 1.0, _dusk))
 		_text.modulate.a = clampf(1.0 - _dusk * DUSK_TIME / TEXT_FADE_TIME, 0.0, 1.0)
 		if _dusk >= 1.0:
 			_blackout = 0.0
