@@ -21,7 +21,7 @@ const DUSK_TIME: float = 7.0
 const TEXT_FADE_TIME: float = 0.8
 const BLACKOUT_TIME: float = 1.3
 ## The ship rides a little high here so swells never wash over the foredeck.
-const RIDE_HEIGHT: float = 0.5
+const RIDE_HEIGHT: float = 0.9
 const HEAVE: float = 0.22
 const HEAVE_RATE: float = 0.55
 const PITCH: float = 0.005

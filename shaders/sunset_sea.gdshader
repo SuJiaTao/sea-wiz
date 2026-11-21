@@ -16,14 +16,14 @@ uniform float sun_bearing_deg = 270.0;
 uniform float daylight : hint_range(0.0, 1.0) = 1.0;
 uniform vec3 deep_water : source_color = vec3(0.012, 0.024, 0.045);
 uniform sampler2D wave_normals : hint_normal, filter_linear_mipmap, repeat_enable;
-uniform float swell_height = 0.18;
-uniform float detail_strength = 0.5;
+uniform float swell_height = 0.55;
+uniform float detail_strength = 0.7;
 uniform float wind_bearing_deg = 60.0;
 uniform float glitter_sharpness = 4000.0;
 uniform float glitter_strength = 14.0;
 
 const int SWELLS = 4;
-const float SWELL_LENGTHS[4] = float[](78.0, 51.0, 34.0, 22.0);
+const float SWELL_LENGTHS[4] = float[](60.0, 38.0, 24.0, 15.0);
 const float SWELL_SHARES[4] = float[](1.0, 0.6, 0.35, 0.2);
 const float SWELL_ANGLES[4] = float[](0.0, 0.5, -0.45, 0.9);
 // Gerstner steepness: how far each crest leans in toward a point.
