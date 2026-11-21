@@ -26,7 +26,7 @@ const vec3 EARTH_SHADOW = vec3(0.05, 0.07, 0.12);
 const vec3 NIGHT = vec3(0.004, 0.007, 0.016);
 const float SUN_RADIUS = 0.02;
 const float SUN_EDGE = 0.003;
-const float REFLECTED_GLARE = 0.5;
+const float REFLECTED_GLARE = 0.15;
 const float SEAM_HEIGHT = 0.05;
 const float SEAM_FULL_ELEVATION = 1.6;
 // Degrees under the horizon by which twilight has run out.
@@ -78,7 +78,7 @@ vec3 sunset_twilight(vec3 dir, float up, float near_side, float dusk) {
 	return sky;
 }
 
-vec3 sunset_sky(vec3 dir, vec3 sun, float daylight, float time, bool with_disc) {
+vec3 sunset_sky(vec3 dir, vec3 sun, float daylight, float time, bool direct) {
 	float dusk = sunset_dusk(sun);
 	float up = max(dir.y, 0.0);
 	float near_side = max(dot(normalize(vec3(dir.x, 0.0, dir.z)), normalize(vec3(sun.x, 0.0, sun.z))), 0.0);
@@ -86,9 +86,9 @@ vec3 sunset_sky(vec3 dir, vec3 sun, float daylight, float time, bool with_disc) 
 	vec3 sky = mix(horizon, SKY_MID, smoothstep(0.0, 0.2, up));
 	sky = mix(sky, SKY_HIGH, smoothstep(0.15, 0.7, up));
 	float facing = max(dot(dir, sun), 0.0);
-	// Seen in the water, the glare around the sun is mostly carried by the
-	// glints themselves, so reflections take less of it.
-	float glare = with_disc ? 1.0 : REFLECTED_GLARE;
+	// Seen in the water (direct is false), the sun's disc is left to the
+	// glints and its surrounding glare is softened.
+	float glare = direct ? 1.0 : REFLECTED_GLARE;
 	sky += SUN_HALO * pow(facing, 5.0) * 0.5 * glare;
 	sky += SUN_GLOW * (pow(facing, 30.0) * 0.45 + pow(facing, 300.0) * 0.7) * glare;
 	// Right down at sea level the light has crossed the most air and runs red,
@@ -107,7 +107,7 @@ vec3 sunset_sky(vec3 dir, vec3 sun, float daylight, float time, bool with_disc) 
 	float underlit = pow(near_side, 1.5) * smoothstep(0.22, 0.02, up) * (1.0 - smoothstep(0.3, 0.85, dusk));
 	vec3 dusk_cloud = mix(TWILIGHT_CLOUD * (1.0 - 0.7 * dusk), CLOUD_AFTERGLOW, underlit);
 	sky = mix(sky, mix(lit_cloud, dusk_cloud, smoothstep(0.0, 0.3, dusk)), cloud * 0.85);
-	if (with_disc) {
+	if (direct) {
 		float disc = smoothstep(SUN_RADIUS + SUN_EDGE, SUN_RADIUS, acos(clamp(facing, -1.0, 1.0)));
 		sky = mix(sky, SUN_CORE, disc * (1.0 - cloud * 0.7));
 	}
