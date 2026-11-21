@@ -1,22 +1,30 @@
-extends MeshInstance3D
+extends Node3D
 class_name FlameCard
 
-# One flame on a card that always turns to face the camera (the turning is
-# done in its shader), so it never shows an edge from any side.
+# A flame built from sheets that cross at its centre, so it never looks like a
+# flat card from any side.
 
 const STRENGTH_PARAMETER := &"strength"
 const COLUMN_PARAMETER := &"column"
+const SHEETS: int = 3
+
+var _sheets: Array[MeshInstance3D] = []
 
 
 func _init(flame_mesh: Mesh) -> void:
-	mesh = flame_mesh
-	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	# The card turns in its shader, so its bounds must allow any facing.
-	extra_cull_margin = 1.0
+	rotation.y = randf() * TAU
+	for index in SHEETS:
+		var sheet := MeshInstance3D.new()
+		sheet.mesh = flame_mesh
+		sheet.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		sheet.rotation.y = PI * index / SHEETS
+		add_child(sheet)
+		_sheets.append(sheet)
 
 
 func _ready() -> void:
-	set_instance_shader_parameter(COLUMN_PARAMETER, randf())
+	for sheet in _sheets:
+		sheet.set_instance_shader_parameter(COLUMN_PARAMETER, randf())
 
 
 func resize(width: float, height: float) -> void:
@@ -24,4 +32,5 @@ func resize(width: float, height: float) -> void:
 
 
 func set_strength(value: float) -> void:
-	set_instance_shader_parameter(STRENGTH_PARAMETER, value)
+	for sheet in _sheets:
+		sheet.set_instance_shader_parameter(STRENGTH_PARAMETER, value)
