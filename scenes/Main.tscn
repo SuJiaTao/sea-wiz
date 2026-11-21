@@ -184,6 +184,9 @@
 [ext_resource type="AudioStream" path="res://audio/water/water_blast_far.ogg" id="154_water_far"]
 [ext_resource type="Script" path="res://scripts/audio/ShipFireAudio.gd" id="155_ship_fire"]
 [ext_resource type="AudioStream" path="res://audio/ship/ship_fire_loop.ogg" id="156_fire_loop"]
+[ext_resource type="Script" path="res://scripts/audio/ShipHitAudio.gd" id="157_ship_hits"]
+[ext_resource type="AudioStream" path="res://audio/ship/bullet_hit_metal.ogg" id="158_bullet_hit"]
+[ext_resource type="AudioStream" path="res://audio/ship/bullet_ricochet.ogg" id="159_ricochet"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -606,6 +609,13 @@ effects = NodePath("../Effects")
 listener = NodePath("../Vessel/Turret")
 close = ExtResource("153_water_close")
 far = ExtResource("154_water_far")
+
+[node name="ShipHits" type="Node3D" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("enemies")]
+process_mode = 1
+script = ExtResource("157_ship_hits")
+enemies = NodePath("../Enemies")
+hit = ExtResource("158_bullet_hit")
+ricochet = ExtResource("159_ricochet")
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1274563182]
 script = ExtResource("5_enemies")

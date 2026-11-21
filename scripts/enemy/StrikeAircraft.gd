@@ -2,6 +2,9 @@
 extends FlyingEnemy
 class_name StrikeAircraft
 
+## One round of a strafing burst striking the ship.
+signal round_struck(at: Vector3)
+
 enum Leg { RUN_IN, EGRESS }
 
 const MAX_DIVE_SLOPE: float = 0.3
@@ -59,6 +62,7 @@ func _strafe() -> void:
 	var burst := GunBurst.new()
 	burst.shooter = self
 	burst.target = target_position
+	burst.round_landed.connect(round_struck.emit)
 	get_parent().add_child(burst)
 	reached_target.emit(contact_damage)
 	_break_off()

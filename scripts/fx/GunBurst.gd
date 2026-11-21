@@ -2,7 +2,8 @@ extends Node3D
 class_name GunBurst
 
 # A strafing jet's cannon burst: a short stream of glowing rounds from the
-# jet's nose to the ship. The damage is dealt by the jet; this is the visual.
+# jet's nose to the ship. The damage is dealt by the jet; this is the visual,
+# and it reports each round as it strikes.
 
 const ROUNDS: int = 18
 const ROUND_GAP: float = 0.035
@@ -11,6 +12,8 @@ const TRACER_LENGTH: float = 14.0
 const TRACER_WIDTH: float = 0.25
 const SCATTER: float = 0.012
 const TRACER_HEAT := Color(3.0, 3.0, 2.6, 1.0)
+
+signal round_landed(at: Vector3)
 
 var shooter: Node3D
 var target := Vector3.ZERO
@@ -38,6 +41,7 @@ func _process(delta: float) -> void:
 	for index in range(_rounds.size() - 1, -1, -1):
 		_lives[index] -= delta
 		if _lives[index] <= 0.0:
+			round_landed.emit(_rounds[index].global_position)
 			_rounds[index].queue_free()
 			_rounds.remove_at(index)
 			_velocities.remove_at(index)
