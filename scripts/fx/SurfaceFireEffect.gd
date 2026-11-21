@@ -48,7 +48,7 @@ func _on_step(effects: EffectManager, delta: float) -> void:
 	for index in _smoke.due(SMOKE_PER_SECOND * _size * strength, delta):
 		effects.smoke.emit(flame_top, _rising(SMOKE_RISE, SMOKE_SPREAD), _size)
 	for index in _sparks.due(EMBERS_PER_SECOND * _size * strength, delta):
-		effects.embers.emit(_position, _rising(EMBER_RISE, EMBER_SPREAD))
+		effects.fire_sparks.emit(_position, _rising(EMBER_RISE, EMBER_SPREAD))
 	if age >= _burn_time:
 		finish()
 

@@ -189,6 +189,7 @@
 [ext_resource type="AudioStream" path="res://audio/ship/bullet_ricochet.ogg" id="159_ricochet"]
 [ext_resource type="Script" path="res://scripts/enemy/AceWatch.gd" id="160_ace_watch"]
 [ext_resource type="Script" path="res://scripts/fx/DamagedJetSmoke.gd" id="161_jet_smoke"]
+[ext_resource type="Resource" path="res://resources/fx/FireSparks.tres" id="162_fire_sparks"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -661,13 +662,14 @@ zoom_near_cull = 25.0
 [node name="FX" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=275603085]
 script = ExtResource("9_fx")
 
-[node name="Effects" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1499605069 node_paths=PackedStringArray("sea", "hull", "smoke", "fireballs", "embers", "droplets", "spray", "ripples", "flares", "flare_smoke")]
+[node name="Effects" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1499605069 node_paths=PackedStringArray("sea", "hull", "smoke", "fireballs", "embers", "fire_sparks", "droplets", "spray", "ripples", "flares", "flare_smoke")]
 script = ExtResource("41_effects")
 sea = NodePath("../Sea")
 hull = NodePath("../Vessel/Warship/Hull")
 smoke = NodePath("Smoke")
 fireballs = NodePath("Fireballs")
 embers = NodePath("Embers")
+fire_sparks = NodePath("FireSparks")
 droplets = NodePath("Droplets")
 spray = NodePath("Spray")
 ripples = NodePath("Ripples")
@@ -699,6 +701,12 @@ script = ExtResource("42_particles")
 style = ExtResource("51_embers")
 wind = ExtResource("44_wind")
 capacity = 1200
+
+[node name="FireSparks" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects"]
+script = ExtResource("42_particles")
+style = ExtResource("162_fire_sparks")
+wind = ExtResource("44_wind")
+capacity = 800
 
 [node name="Droplets" type="MultiMeshInstance3D" parent="ViewportContainer/SubViewport/World/Effects" unique_id=663896908]
 script = ExtResource("42_particles")

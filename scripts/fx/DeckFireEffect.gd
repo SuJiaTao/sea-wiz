@@ -11,19 +11,18 @@ const LAYERS: Array[Vector4] = [
 	Vector4(0.6, 0.0, -1.5, 0.65),
 	Vector4(-0.8, 0.0, -1.1, 0.55),
 ]
-const BILLOWS_PER_SECOND: float = 1.5
-const BILLOW_RISE := Vector2(1.5, 4.0)
-const BILLOW_SPREAD: float = 0.9
-const BILLOW_SCALE: float = 0.35
-const BILLOW_LIFT: float = 0.35
 const SMOKE_PER_SECOND: float = 4.0
-const SMOKE_SCALE: float = 0.5
+const SMOKE_SCALE: float = 0.35
+## Smoke starts a little above the flame tips, so the flame shape reads.
+const SMOKE_LIFT: float = 1.15
 const SMOKE_LIFE: float = 0.45
 const SMOKE_RISE := Vector2(2.0, 4.5)
 const SMOKE_SPREAD: float = 1.2
-const EMBERS_PER_SECOND: float = 5.0
-const EMBER_RISE := Vector2(3.0, 9.0)
-const EMBER_SPREAD: float = 2.5
+## Small bright sparks float up out of the flames, from anywhere in their lower half.
+const SPARKS_PER_SECOND: float = 14.0
+const SPARK_RISE := Vector2(3.0, 10.0)
+const SPARK_SPREAD: float = 1.5
+const SPARK_ZONE := Vector2(0.4, 0.5)
 const EXTINGUISHED_STRENGTH: float = 0.12
 
 var _anchor: Node3D
@@ -31,7 +30,6 @@ var _strength: float
 var _flames: Array[FlameCard] = []
 var _smoke := EmissionRate.new()
 var _sparks := EmissionRate.new()
-var _billows := EmissionRate.new()
 
 
 func _init(anchor: Node3D, strength: float) -> void:
@@ -42,6 +40,11 @@ func _init(anchor: Node3D, strength: float) -> void:
 ## How hard it is burning, 0 to 1; 0 once it has gone out.
 func strength() -> float:
 	return 0.0 if _finished else _strength
+
+
+## Where the fire is, for lighting it.
+func position() -> Vector3:
+	return _anchor.global_position if is_instance_valid(_anchor) else Vector3.ZERO
 
 
 func grow(amount: float) -> void:
@@ -72,14 +75,16 @@ func _on_step(effects: EffectManager, delta: float) -> void:
 		var layer := LAYERS[index].w
 		_flames[index].resize(FLAME_WIDTH * size * layer, FLAME_HEIGHT * size * layer)
 		_flames[index].set_strength(burning)
-	var flame_top := base + Vector3.UP * FLAME_HEIGHT * size * burning
+	var flame_top := base + Vector3.UP * FLAME_HEIGHT * size * burning * SMOKE_LIFT
 	for index in _smoke.due(SMOKE_PER_SECOND * burning, delta):
 		effects.smoke.emit(flame_top, _rising(SMOKE_RISE, SMOKE_SPREAD), SMOKE_SCALE * size, SMOKE_LIFE)
-	var billow_base := base + Vector3.UP * FLAME_HEIGHT * size * burning * BILLOW_LIFT
-	for index in _billows.due(BILLOWS_PER_SECOND * burning, delta):
-		effects.fireballs.emit(billow_base, _rising(BILLOW_RISE, BILLOW_SPREAD), BILLOW_SCALE * size)
-	for index in _sparks.due(EMBERS_PER_SECOND * burning, delta):
-		effects.embers.emit(base, _rising(EMBER_RISE, EMBER_SPREAD))
+	for index in _sparks.due(SPARKS_PER_SECOND * burning, delta):
+		var from := base + Vector3(
+			randf_range(-1.0, 1.0) * FLAME_WIDTH * size * SPARK_ZONE.x,
+			randf() * FLAME_HEIGHT * size * SPARK_ZONE.y,
+			randf_range(-1.0, 1.0) * FLAME_WIDTH * size * SPARK_ZONE.x
+		)
+		effects.fire_sparks.emit(from, _rising(SPARK_RISE, SPARK_SPREAD))
 
 
 func _on_finish(_effects: EffectManager) -> void:
