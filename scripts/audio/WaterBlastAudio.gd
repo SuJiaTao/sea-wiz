@@ -5,8 +5,7 @@ class_name WaterBlastAudio
 # falling back. It reaches us late, at the speed of sound, comes from where
 # the blast was, and is quieter the further off it went up. Close blasts use
 # the close recording; further out the far recording takes over, blending
-# between the two in the middle. Without a far recording the close one
-# carries all the way out.
+# between the two in the middle.
 
 const SOUND_SPEED: float = 343.0
 ## Up to here only the close recording plays.
@@ -65,5 +64,6 @@ func _voice(stream: AudioStream, at: Vector3, share: float, pitch: float) -> voi
 	player.stream = stream
 	player.global_position = at
 	player.pitch_scale = pitch
-	player.volume_db = maxf(linear_to_db(share), SILENT_DB)
+	# Equal-power blend, so the handover between recordings holds its level.
+	player.volume_db = maxf(linear_to_db(sqrt(share)), SILENT_DB)
 	player.play()
