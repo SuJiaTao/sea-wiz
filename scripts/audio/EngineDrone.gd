@@ -1,9 +1,10 @@
 extends AudioStreamPlayer
 class_name EngineDrone
 
-# The roar of everything flying near us, mixed into one rumble that pans
-# toward where the engines are and swells as they close. With the power out
-# it is how you find them.
+# The roar of everything flying near us that has no recorded engine of its
+# own (jets have theirs), mixed into one rumble that pans toward where the
+# engines are and swells as they close. With the power out it is how you
+# find them.
 
 const MIX_RATE: float = 22050.0
 const BUFFER_SECONDS: float = 0.12
@@ -17,8 +18,6 @@ const MAX_GAIN: float = 1.0
 
 @export var enemies: EnemyManager
 @export var turret: Turret
-## Jets passing close are handed over to their recorded flyby.
-@export var flybys: JetFlybyAudio
 
 var _playback: AudioStreamGeneratorPlayback
 var _rumble: float = 0.0
@@ -55,14 +54,14 @@ func _loudness() -> Vector2:
 	var camera := turret.camera
 	var total := Vector2.ZERO
 	for enemy in enemies.live_enemies():
-		if not enemy is FlyingEnemy:
+		if not enemy is FlyingEnemy or (enemy as FlyingEnemy).jet_engine:
 			continue
 		var offset := enemy.global_position - camera.global_position
 		var distance := offset.length()
 		var near := clampf((HEARING_RANGE - distance) / (HEARING_RANGE - NEAR_RANGE), 0.0, 1.0)
 		if near <= 0.0:
 			continue
-		var loud := near * near * (flybys.far_share(enemy) if flybys != null else 1.0)
+		var loud := near * near
 		var side := camera.global_basis.x.dot(offset / distance)
 		total += Vector2(sqrt((1.0 - side) * 0.5), sqrt((1.0 + side) * 0.5)) * loud
 	return total.clampf(0.0, MAX_GAIN)
