@@ -27,8 +27,8 @@ const float SWELL_ANGLES[4] = float[](0.0, 0.5, -0.45, 0.9);
 // Gerstner steepness: how far each crest leans in toward a point.
 const float SWELL_STEEPNESS = 0.55;
 const float GRAVITY = 9.8;
-// Swells settle flat well before the horizon, where the water drops just
-// under the far sheet so the two meet without a seam.
+// The mesh stops lifting the swells well before the horizon, where the water
+// drops just under the far sheet so the two meet without a seam.
 const float SWELL_FADE_START = 250.0;
 const float SWELL_FADE_END = 650.0;
 const float FAR_DROP = 1.0;
@@ -52,7 +52,16 @@ const float MAX_VARIANCE = 0.03;
 // How far up and down each facet's patch of sky reaches, kept small so the
 // glow lands on the waves in crisp streaks.
 const float REFLECTION_SPREAD = 0.01;
-const int SKY_TAPS = 3;
+// Far off, the unseen wave faces that tip toward us mirror sky well above the
+// horizon (a tilt of a few degrees doubles in the reflection), and at a
+// grazing angle those are the faces we see most. So the far sea mixes deep
+// blue sky in with the glow instead of mirroring only the horizon.
+const float TILT_REACH = 4.0;
+const int SKY_TAPS = 5;
+const float LINE_SHARE = 0.85;
+const float LINE_WIDTH = 90.0;
+const float LINE_ROWS = 6000.0;
+const float LINE_DRIFT = 0.3;
 
 varying vec2 rest_xz;
 varying vec3 world_position;
@@ -89,17 +98,22 @@ void vertex() {
 	VERTEX = (inverse(MODEL_MATRIX) * vec4(world, 1.0)).xyz;
 }
 
-vec2 swell_slope(vec2 xz, float fade) {
-	vec2 s = vec2(0.0);
+// The swells are shaded all the way to the horizon, even where the mesh no
+// longer lifts them. Once a swell is too short to see across a few pixels
+// it is not drawn; its slope is kept as roughness instead (z).
+vec3 swell_slope(vec2 xz, float footprint) {
+	vec3 s = vec3(0.0);
 	for (int i = 0; i < SWELLS; i++) {
 		float k;
 		float phase = swell_phase(i, xz, k);
 		float a = swell_height * SWELL_SHARES[i];
 		// Leaning crests pinch the slope near the top and spread it in the trough.
 		float pinch = 1.0 - SWELL_STEEPNESS / float(SWELLS) * SWELL_SHARES[i] * sin(phase);
-		s += swell_heading(i) * k * a * cos(phase) / max(pinch, 0.2);
+		float shown = 1.0 - smoothstep(0.1, 1.0, footprint / SWELL_LENGTHS[i]);
+		s.xy += swell_heading(i) * k * a * cos(phase) / max(pinch, 0.2) * shown;
+		s.z += k * k * a * a * 0.5 * (1.0 - shown);
 	}
-	return s * fade;
+	return s;
 }
 
 // One sheet of the wave map, stretched across its heading so ripples run in
@@ -122,24 +136,36 @@ void fragment() {
 	vec3 glow = sunset_glow_direction(glow_bearing_deg);
 	vec3 eye = CAMERA_POSITION_WORLD;
 	vec3 view = normalize(world_position - eye);
-	vec2 slope = swell_slope(rest_xz, swell_fade(rest_xz, eye));
-	float variance = 0.0;
+	vec3 swells = swell_slope(rest_xz, length(fwidth(rest_xz)));
+	vec2 slope = swells.xy;
+	float variance = swells.z;
 	for (int i = 0; i < DETAIL_LAYERS; i++) {
 		vec3 layer = detail_layer(rest_xz, i);
 		slope += layer.xy;
 		variance += layer.z;
 	}
 	variance = min(variance, MAX_VARIANCE);
+	// Waves too small to draw still show far off as thin lines of crests
+	// running along the horizon, each about a pixel deep. Most of the lost
+	// slope goes back in as those lines, so the far sea keeps the same
+	// texture and contrast as the near sea instead of going flat.
+	vec2 out_to = rest_xz - eye.xz;
+	vec2 heading = normalize(view.xz);
+	float along = max(dot(out_to, heading), 1.0);
+	float across = dot(out_to, vec2(-heading.y, heading.x));
+	float lines = sunset_fbm(vec2(across / along * LINE_WIDTH, LINE_ROWS / along + TIME * LINE_DRIFT)) * 2.0 - 1.0;
+	slope -= heading * lines * sqrt(variance) * LINE_SHARE;
+	variance *= 1.0 - LINE_SHARE;
 	float spread = sqrt(variance);
 	vec3 normal = normalize(vec3(-slope.x, 1.0, -slope.y));
 	vec3 mirrored = reflect(view, normal);
 	mirrored.y = abs(mirrored.y);
 
 	// Each facet sees a patch of sky: the rougher, the further it reaches.
-	float reach = REFLECTION_SPREAD + spread;
+	float reach = REFLECTION_SPREAD + spread * TILT_REACH;
 	vec3 sky = vec3(0.0);
 	for (int i = 0; i < SKY_TAPS; i++) {
-		float offset = (float(i) / float(SKY_TAPS - 1) - 0.3) * reach;
+		float offset = (float(i) / float(SKY_TAPS - 1) - 0.15) * reach;
 		vec3 tap = normalize(vec3(mirrored.x, abs(mirrored.y + offset), mirrored.z));
 		sky += sunset_sky(tap, glow, dusk);
 	}
