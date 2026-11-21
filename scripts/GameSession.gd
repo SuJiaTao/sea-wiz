@@ -84,6 +84,7 @@ func _wake_up() -> void:
 	title_screen.hide()
 	turret.rotation.y = 0.0
 	turret.mount.rotation.x = 0.0
+	turret.hide_gun = false
 	wake_fade.color = Color.BLACK
 	hud.show()
 	var tween := create_tween()
