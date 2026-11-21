@@ -29,6 +29,8 @@ const ROLL: float = 0.012
 const ROLL_RATE: float = 0.33
 const PROMPT_PULSE: float = 3.0
 const CAMERA_POSITION := Vector3(-15.0, 13.2, -6.0)
+## The CIWS gun is raised this much on the title, pivoting on the model's own elevation joint.
+const GUN_ELEVATION_DEG: float = 12.0
 const CAMERA_TARGET := Vector3(0.5, 12.3, -2.1)
 
 @export var sky: ShaderMaterial
@@ -41,6 +43,7 @@ var _blackout: float = -1.0
 
 @onready var _vessel: Node3D = $Sunset/View/Vessel
 @onready var _camera: Camera3D = $Sunset/View/Camera
+@onready var _radome_seal: Node3D = $Sunset/View/Vessel/Ciws/Model/RadomeSeal
 @onready var _text: Control = $Text
 @onready var _prompt: Label = $Text/Prompt
 @onready var _fade: ColorRect = $Fade
@@ -50,6 +53,7 @@ func _ready() -> void:
 	for part in _vessel.find_children("*", "GeometryInstance3D", true, false):
 		(part as GeometryInstance3D).material_override = silhouette
 	_camera.look_at_from_position(CAMERA_POSITION, CAMERA_TARGET, Vector3.UP)
+	_raise_gun()
 	_frame_sea()
 	_set_dusk(DUSK_START)
 
@@ -98,6 +102,14 @@ func _set_dusk(dusk: float) -> void:
 	for material: ShaderMaterial in [sky, sea]:
 		material.set_shader_parameter("dusk", dusk)
 		material.set_shader_parameter("glow_bearing_deg", GLOW_BEARING)
+
+
+func _raise_gun() -> void:
+	var elevation := _vessel.find_child("Phalanx_Elevation", true, false) as Node3D
+	if elevation == null:
+		return
+	elevation.rotate_object_local(Vector3.RIGHT, deg_to_rad(GUN_ELEVATION_DEG))
+	_radome_seal.reparent(elevation)
 
 
 func _frame_sea() -> void:

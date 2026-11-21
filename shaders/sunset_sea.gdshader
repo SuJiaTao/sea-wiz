@@ -61,6 +61,7 @@ const float REFLECTION_SPREAD = 0.08;
 // blue sky in with the glow instead of mirroring only the horizon.
 const float TILT_REACH = 4.0;
 const int SKY_TAPS = 5;
+const float EDGE_BLEND_START = 0.55;
 
 varying vec2 rest_xz;
 varying vec3 world_position;
@@ -128,10 +129,11 @@ vec3 detail_layer(vec2 xz, int i) {
 void fragment() {
 	vec3 glow = sunset_glow_direction(glow_bearing_deg);
 	vec3 eye = CAMERA_POSITION_WORLD;
-	if (dot(rest_xz - eye.xz, view_heading) > sea_reach) {
+	vec3 view = normalize(world_position - eye);
+	float ahead = dot(rest_xz - eye.xz, view_heading);
+	if (ahead > sea_reach || sunset_height(view, view_heading, horizon_drop) > SEA_LINE) {
 		discard;
 	}
-	vec3 view = normalize(world_position - eye);
 	vec3 swells = swell_slope(rest_xz, length(fwidth(rest_xz)));
 	vec2 slope = swells.xy;
 	float variance = swells.z;
@@ -163,5 +165,7 @@ void fragment() {
 	float facing_us = max(dot(-view, normal), mix(0.0, spread * 2.0, hidden));
 	float fresnel = BASE_REFLECTION + HORIZON_REFLECTION * pow(1.0 - facing_us, 5.0);
 	fresnel *= 1.0 - ROUGH_SHADOWING * hidden;
-	ALBEDO = mix(deep_water, sky, fresnel);
+	// The last stretch of sea settles into the dark of the edge line.
+	float edge = smoothstep(sea_reach * EDGE_BLEND_START, sea_reach, ahead);
+	ALBEDO = mix(mix(deep_water, sky, fresnel), sunset_sea_edge(dusk), edge);
 }

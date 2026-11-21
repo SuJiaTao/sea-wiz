@@ -22,6 +22,21 @@ const float NIGHT_SHARE = 0.25;
 // Directions this far off the view heading are treated as if this far, so
 // the sky behind the camera (seen only in reflections) stays well behaved.
 const float MIN_FACING = 0.25;
+// The sea ends in a straight dark line of this colour just above the tops of
+// its last swells (as a slope above the flat sea's edge), so the crests out
+// there never poke into the sky.
+const vec3 SEA_EDGE = vec3(0.016, 0.024, 0.05);
+const float SEA_LINE = 0.0045;
+
+// Height of a direction above the sea's own edge, measured along the view so
+// lines of equal height run straight across the screen.
+float sunset_height(vec3 dir, vec2 heading, float drop) {
+	return dir.y / max(dot(dir.xz, heading), MIN_FACING) + drop;
+}
+
+vec3 sunset_sea_edge(float dusk) {
+	return mix(SEA_EDGE, NIGHT, smoothstep(1.0 - NIGHT_SHARE, 1.0, dusk));
+}
 
 float sunset_hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -70,7 +85,8 @@ vec3 sunset_twilight(float up, float near_side, float dusk) {
 // much (as a slope below eye level).
 vec3 sunset_sky(vec3 dir, vec3 glow, float dusk, vec2 heading, float drop, float time) {
 	float facing = max(dot(dir.xz, heading), MIN_FACING);
-	float up = max(dir.y / facing + drop, 0.0);
+	float height = sunset_height(dir, heading, drop);
+	float up = max(height, 0.0);
 	float near_side = max(dot(normalize(dir.xz), glow.xz), 0.0);
 	vec3 sky = sunset_twilight(up, near_side, dusk);
 	vec2 drift = dir.xz / max(up * facing + 0.08, 0.02);
@@ -80,5 +96,6 @@ vec3 sunset_sky(vec3 dir, vec3 glow, float dusk, vec2 heading, float drop, float
 	float underlit = pow(near_side, 1.5) * smoothstep(0.22, 0.02, up) * (1.0 - smoothstep(0.3, 0.85, dusk));
 	vec3 cloud_colour = mix(CLOUD_SLATE * (1.0 - 0.7 * dusk), CLOUD_AFTERGLOW, underlit);
 	sky = mix(sky, cloud_colour, cloud * 0.85);
-	return mix(sky, NIGHT, smoothstep(1.0 - NIGHT_SHARE, 1.0, dusk));
+	sky = mix(sky, NIGHT, smoothstep(1.0 - NIGHT_SHARE, 1.0, dusk));
+	return mix(sunset_sea_edge(dusk), sky, step(SEA_LINE, height));
 }
