@@ -40,7 +40,7 @@ func _on_flight_created() -> void:
 
 func _on_flight_step(delta: float) -> void:
 	_salvo_clock -= delta
-	if _salvo_clock > 0.0 or missile_scene == null:
+	if _salvo_clock > 0.0 or missile_scene == null or BlindArc.contains(global_position):
 		return
 	_salvo_clock = salvo_interval
 	for shot in salvo_size:

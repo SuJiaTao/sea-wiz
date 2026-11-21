@@ -29,6 +29,8 @@ func _on_flight_step(delta: float) -> void:
 	_bomb_clock = maxf(_bomb_clock - delta, 0.0)
 	if bomb_scene == null or bombs_carried <= 0 or _bomb_clock > 0.0:
 		return
+	if BlindArc.contains(global_position):
+		return
 	var height := maxf(global_position.y - target_position.y, 1.0)
 	var fall_time := sqrt(2.0 * height / GRAVITY)
 	var offset := target_position - global_position

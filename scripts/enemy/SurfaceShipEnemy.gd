@@ -61,8 +61,10 @@ func _on_think(delta: float) -> void:
 	global_position += velocity * delta
 	if visuals != null:
 		visuals.rotation.z = sin(_age * ROLL_RATE) * ROLL_AMOUNT
-	_run_gun(delta)
-	_run_missiles(delta)
+	# Holds fire while it sits behind the bridge, where we cannot answer.
+	if not BlindArc.contains(global_position):
+		_run_gun(delta)
+		_run_missiles(delta)
 	_fade_flash(delta)
 
 
