@@ -33,6 +33,14 @@ func _on_damaged(amount: float, from_position: Vector3) -> void:
 		_burning[spot] = fire
 
 
+## How hard the worst fire on board is burning, 0 when the ship is not on fire.
+func blaze() -> float:
+	var worst := 0.0
+	for fire in _burning.values():
+		worst = maxf(worst, fire.strength())
+	return worst
+
+
 func engulf() -> void:
 	ignite_all(1.0)
 

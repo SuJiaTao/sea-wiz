@@ -39,6 +39,11 @@ func _init(anchor: Node3D, strength: float) -> void:
 	_strength = clampf(strength, 0.0, 1.0)
 
 
+## How hard it is burning, 0 to 1; 0 once it has gone out.
+func strength() -> float:
+	return 0.0 if _finished else _strength
+
+
 func grow(amount: float) -> void:
 	_strength = minf(_strength + amount, 1.0)
 
