@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" path="res://scenes/world/ship/destroyer_v15.glb" id="4_ship"]
 [ext_resource type="PackedScene" path="res://scenes/world/ciws/ciws_phalanx.glb" id="5_ciws"]
 [ext_resource type="Texture2D" path="res://resources/world/WaveNormals.tres" id="6_waves"]
-[ext_resource type="Shader" path="res://shaders/title_glare.gdshader" id="7_glare"]
 
 [sub_resource type="ShaderMaterial" id="Material_sky"]
 shader = ExtResource("2_sky")
@@ -43,8 +42,6 @@ top_radius = 0.72
 bottom_radius = 0.72
 height = 0.12
 
-[sub_resource type="ShaderMaterial" id="Material_glare"]
-shader = ExtResource("7_glare")
 
 [sub_resource type="StandardMaterial3D" id="Material_silhouette"]
 cull_mode = 2
@@ -104,15 +101,6 @@ mesh = SubResource("Mesh_radome_seal")
 [node name="Camera" type="Camera3D" parent="Sunset/View"]
 fov = 58.0
 far = 50000.0
-
-[node name="Glare" type="ColorRect" parent="."]
-material = SubResource("Material_glare")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
 
 [node name="Text" type="Control" parent="."]
 anchors_preset = 15

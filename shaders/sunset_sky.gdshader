@@ -2,11 +2,9 @@ shader_type sky;
 
 #include "res://shaders/sunset.gdshaderinc"
 
-uniform float sun_elevation_deg = 3.0;
-uniform float sun_bearing_deg = 270.0;
-uniform float daylight : hint_range(0.0, 1.0) = 1.0;
+uniform float glow_bearing_deg = 93.0;
+uniform float dusk : hint_range(0.0, 1.0) = 0.0;
 
 void sky() {
-	vec3 sun = sunset_sun_direction(sun_elevation_deg, sun_bearing_deg);
-	COLOR = sunset_sky(EYEDIR, sun, daylight, TIME, true);
+	COLOR = sunset_sky(EYEDIR, sunset_glow_direction(glow_bearing_deg), dusk);
 }
