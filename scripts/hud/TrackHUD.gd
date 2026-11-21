@@ -43,6 +43,8 @@ const MISSILE_COLOUR := Color(1.0, 0.58, 0.18, 0.95)
 const MISSILE_FAINT := Color(1.0, 0.58, 0.18, 0.55)
 const SCOPE_MISSILE_RADIUS: float = 3.5
 const SCOPE_AIRCRAFT_SIZE: float = 4.0
+const JAM_STROBES: int = 9
+const JAM_LABEL := "JAMMED"
 const HOMING_COLOUR := Color(1.0, 0.2, 0.15, 0.95)
 
 @export var turret: Turret
@@ -201,6 +203,9 @@ func _draw_scope() -> void:
 	draw_circle(centre, 2.5, MAIN)
 	_draw_field_of_view(centre)
 
+	if tracks.search_radar.jammed():
+		_draw_jamming(centre)
+		return
 	var marked := spotter.marked_enemies()
 	for track in tracks.tracks():
 		if not _belongs_to_marked(track, marked):
@@ -224,6 +229,16 @@ func _draw_scope() -> void:
 		centre + Vector2(-SCOPE_RADIUS, SCOPE_RADIUS + 18),
 		"HEAT  %.1f km   MARKED %d" % [RADAR_RANGE / METRES_PER_KM, marked.size()], 11, FAINT
 	)
+
+
+## Jamming smears the scope with bright strobes along random bearings.
+func _draw_jamming(centre: Vector2) -> void:
+	for strobe in JAM_STROBES:
+		var bearing := randf() * TAU
+		var direction := Vector2(sin(bearing), -cos(bearing))
+		var near := randf() * SCOPE_RADIUS * 0.3
+		draw_line(centre + direction * near, centre + direction * SCOPE_RADIUS, Color(DIM, randf_range(0.15, 0.5)), randf_range(1.0, 3.0))
+	_text(centre + Vector2(-SCOPE_RADIUS, SCOPE_RADIUS + 18), JAM_LABEL, 11, MAIN if _blink_on() else FAINT)
 
 
 func _draw_triangle(at: Vector2, half: float, colour: Color) -> void:

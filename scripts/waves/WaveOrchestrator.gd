@@ -74,7 +74,8 @@ func _physics_process(delta: float) -> void:
 	_clock += delta
 	while not _pending.is_empty() and _pending[0].time <= _clock:
 		var entry: WaveSpawn = _pending.pop_front()
-		if randf() >= entry.chance:
+		var certain := entry.ace_return and AceLegend.escaped
+		if not certain and randf() >= entry.chance:
 			continue
 		if not _spawn(entry):
 			return

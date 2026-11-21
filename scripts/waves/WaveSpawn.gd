@@ -9,3 +9,5 @@ class_name WaveSpawn
 @export var formation: Formation
 ## Share of runs in which this spawn turns up at all.
 @export_range(0.0, 1.0) var chance: float = 1.0
+## Turns up for certain if the ace got away earlier and is due back.
+@export var ace_return: bool = false

@@ -53,6 +53,7 @@ distance = Vector2(2000, 2400)
 altitude = Vector2(200, 320)
 group = &"ace"
 chance = 0.25
+ace_return = true
 
 [resource]
 script = ExtResource("1_wave")

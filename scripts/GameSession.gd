@@ -37,6 +37,7 @@ var _title_time: float = 0.0
 func _ready() -> void:
 	if not _singleton:
 		_singleton = self
+	AceLegend.reset()
 	enemies.enemy_created.connect(_on_enemy_created)
 	enemies.enemy_killed.connect(_on_enemy_killed)
 	ballistics.entered_water.connect(effects.splash)
