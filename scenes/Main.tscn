@@ -177,6 +177,8 @@
 [ext_resource type="Resource" path="res://resources/audio/Flyby_behind.tres" id="147_flyby_behind"]
 [ext_resource type="Script" path="res://scripts/audio/JetDistantAudio.gd" id="148_distant_jets"]
 [ext_resource type="AudioStream" path="res://audio/jets/jet_distant_loop.ogg" id="149_distant_loop"]
+[ext_resource type="Script" path="res://scripts/audio/ShipGroan.gd" id="150_ship_groan"]
+[ext_resource type="AudioStream" path="res://audio/ship/ship_groan.ogg" id="151_groan"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -1196,6 +1198,12 @@ volume_db = -10.0
 script = ExtResource("166_engines")
 enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
 turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
+
+[node name="ShipGroan" type="AudioStreamPlayer" parent="." node_paths=PackedStringArray("fires")]
+process_mode = 1
+stream = ExtResource("151_groan")
+script = ExtResource("150_ship_groan")
+fires = NodePath("../ViewportContainer/SubViewport/World/ShipDamage/DeckFires")
 
 [node name="StageEvents" type="Node" parent="." node_paths=PackedStringArray("waves", "fires")]
 process_mode = 1
