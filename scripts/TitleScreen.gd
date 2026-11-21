@@ -2,26 +2,23 @@ extends CanvasLayer
 class_name TitleScreen
 
 # The title card: the CIWS with its gun pointing left and the deck below, all
-# black against a red sunset, riding the swell. Any button sets the sun: it
-# sinks, the afterglow lingers and fades to night, and the screen goes dark before the game
-# wakes up in night vision.
+# black against the glow just after sunset, riding the swell. Any button lets
+# the dusk run on: the glow sinks and the sky darkens to night, and the
+# screen goes dark before the game wakes up in night vision.
 
 signal start_requested()
 signal dusk_finished()
 
-const SUN_HIGH: float = 1.6
-## Deep enough under the horizon that twilight has run out.
-const SUN_GONE: float = -9.0
-## Eases the sun in, so it lingers low and sets about a third of the way through.
-const SINK_CURVE: float = 1.6
-## The last share of the dusk, when what twilight is left fades to night.
-const NIGHT_SHARE: float = 0.25
-const SUN_BEARING: float = 93.0
-const DUSK_TIME: float = 7.0
+## How far into dusk the title sits before any button is pressed.
+const DUSK_START: float = 0.12
+## Eases the dusk in, so the glow lingers before the dark comes on.
+const DUSK_CURVE: float = 1.6
+const GLOW_BEARING: float = 93.0
+const DUSK_TIME: float = 6.0
 const TEXT_FADE_TIME: float = 0.8
 const BLACKOUT_TIME: float = 1.3
 ## The ship rides a little high here so swells never wash over the foredeck.
-const RIDE_HEIGHT: float = 0.9
+const RIDE_HEIGHT: float = 1.5
 const HEAVE: float = 0.22
 const HEAVE_RATE: float = 0.55
 const PITCH: float = 0.005
@@ -51,7 +48,7 @@ func _ready() -> void:
 	for part in _vessel.find_children("*", "GeometryInstance3D", true, false):
 		(part as GeometryInstance3D).material_override = silhouette
 	_camera.look_at_from_position(CAMERA_POSITION, CAMERA_TARGET, Vector3.UP)
-	_set_sun(SUN_HIGH, 1.0)
+	_set_dusk(DUSK_START)
 
 
 func handle_input(event: InputEvent) -> bool:
@@ -77,8 +74,7 @@ func _process(delta: float) -> void:
 	_prompt.modulate.a = 0.5 + 0.45 * sin(_clock * PROMPT_PULSE)
 	if _dusk >= 0.0 and _dusk < 1.0:
 		_dusk = minf(_dusk + delta / DUSK_TIME, 1.0)
-		var elevation := lerpf(SUN_HIGH, SUN_GONE, pow(_dusk, SINK_CURVE))
-		_set_sun(elevation, 1.0 - smoothstep(1.0 - NIGHT_SHARE, 1.0, _dusk))
+		_set_dusk(lerpf(DUSK_START, 1.0, pow(_dusk, DUSK_CURVE)))
 		_text.modulate.a = clampf(1.0 - _dusk * DUSK_TIME / TEXT_FADE_TIME, 0.0, 1.0)
 		if _dusk >= 1.0:
 			_blackout = 0.0
@@ -95,8 +91,7 @@ func _ride_swell() -> void:
 	_vessel.rotation.z = sin(_clock * ROLL_RATE + 1.0) * ROLL
 
 
-func _set_sun(elevation: float, daylight: float) -> void:
+func _set_dusk(dusk: float) -> void:
 	for material: ShaderMaterial in [sky, sea]:
-		material.set_shader_parameter("sun_elevation_deg", elevation)
-		material.set_shader_parameter("sun_bearing_deg", SUN_BEARING)
-		material.set_shader_parameter("daylight", daylight)
+		material.set_shader_parameter("dusk", dusk)
+		material.set_shader_parameter("glow_bearing_deg", GLOW_BEARING)
