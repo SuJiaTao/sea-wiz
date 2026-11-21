@@ -17,6 +17,9 @@ uniform float facet_shade : hint_range(0.0, 1.0) = 0.2;
 uniform float exposure : hint_range(0.0, 2.0) = 0.78;
 uniform sampler2D markings : source_color, hint_default_white;
 uniform float markings_base : hint_range(0.01, 1.0) = 1.0;
+// White deck paint is a few times brighter than the grey around it, never so
+// bright that it blooms or throws lens glints through the night vision.
+uniform float markings_ceiling : hint_range(1.0, 20.0) = 2.0;
 uniform vec3 glow_color : source_color = vec3(1.0);
 instance uniform float glow = 0.0;
 uniform vec2 perforation = vec2(0.0);
@@ -34,7 +37,7 @@ void fragment() {
 	}
 	float facet = 1.0 - facet_shade * abs(normal.x);
 	float sky = mix(underside, 1.0, normal.y * 0.5 + 0.5);
-	float marked = dot(texture(markings, UV).rgb, vec3(1.0 / 3.0)) / markings_base;
+	float marked = min(dot(texture(markings, UV).rgb, vec3(1.0 / 3.0)) / markings_base, markings_ceiling);
 	float shade = tone * facet * marked * exposure;
 	ALBEDO = vec3(pow(shade, DISPLAY_GAMMA));
 	EMISSION = vec3(pow(shade * sky_light * sky, DISPLAY_GAMMA)) + glow_color * glow;
