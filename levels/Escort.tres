@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://cwk6y444gpqep" path="res://scenes/enemy/Drone.tscn" id="3_drone"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/HeavyJet.tscn" id="4_heavy"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Interceptor.tscn" id="5_interceptor"]
-[ext_resource type="PackedScene" path="res://scenes/enemy/Jet.tscn" id="6_jet"]
+[ext_resource type="PackedScene" uid="uid://bf0o2xjh2k8eh" path="res://scenes/enemy/Jet.tscn" id="6_jet"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/SeaSkimmer.tscn" id="7_skimmer"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Helo.tscn" id="8_helo"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/Supersonic.tscn" id="9_supersonic"]

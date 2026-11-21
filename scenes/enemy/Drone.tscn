@@ -29,6 +29,5 @@ shape = SubResource("Shape_body")
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="." unique_id=2062426691]
 stream = ExtResource("3_4ociu")
 unit_size = 100.0
-autoplay = true
 bus = &"enemies"
 doppler_tracking = 2
