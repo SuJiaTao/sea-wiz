@@ -104,6 +104,9 @@ func _on_think(delta: float) -> void:
 			_hurtbox.collision_layer = COLLISION_LAYER
 		return
 	_circle(delta)
+	# Nothing comes at us from behind the bridge, where we cannot answer.
+	if BlindArc.contains(global_position):
+		return
 	_run_salvos(delta)
 	_run_fighters(delta)
 	_run_stars(delta)
@@ -118,9 +121,9 @@ func _run_stars(delta: float) -> void:
 	for index in stars_per_seeding:
 		var star := star_scene.instantiate() as FlyingEnemy
 		star.target_position = target_position
-		var bearing := randf() * TAU
+		var bearing := BlindArc.open_bearing(randf())
 		var elevation := deg_to_rad(randf_range(star_elevation_deg.x, star_elevation_deg.y))
-		var direction := Vector3(sin(bearing) * cos(elevation), sin(elevation), -cos(bearing) * cos(elevation))
+		var direction := Vector3(cos(bearing) * cos(elevation), sin(elevation), sin(bearing) * cos(elevation))
 		weapon_launched.emit(star, Transform3D(Basis.IDENTITY, target_position + direction * star_range))
 
 
