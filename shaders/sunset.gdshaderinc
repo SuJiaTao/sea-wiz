@@ -3,15 +3,15 @@
 // thin cloud streaks lit from below. As the sun goes the warmth drains and
 // night comes in.
 
-const vec3 HORIZON_HOT = vec3(1.0, 0.42, 0.07);
-const vec3 HORIZON_FAR = vec3(0.9, 0.22, 0.04);
-const vec3 SKY_MID = vec3(0.55, 0.06, 0.03);
-const vec3 SKY_HIGH = vec3(0.1, 0.015, 0.03);
+const vec3 HORIZON_HOT = vec3(0.85, 0.27, 0.05);
+const vec3 HORIZON_FAR = vec3(0.68, 0.14, 0.04);
+const vec3 SKY_MID = vec3(0.4, 0.05, 0.04);
+const vec3 SKY_HIGH = vec3(0.07, 0.012, 0.03);
 const vec3 AFTERGLOW = vec3(0.55, 0.08, 0.02);
 const vec3 NIGHT = vec3(0.008, 0.004, 0.01);
-const vec3 SUN_CORE = vec3(2.8, 1.15, 0.3);
-const vec3 SUN_GLOW = vec3(0.9, 0.42, 0.08);
-const vec3 SUN_HALO = vec3(1.0, 0.32, 0.04);
+const vec3 SUN_CORE = vec3(2.2, 0.8, 0.22);
+const vec3 SUN_GLOW = vec3(0.7, 0.26, 0.06);
+const vec3 SUN_HALO = vec3(0.8, 0.2, 0.04);
 const vec3 CLOUD_DARK = vec3(0.16, 0.03, 0.03);
 const vec3 CLOUD_RIM = vec3(1.0, 0.45, 0.08);
 const float SUN_RADIUS = 0.02;
