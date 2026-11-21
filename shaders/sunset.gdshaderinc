@@ -5,6 +5,7 @@
 // cloud go slate grey with their undersides still burning near the horizon.
 
 const vec3 HORIZON_HOT = vec3(0.8, 0.24, 0.02);
+const vec3 HORIZON_SEAM = vec3(0.75, 0.08, 0.005);
 const vec3 HORIZON_FAR = vec3(0.62, 0.14, 0.015);
 const vec3 SKY_MID = vec3(0.46, 0.1, 0.015);
 const vec3 SKY_HIGH = vec3(0.24, 0.045, 0.012);
@@ -13,7 +14,7 @@ const vec3 SUN_GLOW = vec3(0.9, 0.38, 0.05);
 const vec3 SUN_HALO = vec3(0.7, 0.18, 0.01);
 const vec3 CLOUD_DARK = vec3(0.2, 0.05, 0.03);
 const vec3 CLOUD_RIM = vec3(1.0, 0.45, 0.08);
-const vec3 TWILIGHT_GLOW = vec3(0.9, 0.14, 0.01);
+const vec3 TWILIGHT_GLOW = vec3(0.85, 0.09, 0.005);
 const vec3 TWILIGHT_GAP = vec3(0.42, 0.2, 0.05);
 const vec3 TWILIGHT_MID = vec3(0.07, 0.12, 0.2);
 const vec3 TWILIGHT_HIGH = vec3(0.02, 0.04, 0.09);
@@ -23,6 +24,8 @@ const vec3 EARTH_SHADOW = vec3(0.05, 0.07, 0.12);
 const vec3 NIGHT = vec3(0.004, 0.007, 0.016);
 const float SUN_RADIUS = 0.02;
 const float SUN_EDGE = 0.003;
+const float SEAM_HEIGHT = 0.05;
+const float SEAM_FULL_ELEVATION = 1.6;
 // Degrees under the horizon by which twilight has run out.
 const float TWILIGHT_DEPTH = 9.0;
 
@@ -82,6 +85,10 @@ vec3 sunset_sky(vec3 dir, vec3 sun, float daylight, float time, bool with_disc) 
 	float facing = max(dot(dir, sun), 0.0);
 	sky += SUN_HALO * pow(facing, 5.0) * 0.5;
 	sky += SUN_GLOW * (pow(facing, 30.0) * 0.45 + pow(facing, 300.0) * 0.7);
+	// Right down at sea level the light has crossed the most air and runs red,
+	// more so the lower the sun gets.
+	float setting = 1.0 - smoothstep(0.0, SEAM_FULL_ELEVATION, sunset_elevation(sun));
+	sky = mix(sky, HORIZON_SEAM, smoothstep(SEAM_HEIGHT, 0.0, up) * mix(0.5, 0.95, setting));
 	// The sky overhead goes blue first while the horizon is still burning.
 	sky = mix(sky, sunset_twilight(dir, up, near_side, dusk), smoothstep(0.0, 0.25, dusk * (1.0 + up * 3.0)));
 	vec2 drift = dir.xz / max(dir.y + 0.08, 0.02);
