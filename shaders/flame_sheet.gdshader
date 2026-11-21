@@ -1,50 +1,50 @@
 shader_type spatial;
-render_mode unshaded, cull_disabled, depth_draw_never, shadows_disabled, skip_vertex_transform;
+render_mode unshaded, cull_disabled, depth_draw_never, shadows_disabled;
 
-// One flame, always turned to face the camera so it never shows an edge or
-// a cross. It is drawn as a solid shape, not wisps: a round, heavy base
-// that narrows into one or two licking tongues, with a clean edge. Inside
-// it is hottest low down and toward the middle, almost white, cooling to
-// the rim; outside it a soft glow spreads into the air around it. Slow,
-// large lobes of noise climb the shape so the tongues lick, split and
-// rejoin, and the whole flame sways a little.
+// One sheet of a fire. A few sheets cross at the flame's centre, so it has
+// depth from every side. It moves like the Doom fire: heat is fed in along a
+// wandering bed at the root and climbs in tall packets, each column losing
+// heat at its own random rate and being pushed sideways by gusts, so the top
+// tears into flickering tongues. Unlike Doom the packets are smooth, not
+// blocky. It is seen the way a night sight sees it: the body is so bright it
+// burns out to a flat glare with detail only at its edges, and a soft halo
+// spreads into the dark around it. Sheets seen edge-on fade away.
 
 uniform sampler2D palette : source_color, filter_linear, repeat_disable;
 uniform float intensity = 1.0;
-uniform float rise_speed = 1.4;
-uniform float sway_speed = 0.8;
+uniform float rise_speed = 1.6;
+uniform float gust_speed = 0.5;
+uniform float edge_fade : hint_range(0.0, 1.0) = 0.35;
 
 instance uniform float strength = 1.0;
 instance uniform float column = 0.0;
 
 const float SEED_SPREAD = 37.0;
-const int OCTAVES = 2;
-// Where the body sits inside the card, leaving a margin for the glow.
-const float BODY_HALF_WIDTH = 0.56;
-const float BODY_TOP = 0.86;
-// Shape of the body up its height: round at the base, pointed at the tip.
-const float BASE_ROUNDNESS = 0.22;
-const float TIP_TAPER = 0.6;
-const float PROFILE_PEAK = 0.62;
-// How far the climbing lobes bend and bite into the shape, and how big they are.
-const float LICK_BEND = 0.85;
-const float LICK_SCALE = 1.6;
-const float TONGUE_BITE = 1.6;
-const float TONGUE_SCALE = 2.2;
-const float TONGUE_STRETCH = 0.45;
-const float SWAY = 0.22;
-// Width of the edge, so it is crisp but not aliased.
-const float EDGE = 0.06;
-// The core: how deep into the body it starts, and how far up it reaches.
-const float CORE_DEPTH = 0.3;
-const float CORE_REACH = 0.7;
-// The hottest part sits a little above the base, not right on it.
-const float CORE_LIFT = 0.15;
-const float BODY_HEAT = 0.3;
-const float CORE_HEAT = 0.7;
-const float GLOW_HEAT = 0.3;
-const float GLOW_REACH = 0.22;
-const float GLOW_ALPHA = 0.55;
+const int OCTAVES = 3;
+// Heat packets are narrow and tall, like Doom's columns, then softened.
+const vec2 PACKET_SCALE = vec2(9.0, 1.8);
+// The bed of fuel along the root, and how fast its hot spots wander.
+const float BED_WIDTH = 0.36;
+const float BED_SCALE = 3.0;
+const float BED_SPEED = 0.35;
+const float ROOT_HEAT = 1.25;
+// Heat lost per unit of height, and how unevenly the columns lose it.
+const float COOLING = 1.15;
+const float COOLING_SPREAD = 2.2;
+// The sideways push: a gust over the whole flame, and each column's wander.
+const float GUST = 0.28;
+const float WANDER = 0.12;
+// The night sight burns the body out: how quickly heat reaches full glare.
+const float GLARE_GAIN = 1.7;
+// Glow spread into the air past the flame's edge, as a share of heat below zero.
+const float HALO_REACH = 0.22;
+const float HALO_HEAT = 0.32;
+const float HALO_ALPHA = 0.5;
+// The flame fades out before the top of its sheet.
+const float TOP_FADE = 0.82;
+// The whole flame flutters in brightness, fast, as a night sight shows it.
+const float FLUTTER = 0.08;
+const float FLUTTER_SPEED = 11.0;
 const float MIN_STRENGTH = 0.001;
 
 float hash(vec2 p) {
@@ -73,48 +73,40 @@ float fbm(vec2 p) {
 	return total;
 }
 
-void vertex() {
-	// Turn about the vertical to face the camera, keeping the card upright.
-	vec3 centre = MODEL_MATRIX[3].xyz;
-	vec3 to_camera = CAMERA_POSITION_WORLD - centre;
-	to_camera.y = 0.0;
-	to_camera = length(to_camera) > 0.0001 ? normalize(to_camera) : vec3(0.0, 0.0, 1.0);
-	vec3 across = normalize(cross(vec3(0.0, 1.0, 0.0), to_camera));
-	float width = length(MODEL_MATRIX[0].xyz);
-	float height = length(MODEL_MATRIX[1].xyz);
-	vec3 world = centre + across * VERTEX.x * width + vec3(0.0, 1.0, 0.0) * VERTEX.y * height;
-	VERTEX = (VIEW_MATRIX * vec4(world, 1.0)).xyz;
-	NORMAL = (VIEW_MATRIX * vec4(to_camera, 0.0)).xyz;
-}
-
 void fragment() {
-	float grown = max(strength, MIN_STRENGTH);
+	float h = 1.0 - UV.y;
+	float x = UV.x - 0.5;
 	vec2 seed = vec2(column * SEED_SPREAD, column * SEED_SPREAD * 0.5);
-	float x = (UV.x - 0.5) * 2.0;
-	float up = (1.0 - UV.y) / (BODY_TOP * mix(0.6, 1.0, grown));
+	float climb = TIME * rise_speed;
 
-	// Climbing lobes bend the flame side to side, more the higher up.
-	float lick = fbm(vec2(x * LICK_SCALE, up * LICK_SCALE - TIME * rise_speed) + seed) - 0.5;
-	float sway = (value_noise(vec2(column * SEED_SPREAD, TIME * sway_speed)) - 0.5) * SWAY;
-	x -= (lick * LICK_BEND + sway) * up;
+	// Gusts lean the flame; each column also wanders, more the higher it has climbed.
+	float gust = (value_noise(vec2(seed.x, TIME * gust_speed)) - 0.5) * GUST;
+	float wander = (value_noise(vec2(x * PACKET_SCALE.x * 0.5, h * PACKET_SCALE.y - climb) + seed + 3.7) - 0.5) * WANDER;
+	x -= (gust * h + wander) * h;
 
-	float h = clamp(up, 0.0, 1.0);
-	float profile = pow(h, BASE_ROUNDNESS) * pow(1.0 - h, TIP_TAPER) / PROFILE_PEAK;
-	// Tongues are tall lobes, so the top splits into licks rather than bumps.
-	float tongues = fbm(vec2(x * TONGUE_SCALE, up * TONGUE_SCALE * TONGUE_STRETCH - TIME * rise_speed * 1.3) + seed + 11.0) - 0.5;
-	float inside = profile * BODY_HALF_WIDTH * mix(0.7, 1.0, grown) - abs(x) + tongues * TONGUE_BITE * pow(h, 1.4);
-	inside = up > 1.0 ? -abs(up - 1.0) - abs(x) : inside;
+	// Fuel feeds the root unevenly, in hot spots that wander along it.
+	float spots = value_noise(vec2(x * BED_SCALE, TIME * BED_SPEED) + seed);
+	float bed = smoothstep(BED_WIDTH, 0.0, abs(x)) * mix(0.75, 1.15, spots);
 
-	float body = smoothstep(0.0, EDGE, inside);
-	float core = smoothstep(EDGE, CORE_DEPTH, inside) * smoothstep(0.0, CORE_LIFT, h) * (1.0 - smoothstep(CORE_LIFT, CORE_REACH, h));
-	float glow = exp(-max(-inside, 0.0) / GLOW_REACH) * (1.0 - h) * (1.0 - body) * grown;
+	// Packets climb; each one cools at its own rate on the way up.
+	float packet = fbm(vec2(x * PACKET_SCALE.x, h * PACKET_SCALE.y - climb) + seed);
+	float cooling = h * (COOLING + COOLING_SPREAD * (0.5 - packet) * 2.0);
+	float heat = bed * ROOT_HEAT - max(cooling, 0.0) - h * h * COOLING * 0.5;
+	heat = (heat - (1.0 - strength)) / max(strength, MIN_STRENGTH);
+	heat *= 1.0 + FLUTTER * (value_noise(vec2(seed.y, TIME * FLUTTER_SPEED)) - 0.5) * 2.0;
 
-	float heat = body * (BODY_HEAT + CORE_HEAT * core) + glow * GLOW_HEAT;
-	float alpha = max(body, glow * GLOW_ALPHA);
-	if (alpha <= 0.002) {
+	float body = 1.0 - exp(-max(heat, 0.0) * GLARE_GAIN);
+	float halo = exp(min(heat, 0.0) / HALO_REACH) * smoothstep(1.0, 0.0, h) * strength;
+	float top = smoothstep(1.0, TOP_FADE, h);
+	float facing = abs(dot(normalize(NORMAL), normalize(VIEW)));
+	float edge = smoothstep(0.0, edge_fade, facing);
+
+	float alpha = max(body, halo * HALO_ALPHA) * top * edge;
+	if (alpha <= 0.003) {
 		discard;
 	}
-	vec4 colour = texture(palette, vec2(clamp(heat, 0.0, 1.0), 0.5));
+	float shade = max(body, halo * HALO_HEAT);
+	vec4 colour = texture(palette, vec2(clamp(shade, 0.0, 1.0), 0.5));
 	ALBEDO = colour.rgb * intensity;
 	ALPHA = alpha;
 }
