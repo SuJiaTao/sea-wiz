@@ -16,7 +16,7 @@ const SEA_REACH: float = 500.0
 ## Eases the dusk in, so the glow lingers before the dark comes on.
 const DUSK_CURVE: float = 1.6
 const GLOW_BEARING: float = 93.0
-const DUSK_TIME: float = 6.0
+const DUSK_TIME: float = 3.5
 const TEXT_FADE_TIME: float = 0.8
 const BLACKOUT_TIME: float = 1.3
 ## The ship rides a little high here so swells never wash over the foredeck.

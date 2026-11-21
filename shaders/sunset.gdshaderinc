@@ -1,7 +1,7 @@
 // The sky just after the sun has gone. A fierce red-orange band holds along
 // the horizon over where it set, the sky above is steel blue going to deep
 // blue, and streaks of slate cloud still burn orange underneath low on the
-// glow's side. As dusk runs on the band thins and pinks, the earth's shadow
+// glow's side. As dusk runs on the band thins and reddens, the earth's shadow
 // rises opposite, the clouds go dark and the sky fades to night.
 //
 // Heights are measured so that bands of sky run straight across the screen
@@ -9,7 +9,7 @@
 // stops short of the true horizon.
 
 const vec3 TWILIGHT_GLOW = vec3(0.85, 0.09, 0.005);
-const vec3 TWILIGHT_PINK = vec3(0.78, 0.06, 0.07);
+const vec3 TWILIGHT_RED = vec3(0.85, 0.035, 0.015);
 const vec3 TWILIGHT_GAP = vec3(0.42, 0.2, 0.05);
 const vec3 TWILIGHT_MID = vec3(0.07, 0.12, 0.2);
 const vec3 TWILIGHT_HIGH = vec3(0.02, 0.04, 0.09);
@@ -61,7 +61,7 @@ vec3 sunset_twilight(float up, float near_side, float dusk) {
 	sky = mix(sky, EARTH_SHADOW * (1.0 - 0.7 * dusk), (1.0 - near_side) * smoothstep(0.25, 0.0, up) * 0.6);
 	float reach = mix(0.45, 1.0, pow(near_side, 2.0)) * fading;
 	sky = mix(sky, TWILIGHT_GAP, exp(-up / (band * 3.0)) * reach * 0.7);
-	sky = mix(sky, mix(TWILIGHT_GLOW, TWILIGHT_PINK, smoothstep(0.0, 0.5, dusk)), exp(-up / band) * reach);
+	sky = mix(sky, mix(TWILIGHT_GLOW, TWILIGHT_RED, smoothstep(0.0, 0.5, dusk)), exp(-up / band) * reach);
 	return sky;
 }
 
