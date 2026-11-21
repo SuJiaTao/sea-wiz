@@ -27,6 +27,9 @@ const float SWELL_ANGLES[4] = float[](0.0, 0.5, -0.45, 0.9);
 // Gerstner steepness: how far each crest leans in toward a point.
 const float SWELL_STEEPNESS = 0.55;
 const float GRAVITY = 9.8;
+// The swells are shaded a little gentler than their true slope, so the faces
+// turned toward us do not all drop to the darkest sky overhead.
+const float SWELL_SHADING = 0.6;
 // The mesh stops lifting the swells well before the horizon, where the water
 // drops just under the far sheet so the two meet without a seam.
 const float SWELL_FADE_START = 250.0;
@@ -44,21 +47,21 @@ const float DETAIL_STRETCH = 0.45;
 const float HORIZON_REFLECTION = 0.6;
 // Higher than clear water really gives, so the sea right under the deck still
 // shows its waves and the rail stands out against it.
-const float BASE_REFLECTION = 0.14;
+const float BASE_REFLECTION = 0.24;
 const float ROUGH_SHADOWING = 0.35;
 const float MASKING = 0.5;
 // Open sea never gets rougher than a fresh breeze makes it.
 const float MAX_VARIANCE = 0.03;
-// How far up and down each facet's patch of sky reaches, kept small so the
-// glow lands on the waves in crisp streaks.
-const float REFLECTION_SPREAD = 0.01;
+// How far up and down each facet's patch of sky reaches. Wide enough to soften
+// the jump from dark to bright across a wave face.
+const float REFLECTION_SPREAD = 0.08;
 // Far off, the unseen wave faces that tip toward us mirror sky well above the
 // horizon (a tilt of a few degrees doubles in the reflection), and at a
 // grazing angle those are the faces we see most. So the far sea mixes deep
 // blue sky in with the glow instead of mirroring only the horizon.
 const float TILT_REACH = 4.0;
 const int SKY_TAPS = 5;
-const float LINE_SHARE = 0.85;
+const float LINE_SHARE = 0.6;
 const float LINE_WIDTH = 90.0;
 const float LINE_ROWS = 6000.0;
 const float LINE_DRIFT = 0.3;
@@ -110,7 +113,7 @@ vec3 swell_slope(vec2 xz, float footprint) {
 		// Leaning crests pinch the slope near the top and spread it in the trough.
 		float pinch = 1.0 - SWELL_STEEPNESS / float(SWELLS) * SWELL_SHARES[i] * sin(phase);
 		float shown = 1.0 - smoothstep(0.1, 1.0, footprint / SWELL_LENGTHS[i]);
-		s.xy += swell_heading(i) * k * a * cos(phase) / max(pinch, 0.2) * shown;
+		s.xy += swell_heading(i) * k * a * cos(phase) / max(pinch, 0.2) * shown * SWELL_SHADING;
 		s.z += k * k * a * a * 0.5 * (1.0 - shown);
 	}
 	return s;
