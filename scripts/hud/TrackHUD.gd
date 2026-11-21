@@ -29,7 +29,6 @@ const LEAD_PIP_RADIUS: float = 5.0
 const LEAD_PIP_SEGMENTS: int = 16
 const LEAD_FITTING := &"fire_control"
 const RADAR_FITTING := &"radar"
-const CLASSIFIER_FITTING := &"radar_classifier"
 const CLASS_SYMBOL: float = 3.5
 const MISSILE_MARKER: float = 9.0
 const MISSILE_LABEL := "VAMPIRE"
@@ -205,7 +204,7 @@ func _draw_scope() -> void:
 	var marked := spotter.marked_enemies()
 	for track in tracks.tracks():
 		if not _belongs_to_marked(track, marked):
-			if track.confirmed and loadout.is_fitted(CLASSIFIER_FITTING):
+			if track.confirmed and loadout.can_classify():
 				_draw_class_symbol(_scope_point(centre, track.position), track.kind)
 			else:
 				_draw_cloud(centre, track)

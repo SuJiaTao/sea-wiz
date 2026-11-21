@@ -4,6 +4,8 @@ class_name ScoreKeeper
 signal scored(points: int, label: String, multiplier: int)
 
 @export var enemies: EnemyManager
+## Kills are only named for what they really were if the radar could tell.
+@export var loadout: ShipLoadout
 @export var combo_window: float = 4.0
 @export var max_multiplier: int = 5
 
@@ -46,4 +48,4 @@ func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: DamageSource) -> voi
 	if not enemy.hostile:
 		return
 	combo.extend()
-	award(enemy.score_points(), enemy.score_label())
+	award(enemy.score_points(), enemy.score_label(loadout != null and loadout.can_classify()))

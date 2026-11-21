@@ -336,6 +336,7 @@ ship = NodePath("../ViewportContainer/SubViewport/World/Vessel/Warship")
 process_mode = 1
 script = ExtResource("65_score")
 enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
+loadout = ExtResource("115_loadout")
 
 [node name="LensSpray" type="Node" parent="." unique_id=1431982379 node_paths=PackedStringArray("thermal")]
 process_mode = 1
@@ -966,6 +967,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("17_feedback_hud")
 enemies = NodePath("../../../ViewportContainer/SubViewport/World/Enemies")
+loadout = ExtResource("115_loadout")
 
 [node name="DecoyHUD" type="Control" parent="HUD/HUDRoot" node_paths=PackedStringArray("decoys")]
 anchors_preset = 0

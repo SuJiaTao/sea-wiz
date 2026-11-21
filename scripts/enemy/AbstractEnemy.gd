@@ -15,6 +15,8 @@ const COLLISION_LAYER: int = 1 << 1
 
 @export var max_hp: float = 20.0
 @export var display_name: String = "CONTACT"
+## Who this really is, shown only to a ship whose radar can classify contacts.
+@export var true_name: String = ""
 @export_range(0.1, 100.0) var hud_radius: float = 5.0
 @export var visuals: Node3D
 @export var contact_kind: ContactKind = ContactKind.AIRCRAFT
@@ -69,8 +71,12 @@ func score_points() -> int:
 	return score_value
 
 
-func score_label() -> String:
-	return display_name
+func shown_name(classified: bool) -> String:
+	return true_name if classified and not true_name.is_empty() else display_name
+
+
+func score_label(classified: bool = false) -> String:
+	return shown_name(classified)
 
 
 func lure(_point: Vector3) -> bool:
