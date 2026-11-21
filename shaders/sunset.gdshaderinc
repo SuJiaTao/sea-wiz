@@ -1,35 +1,27 @@
-// The sky just after the sun has gone: a red seam on the sea, a band of
-// gold and pale cream, a clear pale blue, then violet and a dusky purple
-// overhead. The glow is strongest over where the sun set. A few thin cloud
-// streaks hang low, lit from below near the horizon. As dusk goes on the
-// bands sink and thin and everything darkens to night.
+// The sky just after the sun has gone. A fierce red-orange band holds along
+// the horizon over where it set, the sky above is steel blue going to deep
+// blue, and streaks of slate cloud still burn orange underneath low on the
+// glow's side. As dusk runs on the band thins and pinks, the earth's shadow
+// rises opposite, the clouds go dark and the sky fades to night.
+//
+// Heights are measured so that bands of sky run straight across the screen
+// rather than bowing, and the whole sky can be lowered to meet a sea that
+// stops short of the true horizon.
 
-// Colour stops from the horizon up, and the height (the sine of the angle
-// above the horizon) at which each one is reached at the start of dusk.
-const int STOPS = 9;
-const vec3 STOP_COLOURS[9] = vec3[](
-	vec3(0.33, 0.032, 0.012),
-	vec3(0.275, 0.048, 0.015),
-	vec3(0.47, 0.385, 0.113),
-	vec3(0.465, 0.487, 0.25),
-	vec3(0.43, 0.58, 0.59),
-	vec3(0.28, 0.476, 0.633),
-	vec3(0.157, 0.225, 0.376),
-	vec3(0.063, 0.051, 0.085),
-	vec3(0.022, 0.011, 0.013)
-);
-const float STOP_HEIGHTS[9] = float[](0.0, 0.015, 0.05, 0.08, 0.13, 0.2, 0.3, 0.42, 0.6);
-// Stops below this one are the warm glow, dimmer on the side away from it.
-const int WARM_STOPS = 4;
-const float FAR_SIDE_WARMTH = 0.7;
-const vec3 NIGHT = vec3(0.002, 0.003, 0.01);
-// By full night the bands have sunk to this share of their height.
-const float BAND_SINK = 0.35;
-const vec3 CLOUD_DARK = vec3(0.05, 0.045, 0.06);
-const vec3 CLOUD_LIT = vec3(0.6, 0.16, 0.04);
-const float CLOUD_COVER = 0.64;
-const float CLOUD_OPACITY = 0.8;
-const float CLOUD_TOP = 0.25;
+const vec3 TWILIGHT_GLOW = vec3(0.85, 0.09, 0.005);
+const vec3 TWILIGHT_PINK = vec3(0.78, 0.06, 0.07);
+const vec3 TWILIGHT_GAP = vec3(0.42, 0.2, 0.05);
+const vec3 TWILIGHT_MID = vec3(0.07, 0.12, 0.2);
+const vec3 TWILIGHT_HIGH = vec3(0.02, 0.04, 0.09);
+const vec3 EARTH_SHADOW = vec3(0.05, 0.07, 0.12);
+const vec3 CLOUD_SLATE = vec3(0.04, 0.045, 0.065);
+const vec3 CLOUD_AFTERGLOW = vec3(1.0, 0.22, 0.03);
+const vec3 NIGHT = vec3(0.004, 0.007, 0.016);
+// The last share of the dusk, when what twilight is left fades to night.
+const float NIGHT_SHARE = 0.25;
+// Directions this far off the view heading are treated as if this far, so
+// the sky behind the camera (seen only in reflections) stays well behaved.
+const float MIN_FACING = 0.25;
 
 float sunset_hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -62,24 +54,31 @@ vec3 sunset_glow_direction(float bearing_deg) {
 	return vec3(sin(b), 0.0, -cos(b));
 }
 
-// dusk runs from 0, just after sunset, to 1, full night.
-vec3 sunset_sky(vec3 dir, vec3 glow, float dusk) {
-	float height = max(dir.y, 0.0);
-	float up = height / mix(1.0, BAND_SINK, dusk);
-	float toward = max(dot(normalize(vec3(dir.x, 0.0, dir.z)), glow), 0.0);
-	float side = mix(FAR_SIDE_WARMTH, 1.0, toward);
-	vec3 sky = STOP_COLOURS[0] * side;
-	for (int i = 1; i < STOPS; i++) {
-		vec3 colour = STOP_COLOURS[i] * (i < WARM_STOPS ? side : 1.0);
-		sky = mix(sky, colour, smoothstep(STOP_HEIGHTS[i - 1], STOP_HEIGHTS[i], up));
-	}
-	// Long thin streaks, foreshortened toward the horizon. Low down on the
-	// glow's side their undersides still catch the light.
-	vec2 drift = dir.xz / max(dir.y + 0.08, 0.02);
-	float streak = sunset_fbm(drift * vec2(0.35, 1.6));
-	float band = smoothstep(0.01, 0.05, height) * smoothstep(CLOUD_TOP, CLOUD_TOP * 0.4, height);
-	float cloud = smoothstep(CLOUD_COVER, CLOUD_COVER + 0.15, streak) * band;
-	float underlit = pow(toward, 1.5) * smoothstep(0.2, 0.02, height) * (1.0 - dusk);
-	sky = mix(sky, mix(CLOUD_DARK, CLOUD_LIT, underlit), cloud * CLOUD_OPACITY);
-	return mix(sky, NIGHT, smoothstep(0.0, 1.0, dusk));
+vec3 sunset_twilight(float up, float near_side, float dusk) {
+	float band = mix(0.05, 0.015, dusk);
+	float fading = 1.0 - smoothstep(0.45, 1.0, dusk);
+	vec3 sky = mix(TWILIGHT_MID, TWILIGHT_HIGH, smoothstep(0.0, 0.6, up)) * (1.0 - 0.7 * dusk);
+	sky = mix(sky, EARTH_SHADOW * (1.0 - 0.7 * dusk), (1.0 - near_side) * smoothstep(0.25, 0.0, up) * 0.6);
+	float reach = mix(0.45, 1.0, pow(near_side, 2.0)) * fading;
+	sky = mix(sky, TWILIGHT_GAP, exp(-up / (band * 3.0)) * reach * 0.7);
+	sky = mix(sky, mix(TWILIGHT_GLOW, TWILIGHT_PINK, smoothstep(0.0, 0.5, dusk)), exp(-up / band) * reach);
+	return sky;
+}
+
+// dusk runs from 0, the moment of sunset, to 1, full night. heading is the
+// camera's view direction across the sea; drop lowers the horizon by that
+// much (as a slope below eye level).
+vec3 sunset_sky(vec3 dir, vec3 glow, float dusk, vec2 heading, float drop, float time) {
+	float facing = max(dot(dir.xz, heading), MIN_FACING);
+	float up = max(dir.y / facing + drop, 0.0);
+	float near_side = max(dot(normalize(dir.xz), glow.xz), 0.0);
+	vec3 sky = sunset_twilight(up, near_side, dusk);
+	vec2 drift = dir.xz / max(up * facing + 0.08, 0.02);
+	float streak = sunset_fbm(drift * vec2(0.35, 1.6) + vec2(time * 0.004, 0.0));
+	float spread = smoothstep(0.01, 0.06, up) * smoothstep(0.35, 0.12, up);
+	float cloud = smoothstep(0.52, 0.72, streak) * spread;
+	float underlit = pow(near_side, 1.5) * smoothstep(0.22, 0.02, up) * (1.0 - smoothstep(0.3, 0.85, dusk));
+	vec3 cloud_colour = mix(CLOUD_SLATE * (1.0 - 0.7 * dusk), CLOUD_AFTERGLOW, underlit);
+	sky = mix(sky, cloud_colour, cloud * 0.85);
+	return mix(sky, NIGHT, smoothstep(1.0 - NIGHT_SHARE, 1.0, dusk));
 }
