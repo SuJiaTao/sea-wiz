@@ -123,6 +123,8 @@ func _process(delta: float) -> void:
 
 	if gun != null and camera != null:
 		gun.visible = camera.fov > 32.0 and not hide_gun
+	if camera != null:
+		GunnerView.track(camera.global_position, -camera.global_basis.z, shooting())
 
 
 func _physics_process(delta: float) -> void:

@@ -27,6 +27,7 @@ attack_altitude = 90.0
 missile_scene = ExtResource("5_missile")
 missiles_carried = 4
 arc_reversal_chance = 0.6
+launch_range = 1500.0
 
 [node name="Visuals" parent="." instance=ExtResource("2_visuals")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
