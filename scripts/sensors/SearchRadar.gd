@@ -19,10 +19,24 @@ const MIN_SIZE_FACTOR := 0.45
 var sweep_angle: float = 0.0
 var clutter: float = 0.0
 
+var _jammed_for: float = 0.0
+
+
+## Noise jamming: the scope fills with junk and finds nothing for a while.
+func jam(seconds: float) -> void:
+	_jammed_for = maxf(_jammed_for, seconds)
+
+
+func jammed() -> bool:
+	return _jammed_for > 0.0
+
 
 func _physics_process(delta: float) -> void:
 	var previous := sweep_angle
 	sweep_angle = fposmod(sweep_angle + TAU * delta / sweep_period, TAU)
+	if _jammed_for > 0.0:
+		_jammed_for -= delta
+		return
 	for enemy in enemies.live_enemies():
 		var offset := enemy.global_position - antenna.global_position
 		var distance := offset.length()

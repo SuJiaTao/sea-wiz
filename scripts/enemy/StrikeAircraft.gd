@@ -30,9 +30,21 @@ var _leg: Leg = Leg.RUN_IN
 var _egress_heading := Vector3.FORWARD
 ## The edge of the blind arc this pass is leaving by, 0 when outside it.
 var _arc_exit: float = 0.0
+## Flying through with a leader's opening pass: no attack until clear.
+var _passing_through: bool = false
+
+
+## Fly this first pass straight through over the ship without attacking.
+func pass_through() -> void:
+	_passing_through = true
 
 
 func _on_arrival() -> void:
+	if _passing_through:
+		_passing_through = false
+		_leg = Leg.EGRESS
+		_egress_heading = _flat(velocity)
+		return
 	if _leg != Leg.RUN_IN:
 		return
 	reached_target.emit(contact_damage)
@@ -54,12 +66,18 @@ func _desired_velocity(_delta: float) -> Vector3:
 	_arc_exit = 0.0
 	var range_left := global_position - target_position
 	var flat_range := Vector2(range_left.x, range_left.z).length()
-	if contact_damage > 0.0 and flat_range < gun_range and _pointed_at_target():
+	if _passing_through:
+		pass
+	elif contact_damage > 0.0 and flat_range < gun_range and _pointed_at_target():
 		_strafe()
 	elif _wants_missile() and flat_range >= gun_range and flat_range < launch_range:
 		_launch_missile()
-	var aim := target_position + Vector3.UP * attack_altitude
-	return _hold_altitude(aim - global_position) * speed
+	return _run_in_heading() * speed
+
+
+## Which way to fly on the run in once clear to attack.
+func _run_in_heading() -> Vector3:
+	return _hold_altitude(target_position + Vector3.UP * attack_altitude - global_position)
 
 
 ## Most pilots leave by the nearer edge as they go. One set on reversing

@@ -187,6 +187,8 @@
 [ext_resource type="Script" path="res://scripts/audio/ShipHitAudio.gd" id="157_ship_hits"]
 [ext_resource type="AudioStream" path="res://audio/ship/bullet_hit_metal.ogg" id="158_bullet_hit"]
 [ext_resource type="AudioStream" path="res://audio/ship/bullet_ricochet.ogg" id="159_ricochet"]
+[ext_resource type="Script" path="res://scripts/enemy/AceWatch.gd" id="160_ace_watch"]
+[ext_resource type="Script" path="res://scripts/fx/DamagedJetSmoke.gd" id="161_jet_smoke"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -617,6 +619,20 @@ script = ExtResource("157_ship_hits")
 enemies = NodePath("../Enemies")
 hit = ExtResource("158_bullet_hit")
 ricochet = ExtResource("159_ricochet")
+
+[node name="AceWatch" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("enemies", "radar", "effects", "fx")]
+process_mode = 1
+script = ExtResource("160_ace_watch")
+enemies = NodePath("../Enemies")
+radar = NodePath("../Sensors/SearchRadar")
+effects = NodePath("../Effects")
+fx = NodePath("../FX")
+
+[node name="DamagedJetSmoke" type="Node" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("enemies", "effects")]
+process_mode = 1
+script = ExtResource("161_jet_smoke")
+enemies = NodePath("../Enemies")
+effects = NodePath("../Effects")
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1274563182]
 script = ExtResource("5_enemies")
