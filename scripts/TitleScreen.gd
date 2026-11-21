@@ -13,7 +13,7 @@ const SUN_HIGH: float = 1.6
 const SUN_GONE: float = -1.6
 ## Share of the dusk spent with the sun sinking into the sea before the light drains.
 const SINK_SHARE: float = 0.6
-const SUN_BEARING: float = 85.0
+const SUN_BEARING: float = 93.0
 const DUSK_TIME: float = 5.5
 const TEXT_FADE_TIME: float = 0.8
 const BLACKOUT_TIME: float = 1.3
@@ -25,7 +25,7 @@ const ROLL: float = 0.03
 const ROLL_RATE: float = 0.33
 const PROMPT_PULSE: float = 3.0
 const CAMERA_POSITION := Vector3(-16.0, 12.4, -6.0)
-const CAMERA_TARGET := Vector3(0.0, 13.0, 0.0)
+const CAMERA_TARGET := Vector3(-2.1, 14.8, 3.4)
 
 @export var sky: ShaderMaterial
 @export var sea: ShaderMaterial
