@@ -4,7 +4,7 @@ render_mode unshaded, shadows_disabled;
 #include "res://shaders/sunset.gdshaderinc"
 
 // Dark swell under a low sun: each wave face mirrors the sunset sky, and a
-// broken path of glitter runs from the sun toward us, reddening as it sinks. Far off, ripples too
+// broken path of glitter runs from the sun toward us until it slips under. Far off, ripples too
 // fine to see are smoothed away and the glitter softens, so nothing shimmers.
 
 uniform float sun_elevation_deg = 3.0;
@@ -17,8 +17,7 @@ uniform float glitter_sharpness = 900.0;
 uniform float glitter_strength = 5.0;
 
 const float GLINT_SOFTENING = 12.0;
-const vec3 GLINT_HIGH = vec3(0.9, 0.34, 0.1);
-const vec3 GLINT_LOW = vec3(0.6, 0.09, 0.02);
+const vec3 GLINT_COLOUR = vec3(1.0, 0.5, 0.15);
 // The glitter path dies as the last of the disc slips under.
 const float SUN_RADIUS_DEG = 0.6;
 // Even at a grazing angle the sea stays a little darker than the sky, so the
@@ -68,6 +67,5 @@ void fragment() {
 	float sharpness = glitter_sharpness / (1.0 + footprint * GLINT_SOFTENING);
 	float above = smoothstep(-SUN_RADIUS_DEG, SUN_RADIUS_DEG, sunset_elevation(sun));
 	float glint = pow(max(dot(mirrored, sun), 0.0), sharpness) * glitter_strength * above * daylight * sharpness / glitter_sharpness;
-	vec3 glint_colour = mix(GLINT_HIGH, GLINT_LOW, sunset_lowness(sun));
-	ALBEDO = mix(deep_water, sky, fresnel) + glint_colour * glint;
+	ALBEDO = mix(deep_water, sky, fresnel) + GLINT_COLOUR * glint;
 }
