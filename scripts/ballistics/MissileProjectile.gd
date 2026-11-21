@@ -7,9 +7,15 @@ const LAUNCH_SPEED: float = 34.0
 const BOOST_DELAY: float = 0.28
 const CRUISE_SPEED: float = 265.0
 const ACCELERATION: float = 420.0
-const TURN_RATE: float = 4.6
-const TURN_RATE_TERMINAL: float = 8.5
-const TERMINAL_RANGE: float = 260.0
+## The airframe can pull this many g at most, however close the target.
+const MAX_G: float = 35.0
+## At low speed, just off the rail, it still cannot whip round faster than this.
+const MAX_TURN_RATE: float = 2.2
+## The seeker can only look this far off the nose. Once it has the target in
+## view, a target or flare that slips outside it is lost and the missile
+## flies on as a miss. Until then (climbing out of the cell and pitching
+## over) it is steered onto the target without it.
+const SEEKER_LIMIT_DEG: float = 55.0
 const GRAVITY: float = 9.81
 const FUZE_RADIUS: float = 16.0
 const CLOSEST_APPROACH_RANGE: float = 75.0
@@ -21,12 +27,16 @@ const THREAT_RANGE: float = 650.0
 var vertical_climb: float = 0.0
 
 var _target: AbstractEnemy
+## The proximity fuze keeps sensing the original target even after the
+## seeker loses it, so a missile that slides past still bursts beside it.
+var _fuzed_on: AbstractEnemy
 var _ballistics: BallisticManager
 var _smoke: MissileSmokeRenderer
 var _speed: float = LAUNCH_SPEED
 var _last_distance: float = INF
 var _decoy: DecoyFlare
 var _threat_announced: bool = false
+var _acquired: bool = false
 
 
 func _init(
@@ -41,6 +51,7 @@ func _init(
 	_smoke = smoke
 	_ballistics = ballistics
 	_target = target
+	_fuzed_on = target
 	max_lifetime = 14.0
 
 
@@ -73,6 +84,7 @@ func _on_propel(delta: float) -> void:
 		velocity.y -= GRAVITY * delta
 	else:
 		_speed = minf(_speed + ACCELERATION * delta, CRUISE_SPEED)
+		_track_seeker()
 		if _target != null:
 			var distance := position.distance_to(_target.global_position)
 			var time_to_go := distance / maxf(_speed, 1.0)
@@ -115,14 +127,14 @@ func _check_decoy() -> void:
 
 
 func _check_fuze() -> void:
-	if _target == null:
+	if not is_instance_valid(_fuzed_on) or not _fuzed_on.alive:
 		_last_distance = INF
 		return
 
 	for contact in _ballistics.sphere_contacts(
 		position, CLOSEST_APPROACH_RANGE
 	):
-		if contact.managed_enemy != _target:
+		if contact.managed_enemy != _fuzed_on:
 			continue
 		var distance := position.distance_to(contact.point)
 		if (
@@ -138,6 +150,23 @@ func _check_fuze() -> void:
 	_last_distance = INF
 
 
+func _track_seeker() -> void:
+	var seen := _target.global_position if _target != null else (_decoy.position if _decoy != null else position)
+	if seen == position:
+		return
+	if _in_seeker(seen):
+		_acquired = true
+	elif _acquired:
+		_target = null
+		_decoy = null
+
+
+func _in_seeker(point: Vector3) -> bool:
+	if velocity.length_squared() <= 0.000001:
+		return true
+	return rad_to_deg(velocity.angle_to(point - position)) <= SEEKER_LIMIT_DEG
+
+
 func _steer(aim: Vector3, delta: float) -> void:
 	var offset := aim - position
 	if offset.length_squared() <= 0.0001:
@@ -149,9 +178,7 @@ func _steer(aim: Vector3, delta: float) -> void:
 	if velocity.length_squared() > 0.000001:
 		current = velocity.normalized()
 
-	var rate := TURN_RATE
-	if offset.length() < TERMINAL_RANGE:
-		rate = TURN_RATE_TERMINAL
+	var rate := minf(MAX_G * GRAVITY / maxf(_speed, 1.0), MAX_TURN_RATE)
 
 	var angle := current.angle_to(desired)
 	if angle > 0.0001:
@@ -187,6 +214,7 @@ func _splash_size() -> float:
 func _on_delete() -> void:
 	super()
 	_target = null
+	_fuzed_on = null
 	_decoy = null
 	_ballistics = null
 	_smoke = null
