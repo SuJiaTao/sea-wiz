@@ -6,6 +6,8 @@
 
 const vec3 HORIZON_HOT = vec3(0.8, 0.24, 0.02);
 const vec3 HORIZON_SEAM = vec3(0.75, 0.08, 0.005);
+// The seam goes from red-orange toward a pinkish red as the sun goes down.
+const vec3 HORIZON_PINK = vec3(0.78, 0.06, 0.07);
 const vec3 HORIZON_FAR = vec3(0.62, 0.14, 0.015);
 const vec3 SKY_MID = vec3(0.46, 0.1, 0.015);
 const vec3 SKY_HIGH = vec3(0.24, 0.045, 0.012);
@@ -71,7 +73,7 @@ vec3 sunset_twilight(vec3 dir, float up, float near_side, float dusk) {
 	sky = mix(sky, EARTH_SHADOW * (1.0 - 0.7 * dusk), (1.0 - near_side) * smoothstep(0.25, 0.0, up) * 0.6);
 	float reach = mix(0.45, 1.0, pow(near_side, 2.0)) * fading;
 	sky = mix(sky, TWILIGHT_GAP, exp(-up / (band * 3.0)) * reach * 0.7);
-	sky = mix(sky, TWILIGHT_GLOW, exp(-up / band) * reach);
+	sky = mix(sky, mix(TWILIGHT_GLOW, HORIZON_PINK, smoothstep(0.0, 0.5, dusk)), exp(-up / band) * reach);
 	return sky;
 }
 
@@ -88,7 +90,8 @@ vec3 sunset_sky(vec3 dir, vec3 sun, float daylight, float time, bool with_disc) 
 	// Right down at sea level the light has crossed the most air and runs red,
 	// more so the lower the sun gets.
 	float setting = 1.0 - smoothstep(0.0, SEAM_FULL_ELEVATION, sunset_elevation(sun));
-	sky = mix(sky, HORIZON_SEAM, smoothstep(SEAM_HEIGHT, 0.0, up) * mix(0.5, 0.95, setting));
+	vec3 seam = mix(HORIZON_SEAM, HORIZON_PINK, smoothstep(0.5, 1.0, setting) * 0.5 + smoothstep(0.0, 0.3, dusk) * 0.5);
+	sky = mix(sky, seam, smoothstep(SEAM_HEIGHT, 0.0, up) * mix(0.5, 0.95, setting));
 	// The sky overhead goes blue first while the horizon is still burning.
 	sky = mix(sky, sunset_twilight(dir, up, near_side, dusk), smoothstep(0.0, 0.25, dusk * (1.0 + up * 3.0)));
 	vec2 drift = dir.xz / max(dir.y + 0.08, 0.02);
