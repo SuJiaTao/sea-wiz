@@ -17,6 +17,7 @@ max_hp = 55.0
 display_name = "FIGHTER"
 score_value = 300
 hud_radius = 8.25
+jet_engine = true
 speed = 240.0
 agility = 0.7
 contact_damage = 10.0

@@ -16,6 +16,7 @@ max_hp = 70.0
 display_name = "STEALTH FIGHTER"
 score_value = 600
 hud_radius = 8.0
+jet_engine = true
 radar_reach = 0.0
 innate_countermeasures = true
 speed = 250.0

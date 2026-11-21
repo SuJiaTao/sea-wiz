@@ -22,6 +22,8 @@ const JINK_RATE: float = 1.7
 @export var break_time: float = 2.5
 @export var break_turn_rate: float = 6.0
 @export var max_g: float = 0.0
+## Close passes play a recorded jet flyby instead of the distant rumble.
+@export var jet_engine: bool = false
 
 var approach: FormationApproach
 var g_load: float = 0.0

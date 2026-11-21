@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="FlybySound" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/FlybySound.gd" id="1_flyby"]
+[ext_resource type="AudioStream" path="res://audio/jets/jet_flyby_behind.ogg" id="2_stream"]
+
+[resource]
+script = ExtResource("1_flyby")
+stream = ExtResource("2_stream")
+closest_at = 4.9
