@@ -11,5 +11,5 @@ func _ready() -> void:
 	effects.shockwave.connect(_on_shockwave)
 
 
-func _on_shockwave(position: Vector3, size: float) -> void:
+func _on_shockwave(position: Vector3, size: float, _on_water: bool) -> void:
 	ballistics.push_in_radius(position, size * radius_per_size, size * push_per_size)

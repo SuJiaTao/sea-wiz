@@ -16,16 +16,20 @@ func _ready() -> void:
 	effects.shockwave.connect(_on_shockwave)
 
 
-func _on_shockwave(at: Vector3, size: float) -> void:
+## Blasts on the water shake us just the same, but their sound is the
+## water blast's own.
+func _on_shockwave(at: Vector3, size: float, on_water: bool) -> void:
 	var distance := at.distance_to(turret.global_position)
 	var nearness := 1.0 - clampf(distance / felt_range, 0.0, 1.0)
 	if nearness <= 0.0:
 		return
-	get_tree().create_timer(distance / SOUND_SPEED, false).timeout.connect(_arrive.bind(size, nearness))
+	get_tree().create_timer(distance / SOUND_SPEED, false).timeout.connect(_arrive.bind(size, nearness, not on_water))
 
 
-func _arrive(size: float, nearness: float) -> void:
+func _arrive(size: float, nearness: float, audible: bool) -> void:
 	turret.apply_camera_shake_impulse(impulse_per_size * size * nearness)
+	if not audible:
+		return
 	boom.volume_db = lerpf(quietest_db, 0.0, nearness)
 	boom.pitch_scale = 1.0 + randf_range(-PITCH_SPREAD, PITCH_SPREAD)
 	boom.play()
