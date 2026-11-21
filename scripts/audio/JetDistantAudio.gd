@@ -28,7 +28,8 @@ const MUFFLE_DB: float = -18.0
 @export var loop: AudioStream
 @export var bus: StringName = &"Master"
 
-var _loops: Dictionary[AbstractEnemy, AudioStreamPlayer3D] = {}
+# Keyed by the jet's instance id, so a freed jet can still be looked up.
+var _loops: Dictionary[int, AudioStreamPlayer3D] = {}
 
 
 func _ready() -> void:
@@ -43,10 +44,10 @@ func _process(_delta: float) -> void:
 		if jet == null or not jet.jet_engine:
 			continue
 		var distance := jet.global_position.distance_to(ear)
-		var player: AudioStreamPlayer3D = _loops.get(jet)
+		var player: AudioStreamPlayer3D = _loops.get(jet.get_instance_id())
 		if distance > HEARING_RANGE:
 			if player != null:
-				_stop(jet)
+				_stop(jet.get_instance_id())
 			continue
 		if player == null:
 			player = _start(jet)
@@ -70,18 +71,19 @@ func _start(jet: AbstractEnemy) -> AudioStreamPlayer3D:
 	add_child(player)
 	player.global_position = jet.global_position
 	player.play(randf() * loop.get_length())
-	_loops[jet] = player
+	_loops[jet.get_instance_id()] = player
 	return player
 
 
 ## A jet that is shot down or gone takes its roar with it.
 func _tidy() -> void:
-	for enemy: Variant in _loops.keys():
-		if not is_instance_valid(enemy) or not (enemy as AbstractEnemy).alive:
-			_stop(enemy)
+	for id in _loops.keys():
+		var enemy := instance_from_id(id) as AbstractEnemy
+		if enemy == null or not enemy.alive:
+			_stop(id)
 
 
-func _stop(enemy: Variant) -> void:
-	var player: AudioStreamPlayer3D = _loops[enemy]
-	_loops.erase(enemy)
+func _stop(id: int) -> void:
+	var player: AudioStreamPlayer3D = _loops[id]
+	_loops.erase(id)
 	player.queue_free()
