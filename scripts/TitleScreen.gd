@@ -28,7 +28,7 @@ const ROLL: float = 0.03
 const ROLL_RATE: float = 0.33
 const PROMPT_PULSE: float = 3.0
 const CAMERA_POSITION := Vector3(-15.0, 13.2, -6.0)
-const CAMERA_TARGET := Vector3(-0.9, 12.3, 1.5)
+const CAMERA_TARGET := Vector3(0.5, 12.3, -2.1)
 
 @export var sky: ShaderMaterial
 @export var sea: ShaderMaterial

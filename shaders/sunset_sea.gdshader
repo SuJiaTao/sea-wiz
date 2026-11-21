@@ -11,8 +11,8 @@ uniform float sun_elevation_deg = 3.0;
 uniform float sun_bearing_deg = 270.0;
 uniform float daylight : hint_range(0.0, 1.0) = 1.0;
 uniform vec3 deep_water : source_color = vec3(0.006, 0.006, 0.012);
-uniform float wave_scale = 0.16;
-uniform float wave_tilt = 0.12;
+uniform float wave_scale = 0.1;
+uniform float wave_tilt = 0.085;
 uniform float glitter_sharpness = 900.0;
 uniform float glitter_strength = 5.0;
 
@@ -39,16 +39,16 @@ vec2 slope(vec2 p, float footprint) {
 	vec2 s = vec2(0.0);
 	float amplitude = 1.0;
 	float frequency = 1.0;
-	for (int octave = 0; octave < 5; octave++) {
+	for (int octave = 0; octave < 7; octave++) {
 		float angle = float(octave) * 2.39;
 		vec2 heading = vec2(cos(angle), sin(angle));
 		float phase = dot(p, heading) * frequency + TIME * (0.8 + 0.35 * float(octave));
 		s += heading * cos(phase) * amplitude * resolved(footprint, frequency);
-		frequency *= 1.9;
-		amplitude *= 0.62;
+		frequency *= 1.85;
+		amplitude *= 0.58;
 	}
 	vec2 fine = vec2(sunset_noise(p * 6.0 + TIME), sunset_noise(p * 6.0 - TIME + 7.0)) - 0.5;
-	s += fine * 0.6 * resolved(footprint, 6.0);
+	s += fine * 0.4 * resolved(footprint, 6.0);
 	return s;
 }
 
