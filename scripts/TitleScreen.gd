@@ -20,11 +20,13 @@ const SUN_BEARING: float = 93.0
 const DUSK_TIME: float = 7.0
 const TEXT_FADE_TIME: float = 0.8
 const BLACKOUT_TIME: float = 1.3
-const HEAVE: float = 0.7
+## The ship rides a little high here so swells never wash over the foredeck.
+const RIDE_HEIGHT: float = 0.5
+const HEAVE: float = 0.22
 const HEAVE_RATE: float = 0.55
-const PITCH: float = 0.018
+const PITCH: float = 0.005
 const PITCH_RATE: float = 0.41
-const ROLL: float = 0.03
+const ROLL: float = 0.012
 const ROLL_RATE: float = 0.33
 const PROMPT_PULSE: float = 3.0
 const CAMERA_POSITION := Vector3(-15.0, 13.2, -6.0)
@@ -88,7 +90,7 @@ func _process(delta: float) -> void:
 
 
 func _ride_swell() -> void:
-	_vessel.position.y = sin(_clock * HEAVE_RATE) * HEAVE
+	_vessel.position.y = RIDE_HEIGHT + sin(_clock * HEAVE_RATE) * HEAVE
 	_vessel.rotation.x = sin(_clock * PITCH_RATE) * PITCH
 	_vessel.rotation.z = sin(_clock * ROLL_RATE + 1.0) * ROLL
 

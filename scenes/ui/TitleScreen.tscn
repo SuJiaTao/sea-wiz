@@ -5,6 +5,8 @@
 [ext_resource type="Shader" path="res://shaders/sunset_sea.gdshader" id="3_sea"]
 [ext_resource type="PackedScene" path="res://scenes/world/ship/destroyer_v15.glb" id="4_ship"]
 [ext_resource type="PackedScene" path="res://scenes/world/ciws/ciws_phalanx.glb" id="5_ciws"]
+[ext_resource type="Texture2D" path="res://resources/world/WaveNormals.tres" id="6_waves"]
+[ext_resource type="Shader" path="res://shaders/title_glare.gdshader" id="7_glare"]
 
 [sub_resource type="ShaderMaterial" id="Material_sky"]
 shader = ExtResource("2_sky")
@@ -24,10 +26,25 @@ glow_bloom = 0.05
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 shader = ExtResource("3_sea")
+shader_parameter/wave_normals = ExtResource("6_waves")
 
 [sub_resource type="PlaneMesh" id="Mesh_sea"]
 material = SubResource("Material_sea")
-size = Vector2(30000, 30000)
+size = Vector2(100000, 100000)
+
+[sub_resource type="PlaneMesh" id="Mesh_near_sea"]
+material = SubResource("Material_sea")
+size = Vector2(1400, 1400)
+subdivide_width = 349
+subdivide_depth = 349
+
+[sub_resource type="CylinderMesh" id="Mesh_radome_seal"]
+top_radius = 0.72
+bottom_radius = 0.72
+height = 0.12
+
+[sub_resource type="ShaderMaterial" id="Material_glare"]
+shader = ExtResource("7_glare")
 
 [sub_resource type="StandardMaterial3D" id="Material_silhouette"]
 cull_mode = 2
@@ -64,6 +81,11 @@ environment = SubResource("Environment_sunset")
 mesh = SubResource("Mesh_sea")
 cast_shadow = 0
 
+[node name="NearSea" type="MeshInstance3D" parent="Sunset/View"]
+mesh = SubResource("Mesh_near_sea")
+cast_shadow = 0
+extra_cull_margin = 4.0
+
 [node name="Vessel" type="Node3D" parent="Sunset/View"]
 
 [node name="Ship" parent="Sunset/View/Vessel" instance=ExtResource("4_ship")]
@@ -75,9 +97,22 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.02, 0)
 [node name="Model" parent="Sunset/View/Vessel/Ciws" instance=ExtResource("5_ciws")]
 transform = Transform3D(0.9708, 0, -0.7053, 0, 1.2, 0, 0.7053, 0, 0.9708, 0, 0, 0)
 
+[node name="RadomeSeal" type="MeshInstance3D" parent="Sunset/View/Vessel/Ciws/Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 2.16, 0.11)
+mesh = SubResource("Mesh_radome_seal")
+
 [node name="Camera" type="Camera3D" parent="Sunset/View"]
 fov = 58.0
-far = 20000.0
+far = 50000.0
+
+[node name="Glare" type="ColorRect" parent="."]
+material = SubResource("Material_glare")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="Text" type="Control" parent="."]
 anchors_preset = 15
