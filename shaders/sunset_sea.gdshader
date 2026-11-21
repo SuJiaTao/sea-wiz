@@ -14,6 +14,11 @@ render_mode unshaded, shadows_disabled;
 
 uniform float glow_bearing_deg = 93.0;
 uniform float dusk : hint_range(0.0, 1.0) = 0.0;
+uniform vec2 view_heading = vec2(0.0, -1.0);
+uniform float horizon_drop = 0.0;
+// The sea is drawn out to this distance ahead of the camera and no further,
+// so it ends while its waves are still clear; the sky is lowered to meet it.
+uniform float sea_reach = 500.0;
 uniform vec3 deep_water : source_color = vec3(0.01, 0.02, 0.04);
 uniform sampler2D wave_normals : hint_normal, filter_linear_mipmap, repeat_enable;
 uniform float swell_height = 0.8;
@@ -30,11 +35,6 @@ const float GRAVITY = 9.8;
 // The swells are shaded a little gentler than their true slope, so the faces
 // turned toward us do not all drop to the darkest sky overhead.
 const float SWELL_SHADING = 0.6;
-// The mesh stops lifting the swells well before the horizon, where the water
-// drops just under the far sheet so the two meet without a seam.
-const float SWELL_FADE_START = 250.0;
-const float SWELL_FADE_END = 650.0;
-const float FAR_DROP = 1.0;
 
 const int DETAIL_LAYERS = 4;
 const float DETAIL_TILES[4] = float[](40.0, 14.0, 6.0, 2.5);
@@ -61,17 +61,9 @@ const float REFLECTION_SPREAD = 0.08;
 // blue sky in with the glow instead of mirroring only the horizon.
 const float TILT_REACH = 4.0;
 const int SKY_TAPS = 5;
-const float LINE_SHARE = 0.6;
-const float LINE_WIDTH = 90.0;
-const float LINE_ROWS = 6000.0;
-const float LINE_DRIFT = 0.3;
 
 varying vec2 rest_xz;
 varying vec3 world_position;
-
-float swell_fade(vec2 xz, vec3 eye) {
-	return 1.0 - smoothstep(SWELL_FADE_START, SWELL_FADE_END, distance(xz, eye.xz));
-}
 
 vec2 swell_heading(int i) {
 	float angle = radians(wind_bearing_deg) + SWELL_ANGLES[i];
@@ -86,7 +78,6 @@ float swell_phase(int i, vec2 xz, out float k) {
 void vertex() {
 	vec3 world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	rest_xz = world.xz;
-	float fade = swell_fade(world.xz, CAMERA_POSITION_WORLD);
 	vec3 lift = vec3(0.0);
 	for (int i = 0; i < SWELLS; i++) {
 		float k;
@@ -95,8 +86,7 @@ void vertex() {
 		vec2 lean = swell_heading(i) * SWELL_STEEPNESS / (k * float(SWELLS)) * cos(phase) * SWELL_SHARES[i];
 		lift += vec3(lean.x, a * sin(phase), lean.y);
 	}
-	world += lift * fade;
-	world.y -= FAR_DROP * (1.0 - fade);
+	world += lift;
 	world_position = world;
 	VERTEX = (inverse(MODEL_MATRIX) * vec4(world, 1.0)).xyz;
 }
@@ -138,6 +128,9 @@ vec3 detail_layer(vec2 xz, int i) {
 void fragment() {
 	vec3 glow = sunset_glow_direction(glow_bearing_deg);
 	vec3 eye = CAMERA_POSITION_WORLD;
+	if (dot(rest_xz - eye.xz, view_heading) > sea_reach) {
+		discard;
+	}
 	vec3 view = normalize(world_position - eye);
 	vec3 swells = swell_slope(rest_xz, length(fwidth(rest_xz)));
 	vec2 slope = swells.xy;
@@ -148,17 +141,6 @@ void fragment() {
 		variance += layer.z;
 	}
 	variance = min(variance, MAX_VARIANCE);
-	// Waves too small to draw still show far off as thin lines of crests
-	// running along the horizon, each about a pixel deep. Most of the lost
-	// slope goes back in as those lines, so the far sea keeps the same
-	// texture and contrast as the near sea instead of going flat.
-	vec2 out_to = rest_xz - eye.xz;
-	vec2 heading = normalize(view.xz);
-	float along = max(dot(out_to, heading), 1.0);
-	float across = dot(out_to, vec2(-heading.y, heading.x));
-	float lines = sunset_fbm(vec2(across / along * LINE_WIDTH, LINE_ROWS / along + TIME * LINE_DRIFT)) * 2.0 - 1.0;
-	slope -= heading * lines * sqrt(variance) * LINE_SHARE;
-	variance *= 1.0 - LINE_SHARE;
 	float spread = sqrt(variance);
 	vec3 normal = normalize(vec3(-slope.x, 1.0, -slope.y));
 	vec3 mirrored = reflect(view, normal);
@@ -170,7 +152,7 @@ void fragment() {
 	for (int i = 0; i < SKY_TAPS; i++) {
 		float offset = (float(i) / float(SKY_TAPS - 1) - 0.15) * reach;
 		vec3 tap = normalize(vec3(mirrored.x, abs(mirrored.y + offset), mirrored.z));
-		sky += sunset_sky(tap, glow, dusk);
+		sky += sunset_sky(tap, glow, dusk, view_heading, horizon_drop, TIME);
 	}
 	sky /= float(SKY_TAPS);
 

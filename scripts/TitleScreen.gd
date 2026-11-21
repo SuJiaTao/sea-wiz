@@ -10,7 +10,9 @@ signal start_requested()
 signal dusk_finished()
 
 ## How far into dusk the title sits before any button is pressed.
-const DUSK_START: float = 0.12
+const DUSK_START: float = 0.34
+## How far ahead the sea is drawn; the sky is lowered to meet its edge.
+const SEA_REACH: float = 500.0
 ## Eases the dusk in, so the glow lingers before the dark comes on.
 const DUSK_CURVE: float = 1.6
 const GLOW_BEARING: float = 93.0
@@ -48,6 +50,7 @@ func _ready() -> void:
 	for part in _vessel.find_children("*", "GeometryInstance3D", true, false):
 		(part as GeometryInstance3D).material_override = silhouette
 	_camera.look_at_from_position(CAMERA_POSITION, CAMERA_TARGET, Vector3.UP)
+	_frame_sea()
 	_set_dusk(DUSK_START)
 
 
@@ -95,3 +98,12 @@ func _set_dusk(dusk: float) -> void:
 	for material: ShaderMaterial in [sky, sea]:
 		material.set_shader_parameter("dusk", dusk)
 		material.set_shader_parameter("glow_bearing_deg", GLOW_BEARING)
+
+
+func _frame_sea() -> void:
+	var forward := -_camera.global_basis.z
+	var heading := Vector2(forward.x, forward.z).normalized()
+	for material: ShaderMaterial in [sky, sea]:
+		material.set_shader_parameter("view_heading", heading)
+		material.set_shader_parameter("horizon_drop", CAMERA_POSITION.y / SEA_REACH)
+	sea.set_shader_parameter("sea_reach", SEA_REACH)

@@ -27,15 +27,11 @@ glow_bloom = 0.05
 shader = ExtResource("3_sea")
 shader_parameter/wave_normals = ExtResource("6_waves")
 
-[sub_resource type="PlaneMesh" id="Mesh_sea"]
-material = SubResource("Material_sea")
-size = Vector2(100000, 100000)
-
 [sub_resource type="PlaneMesh" id="Mesh_near_sea"]
 material = SubResource("Material_sea")
-size = Vector2(1400, 1400)
-subdivide_width = 349
-subdivide_depth = 349
+size = Vector2(1800, 1800)
+subdivide_width = 449
+subdivide_depth = 449
 
 [sub_resource type="CylinderMesh" id="Mesh_radome_seal"]
 top_radius = 0.72
@@ -75,10 +71,6 @@ render_target_update_mode = 4
 environment = SubResource("Environment_sunset")
 
 [node name="Sea" type="MeshInstance3D" parent="Sunset/View"]
-mesh = SubResource("Mesh_sea")
-cast_shadow = 0
-
-[node name="NearSea" type="MeshInstance3D" parent="Sunset/View"]
 mesh = SubResource("Mesh_near_sea")
 cast_shadow = 0
 extra_cull_margin = 4.0
