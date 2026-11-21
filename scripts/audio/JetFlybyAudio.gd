@@ -28,13 +28,14 @@ const GRAZE_DROP_DB: float = 9.0
 @export var behind: FlybySound
 @export var bus: StringName = &"Master"
 
-var _flybys: Dictionary[AbstractEnemy, AudioStreamPlayer3D] = {}
-var _handed_over: Dictionary[AbstractEnemy, float] = {}
+# Keyed by the jet's instance id, so a jet freed mid-flyby can still be looked up.
+var _flybys: Dictionary[int, AudioStreamPlayer3D] = {}
+var _handed_over: Dictionary[int, float] = {}
 
 
 ## How much of this jet should still be heard in its distant roar, 0 to 1.
 func far_share(enemy: AbstractEnemy) -> float:
-	return 1.0 - _handed_over.get(enemy, 0.0)
+	return 1.0 - _handed_over.get(enemy.get_instance_id(), 0.0)
 
 
 func _process(delta: float) -> void:
@@ -44,23 +45,24 @@ func _process(delta: float) -> void:
 		if jet == null or not jet.jet_engine:
 			continue
 		_follow(jet, ear, delta)
-	_tidy(delta)
+	_tidy()
 
 
 func _follow(jet: FlyingEnemy, ear: Vector3, delta: float) -> void:
-	var player: AudioStreamPlayer3D = _flybys.get(jet)
+	var id := jet.get_instance_id()
+	var player: AudioStreamPlayer3D = _flybys.get(id)
 	if player == null:
 		_maybe_start(jet, ear)
 		return
 	player.global_position = jet.global_position
 	var step := delta / HANDOVER_TIME
-	var share: float = _handed_over.get(jet, 0.0)
+	var share: float = _handed_over.get(id, 0.0)
 	# Back to the rumble once the recording is over; a new pass needs the jet
 	# to fall well back first.
 	share = clampf(share + (step if player.playing else -step), 0.0, 1.0)
-	_handed_over[jet] = share
+	_handed_over[id] = share
 	if not player.playing and share <= 0.0 and jet.global_position.distance_to(ear) > REARM_DISTANCE:
-		_release(jet)
+		_release(id)
 
 
 func _maybe_start(jet: FlyingEnemy, ear: Vector3) -> void:
@@ -88,26 +90,27 @@ func _maybe_start(jet: FlyingEnemy, ear: Vector3) -> void:
 	add_child(player)
 	player.global_position = jet.global_position
 	player.play(sound.closest_at - until_closest)
-	_flybys[jet] = player
-	_handed_over[jet] = 0.0
+	_flybys[jet.get_instance_id()] = player
+	_handed_over[jet.get_instance_id()] = 0.0
 
 
 ## A recording outlives its jet: a shot-down jet's roar still trails off.
-func _tidy(delta: float) -> void:
-	for enemy: Variant in _flybys.keys():
-		if is_instance_valid(enemy) and (enemy as AbstractEnemy).alive:
+func _tidy() -> void:
+	for id in _flybys.keys():
+		var enemy := instance_from_id(id) as AbstractEnemy
+		if enemy != null and enemy.alive:
 			continue
-		var player: AudioStreamPlayer3D = _flybys[enemy]
-		_flybys.erase(enemy)
-		_handed_over.erase(enemy)
+		var player: AudioStreamPlayer3D = _flybys[id]
+		_flybys.erase(id)
+		_handed_over.erase(id)
 		if player.playing:
 			player.finished.connect(player.queue_free)
 		else:
 			player.queue_free()
 
 
-func _release(jet: AbstractEnemy) -> void:
-	var player: AudioStreamPlayer3D = _flybys[jet]
-	_flybys.erase(jet)
-	_handed_over.erase(jet)
+func _release(id: int) -> void:
+	var player: AudioStreamPlayer3D = _flybys[id]
+	_flybys.erase(id)
+	_handed_over.erase(id)
 	player.queue_free()
