@@ -2,6 +2,8 @@ extends HUDPanel
 class_name CombatFeedbackHUD
 
 @export var enemies: EnemyManager
+## Kills are only named for what they really were if the radar could tell.
+@export var loadout: ShipLoadout
 
 var _hit_remaining: float = 0.0
 var _kill_remaining: float = 0.0
@@ -28,7 +30,7 @@ func _on_enemy_damaged(_amount: float, _point: Vector3) -> void:
 func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: DamageSource) -> void:
 	_kill_remaining = 0.22
 	_splash_remaining = 1.3
-	_splash_text = "SPLASH " + enemy.display_name
+	_splash_text = "SPLASH " + enemy.shown_name(loadout != null and loadout.can_classify())
 
 
 func _update_hud(delta: float) -> void:

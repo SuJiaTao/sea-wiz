@@ -26,7 +26,7 @@ func score_points() -> int:
 	return roundi(score_value * (1.0 + close_bonus * closeness))
 
 
-func score_label() -> String:
+func score_label(_classified: bool = false) -> String:
 	return SAVE_LABEL
 
 

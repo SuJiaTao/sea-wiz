@@ -32,8 +32,8 @@ func score_points() -> int:
 	return roundi(score_value * star_bonus) if looks_like_star else score_value
 
 
-func score_label() -> String:
-	return STAR_KILL_LABEL if looks_like_star else display_name
+func score_label(classified: bool = false) -> String:
+	return STAR_KILL_LABEL if looks_like_star else shown_name(classified)
 
 
 func _on_flight_created() -> void:

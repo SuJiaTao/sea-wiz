@@ -1,6 +1,8 @@
 class_name ShipLoadout
 extends UpgradeTarget
 
+const CLASSIFIER := &"radar_classifier"
+
 signal repair_requested(amount: float)
 signal restock_requested(mount: StringName)
 
@@ -41,6 +43,11 @@ func remove(mount: StringName) -> void:
 
 func is_fitted(mount: StringName) -> bool:
 	return _passives.has(mount) or _weapons.has(mount) or _systems.has(mount)
+
+
+## Whether the radar can tell what a contact really is.
+func can_classify() -> bool:
+	return is_fitted(CLASSIFIER)
 
 
 func has_room(slot: Slot) -> bool:
