@@ -182,6 +182,8 @@
 [ext_resource type="Script" path="res://scripts/audio/WaterBlastAudio.gd" id="152_water_blast"]
 [ext_resource type="AudioStream" path="res://audio/water/water_blast_close.ogg" id="153_water_close"]
 [ext_resource type="AudioStream" path="res://audio/water/water_blast_far.ogg" id="154_water_far"]
+[ext_resource type="Script" path="res://scripts/audio/ShipFireAudio.gd" id="155_ship_fire"]
+[ext_resource type="AudioStream" path="res://audio/ship/ship_fire_loop.ogg" id="156_fire_loop"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -1209,6 +1211,12 @@ volume_db = -10.0
 script = ExtResource("166_engines")
 enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
 turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
+
+[node name="ShipFire" type="AudioStreamPlayer" parent="." node_paths=PackedStringArray("fires")]
+process_mode = 1
+stream = ExtResource("156_fire_loop")
+script = ExtResource("155_ship_fire")
+fires = NodePath("../ViewportContainer/SubViewport/World/ShipDamage/DeckFires")
 
 [node name="ShipGroan" type="AudioStreamPlayer" parent="." node_paths=PackedStringArray("fires")]
 process_mode = 1
