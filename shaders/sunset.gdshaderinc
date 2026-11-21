@@ -8,13 +8,13 @@
 // above the horizon) at which each one is reached at the start of dusk.
 const int STOPS = 7;
 const vec3 STOP_COLOURS[7] = vec3[](
-	vec3(0.15, 0.03, 0.014),
-	vec3(0.3, 0.14, 0.05),
-	vec3(0.25, 0.195, 0.13),
-	vec3(0.14, 0.165, 0.225),
-	vec3(0.078, 0.118, 0.22),
-	vec3(0.03, 0.067, 0.165),
-	vec3(0.005, 0.023, 0.083)
+	vec3(0.55, 0.035, 0.005),
+	vec3(0.75, 0.22, 0.02),
+	vec3(0.55, 0.3, 0.12),
+	vec3(0.16, 0.17, 0.26),
+	vec3(0.05, 0.12, 0.3),
+	vec3(0.015, 0.06, 0.22),
+	vec3(0.003, 0.018, 0.09)
 );
 const float STOP_HEIGHTS[7] = float[](0.0, 0.03, 0.09, 0.15, 0.22, 0.32, 0.5);
 // Stops below this one are the warm glow, dimmer on the side away from it.
