@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
 [ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/AceJet.tscn" id="ace_jet"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/StealthJet.tscn" id="s0_stealth"]
 [ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/deck_gun.tres" id="u0_deck_gun"]
 [ext_resource type="Resource" path="res://scripts/upgrade_system/upgrades/resources/loadout/front_gun.tres" id="u1_front_gun"]
@@ -27,8 +28,17 @@ altitude = Vector2(150, 300)
 formation = ExtResource("f0_split")
 group = &"west"
 
+[sub_resource type="Resource" id="Ace"]
+script = ExtResource("2_spawn")
+time = 14.0
+enemy_scene = ExtResource("ace_jet")
+distance = Vector2(2000, 2400)
+altitude = Vector2(200, 320)
+group = &"ace"
+chance = 0.25
+
 [resource]
 script = ExtResource("1_wave")
 title = "STAGE 4  /  GHOSTS"
-spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2")])
+spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2"), SubResource("Ace")])
 unlocks = Array[ExtResource("3_upgrade")]([ExtResource("u0_deck_gun"), ExtResource("u1_front_gun"), ExtResource("u3_counter_missiles")])

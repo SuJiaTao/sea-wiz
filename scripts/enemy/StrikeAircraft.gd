@@ -22,9 +22,14 @@ const GUN_CONE_COS: float = 0.94
 @export var launch_range: float = 2200.0
 @export var launch_turn_deg: float = 130.0
 @export var gun_range: float = 1000.0
+## A skilled pilot ducking behind the bridge sometimes reverses inside the
+## blind arc and comes back out the side he went in, instead of crossing.
+@export_range(0.0, 1.0) var arc_reversal_chance: float = 0.0
 
 var _leg: Leg = Leg.RUN_IN
 var _egress_heading := Vector3.FORWARD
+## The edge of the blind arc this pass is leaving by, 0 when outside it.
+var _arc_exit: float = 0.0
 
 
 func _on_arrival() -> void:
@@ -42,8 +47,11 @@ func _desired_velocity(_delta: float) -> Vector3:
 			return _hold_altitude(_egress_heading + Vector3.UP * egress_climb) * speed
 		_leg = Leg.RUN_IN
 	if BlindArc.contains(global_position):
-		var way_out := BlindArc.way_out(global_position) + Vector3.UP * attack_altitude
+		if _arc_exit == 0.0:
+			_arc_exit = _choose_arc_exit()
+		var way_out := BlindArc.way_out(global_position, _arc_exit) + Vector3.UP * attack_altitude
 		return _hold_altitude(way_out - global_position) * speed
+	_arc_exit = 0.0
 	var range_left := global_position - target_position
 	var flat_range := Vector2(range_left.x, range_left.z).length()
 	if contact_damage > 0.0 and flat_range < gun_range and _pointed_at_target():
@@ -52,6 +60,15 @@ func _desired_velocity(_delta: float) -> Vector3:
 		_launch_missile()
 	var aim := target_position + Vector3.UP * attack_altitude
 	return _hold_altitude(aim - global_position) * speed
+
+
+## Most pilots leave by the nearer edge as they go. One set on reversing
+## commits to the side he came in by and turns round behind the bridge.
+func _choose_arc_exit() -> float:
+	var entered := BlindArc.side_of(global_position)
+	if randf() < arc_reversal_chance:
+		return entered
+	return 0.0 if arc_reversal_chance <= 0.0 else -entered
 
 
 func _pointed_at_target() -> bool:
