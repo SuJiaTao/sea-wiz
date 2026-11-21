@@ -24,6 +24,9 @@ const WARHEAD: float = 260.0
 const WATER_SPLASH_SIZE: float = 1.2
 const THREAT_RANGE: float = 650.0
 
+## Our missiles in the air, for anything out there that wants to shoot them.
+static var in_flight: Array[MissileProjectile] = []
+
 var vertical_climb: float = 0.0
 
 var _target: AbstractEnemy
@@ -53,6 +56,21 @@ func _init(
 	_target = target
 	_fuzed_on = target
 	max_lifetime = 14.0
+
+
+func _on_fire() -> void:
+	super()
+	in_flight.append(self)
+
+
+func is_flying() -> bool:
+	return _ballistics != null
+
+
+## Gunned down in flight: the warhead goes off where it is.
+func shoot_down() -> void:
+	if is_flying():
+		request_impact(ProjectileImpact.new(position))
 
 
 ## What this missile is still guiding onto; null once it has hit, missed or
@@ -213,6 +231,7 @@ func _splash_size() -> float:
 
 func _on_delete() -> void:
 	super()
+	in_flight.erase(self)
 	_target = null
 	_fuzed_on = null
 	_decoy = null

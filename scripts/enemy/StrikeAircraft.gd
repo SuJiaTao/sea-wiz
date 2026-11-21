@@ -56,7 +56,7 @@ func _desired_velocity(_delta: float) -> Vector3:
 	var flat_range := Vector2(range_left.x, range_left.z).length()
 	if contact_damage > 0.0 and flat_range < gun_range and _pointed_at_target():
 		_strafe()
-	elif missiles_carried > 0 and flat_range >= gun_range and flat_range < launch_range:
+	elif _wants_missile() and flat_range >= gun_range and flat_range < launch_range:
 		_launch_missile()
 	var aim := target_position + Vector3.UP * attack_altitude
 	return _hold_altitude(aim - global_position) * speed
@@ -69,6 +69,10 @@ func _choose_arc_exit() -> float:
 	if randf() < arc_reversal_chance:
 		return entered
 	return 0.0 if arc_reversal_chance <= 0.0 else -entered
+
+
+func _wants_missile() -> bool:
+	return missiles_carried > 0
 
 
 func _pointed_at_target() -> bool:
