@@ -23,6 +23,11 @@ const float SUN_RADIUS_DEG = 0.6;
 // Even at a grazing angle the sea stays a little darker than the sky, so the
 // horizon line holds and the sun visibly sinks into it.
 const float HORIZON_REFLECTION = 0.62;
+const float ROUGH_SHADOWING = 0.4;
+const float ROUGH_LIFT = 2.5;
+const float STREAK_WIDTH = 6.0;
+const float STREAK_ROWS = 4000.0;
+const float STREAK_DRIFT = 0.15;
 
 varying vec3 world_position;
 
@@ -62,10 +67,25 @@ void fragment() {
 	vec3 normal = normalize(vec3(-tilt.x, 1.0, -tilt.y));
 	vec3 mirrored = reflect(view, normal);
 	mirrored.y = abs(mirrored.y);
-	float fresnel = 0.04 + HORIZON_REFLECTION * pow(1.0 - max(dot(-view, normal), 0.0), 5.0);
+	// Out where even the swell is finer than a pixel, the sea is still rough: its
+	// faces tip up and catch sky from higher overhead, and shade each other, so
+	// it stays darker than the sky and the horizon keeps a hard edge.
+	float rough = 1.0 - resolved(footprint, 1.0);
+	float fresnel = 0.04 + HORIZON_REFLECTION * pow(1.0 - max(dot(-view, normal), 0.0), 5.0) * (1.0 - ROUGH_SHADOWING * rough);
 	vec3 sky = sunset_sky(mirrored, sun, daylight, TIME, false);
+	// Swells too fine to draw still show far off as long streaks along the horizon.
+	vec2 out_to = world_position.xz - eye.xz;
+	vec2 heading = normalize(view.xz);
+	float along = max(dot(out_to, heading), 1.0);
+	float across = dot(out_to, vec2(-heading.y, heading.x));
+	vec2 streak_at = vec2(across / along * STREAK_WIDTH, STREAK_ROWS / along + TIME * STREAK_DRIFT);
+	float streak = sunset_fbm(streak_at);
+	vec3 tipped = normalize(vec3(mirrored.x, mirrored.y + wave_tilt * ROUGH_LIFT * (0.3 + 1.4 * streak), mirrored.z));
+	sky = mix(sky, sunset_sky(tipped, sun, daylight, TIME, false), rough * 0.75);
+	fresnel *= mix(1.0, 0.7 + 0.6 * streak, rough);
 	float sharpness = glitter_sharpness / (1.0 + footprint * GLINT_SOFTENING);
 	float above = smoothstep(-SUN_RADIUS_DEG, SUN_RADIUS_DEG, sunset_elevation(sun));
 	float glint = pow(max(dot(mirrored, sun), 0.0), sharpness) * glitter_strength * above * daylight * sharpness / glitter_sharpness;
+	glint *= mix(1.0, streak * 1.6, rough);
 	ALBEDO = mix(deep_water, sky, fresnel) + GLINT_COLOUR * glint;
 }
