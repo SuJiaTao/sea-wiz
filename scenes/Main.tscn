@@ -175,6 +175,8 @@
 [ext_resource type="Script" path="res://scripts/audio/JetFlybyAudio.gd" id="145_flybys"]
 [ext_resource type="Resource" path="res://resources/audio/Flyby_overhead.tres" id="146_flyby_overhead"]
 [ext_resource type="Resource" path="res://resources/audio/Flyby_behind.tres" id="147_flyby_behind"]
+[ext_resource type="Script" path="res://scripts/audio/JetDistantAudio.gd" id="148_distant_jets"]
+[ext_resource type="AudioStream" path="res://audio/jets/jet_distant_loop.ogg" id="149_distant_loop"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -581,6 +583,14 @@ enemies = NodePath("../Enemies")
 listener = NodePath("../Vessel/Turret")
 overhead = ExtResource("146_flyby_overhead")
 behind = ExtResource("147_flyby_behind")
+
+[node name="DistantJets" type="Node3D" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("enemies", "listener", "flybys")]
+process_mode = 1
+script = ExtResource("148_distant_jets")
+enemies = NodePath("../Enemies")
+listener = NodePath("../Vessel/Turret")
+flybys = NodePath("../JetFlybys")
+loop = ExtResource("149_distant_loop")
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1274563182]
 script = ExtResource("5_enemies")
@@ -1180,13 +1190,12 @@ hum = NodePath("Hum")
 [node name="Hum" type="AudioStreamPlayer" parent="PowerGrid"]
 volume_db = -4.0
 
-[node name="EngineDrone" type="AudioStreamPlayer" parent="." node_paths=PackedStringArray("enemies", "turret", "flybys")]
+[node name="EngineDrone" type="AudioStreamPlayer" parent="." node_paths=PackedStringArray("enemies", "turret")]
 process_mode = 1
 volume_db = -10.0
 script = ExtResource("166_engines")
 enemies = NodePath("../ViewportContainer/SubViewport/World/Enemies")
 turret = NodePath("../ViewportContainer/SubViewport/World/Vessel/Turret")
-flybys = NodePath("../ViewportContainer/SubViewport/World/JetFlybys")
 
 [node name="StageEvents" type="Node" parent="." node_paths=PackedStringArray("waves", "fires")]
 process_mode = 1

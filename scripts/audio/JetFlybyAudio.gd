@@ -6,9 +6,9 @@ class_name JetFlybyAudio
 # loudest moment lands as the jet goes by, and follows the jet through the
 # sky so it pans with it. Passes overhead get the overhead recording, the
 # rest the one that roars in from behind. While a recording plays, that jet
-# fades out of the distant rumble, so the two hand over without a gap.
+# fades out of its distant roar, so the two hand over without a gap.
 
-## Passes that come no closer than this stay part of the distant rumble.
+## Passes that come no closer than this keep only the distant roar.
 const PASS_DISTANCE: float = 700.0
 ## A pass at least this steep above us counts as overhead.
 const OVERHEAD_ELEVATION_DEG: float = 50.0
@@ -32,7 +32,7 @@ var _flybys: Dictionary[AbstractEnemy, AudioStreamPlayer3D] = {}
 var _handed_over: Dictionary[AbstractEnemy, float] = {}
 
 
-## How much of this jet should still be heard in the distant rumble, 0 to 1.
+## How much of this jet should still be heard in its distant roar, 0 to 1.
 func far_share(enemy: AbstractEnemy) -> float:
 	return 1.0 - _handed_over.get(enemy, 0.0)
 
