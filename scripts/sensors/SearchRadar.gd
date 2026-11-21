@@ -6,7 +6,6 @@ signal detected(detection: RadarDetection)
 const DETECTION_FALLOFF_POWER := 4.0
 const REFERENCE_SIZE := 6.0
 const MIN_SIZE_FACTOR := 0.45
-const SIZE_ERROR := 0.15
 
 @export var enemies: EnemyManager
 @export var antenna: Node3D
@@ -33,7 +32,7 @@ func _physics_process(delta: float) -> void:
 			continue
 		if randf() > _chance(distance, enemy.hud_radius):
 			continue
-		detected.emit(_measure(offset, distance, enemy.hud_radius))
+		detected.emit(_measure(offset, distance, enemy))
 
 
 func _bearing(offset: Vector3) -> float:
@@ -52,7 +51,7 @@ func _chance(distance: float, size: float) -> float:
 	return detection_chance * reach * size_factor * (1.0 - clutter)
 
 
-func _measure(offset: Vector3, distance: float, size: float) -> RadarDetection:
+func _measure(offset: Vector3, distance: float, enemy: AbstractEnemy) -> RadarDetection:
 	var sigma_angle := deg_to_rad(angle_error_deg)
 	var sigma_range := range_error + range_error_per_km * distance * 0.001
 	var direction := offset / distance
@@ -67,5 +66,5 @@ func _measure(offset: Vector3, distance: float, size: float) -> RadarDetection:
 	return RadarDetection.new(
 		antenna.global_position + direction * measured_range,
 		sigma_range + distance * sigma_angle,
-		size * (1.0 + randfn(0.0, SIZE_ERROR))
+		enemy
 	)

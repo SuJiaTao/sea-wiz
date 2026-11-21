@@ -3,10 +3,12 @@ class_name RadarDetection
 
 var position: Vector3
 var error: float
-var size_hint: float
+## The contact this return came from. Tracks follow one contact each, so two
+## aircraft flying close never swap or merge on the scope.
+var source: AbstractEnemy
 
 
-func _init(at: Vector3, error_metres: float, apparent_size: float) -> void:
+func _init(at: Vector3, error_metres: float, from: AbstractEnemy) -> void:
 	position = at
 	error = error_metres
-	size_hint = apparent_size
+	source = from

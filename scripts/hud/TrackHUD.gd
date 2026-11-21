@@ -30,8 +30,6 @@ const LEAD_PIP_SEGMENTS: int = 16
 const LEAD_FITTING := &"fire_control"
 const RADAR_FITTING := &"radar"
 const CLASSIFIER_FITTING := &"radar_classifier"
-const MISSILE_SIZE_BELOW: float = 3.5
-const FIGHTER_SIZE_BELOW: float = 14.0
 const CLASS_SYMBOL: float = 3.5
 const MISSILE_MARKER: float = 9.0
 const MISSILE_LABEL := "VAMPIRE"
@@ -208,12 +206,14 @@ func _draw_scope() -> void:
 	for track in tracks.tracks():
 		if not _belongs_to_marked(track, marked):
 			if track.confirmed and loadout.is_fitted(CLASSIFIER_FITTING):
-				_draw_class_symbol(_scope_point(centre, track.position), track.size_hint)
+				_draw_class_symbol(_scope_point(centre, track.position), track.kind)
 			else:
 				_draw_cloud(centre, track)
 			if track.confirmed:
 				_draw_leader(centre, track.position, track.velocity, Color(DIM, CLOUD_ALPHA * 3.0))
 	for enemy in marked:
+		if not _in_scope(enemy.global_position):
+			continue
 		var at := _scope_point(centre, enemy.global_position)
 		_draw_leader(centre, enemy.global_position, enemy.velocity, DIM)
 		if enemy.contact_kind == AbstractEnemy.ContactKind.MISSILE:
@@ -233,10 +233,10 @@ func _draw_triangle(at: Vector2, half: float, colour: Color) -> void:
 	]), colour)
 
 
-func _draw_class_symbol(at: Vector2, size_hint: float) -> void:
-	if size_hint < MISSILE_SIZE_BELOW:
+func _draw_class_symbol(at: Vector2, kind: RadarTrack.Kind) -> void:
+	if kind == RadarTrack.Kind.MISSILE:
 		draw_polyline(_diamond(at, CLASS_SYMBOL), MAIN if _blink_on() else DIM, 1.5)
-	elif size_hint < FIGHTER_SIZE_BELOW:
+	elif kind == RadarTrack.Kind.AIRCRAFT:
 		draw_colored_polygon(PackedVector2Array([
 			at + Vector2(0, -CLASS_SYMBOL), at + Vector2(CLASS_SYMBOL, CLASS_SYMBOL),
 			at + Vector2(-CLASS_SYMBOL, CLASS_SYMBOL)
@@ -263,9 +263,16 @@ func _draw_leader(centre: Vector2, world_position: Vector3, velocity: Vector3, c
 
 func _belongs_to_marked(track: RadarTrack, marked: Array[AbstractEnemy]) -> bool:
 	for enemy in marked:
-		if enemy.global_position.distance_to(track.position) < track.uncertainty + CLOUD_MIN_METRES:
+		if track.follows(enemy):
 			return true
 	return false
+
+
+## Marked contacts past the scope's edge are left off rather than pinned to
+## the rim, where they would read as closer than they are.
+func _in_scope(world_position: Vector3) -> bool:
+	var offset := world_position - turret.global_position
+	return Vector2(offset.x, offset.z).length() <= RADAR_RANGE
 
 
 func _draw_cloud(centre: Vector2, track: RadarTrack) -> void:
