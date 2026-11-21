@@ -7,6 +7,7 @@ enum State { TITLE, STARTING, RUNNING, WON, LOST }
 
 const HIT_IMPULSE: float = 5.0
 const HIT_FLASH: float = 0.6
+const KILL_BLAST_SIZE: float = 6.0
 const WRECK_DAMAGE_PER_SIZE: float = 12.0
 const HUD_FIRST_TIME: float = 0.9
 const NIGHT_VISION_FADE: float = 3.0
@@ -160,7 +161,9 @@ func _on_enemy_damaged(_amount: float, point: Vector3) -> void:
 
 
 func _on_enemy_killed(enemy: AbstractEnemy, _weapon_source: DamageSource) -> void:
-	fx.explosion(enemy.global_position, 6.0)
+	fx.kill_explosion(
+		enemy.global_position, KILL_BLAST_SIZE, enemy.contact_kind == AbstractEnemy.ContactKind.AIRCRAFT
+	)
 	if enemy.blast_size > 0.0:
 		effects.spawn(BigExplosionEffect.new(enemy.global_position, enemy.blast_size))
 	if enemy.leaves_wreck:

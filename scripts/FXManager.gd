@@ -8,6 +8,13 @@ const MAX_BLASTS := 48
 const SPARK_GRAVITY := 22.0
 const BOOM_LOUD_PATH := "res://audio/explosions/explosion_loud.ogg"
 const BOOM_MEDIUM_PATH := "res://audio/explosions/explosion_medium.ogg"
+const PING_VOICES := 6
+const BOOM_VOICES := 8
+const HEARING_RANGE := 4000.0
+## Distance at which a blast plays at full level; beyond it, it falls off.
+const BOOM_UNIT_SIZE := 380.0
+## A shot-down aircraft goes up with the loud recording, a missile the medium.
+const KILL_BOOM_DB := -3.0
 ## Blasts at least this big use the loud recording.
 const LOUD_BOOM_SIZE := 10.0
 ## Each boom is pitched a touch differently so repeats do not stand out.
@@ -31,8 +38,12 @@ var _blast_mm: MultiMesh
 var _boom_loud: AudioStream
 var _boom_medium: AudioStream
 var _ping: AudioStream
-var _audio_pool: Array[AudioStreamPlayer3D] = []
-var _audio_idx: int = 0
+# Hit pings and booms get their own voices: a stream of hits must never cut
+# off an explosion that is still rolling.
+var _ping_voices: Array[AudioStreamPlayer3D] = []
+var _boom_voices: Array[AudioStreamPlayer3D] = []
+var _ping_next: int = 0
+var _boom_next: int = 0
 var _hit_sound_cooldown: float = 0.0
 
 
@@ -49,13 +60,19 @@ func _ready() -> void:
 	_boom_medium = load(BOOM_MEDIUM_PATH)
 	if ResourceLoader.exists("res://audio/impact.wav"):
 		_ping = load("res://audio/impact.wav")
-	for i in 10:
-		var p := AudioStreamPlayer3D.new()
-		p.unit_size = 220.0
-		p.max_distance = 4000.0
-		p.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
-		add_child(p)
-		_audio_pool.append(p)
+	for i in PING_VOICES:
+		_ping_voices.append(_voice())
+	for i in BOOM_VOICES:
+		_boom_voices.append(_voice())
+
+
+func _voice() -> AudioStreamPlayer3D:
+	var p := AudioStreamPlayer3D.new()
+	p.unit_size = BOOM_UNIT_SIZE
+	p.max_distance = HEARING_RANGE
+	p.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
+	add_child(p)
+	return p
 
 
 func _make_mm(mesh: Mesh, count: int) -> MultiMesh:
@@ -119,10 +136,26 @@ func hit(pos: Vector3) -> void:
 	spark_burst(pos, 3, 1.0)
 	if _hit_sound_cooldown <= 0.0:
 		_hit_sound_cooldown = 0.09
-		_play(_ping, pos, randf_range(-8.0, -3.0), randf_range(0.85, 1.25))
+		_play_ping(_ping, pos, randf_range(-8.0, -3.0), randf_range(0.85, 1.25))
+
+
+## Something we shot down: the blast, and the loud boom for an aircraft or
+## the medium one for a missile, at a level that still carries from far off.
+func kill_explosion(pos: Vector3, size: float, aircraft: bool) -> void:
+	_draw_blast(pos, size)
+	var boom := _boom_loud if aircraft else _boom_medium
+	_play_boom(boom, pos, KILL_BOOM_DB, 1.0 + randf_range(-BOOM_PITCH_SPREAD, BOOM_PITCH_SPREAD))
 
 
 func explosion(pos: Vector3, size: float) -> void:
+	_draw_blast(pos, size)
+	# Further blasts are quieter through the player's distance falloff.
+	var boom := _boom_loud if size >= LOUD_BOOM_SIZE else _boom_medium
+	_play_boom(boom, pos, clampf(-12.0 + size * 0.35, -12.0, 4.0),
+			1.0 + randf_range(-BOOM_PITCH_SPREAD, BOOM_PITCH_SPREAD))
+
+
+func _draw_blast(pos: Vector3, size: float) -> void:
 	if _bl_count < MAX_BLASTS:
 		_bl_pos[_bl_count] = pos
 		var l := clampf(0.35 + size * 0.02, 0.35, 1.6)
@@ -131,17 +164,21 @@ func explosion(pos: Vector3, size: float) -> void:
 		_bl_size[_bl_count] = size
 		_bl_count += 1
 	spark_burst(pos, int(clampf(size * 1.6, 8.0, 60.0)), clampf(size * 0.18, 1.0, 5.0))
-	# Further blasts are quieter through the player's distance falloff.
-	var boom := _boom_loud if size >= LOUD_BOOM_SIZE else _boom_medium
-	_play(boom, pos, clampf(-12.0 + size * 0.35, -12.0, 4.0),
-			1.0 + randf_range(-BOOM_PITCH_SPREAD, BOOM_PITCH_SPREAD))
 
 
-func _play(stream: AudioStream, pos: Vector3, vol: float, pitch: float) -> void:
-	if stream == null or _audio_pool.is_empty():
+func _play_boom(stream: AudioStream, pos: Vector3, vol: float, pitch: float) -> void:
+	_play_on(_boom_voices[_boom_next], stream, pos, vol, pitch)
+	_boom_next = (_boom_next + 1) % _boom_voices.size()
+
+
+func _play_ping(stream: AudioStream, pos: Vector3, vol: float, pitch: float) -> void:
+	_play_on(_ping_voices[_ping_next], stream, pos, vol, pitch)
+	_ping_next = (_ping_next + 1) % _ping_voices.size()
+
+
+func _play_on(p: AudioStreamPlayer3D, stream: AudioStream, pos: Vector3, vol: float, pitch: float) -> void:
+	if stream == null:
 		return
-	var p := _audio_pool[_audio_idx]
-	_audio_idx = (_audio_idx + 1) % _audio_pool.size()
 	p.global_position = pos
 	p.stream = stream
 	p.volume_db = vol
