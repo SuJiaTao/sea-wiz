@@ -181,6 +181,7 @@
 [ext_resource type="AudioStream" path="res://audio/ship/ship_groan.ogg" id="151_groan"]
 [ext_resource type="Script" path="res://scripts/audio/WaterBlastAudio.gd" id="152_water_blast"]
 [ext_resource type="AudioStream" path="res://audio/water/water_blast_close.ogg" id="153_water_close"]
+[ext_resource type="AudioStream" path="res://audio/water/water_blast_far.ogg" id="154_water_far"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -602,6 +603,7 @@ script = ExtResource("152_water_blast")
 effects = NodePath("../Effects")
 listener = NodePath("../Vessel/Turret")
 close = ExtResource("153_water_close")
+far = ExtResource("154_water_far")
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1274563182]
 script = ExtResource("5_enemies")
