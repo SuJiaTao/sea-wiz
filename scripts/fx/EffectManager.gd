@@ -3,7 +3,8 @@ class_name EffectManager
 
 signal wreck_hit_ship(position: Vector3, size: float)
 signal wreck_falling(wreck: WreckEffect)
-signal shockwave(position: Vector3, size: float)
+## on_water: the blast went off on the sea, so it is heard as a water blast.
+signal shockwave(position: Vector3, size: float, on_water: bool)
 
 @export var sea: Node3D
 @export var hull: HullMesh

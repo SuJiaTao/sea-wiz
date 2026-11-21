@@ -13,7 +13,7 @@ func _ready() -> void:
 	effects.shockwave.connect(_on_shockwave)
 
 
-func _on_shockwave(position: Vector3, size: float) -> void:
+func _on_shockwave(position: Vector3, size: float, _on_water: bool) -> void:
 	var local := vessel.global_transform.affine_inverse() * position
 	var distance := Vector2(local.x, local.z).length()
 	if distance >= reach:

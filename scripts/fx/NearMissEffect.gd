@@ -35,7 +35,7 @@ func _on_spawn(effects: EffectManager) -> void:
 	_throw_droplets(effects)
 	effects.ripples.emit(_position + Vector3.UP * RIPPLE_LIFT, effects.sea_current(), _size * RIPPLE_SCALE)
 	effects.spawn(ShockDomeEffect.new(_position, _size))
-	effects.shockwave.emit(_position, _size)
+	effects.shockwave.emit(_position, _size, true)
 
 
 func _on_step(effects: EffectManager, delta: float) -> void:

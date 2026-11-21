@@ -179,6 +179,8 @@
 [ext_resource type="AudioStream" path="res://audio/jets/jet_distant_loop.ogg" id="149_distant_loop"]
 [ext_resource type="Script" path="res://scripts/audio/ShipGroan.gd" id="150_ship_groan"]
 [ext_resource type="AudioStream" path="res://audio/ship/ship_groan.ogg" id="151_groan"]
+[ext_resource type="Script" path="res://scripts/audio/WaterBlastAudio.gd" id="152_water_blast"]
+[ext_resource type="AudioStream" path="res://audio/water/water_blast_close.ogg" id="153_water_close"]
 
 [sub_resource type="ShaderMaterial" id="Material_sea"]
 render_priority = 0
@@ -593,6 +595,13 @@ enemies = NodePath("../Enemies")
 listener = NodePath("../Vessel/Turret")
 flybys = NodePath("../JetFlybys")
 loop = ExtResource("149_distant_loop")
+
+[node name="WaterBlasts" type="Node3D" parent="ViewportContainer/SubViewport/World" node_paths=PackedStringArray("effects", "listener")]
+process_mode = 1
+script = ExtResource("152_water_blast")
+effects = NodePath("../Effects")
+listener = NodePath("../Vessel/Turret")
+close = ExtResource("153_water_close")
 
 [node name="Enemies" type="Node3D" parent="ViewportContainer/SubViewport/World" unique_id=1274563182]
 script = ExtResource("5_enemies")

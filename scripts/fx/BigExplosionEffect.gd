@@ -22,5 +22,5 @@ func _on_spawn(effects: EffectManager) -> void:
 	for index in randi_range(STREAMERS.x, STREAMERS.y):
 		effects.spawn(SmokeStreamerEffect.new(_position, _size))
 	effects.embers.burst(_position, DEBRIS_PER_SIZE * ceili(_size), DEBRIS_SPEED * sqrt(_size))
-	effects.shockwave.emit(_position, _size)
+	effects.shockwave.emit(_position, _size, false)
 	finish()

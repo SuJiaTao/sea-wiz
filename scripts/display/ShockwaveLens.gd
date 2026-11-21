@@ -20,7 +20,7 @@ func _ready() -> void:
 	effects.shockwave.connect(_on_shockwave)
 
 
-func _on_shockwave(at: Vector3, size: float) -> void:
+func _on_shockwave(at: Vector3, size: float, _on_water: bool) -> void:
 	_rings.push_back(ShockRing.new(at, size))
 	while _rings.size() > MAX_RINGS:
 		_rings.pop_front()
