@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
 [ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/AceJet.tscn" id="ace_jet"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/EnemyCruiser.tscn" id="s0_cruiser"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/EnemyDestroyer.tscn" id="s1_destroyer"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/StealthJet.tscn" id="s2_stealth"]
@@ -39,7 +40,16 @@ altitude = Vector2(150, 300)
 formation = ExtResource("f0_split")
 group = &"east"
 
+[sub_resource type="Resource" id="Ace"]
+script = ExtResource("2_spawn")
+time = 18.0
+enemy_scene = ExtResource("ace_jet")
+distance = Vector2(2000, 2400)
+altitude = Vector2(200, 320)
+group = &"ace"
+chance = 0.25
+
 [resource]
 script = ExtResource("1_wave")
 title = "STAGE 4  /  SURFACE ACTION"
-spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2"), SubResource("S3"), SubResource("S4")])
+spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2"), SubResource("S3"), SubResource("S4"), SubResource("Ace")])

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/waves/WaveDefinition.gd" id="1_wave"]
 [ext_resource type="Script" path="res://scripts/waves/WaveSpawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/enemy/AceJet.tscn" id="ace_jet"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/GreatMothership.tscn" id="s0_great"]
 [ext_resource type="PackedScene" path="res://scenes/enemy/StealthJet.tscn" id="s1_stealth"]
 [ext_resource type="Resource" path="res://resources/formations/SplitPair.tres" id="f0_split"]
@@ -22,8 +23,17 @@ distance = Vector2(1800, 2200)
 altitude = Vector2(150, 300)
 formation = ExtResource("f0_split")
 
+[sub_resource type="Resource" id="Ace"]
+script = ExtResource("2_spawn")
+time = 14.0
+enemy_scene = ExtResource("ace_jet")
+distance = Vector2(2000, 2400)
+altitude = Vector2(200, 320)
+group = &"ace"
+chance = 0.25
+
 [resource]
 script = ExtResource("1_wave")
 title = "STAGE 5  /  LAST LIGHT"
-spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2")])
+spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2"), SubResource("Ace")])
 ignite_ship = true
