@@ -17,6 +17,8 @@ const MAX_GAIN: float = 1.0
 
 @export var enemies: EnemyManager
 @export var turret: Turret
+## Jets passing close are handed over to their recorded flyby.
+@export var flybys: JetFlybyAudio
 
 var _playback: AudioStreamGeneratorPlayback
 var _rumble: float = 0.0
@@ -60,7 +62,7 @@ func _loudness() -> Vector2:
 		var near := clampf((HEARING_RANGE - distance) / (HEARING_RANGE - NEAR_RANGE), 0.0, 1.0)
 		if near <= 0.0:
 			continue
-		var loud := near * near
+		var loud := near * near * (flybys.far_share(enemy) if flybys != null else 1.0)
 		var side := camera.global_basis.x.dot(offset / distance)
 		total += Vector2(sqrt((1.0 - side) * 0.5), sqrt((1.0 + side) * 0.5)) * loud
 	return total.clampf(0.0, MAX_GAIN)
