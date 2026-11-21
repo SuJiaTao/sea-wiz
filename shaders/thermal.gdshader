@@ -22,8 +22,6 @@ uniform float halo_radius_texels : hint_range(1.0, 8.0) = 2.8;
 uniform float shake_x = 0.0;
 uniform float shake_y = 0.0;
 uniform vec2 sensor_size = vec2(320.0, 180.0);
-// Grain is drawn per rendered pixel, so it stays fine on big screens.
-uniform vec2 grain_cells = vec2(1280.0, 720.0);
 uniform float flash : hint_range(0.0, 1.0) = 0.0;
 
 // Water on the lens: xy centre in UV, z radius (fraction of height), w strength.
@@ -107,8 +105,9 @@ float sense(vec3 colour) {
 	return mix(raw, night_vision(max(raw - black_level, 0.0) * gain), nvg_amount);
 }
 
-float shot(vec2 uv, float l) {
-	float jitter = hash12(floor(uv * grain_cells) + fract(TIME) * SHOT_SEED) - 0.5;
+// Grain is one speck per physical screen pixel, however low the scene renders.
+float shot(vec2 screen_pixel, float l) {
+	float jitter = hash12(floor(screen_pixel) + fract(TIME) * SHOT_SEED) - 0.5;
 	return jitter * shot_noise * sqrt(l);
 }
 
@@ -208,7 +207,7 @@ void fragment() {
 	l = l * (1.0 - droplet_cooling * wet) + droplet_rim * rim;
 	l = clamp(detector_flaws(l + flash + shock_light * shock_glow, UV), 0.0, 1.0);
 
-	l = clamp(l + shot(UV, l) * nvg_amount, 0.0, 1.0);
+	l = clamp(l + shot(FRAGCOORD.xy, l) * nvg_amount, 0.0, 1.0);
 	l = floor(l * levels + 0.5) / levels;
 	l = mix(l, 1.0 - l, polarity);
 
