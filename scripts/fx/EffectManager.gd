@@ -11,6 +11,8 @@ signal shockwave(position: Vector3, size: float, on_water: bool)
 @export var smoke: ParticleBatch
 @export var fireballs: ParticleBatch
 @export var embers: ParticleBatch
+## Tiny bright sparks that float up out of fires.
+@export var fire_sparks: ParticleBatch
 @export var droplets: ParticleBatch
 @export var spray: ParticleBatch
 @export var ripples: ParticleBatch
