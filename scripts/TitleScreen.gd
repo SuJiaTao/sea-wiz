@@ -77,6 +77,11 @@ func handle_input(event: InputEvent) -> bool:
 	return false
 
 
+## How far the screen has gone dark after the dusk, 0 to 1.
+func darkness() -> float:
+	return maxf(_blackout, 0.0)
+
+
 func play_dusk() -> void:
 	if _dusk < 0.0:
 		_dusk = 0.0

@@ -6,6 +6,8 @@
 [ext_resource type="PackedScene" path="res://scenes/world/ship/destroyer_v15.glb" id="4_ship"]
 [ext_resource type="PackedScene" path="res://scenes/world/ciws/ciws_phalanx.glb" id="5_ciws"]
 [ext_resource type="Texture2D" path="res://resources/world/WaveNormals.tres" id="6_waves"]
+[ext_resource type="Script" path="res://scripts/audio/TitleAmbience.gd" id="7_ambience"]
+[ext_resource type="AudioStream" path="res://audio/ambience/title_ocean_night.ogg" id="8_ocean"]
 
 [sub_resource type="ShaderMaterial" id="Material_sky"]
 shader = ExtResource("2_sky")
@@ -147,3 +149,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
+
+[node name="Ambience" type="AudioStreamPlayer" parent="." node_paths=PackedStringArray("title")]
+stream = ExtResource("8_ocean")
+script = ExtResource("7_ambience")
+title = NodePath("..")
