@@ -3,7 +3,7 @@ class_name SeaStateWeather
 
 const ROUGHNESS := "roughness"
 const RAIN := "rain"
-const FULL_RAIN_RATE: float = 6000.0
+const FULL_RAIN_RATE: float = 30000.0
 
 @export var sea_material: ShaderMaterial
 @export var sway: ShipSway
