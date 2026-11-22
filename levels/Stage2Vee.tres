@@ -16,5 +16,6 @@ group = &"vee"
 
 [resource]
 script = ExtResource("1_wave")
+missile_gap = 4.0
 title = "STAGE 2  /  VEE"
 spawns = Array[ExtResource("2_spawn")]([SubResource("S1")])

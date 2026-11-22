@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_profile")
 display_name = "THUNDERSTORM"
-fog_density = 0.0006
-rain_rate = 6000.0
-lens_drops_per_second = 2.0
+fog_density = 0.0015
+rain_rate = 30000.0
+lens_drops_per_second = 3.5
 radar_clutter = 0.35
 lightning_interval = Vector2(4, 11)
 sea_roughness = 0.3

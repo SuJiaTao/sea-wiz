@@ -70,7 +70,7 @@ func _desired_velocity(_delta: float) -> Vector3:
 		pass
 	elif contact_damage > 0.0 and flat_range < gun_range and _pointed_at_target():
 		_strafe()
-	elif _wants_missile() and flat_range >= gun_range and flat_range < launch_range:
+	elif _wants_missile() and flat_range >= gun_range and flat_range < launch_range and LaunchSpacing.clear():
 		_launch_missile()
 	return _run_in_heading() * speed
 
@@ -113,6 +113,7 @@ func _break_off() -> void:
 
 
 func _launch_missile() -> void:
+	LaunchSpacing.note()
 	missiles_carried -= 1
 	var missile := missile_scene.instantiate() as FlyingEnemy
 	missile.velocity = velocity

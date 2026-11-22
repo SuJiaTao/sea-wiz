@@ -8,7 +8,7 @@ const UNCULLED := AABB(Vector3(-1.0e5, -1.0e5, -1.0e5), Vector3(2.0e5, 2.0e5, 2.
 
 @export var turret: Turret
 @export var particle_mesh: Mesh
-@export var capacity: int = 6000
+@export var capacity: int = 30000
 @export var box := Vector3(80.0, 50.0, 80.0)
 ## Blows the drops the same way the sea's waves run, at this speed (m/s).
 @export var sea_material: ShaderMaterial

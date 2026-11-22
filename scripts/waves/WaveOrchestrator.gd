@@ -63,6 +63,7 @@ func stop() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	LaunchSpacing.tick(delta)
 	if _state == State.INTERMISSION:
 		intermission_remaining = maxf(intermission_remaining - delta, 0.0)
 		if intermission_remaining <= 0.0:
@@ -93,6 +94,7 @@ func _begin_next_level() -> void:
 		definition = levels[_level_index]
 		_level_index += 1
 	_current = definition
+	LaunchSpacing.reset(definition.missile_gap)
 	_engaged = false
 	level_number += 1
 	level_title = definition.title
