@@ -93,6 +93,8 @@
 [ext_resource type="Script" uid="uid://cpjkfm8fhl845" path="res://scripts/weather/PrecipitationField.gd" id="83_precip_field"]
 [ext_resource type="Script" uid="uid://byx13np1h1yml" path="res://scripts/weather/PrecipitationWeather.gd" id="84_precip"]
 [ext_resource type="Script" uid="uid://dbslkmkup63ge" path="res://scripts/weather/LensRainWeather.gd" id="85_lens_rain"]
+[ext_resource type="Script" path="res://scripts/weather/DeckRainWeather.gd" id="85_deck_rain"]
+[ext_resource type="AudioStream" path="res://audio/weather/deck_rain_loop.ogg" id="85_deck_rain_loop"]
 [ext_resource type="Script" path="res://scripts/weather/BarrelClimateWeather.gd" id="85_barrel_climate"]
 [ext_resource type="Script" path="res://scripts/weather/CloudWeather.gd" id="85_clouds"]
 [ext_resource type="QuadMesh" uid="uid://efqwkh210cn1" path="res://resources/weather/RainStreak.tres" id="86_rain_mesh"]
@@ -405,6 +407,14 @@ snow = NodePath("../../ViewportContainer/SubViewport/World/Snow")
 [node name="LensRain" type="Node" parent="Weather" unique_id=609978638 node_paths=PackedStringArray("lens")]
 script = ExtResource("85_lens_rain")
 lens = NodePath("../../LensSpray")
+
+[node name="DeckRain" type="Node" parent="Weather" node_paths=PackedStringArray("player")]
+script = ExtResource("85_deck_rain")
+player = NodePath("Sound")
+
+[node name="Sound" type="AudioStreamPlayer" parent="Weather/DeckRain"]
+process_mode = 1
+stream = ExtResource("85_deck_rain_loop")
 
 [node name="BarrelClimate" type="Node" parent="Weather" node_paths=PackedStringArray("barrel_heat")]
 script = ExtResource("85_barrel_climate")
