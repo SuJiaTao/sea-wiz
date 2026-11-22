@@ -34,5 +34,6 @@ altitude = Vector2(300, 450)
 [resource]
 script = ExtResource("1_wave")
 missile_gap = 4.0
+salvo_chance = 0.25
 title = "STAGE 2  /  PINCER"
 spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2"), SubResource("S3")])

@@ -94,7 +94,7 @@ func _begin_next_level() -> void:
 		definition = levels[_level_index]
 		_level_index += 1
 	_current = definition
-	LaunchSpacing.reset(definition.missile_gap)
+	LaunchSpacing.reset(0.0 if randf() < definition.salvo_chance else definition.missile_gap)
 	_engaged = false
 	level_number += 1
 	level_title = definition.title
