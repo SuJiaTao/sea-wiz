@@ -34,5 +34,6 @@ group = &"skim"
 [resource]
 script = ExtResource("1_wave")
 missile_gap = 2.5
+salvo_chance = 0.25
 title = "STAGE 3  /  SEA SKIMMERS"
 spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2"), SubResource("S3")])

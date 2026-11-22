@@ -10,7 +10,7 @@ uniform vec3 centre = vec3(0.0);
 uniform vec3 box_size = vec3(80.0, 50.0, 80.0);
 uniform vec3 fall_velocity = vec3(2.5, -20.0, 1.0);
 uniform float streak_seconds = 0.1;
-uniform float width_pixels : hint_range(0.5, 4.0) = 1.0;
+uniform float width_pixels : hint_range(0.25, 4.0) = 1.0;
 uniform float brightness : hint_range(0.0, 1.0) = 0.24;
 uniform float speed_spread : hint_range(0.0, 0.5) = 0.25;
 uniform float length_spread : hint_range(0.0, 1.0) = 0.6;
@@ -47,7 +47,10 @@ void vertex() {
 	vec2 axis = normalize(head.xy - tail.xy + vec2(0.0, 1e-4));
 	vec2 side = vec2(-axis.y, axis.x);
 	float pixel_angle = 2.0 / (PROJECTION_MATRIX[1][1] * VIEWPORT_SIZE.y);
-	float width = length(head) * pixel_angle * width_pixels;
+	// Below a pixel wide a streak is drawn one pixel wide but fainter, so it
+	// reads as thinner without breaking up.
+	float width = length(head) * pixel_angle * max(width_pixels, 1.0);
+	shine *= min(width_pixels, 1.0);
 	along = VERTEX.y + 0.5;
 	VERTEX = mix(tail, head, along) + vec3(side * VERTEX.x * width, 0.0);
 }

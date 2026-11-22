@@ -14,3 +14,5 @@ class_name WaveDefinition
 ## Least time between enemy missile launches in this wave, so early waves
 ## never send a whole salvo at once.
 @export var missile_gap: float = 0.0
+## Share of runs in which the gap is lifted and they may all fire at once.
+@export_range(0.0, 1.0) var salvo_chance: float = 0.0
