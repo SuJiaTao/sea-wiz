@@ -11,3 +11,6 @@ class_name WaveDefinition
 @export var unlocks: Array[Upgrade] = []
 ## The ship's decks catch fire as this wave starts.
 @export var ignite_ship: bool = false
+## Least time between enemy missile launches in this wave, so early waves
+## never send a whole salvo at once.
+@export var missile_gap: float = 0.0

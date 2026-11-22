@@ -17,6 +17,7 @@ group = &"patrol"
 
 [resource]
 script = ExtResource("1_wave")
+missile_gap = 5.0
 title = "STAGE 1  /  PATROL"
 spawns = Array[ExtResource("2_spawn")]([SubResource("S1")])
 if_engaged = ExtResource("5_lone_jet")

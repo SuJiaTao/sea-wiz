@@ -20,6 +20,9 @@ uniform float shadow_level : hint_range(0.0, 1.0) = 0.3;
 
 #include "res://shaders/moon_shadow.gdshaderinc"
 
+// Streaks stay fairly even along their length, fading only a little to the tail.
+const float TAIL_SHARE = 0.45;
+
 varying float along;
 varying float shine;
 
@@ -51,5 +54,5 @@ void vertex() {
 
 void fragment() {
 	float across = 1.0 - abs(UV.x - 0.5) * 2.0;
-	ALBEDO = vec3(pow(brightness, 2.2)) * along * across * shine;
+	ALBEDO = vec3(pow(brightness, 2.2)) * mix(TAIL_SHARE, 1.0, along) * across * shine;
 }

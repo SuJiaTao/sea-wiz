@@ -26,5 +26,6 @@ group = &"second"
 
 [resource]
 script = ExtResource("1_wave")
+missile_gap = 4.0
 title = "STAGE 2  /  TRAIL"
 spawns = Array[ExtResource("2_spawn")]([SubResource("S1"), SubResource("S2")])
