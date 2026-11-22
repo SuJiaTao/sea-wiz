@@ -93,7 +93,8 @@
 [ext_resource type="Script" uid="uid://cpjkfm8fhl845" path="res://scripts/weather/PrecipitationField.gd" id="83_precip_field"]
 [ext_resource type="Script" uid="uid://byx13np1h1yml" path="res://scripts/weather/PrecipitationWeather.gd" id="84_precip"]
 [ext_resource type="Script" uid="uid://dbslkmkup63ge" path="res://scripts/weather/LensRainWeather.gd" id="85_lens_rain"]
-[ext_resource type="Script" path="res://scripts/weather/DeckRainWeather.gd" id="85_deck_rain"]
+[ext_resource type="Script" path="res://scripts/weather/RainSoundWeather.gd" id="85_deck_rain"]
+[ext_resource type="AudioStream" path="res://audio/weather/sea_rain_loop.ogg" id="85_sea_rain_loop"]
 [ext_resource type="AudioStream" path="res://audio/weather/deck_rain_loop.ogg" id="85_deck_rain_loop"]
 [ext_resource type="Script" path="res://scripts/weather/BarrelClimateWeather.gd" id="85_barrel_climate"]
 [ext_resource type="Script" path="res://scripts/weather/CloudWeather.gd" id="85_clouds"]
@@ -415,6 +416,16 @@ player = NodePath("Sound")
 [node name="Sound" type="AudioStreamPlayer" parent="Weather/DeckRain"]
 process_mode = 1
 stream = ExtResource("85_deck_rain_loop")
+
+[node name="SeaRain" type="Node" parent="Weather" node_paths=PackedStringArray("player")]
+script = ExtResource("85_deck_rain")
+player = NodePath("Sound")
+light_db = -12.0
+heavy_db = 0.0
+
+[node name="Sound" type="AudioStreamPlayer" parent="Weather/SeaRain"]
+process_mode = 1
+stream = ExtResource("85_sea_rain_loop")
 
 [node name="BarrelClimate" type="Node" parent="Weather" node_paths=PackedStringArray("barrel_heat")]
 script = ExtResource("85_barrel_climate")

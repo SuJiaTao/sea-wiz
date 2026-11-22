@@ -1,15 +1,15 @@
 extends AbstractWeatherEffect
-class_name DeckRainWeather
+class_name RainSoundWeather
 
-# Rain drumming on the deck and the mount's steel: a seamless loop that comes
-# in with the rain and grows with how hard it falls.
+# A seamless loop of rain, such as on the deck or on the sea around the ship,
+# that comes in with the rain and grows with how hard it falls.
 
-## Level as the first rain starts, and in the heaviest downpour.
-const LIGHT_DB: float = -18.0
-const HEAVY_DB: float = -4.0
 const SILENT_DB: float = -60.0
 
 @export var player: AudioStreamPlayer
+## Level as the first rain starts, and in the heaviest downpour.
+@export var light_db: float = -18.0
+@export var heavy_db: float = -4.0
 
 
 func _ready() -> void:
@@ -24,6 +24,6 @@ func _apply(profile: WeatherProfile, strength: float, _delta: float) -> void:
 		if player.playing:
 			player.stop()
 		return
-	player.volume_db = lerpf(LIGHT_DB, HEAVY_DB, share)
+	player.volume_db = lerpf(light_db, heavy_db, share)
 	if not player.playing:
 		player.play(randf() * player.stream.get_length())
